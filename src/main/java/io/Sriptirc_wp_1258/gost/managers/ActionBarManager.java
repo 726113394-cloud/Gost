@@ -141,6 +141,14 @@ public class ActionBarManager {
         sendItemUsageHint(player, "闪现珍珠", "右键投掷进行短距离传送");
     }
     
+    public void sendStinkySteakHint(Player player) {
+        sendItemUsageHint(player, "臭牛排", "右键食用获得速度II效果");
+    }
+    
+    public void sendTeleportPearlHint(Player player) {
+        sendItemUsageHint(player, "传送珍珠", "右键投掷进行传送");
+    }
+    
     /**
      * 清理所有ActionBar
      */

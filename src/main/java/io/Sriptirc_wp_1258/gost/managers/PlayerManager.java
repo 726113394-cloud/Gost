@@ -178,6 +178,9 @@ public class PlayerManager {
             
             // 显示感染效果
             showInfectionEffects(victim);
+            
+            // 发送感染标题
+            plugin.getGameManager().sendInfectedTitle(victim);
         }
         
         // 更新游戏统计
@@ -280,7 +283,27 @@ public class PlayerManager {
                     true,
                     true
                 ));
-                player.sendMessage("§c你是母体鬼！前20秒你将处于失明状态！");
+                
+                // 母体鬼20秒无法移动效果（神鬼药水效果）
+                int immobilizeDuration = plugin.getConfigManager().getGhostImmobilizeDuration() * 20;
+                player.addPotionEffect(new PotionEffect(
+                    PotionEffectType.SLOW,
+                    immobilizeDuration,
+                    255, // 最大等级，几乎无法移动
+                    true,
+                    true
+                ));
+                
+                // 同时添加挖掘疲劳效果，确保完全无法移动
+                player.addPotionEffect(new PotionEffect(
+                    PotionEffectType.SLOW_DIGGING,
+                    immobilizeDuration,
+                    255,
+                    true,
+                    true
+                ));
+                
+                plugin.getLanguageManager().sendMessage(player, "role.ghost-disabled-prep");
                 break;
         }
     }

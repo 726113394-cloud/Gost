@@ -36,6 +36,7 @@ public class GameManager {
     private int gameDuration;
     private int preparationTime;
     private int queueTime;
+    private int remainingGameTime;
     private boolean preparationPhase = false;
     
     // Boss栏
@@ -157,6 +158,8 @@ public class GameManager {
         
         queueTask = new BukkitRunnable() {
             int timeLeft = queueTime;
+            boolean matchQueueStarted = false;
+            int matchQueueTimeLeft = 0;
             
             @Override
             public void run() {
@@ -166,11 +169,49 @@ public class GameManager {
                     return;
                 }
                 
+                // 检查是否达到最大玩家数，开始匹配队列倒计时
+                if (!matchQueueStarted && waitingPlayers.size() >= plugin.getConfigManager().getMaxPlayers()) {
+                    matchQueueStarted = true;
+                    matchQueueTimeLeft = plugin.getConfigManager().getMatchQueueTime();
+                    Bukkit.broadcastMessage(ChatColor.GREEN + "队列已满员！游戏将在 " + matchQueueTimeLeft + " 秒后开始！");
+                }
+                
+                // 处理匹配队列倒计时
+                if (matchQueueStarted) {
+                    if (matchQueueTimeLeft > 0) {
+                        // 只在最后10秒发送居中大文本倒计时提示
+                        if (matchQueueTimeLeft <= 10) {
+                            for (UUID playerId : waitingPlayers) {
+                                Player player = Bukkit.getPlayer(playerId);
+                                if (player != null && player.isOnline()) {
+                                    player.sendTitle(ChatColor.GREEN + "游戏即将开始", ChatColor.YELLOW + "倒计时: " + matchQueueTimeLeft + " 秒", 0, 20, 0);
+                                }
+                            }
+                        }
+                        
+                        // 每10秒或最后10秒发送聊天提示
+                        if (matchQueueTimeLeft == 10 || matchQueueTimeLeft == 5 || matchQueueTimeLeft <= 3) {
+                            Bukkit.broadcastMessage(ChatColor.GREEN + "游戏开始倒计时: " + matchQueueTimeLeft + " 秒");
+                        }
+                        
+                        matchQueueTimeLeft--;
+                    } else {
+                        // 匹配队列倒计时结束，开始游戏
+                        startGame();
+                        this.cancel();
+                        return;
+                    }
+                }
+                
                 // 更新Boss栏
                 double progress = (double) timeLeft / queueTime;
                 queueBossBar.setProgress(progress);
-                queueBossBar.setTitle(ChatColor.YELLOW + "等待玩家 " + waitingPlayers.size() + "/" + 
-                    plugin.getConfigManager().getMaxPlayers() + " | 剩余: " + timeLeft + "秒");
+                String title = ChatColor.YELLOW + "等待玩家 " + waitingPlayers.size() + "/" + 
+                    plugin.getConfigManager().getMaxPlayers() + " | 剩余: " + timeLeft + "秒";
+                if (matchQueueStarted) {
+                    title += ChatColor.GREEN + " (满员倒计时: " + matchQueueTimeLeft + "秒)";
+                }
+                queueBossBar.setTitle(title);
                 
                 // 显示给队列中的玩家
                 for (UUID playerId : waitingPlayers) {
@@ -180,7 +221,7 @@ public class GameManager {
                     }
                 }
                 
-                // 检查是否可以开始游戏
+                // 检查是否可以开始游戏（普通队列时间结束）
                 if (timeLeft <= 0) {
                     if (waitingPlayers.size() >= plugin.getConfigManager().getMinPlayers()) {
                         startGame();
@@ -287,6 +328,14 @@ public class GameManager {
                 // 每5秒提醒一次
                 if (timeLeft % 5 == 0 || timeLeft <= 3) {
                     Bukkit.broadcastMessage(ChatColor.YELLOW + "准备阶段剩余: " + timeLeft + "秒");
+                    
+                    // 发送准备阶段标题
+                    sendPreparationTitle(timeLeft);
+                }
+                
+                // 最后3秒每1秒发送标题
+                if (timeLeft <= 3) {
+                    sendPreparationTitle(timeLeft);
                 }
                 
                 timeLeft--;
@@ -324,7 +373,47 @@ public class GameManager {
             
             // 更新玩家背包（母体鬼需要狂暴药水）
             plugin.getPlayerManager().updatePlayerInventory(motherGhost, PlayerManager.PlayerRole.GHOST_MOTHER);
+            
+            // 启动母体禁足倒计时
+            startMotherGhostImmobilizeCountdown(motherGhost);
         }
+    }
+    
+    // 启动母体禁足倒计时
+    private void startMotherGhostImmobilizeCountdown(Player motherGhost) {
+        int immobilizeDuration = plugin.getConfigManager().getGhostImmobilizeDuration();
+        
+        new BukkitRunnable() {
+            int timeLeft = immobilizeDuration;
+            
+            @Override
+            public void run() {
+                if (!motherGhost.isOnline() || 
+                    plugin.getPlayerManager().getPlayerRole(motherGhost.getUniqueId()) != PlayerManager.PlayerRole.GHOST_MOTHER) {
+                    this.cancel();
+                    return;
+                }
+                
+                if (timeLeft > 0) {
+                    // 只在最后10秒显示居中大文本倒计时提示
+                    if (timeLeft <= 10) {
+                        motherGhost.sendTitle(ChatColor.RED + "禁足中", ChatColor.YELLOW + "剩余: " + timeLeft + " 秒", 0, 20, 0);
+                    }
+                    
+                    // 最后10秒发送聊天提示
+                    if (timeLeft == 10 || timeLeft == 5 || timeLeft <= 3) {
+                        motherGhost.sendMessage(ChatColor.RED + "禁足解除倒计时: " + timeLeft + " 秒");
+                    }
+                    
+                    timeLeft--;
+                } else {
+                    // 禁足结束
+                    motherGhost.sendTitle(ChatColor.GREEN + "禁足解除", ChatColor.YELLOW + "你可以开始行动了！", 10, 40, 10);
+                    motherGhost.sendMessage(ChatColor.GREEN + "禁足已解除，你可以开始感染人类了！");
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 20L); // 每秒执行一次
     }
     
     // 开始游戏阶段
@@ -346,15 +435,28 @@ public class GameManager {
         
         // 开始幽灵感知任务（每分钟）
         startGhostSenseTask();
+        
+        // 开始道具刷新系统
+        plugin.getItemSpawnManager().startSpawning();
+        
+        // 开始货币发放系统（暂时取消）
+        // plugin.getCurrencyManager().startDistribution();
+        
+        // 发送游戏开始标题
+        sendGameStartTitles();
     }
     
     // 开始游戏倒计时
     private void startGameTimer() {
+        remainingGameTime = gameDuration;
+        
         gameTask = new BukkitRunnable() {
             int timeLeft = gameDuration;
             
             @Override
             public void run() {
+                remainingGameTime = timeLeft;
+                
                 if (gameState != GameState.RUNNING) {
                     this.cancel();
                     return;
@@ -390,9 +492,19 @@ public class GameManager {
                     return;
                 }
                 
-                // 最后2分钟：随机将一名鬼变回人类
-                if (timeLeft == 120) { // 2分钟 = 120秒
-                    plugin.getItemManager().randomGhostToHuman();
+                // 检查鬼数量是否为0
+                if (ghostCount == 0) {
+                    // 鬼数量为0，人类自动胜利，但不发放奖金，退还入场金
+                    endGameWithNoGhosts();
+                    this.cancel();
+                    return;
+                }
+                
+                // 最后2分钟：随机将一名鬼变回人类（如果转化功能启用）
+                if (plugin.getConfigManager().isConversionEnabled() && timeLeft == plugin.getConfigManager().getConversionActivateTime()) {
+                    // 发送转化提示
+                    Bukkit.broadcastMessage(ChatColor.YELLOW + "剩余2分钟，转化功能已激活！");
+                    // 这里可以添加转化逻辑，比如给予玩家转化物品
                 }
                 
                 timeLeft--;
@@ -468,6 +580,7 @@ public class GameManager {
     // 结束游戏
     public void endGame(boolean humanWin) {
         gameState = GameState.ENDING;
+        remainingGameTime = 0;
         
         // 取消所有任务
         if (preparationTask != null) {
@@ -493,6 +606,9 @@ public class GameManager {
             Bukkit.broadcastMessage(ChatColor.RED + "游戏结束！鬼胜利！");
         }
         
+        // 发送游戏结束标题
+        sendGameEndTitle(humanWin);
+        
         // 计算并分发奖金
         plugin.getEconomyManager().distributeRewards(humanWin);
         
@@ -507,8 +623,63 @@ public class GameManager {
         Bukkit.broadcastMessage(ChatColor.YELLOW + "游戏已结束，可以开始新的游戏！");
     }
     
+    /**
+     * 鬼数量为0时结束游戏（不发放奖金，退还入场金）
+     */
+    private void endGameWithNoGhosts() {
+        gameState = GameState.ENDING;
+        remainingGameTime = 0;
+        
+        // 取消所有任务
+        if (preparationTask != null) {
+            preparationTask.cancel();
+        }
+        if (gameTask != null) {
+            gameTask.cancel();
+        }
+        if (itemDistributionTask != null) {
+            itemDistributionTask.cancel();
+        }
+        if (ghostSenseTask != null) {
+            ghostSenseTask.cancel();
+        }
+        
+        // 隐藏Boss栏
+        gameBossBar.setVisible(false);
+        
+        // 广播消息
+        Bukkit.broadcastMessage(ChatColor.YELLOW + "游戏结束！鬼阵营数量为0！");
+        Bukkit.broadcastMessage(ChatColor.RED + "由于鬼阵营数量为0，服务器奖金不发放！");
+        Bukkit.broadcastMessage(ChatColor.GREEN + "各玩家的入场金已原路退回！");
+        
+        // 发送游戏结束标题（人类胜利）
+        sendGameEndTitle(true);
+        
+        // 退还所有玩家的入场金
+        List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
+        for (UUID playerId : allPlayers) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                plugin.getEconomyManager().refundEntryFee(player);
+                player.sendMessage(ChatColor.YELLOW + "你的入场金已退还！");
+            }
+        }
+        
+        // 清理数据并恢复所有玩家状态
+        plugin.getPlayerManager().cleanup();
+        
+        // 重置游戏状态
+        gameState = GameState.STOPPED;
+        currentGameId = null;
+        preparationPhase = false;
+        
+        Bukkit.broadcastMessage(ChatColor.YELLOW + "游戏已结束，可以开始新的游戏！");
+    }
+    
     // 强制停止游戏
     public void forceStopGame() {
+        remainingGameTime = 0;
+        
         if (gameState == GameState.STOPPED) {
             return;
         }
@@ -591,5 +762,88 @@ public class GameManager {
     // 获取游戏ID
     public UUID getCurrentGameId() {
         return currentGameId;
+    }
+    
+    /**
+     * 发送游戏开始标题
+     */
+    private void sendGameStartTitles() {
+        List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
+        
+        for (UUID playerId : allPlayers) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                PlayerManager.PlayerRole role = plugin.getPlayerManager().getPlayerRole(playerId);
+                
+                if (role == PlayerManager.PlayerRole.HUMAN) {
+                    plugin.getLanguageManager().sendTitle(player, "game.started-human", "");
+                } else if (role == PlayerManager.PlayerRole.GHOST_MOTHER || role == PlayerManager.PlayerRole.GHOST_NORMAL) {
+                    plugin.getLanguageManager().sendTitle(player, "game.started-ghost", "");
+                }
+            }
+        }
+    }
+    
+    /**
+     * 发送感染标题
+     */
+    public void sendInfectedTitle(Player player) {
+        plugin.getLanguageManager().sendTitle(player, "role.infected", "");
+    }
+    
+    /**
+     * 发送转化标题
+     */
+    public void sendConversionTitle(Player player) {
+        plugin.getLanguageManager().sendTitle(player, "role.converted", "");
+    }
+    
+    /**
+     * 发送游戏结束标题
+     */
+    public void sendGameEndTitle(boolean humanWin) {
+        String titleKey = humanWin ? "broadcast.human-win" : "broadcast.ghost-win";
+        String subtitleKey = "game.ended";
+        
+        List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
+        
+        for (UUID playerId : allPlayers) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                plugin.getLanguageManager().sendTitle(player, titleKey, subtitleKey);
+            }
+        }
+        
+        // 同时发送给观战者（暂时取消观战系统）
+        // for (UUID spectatorId : plugin.getSpectatorManager().getSpectators()) {
+        //     Player spectator = Bukkit.getPlayer(spectatorId);
+        //     if (spectator != null && spectator.isOnline()) {
+        //         plugin.getLanguageManager().sendTitle(spectator, titleKey, subtitleKey);
+        //     }
+        // }
+    }
+    
+    /**
+     * 发送准备阶段倒计时标题
+     */
+    public void sendPreparationTitle(int timeLeft) {
+        String title = plugin.getLanguageManager().getMessage("game.starting");
+        String subtitle = plugin.getLanguageManager().getMessage("time.preparation", timeLeft);
+        
+        List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
+        
+        for (UUID playerId : allPlayers) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                player.sendTitle(title, subtitle, 10, 70, 20);
+            }
+        }
+    }
+    
+    /**
+     * 获取游戏剩余时间（秒）
+     */
+    public int getRemainingGameTime() {
+        return remainingGameTime;
     }
 }

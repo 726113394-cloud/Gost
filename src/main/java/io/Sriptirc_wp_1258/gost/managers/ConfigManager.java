@@ -18,13 +18,14 @@ public class ConfigManager {
         config = plugin.getConfig();
         
         // 设置默认值
-        config.addDefault("ScriptIrc-config-version", 2);
+        config.addDefault("ScriptIrc-config-version", 5);
         config.addDefault("game.duration", 420); // 7分钟，单位秒
         config.addDefault("game.preparation-time", 20); // 准备时间，单位秒
         config.addDefault("game.queue-time", 60); // 队列等待时间，单位秒
         config.addDefault("game.min-players", 2); // 最小玩家数
         config.addDefault("game.max-players", 16); // 最大玩家数
         config.addDefault("game.max-games", 1); // 最大同时游戏数
+        config.addDefault("game.match-queue-time", 30); // 匹配队列时间，队列满员后等待多久开始游戏
         
         // 经济设置
         config.addDefault("economy.entry-fee", 100.0); // 入场费
@@ -38,12 +39,40 @@ public class ConfigManager {
         config.addDefault("items.ice-ball.slow-duration", 4); // 凝冰球减速持续时间，单位秒
         config.addDefault("items.ice-ball.slow-level", 4); // 凝冰球减速等级
         config.addDefault("items.soul-control.freeze-duration", 6); // 控魂术冻结持续时间，单位秒
+        config.addDefault("items.teleport-pearl.cooldown", 10); // 传送珍珠冷却时间，单位秒
         
         // 效果设置
         config.addDefault("effects.mother-ghost-blindness-duration", 20); // 母体失明持续时间，单位秒
+        config.addDefault("effects.ghost-immobilize-duration", 20); // 母体鬼固定时间，单位秒
         config.addDefault("effects.ghost-sense-duration", 5); // 幽灵感知高亮持续时间，单位秒
         config.addDefault("effects.infection-lightning", true); // 感染时是否显示闪电
         config.addDefault("effects.infection-sound", true); // 感染时是否播放音效
+        
+        // 转化功能设置
+        config.addDefault("conversion.enabled", false); // 是否启用转化功能
+        config.addDefault("conversion.activate-time", 120); // 转化激活时间（游戏剩余时间，秒）
+        config.addDefault("conversion.cooldown", 30); // 转化冷却时间（秒）
+        config.addDefault("conversion.cost", 15); // 转化消耗宝石数量
+        
+        // 道具刷新设置
+        config.addDefault("item-spawn.enabled", true); // 是否启用道具刷新
+        config.addDefault("item-spawn.interval", 60); // 刷新间隔（秒）
+        config.addDefault("item-spawn.max-per-refresh", 3); // 每次刷新数量上限
+        config.addDefault("item-spawn.max-per-player", 1); // 每位玩家最多获得数量
+        
+        // 货币发放设置
+        config.addDefault("currency.distribution-interval", 25); // 发放间隔（秒）
+        config.addDefault("currency.distribution-amount", 1); // 每次发放数量
+        config.addDefault("currency.enchanted", true); // 是否带有附魔光效
+        
+        // 观战系统设置
+        config.addDefault("spectator.enabled", true); // 是否启用观战系统
+        config.addDefault("spectator.confirmation-required", true); // 是否需要确认观战
+        
+        // NPC设置
+        config.addDefault("npc.enabled", true); // 是否启用NPC系统
+        config.addDefault("npc.entity-type", "VILLAGER"); // NPC实体类型
+        config.addDefault("npc.name", "&e&lGost商人"); // NPC名称
         
         // 服务器模组设置（预留）
         
@@ -152,5 +181,83 @@ public class ConfigManager {
     
     public int getMaxAreas() {
         return config.getInt("area.max-areas", 20);
+    }
+    
+    // 新功能配置方法
+    
+    public int getGhostImmobilizeDuration() {
+        return config.getInt("effects.ghost-immobilize-duration", 20);
+    }
+    
+    public boolean isConversionEnabled() {
+        return config.getBoolean("conversion.enabled", false);
+    }
+    
+    public int getConversionActivateTime() {
+        return config.getInt("conversion.activate-time", 120);
+    }
+    
+    public int getConversionCooldown() {
+        return config.getInt("conversion.cooldown", 30);
+    }
+    
+    public int getConversionCost() {
+        return config.getInt("conversion.cost", 15);
+    }
+    
+    public boolean isItemSpawnEnabled() {
+        return config.getBoolean("item-spawn.enabled", true);
+    }
+    
+    public int getItemSpawnInterval() {
+        return config.getInt("item-spawn.interval", 60);
+    }
+    
+    public int getItemSpawnMaxPerRefresh() {
+        return config.getInt("item-spawn.max-per-refresh", 3);
+    }
+    
+    public int getItemSpawnMaxPerPlayer() {
+        return config.getInt("item-spawn.max-per-player", 1);
+    }
+    
+    public int getCurrencyDistributionInterval() {
+        return config.getInt("currency.distribution-interval", 25);
+    }
+    
+    public int getCurrencyDistributionAmount() {
+        return config.getInt("currency.distribution-amount", 1);
+    }
+    
+    public boolean getCurrencyEnchanted() {
+        return config.getBoolean("currency.enchanted", true);
+    }
+    
+    public boolean isSpectatorEnabled() {
+        return config.getBoolean("spectator.enabled", true);
+    }
+    
+    public boolean isSpectatorConfirmationRequired() {
+        return config.getBoolean("spectator.confirmation-required", true);
+    }
+    
+    public boolean isNpcEnabled() {
+        return config.getBoolean("npc.enabled", true);
+    }
+    
+    public String getNpcEntityType() {
+        return config.getString("npc.entity-type", "VILLAGER");
+    }
+    
+    public String getNpcName() {
+        return config.getString("npc.name", "&e&lGost商人");
+    }
+    
+    public int getMatchQueueTime() {
+        return config.getInt("game.match-queue-time", 30);
+    }
+    
+    public int getTeleportPearlCooldown() {
+        return config.getInt("items.teleport-pearl.cooldown", 10);
     }
 }

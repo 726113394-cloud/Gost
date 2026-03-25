@@ -12,6 +12,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +68,10 @@ public class ItemListener implements Listener {
             handleSoulControl(player, item);
         } else if (displayName.contains("闪现珍珠")) {
             handleBlinkPearl(player, item, event);
+        } else if (displayName.contains("臭牛排")) {
+            handleStinkySteak(player, item);
+        } else if (displayName.contains("传送珍珠")) {
+            handleTeleportPearl(player, item, event);
         }
     }
     
@@ -136,12 +142,6 @@ public class ItemListener implements Listener {
     }
     
     private void handleIceBall(Player player, PlayerInteractEvent event) {
-        // 检查玩家是否是人类
-        if (!plugin.getPlayerManager().isHuman(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "只有人类可以使用凝冰球！");
-            return;
-        }
-        
         // 发送ActionBar提示
         plugin.getActionBarManager().sendIceBallHint(player);
         
@@ -252,5 +252,53 @@ public class ItemListener implements Listener {
     // 清理所有冷却时间
     public void clearAllCooldowns() {
         cooldowns.clear();
+    }
+    
+    private void handleStinkySteak(Player player, ItemStack item) {
+        // 发送ActionBar提示
+        plugin.getActionBarManager().sendStinkySteakHint(player);
+        
+        // 保存当前饱食度
+        float savedFoodLevel = player.getFoodLevel();
+        float savedSaturation = player.getSaturation();
+        
+        // 临时设置饱食度为20，确保可以食用
+        player.setFoodLevel(20);
+        player.setSaturation(20);
+        
+        // 应用臭牛排效果 - 速度II效果14秒
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 280, 1)); // 14秒 * 20 = 280 ticks
+        
+        // 消耗物品
+        consumeItem(player, item);
+        
+        // 恢复原来的饱食度
+        player.setFoodLevel((int) savedFoodLevel);
+        player.setSaturation(savedSaturation);
+        
+        // 发送使用提示
+        player.sendMessage(ChatColor.GREEN + "你食用了臭牛排，获得了速度II效果！");
+    }
+    
+    private void handleTeleportPearl(Player player, ItemStack item, PlayerInteractEvent event) {
+        // 检查冷却时间
+        if (isOnCooldown(player, "teleport-pearl")) {
+            int remaining = getRemainingCooldown(player, "teleport-pearl");
+            player.sendMessage(ChatColor.RED + "传送珍珠冷却中，剩余 " + remaining + " 秒");
+            return;
+        }
+        
+        // 发送ActionBar提示
+        plugin.getActionBarManager().sendTeleportPearlHint(player);
+        
+        // 允许使用末影珍珠（不取消事件）
+        event.setCancelled(false);
+        
+        // 设置冷却时间
+        int cooldown = plugin.getConfigManager().getTeleportPearlCooldown();
+        setCooldown(player, "teleport-pearl", cooldown);
+        
+        // 发送使用提示
+        player.sendMessage(ChatColor.GREEN + "你使用了传送珍珠，冷却时间 " + cooldown + " 秒");
     }
 }

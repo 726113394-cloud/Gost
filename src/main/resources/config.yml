@@ -2,7 +2,7 @@
 # 版本: 2.0.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 2
+ScriptIrc-config-version: 5
 
 # 游戏设置
 game:
@@ -12,6 +12,7 @@ game:
   min-players: 2 # 最小玩家数
   max-players: 16 # 最大玩家数
   max-games: 1 # 最大同时游戏数（0=禁止新游戏）
+  match-queue-time: 30 # 匹配队列时间（秒），队列满员后等待多久开始游戏
 
 # 经济设置
 economy:
@@ -31,10 +32,13 @@ items:
     slow-level: 4 # 凝冰球减速等级
   soul-control:
     freeze-duration: 6 # 控魂术冻结持续时间（秒）
+  teleport-pearl:
+    cooldown: 10 # 传送珍珠冷却时间（秒）
 
 # 效果设置
 effects:
   mother-ghost-blindness-duration: 20 # 母体失明持续时间（秒）
+  ghost-immobilize-duration: 20 # 母体鬼固定时间（秒）
   ghost-sense-duration: 5 # 幽灵感知高亮持续时间（秒）
   infection-lightning: true # 感染时是否显示闪电
   infection-sound: true # 感染时是否播放音效
@@ -48,3 +52,10 @@ area:
   selection-tool: MAGMA_CREAM # 选区工具物品（默认为岩浆膏）
   max-areas: 20 # 最大存档区域数量
   auto-teleport: true # 是否自动传送到区域
+
+# 道具刷新设置
+item-spawn:
+  enabled: true              # 是否启用道具刷新
+  interval: 60               # 刷新间隔（秒）
+  max-per-refresh: 3         # 每次刷新数量上限
+  max-per-player: 1          # 每位玩家最多获得数量

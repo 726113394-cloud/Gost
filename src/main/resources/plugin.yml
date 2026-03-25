@@ -1,5 +1,5 @@
 name: Gost
-version: 2.0.0
+version: 2.0.1
 main: io.Sriptirc_wp_1258.gost.Gost
 api-version: 1.20
 description: 生化模式小游戏 - 基于Residence领地的团队对抗游戏
