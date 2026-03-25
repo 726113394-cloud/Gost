@@ -2,7 +2,7 @@ name: Gost
 version: 2.0.1
 main: io.Sriptirc_wp_1258.gost.Gost
 api-version: 1.20
-description: 生化模式小游戏 - 基于Residence领地的团队对抗游戏
+description: 极限生存对抗游戏 - 融合猫抓老鼠、鬼抓人、躲猫猫、CF生化模式等多种玩法
 author: ScriptIrc
 website: https://scriptirc.com
 
