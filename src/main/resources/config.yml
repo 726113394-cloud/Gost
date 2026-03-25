@@ -1,0 +1,50 @@
+# Gost 插件配置文件
+# 版本: 2.0.0
+# Minecraft: 1.20.x
+
+ScriptIrc-config-version: 2
+
+# 游戏设置
+game:
+  duration: 420 # 游戏时长（秒），默认7分钟
+  preparation-time: 20 # 准备时间（秒）
+  queue-time: 60 # 队列等待时间（秒）
+  min-players: 2 # 最小玩家数
+  max-players: 16 # 最大玩家数
+  max-games: 1 # 最大同时游戏数（0=禁止新游戏）
+
+# 经济设置
+economy:
+  entry-fee: 100.0 # 入场费
+  server-bonus: 5000.0 # 服务器奖金
+
+# 道具设置
+items:
+  adrenaline:
+    duration: 10 # 肾上腺素持续时间（秒）
+    speed-level: 2 # 肾上腺素速度等级
+  frenzy:
+    duration: 10 # 狂暴持续时间（秒）
+    speed-level: 2 # 狂暴速度等级
+  ice-ball:
+    slow-duration: 4 # 凝冰球减速持续时间（秒）
+    slow-level: 4 # 凝冰球减速等级
+  soul-control:
+    freeze-duration: 6 # 控魂术冻结持续时间（秒）
+
+# 效果设置
+effects:
+  mother-ghost-blindness-duration: 20 # 母体失明持续时间（秒）
+  ghost-sense-duration: 5 # 幽灵感知高亮持续时间（秒）
+  infection-lightning: true # 感染时是否显示闪电
+  infection-sound: true # 感染时是否播放音效
+
+# 服务器模组设置
+mods:
+  injured-effects: false # 是否使用Injured Effects模组（限制最大生命值为2.0）
+
+# 区域选择设置
+area:
+  selection-tool: MAGMA_CREAM # 选区工具物品（默认为岩浆膏）
+  max-areas: 20 # 最大存档区域数量
+  auto-teleport: true # 是否自动传送到区域

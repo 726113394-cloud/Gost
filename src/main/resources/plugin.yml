@@ -1,0 +1,31 @@
+name: Gost
+version: 2.0.0
+main: io.Sriptirc_wp_1258.gost.Gost
+api-version: 1.20
+description: 生化模式小游戏 - 基于Residence领地的团队对抗游戏
+author: ScriptIrc
+website: https://scriptirc.com
+
+depend: [Vault]
+softdepend: []
+
+commands:
+  gost:
+    description: 玩家命令 - 加入/离开游戏
+    usage: /<command> [join|leave|info|help]
+    aliases: [join, leave]
+  gostadmin:
+    description: 管理员命令 - 管理游戏和区域
+    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|help]
+    aliases: [ga]
+
+permissions:
+  gost.join:
+    description: 允许玩家加入游戏
+    default: true
+  gost.leave:
+    description: 允许玩家离开游戏
+    default: true
+  gost.admin:
+    description: 管理员权限
+    default: op
