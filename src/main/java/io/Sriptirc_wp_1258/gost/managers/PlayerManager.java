@@ -516,4 +516,61 @@ public class PlayerManager {
             player.setFlying(flying);
         }
     }
+    
+    // 检查玩家是否已达到最大道具种类数量
+    public boolean hasReachedMaxItemTypes(Player player) {
+        int maxItemTypes = plugin.getConfigManager().getMaxItemTypesPerPlayer();
+        Set<String> itemTypes = new HashSet<>();
+        
+        // 检查玩家背包中的道具
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null && meta.hasDisplayName()) {
+                    String displayName = meta.getDisplayName();
+                    
+                    // 检查是否是自定义道具
+                    if (displayName.contains("臭牛排") || 
+                        displayName.contains("传送珍珠") || 
+                        displayName.contains("灵魂探测器") ||
+                        displayName.contains("一次机会")) {
+                        
+                        // 获取道具类型（去除颜色代码）
+                        String itemType = ChatColor.stripColor(displayName);
+                        itemTypes.add(itemType);
+                    }
+                }
+            }
+        }
+        
+        return itemTypes.size() >= maxItemTypes;
+    }
+    
+    // 获取玩家当前拥有的道具种类数量
+    public int getPlayerItemTypesCount(Player player) {
+        Set<String> itemTypes = new HashSet<>();
+        
+        // 检查玩家背包中的道具
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null && meta.hasDisplayName()) {
+                    String displayName = meta.getDisplayName();
+                    
+                    // 检查是否是自定义道具
+                    if (displayName.contains("臭牛排") || 
+                        displayName.contains("传送珍珠") || 
+                        displayName.contains("灵魂探测器") ||
+                        displayName.contains("一次机会")) {
+                        
+                        // 获取道具类型（去除颜色代码）
+                        String itemType = ChatColor.stripColor(displayName);
+                        itemTypes.add(itemType);
+                    }
+                }
+            }
+        }
+        
+        return itemTypes.size();
+    }
 }

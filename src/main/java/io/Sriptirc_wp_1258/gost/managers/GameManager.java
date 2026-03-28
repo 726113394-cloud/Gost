@@ -49,6 +49,7 @@ public class GameManager {
     private BukkitTask gameTask;
     private BukkitTask itemDistributionTask;
     private BukkitTask ghostSenseTask;
+    private BukkitTask minuteGlowingTask;
     
     public GameManager(Gost plugin) {
         this.plugin = plugin;
@@ -453,6 +454,9 @@ public class GameManager {
         // 开始道具刷新系统
         plugin.getItemSpawnManager().startSpawning();
         
+        // 开始每分钟高亮效果任务
+        startMinuteGlowingTask();
+        
         // 开始货币发放系统（暂时取消）
         // plugin.getCurrencyManager().startDistribution();
         
@@ -609,6 +613,9 @@ public class GameManager {
         if (ghostSenseTask != null) {
             ghostSenseTask.cancel();
         }
+        if (minuteGlowingTask != null) {
+            minuteGlowingTask.cancel();
+        }
         
         // 隐藏Boss栏
         gameBossBar.setVisible(false);
@@ -656,6 +663,9 @@ public class GameManager {
         }
         if (ghostSenseTask != null) {
             ghostSenseTask.cancel();
+        }
+        if (minuteGlowingTask != null) {
+            minuteGlowingTask.cancel();
         }
         
         // 隐藏Boss栏
@@ -713,6 +723,9 @@ public class GameManager {
         }
         if (ghostSenseTask != null) {
             ghostSenseTask.cancel();
+        }
+        if (minuteGlowingTask != null) {
+            minuteGlowingTask.cancel();
         }
         
         // 隐藏Boss栏
@@ -859,5 +872,83 @@ public class GameManager {
      */
     public int getRemainingGameTime() {
         return remainingGameTime;
+    }
+    
+    /**
+     * 开始每分钟高亮效果任务
+     */
+    private void startMinuteGlowingTask() {
+        // 检查是否启用每分钟高亮效果
+        if (!plugin.getConfigManager().isMinuteGlowingEnabled()) {
+            plugin.getLogger().info("每分钟高亮效果已禁用");
+            return;
+        }
+        
+        int interval = plugin.getConfigManager().getMinuteGlowingInterval();
+        int duration = plugin.getConfigManager().getMinuteGlowingDuration();
+        
+        plugin.getLogger().info("开始每分钟高亮效果任务，间隔: " + interval + "秒，持续时间: " + duration + "秒");
+        
+        minuteGlowingTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (gameState != GameState.RUNNING) {
+                    this.cancel();
+                    return;
+                }
+                
+                // 给所有玩家应用高亮效果
+                applyMinuteGlowingEffect();
+            }
+        }.runTaskTimer(plugin, interval * 20L, interval * 20L); // 转换为ticks
+    }
+    
+    /**
+     * 应用每分钟高亮效果
+     */
+    private void applyMinuteGlowingEffect() {
+        int duration = plugin.getConfigManager().getMinuteGlowingDuration();
+        int durationTicks = duration * 20;
+        
+        // 获取所有游戏中的玩家
+        List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
+        
+        if (allPlayers.isEmpty()) {
+            return;
+        }
+        
+        plugin.getLogger().info("应用每分钟高亮效果，持续时间: " + duration + "秒，玩家数量: " + allPlayers.size());
+        
+        // 给所有玩家应用高亮效果
+        for (UUID playerId : allPlayers) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                player.addPotionEffect(new org.bukkit.potion.PotionEffect(
+                    org.bukkit.potion.PotionEffectType.GLOWING,
+                    durationTicks,
+                    0, // 等级0
+                    true, // 环境效果
+                    true // 显示粒子
+                ));
+                
+                // 发送提示消息
+                player.sendMessage(ChatColor.YELLOW + "你获得了高亮效果，持续 " + duration + " 秒！");
+            }
+        }
+        
+        // 广播提示
+        Bukkit.broadcastMessage(ChatColor.GOLD + "✨ 所有玩家获得高亮效果，持续 " + duration + " 秒！");
+        
+        // 发送屏幕居中字幕
+        for (UUID playerId : allPlayers) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                player.sendTitle(
+                    ChatColor.GOLD + "✨ 高亮效果",
+                    ChatColor.YELLOW + "持续 " + duration + " 秒",
+                    10, 40, 10
+                );
+            }
+        }
     }
 }

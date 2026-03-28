@@ -2,7 +2,7 @@
 # 版本: 2.0.1
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 5
+ScriptIrc-config-version: 7
 
 # 游戏设置
 game:
@@ -34,6 +34,13 @@ items:
     freeze-duration: 6 # 控魂术冻结持续时间（秒）
   teleport-pearl:
     cooldown: 10 # 传送珍珠冷却时间（秒）
+  second-chance:
+    cooldown: 60 # 一次机会冷却时间（秒）
+    human-speed-duration: 10 # 人类玩家速度效果持续时间（秒）
+    human-speed-level: 2 # 人类玩家速度效果等级
+    human-glowing-duration: 10 # 人类玩家高亮效果持续时间（秒）
+    ghost-slow-duration: 7 # 鬼玩家缓慢效果持续时间（秒）
+    ghost-slow-level: 1 # 鬼玩家缓慢效果等级
 
 # 效果设置
 effects:
@@ -42,6 +49,10 @@ effects:
   ghost-sense-duration: 5 # 幽灵感知高亮持续时间（秒）
   infection-lightning: true # 感染时是否显示闪电
   infection-sound: true # 感染时是否播放音效
+  minute-glowing:
+    enabled: true # 是否启用每分钟高亮效果
+    duration: 5 # 高亮持续时间（秒）
+    interval: 60 # 触发间隔时间（秒）
 
 # 游戏血量设置
 health:
@@ -60,3 +71,4 @@ item-spawn:
   interval: 60               # 刷新间隔（秒）
   max-per-refresh: 3         # 每次刷新数量上限
   max-per-player: 1          # 每位玩家最多获得数量
+  max-item-types-per-player: 6 # 玩家最多拥有的道具种类数量

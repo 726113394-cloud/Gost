@@ -31,6 +31,7 @@ public class ItemManager {
         createFrenzyPotion();
         createIceBall();
         createSoulControl();
+        createSecondChance();
         // createBlinkPearl(); // 已废弃，使用传送珍珠
         
         plugin.getLogger().info("ItemManager初始化完成，创建了 " + customItems.size() + " 个自定义物品");
@@ -346,5 +347,89 @@ public class ItemManager {
             player.sendMessage(ChatColor.GREEN + "你在最后时刻被治愈了！变回了人类！");
             Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " 在最后时刻被治愈，变回了人类！");
         }
+    }
+    
+    // 创建一次机会道具
+    private void createSecondChance() {
+        ItemStack secondChance = new ItemStack(Material.TOTEM_OF_UNDYING);
+        ItemMeta meta = secondChance.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6一次机会"));
+            meta.setLore(Arrays.asList(
+                ChatColor.translateAlternateColorCodes('&', "&7可抵挡一次鬼的感染"),
+                ChatColor.translateAlternateColorCodes('&', "&6被动触发道具"),
+                ChatColor.translateAlternateColorCodes('&', "&a仅限人类使用"),
+                ChatColor.translateAlternateColorCodes('&', "&c[唯一道具]"),
+                "",
+                ChatColor.GRAY + "效果:",
+                ChatColor.GRAY + "• 人类: 速度II " + plugin.getConfigManager().getSecondChanceHumanSpeedDuration() + "秒",
+                ChatColor.GRAY + "• 人类: 高亮 " + plugin.getConfigManager().getSecondChanceHumanGlowingDuration() + "秒",
+                ChatColor.GRAY + "• 鬼: 缓慢I " + plugin.getConfigManager().getSecondChanceGhostSlowDuration() + "秒",
+                "",
+                ChatColor.DARK_GRAY + "[被动触发]"
+            ));
+            
+            // 添加发光效果
+            meta.addEnchant(Enchantment.LURE, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            secondChance.setItemMeta(meta);
+        }
+        
+        customItems.put("second_chance", secondChance);
+        plugin.getLogger().info("已创建一次机会道具");
+    }
+    
+    // 获取一次机会道具
+    public ItemStack getSecondChance() {
+        return customItems.get("second_chance").clone();
+    }
+    
+    // 应用一次机会效果
+    public void applySecondChanceEffect(Player humanPlayer, Player ghostPlayer) {
+        plugin.getLogger().info("一次机会效果触发: 人类=" + humanPlayer.getName() + ", 鬼=" + ghostPlayer.getName());
+        
+        // 给人类玩家效果
+        int humanSpeedDuration = plugin.getConfigManager().getSecondChanceHumanSpeedDuration() * 20;
+        int humanSpeedLevel = plugin.getConfigManager().getSecondChanceHumanSpeedLevel() - 1;
+        int humanGlowingDuration = plugin.getConfigManager().getSecondChanceHumanGlowingDuration() * 20;
+        
+        humanPlayer.addPotionEffect(new PotionEffect(
+            PotionEffectType.SPEED,
+            humanSpeedDuration,
+            humanSpeedLevel,
+            true,
+            true
+        ));
+        
+        humanPlayer.addPotionEffect(new PotionEffect(
+            PotionEffectType.GLOWING,
+            humanGlowingDuration,
+            0,
+            true,
+            true
+        ));
+        
+        // 给鬼玩家效果
+        int ghostSlowDuration = plugin.getConfigManager().getSecondChanceGhostSlowDuration() * 20;
+        int ghostSlowLevel = plugin.getConfigManager().getSecondChanceGhostSlowLevel() - 1;
+        
+        ghostPlayer.addPotionEffect(new PotionEffect(
+            PotionEffectType.SLOW,
+            ghostSlowDuration,
+            ghostSlowLevel,
+            true,
+            true
+        ));
+        
+        // 发送消息
+        humanPlayer.sendMessage(ChatColor.GOLD + "一次机会已触发！你获得了速度和高亮效果！");
+        ghostPlayer.sendMessage(ChatColor.RED + "目标使用了一次机会！你被减速了！");
+        
+        // 广播消息
+        Bukkit.broadcastMessage(ChatColor.YELLOW + humanPlayer.getName() + " 使用了一次机会抵挡了 " + ghostPlayer.getName() + " 的感染！");
+        
+        plugin.getLogger().info("一次机会效果应用完成");
     }
 }

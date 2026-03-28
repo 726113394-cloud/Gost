@@ -23,6 +23,7 @@ public class Gost extends JavaPlugin {
     private BotManager botManager;
     private LanguageManager languageManager;
     private ItemSpawnManager itemSpawnManager;
+    private SecondChanceListener secondChanceListener;
     // private CurrencyManager currencyManager; // 货币系统已取消
     // private NpcManager npcManager; // NPC系统已取消
     // private SpectatorManager spectatorManager; // 观战系统已搁置
@@ -44,6 +45,7 @@ public class Gost extends JavaPlugin {
         botManager = new BotManager(this);
         languageManager = new LanguageManager(this);
         itemSpawnManager = new ItemSpawnManager(this);
+        secondChanceListener = new SecondChanceListener(this);
         // currencyManager = new CurrencyManager(this); // 暂时取消货币系统
         // spectatorManager = new SpectatorManager(this); // 暂时搁置观战系统
         // npcManager = new NpcManager(this); // 取消NPC系统
@@ -58,6 +60,7 @@ public class Gost extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InfectionListener(this), this);
         getServer().getPluginManager().registerEvents(new ItemListener(this), this);
         getServer().getPluginManager().registerEvents(new SelectionListener(this), this);
+        getServer().getPluginManager().registerEvents(secondChanceListener, this);
         
         getLogger().info("Gost 插件已启用 - 生化模式小游戏 v2.0.1");
     }
@@ -125,6 +128,10 @@ public class Gost extends JavaPlugin {
     
     public ItemSpawnManager getItemSpawnManager() {
         return itemSpawnManager;
+    }
+    
+    public SecondChanceListener getSecondChanceListener() {
+        return secondChanceListener;
     }
     
     // public CurrencyManager getCurrencyManager() {

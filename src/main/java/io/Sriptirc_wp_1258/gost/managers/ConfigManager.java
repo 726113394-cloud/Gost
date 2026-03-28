@@ -18,7 +18,7 @@ public class ConfigManager {
         config = plugin.getConfig();
         
         // 设置默认值
-        config.addDefault("ScriptIrc-config-version", 5);
+        config.addDefault("ScriptIrc-config-version", 7);
         config.addDefault("game.duration", 420); // 7分钟，单位秒
         config.addDefault("game.preparation-time", 20); // 准备时间，单位秒
         config.addDefault("game.queue-time", 60); // 队列等待时间，单位秒
@@ -40,6 +40,12 @@ public class ConfigManager {
         config.addDefault("items.ice-ball.slow-level", 4); // 凝冰球减速等级
         config.addDefault("items.soul-control.freeze-duration", 6); // 控魂术冻结持续时间，单位秒
         config.addDefault("items.teleport-pearl.cooldown", 10); // 传送珍珠冷却时间，单位秒
+        config.addDefault("items.second-chance.cooldown", 60); // 一次机会冷却时间，单位秒
+        config.addDefault("items.second-chance.human-speed-duration", 10); // 人类玩家速度效果持续时间，单位秒
+        config.addDefault("items.second-chance.human-speed-level", 2); // 人类玩家速度效果等级
+        config.addDefault("items.second-chance.human-glowing-duration", 10); // 人类玩家高亮效果持续时间，单位秒
+        config.addDefault("items.second-chance.ghost-slow-duration", 7); // 鬼玩家缓慢效果持续时间，单位秒
+        config.addDefault("items.second-chance.ghost-slow-level", 1); // 鬼玩家缓慢效果等级
         
         // 效果设置
         config.addDefault("effects.mother-ghost-blindness-duration", 20); // 母体失明持续时间，单位秒
@@ -47,6 +53,9 @@ public class ConfigManager {
         config.addDefault("effects.ghost-sense-duration", 5); // 幽灵感知高亮持续时间，单位秒
         config.addDefault("effects.infection-lightning", true); // 感染时是否显示闪电
         config.addDefault("effects.infection-sound", true); // 感染时是否播放音效
+        config.addDefault("effects.minute-glowing.enabled", true); // 是否启用每分钟高亮效果
+        config.addDefault("effects.minute-glowing.duration", 5); // 高亮持续时间，单位秒
+        config.addDefault("effects.minute-glowing.interval", 60); // 触发间隔时间，单位秒
         
         // 转化功能设置
         config.addDefault("conversion.enabled", false); // 是否启用转化功能
@@ -59,6 +68,7 @@ public class ConfigManager {
         config.addDefault("item-spawn.interval", 60); // 刷新间隔（秒）
         config.addDefault("item-spawn.max-per-refresh", 3); // 每次刷新数量上限
         config.addDefault("item-spawn.max-per-player", 1); // 每位玩家最多获得数量
+        config.addDefault("item-spawn.max-item-types-per-player", 6); // 玩家最多拥有的道具种类数量
         
         // 货币发放设置
         config.addDefault("currency.distribution-interval", 25); // 发放间隔（秒）
@@ -259,5 +269,45 @@ public class ConfigManager {
     
     public int getTeleportPearlCooldown() {
         return config.getInt("items.teleport-pearl.cooldown", 10);
+    }
+    
+    public int getSecondChanceCooldown() {
+        return config.getInt("items.second-chance.cooldown", 60);
+    }
+    
+    public int getSecondChanceHumanSpeedDuration() {
+        return config.getInt("items.second-chance.human-speed-duration", 10);
+    }
+    
+    public int getSecondChanceHumanSpeedLevel() {
+        return config.getInt("items.second-chance.human-speed-level", 2);
+    }
+    
+    public int getSecondChanceHumanGlowingDuration() {
+        return config.getInt("items.second-chance.human-glowing-duration", 10);
+    }
+    
+    public int getSecondChanceGhostSlowDuration() {
+        return config.getInt("items.second-chance.ghost-slow-duration", 7);
+    }
+    
+    public int getSecondChanceGhostSlowLevel() {
+        return config.getInt("items.second-chance.ghost-slow-level", 1);
+    }
+    
+    public int getMaxItemTypesPerPlayer() {
+        return config.getInt("item-spawn.max-item-types-per-player", 6);
+    }
+    
+    public boolean isMinuteGlowingEnabled() {
+        return config.getBoolean("effects.minute-glowing.enabled", true);
+    }
+    
+    public int getMinuteGlowingDuration() {
+        return config.getInt("effects.minute-glowing.duration", 5);
+    }
+    
+    public int getMinuteGlowingInterval() {
+        return config.getInt("effects.minute-glowing.interval", 60);
     }
 }

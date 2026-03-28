@@ -68,7 +68,28 @@ public class ItemSpawnManager {
             false, true // ghostOnly
         ));
         
-        plugin.getLogger().info("已加载 " + randomItems.size() + " 种随机道具: 臭牛排(权重15), 传送珍珠(权重20), 灵魂探测器(权重12, 鬼专属)");
+        // 一次机会 - 人类专属道具
+        randomItems.add(new RandomItemConfig(
+            "second-chance",
+            Material.TOTEM_OF_UNDYING,
+            "&6一次机会",
+            Arrays.asList(
+                "&7可抵挡一次鬼的感染",
+                "&6被动触发道具",
+                "&a仅限人类使用",
+                "&c[唯一道具]",
+                "",
+                "&7效果:",
+                "&7• 人类: 速度II 10秒",
+                "&7• 人类: 高亮 10秒",
+                "&7• 鬼: 缓慢I 7秒"
+            ),
+            10,
+            null, // 被动触发，没有直接药水效果
+            true, false // humanOnly
+        ));
+        
+        plugin.getLogger().info("已加载 " + randomItems.size() + " 种随机道具: 臭牛排(权重15), 传送珍珠(权重20), 灵魂探测器(权重12, 鬼专属), 一次机会(权重10, 人类专属)");
     }
     
     /**
@@ -173,6 +194,14 @@ public class ItemSpawnManager {
         int maxPerPlayer = plugin.getConfigManager().getItemSpawnMaxPerPlayer();
         
         if (currentCount >= maxPerPlayer) {
+            return;
+        }
+        
+        // 检查玩家是否已达到最大道具种类数量
+        if (plugin.getPlayerManager().hasReachedMaxItemTypes(player)) {
+            int currentTypes = plugin.getPlayerManager().getPlayerItemTypesCount(player);
+            int maxTypes = plugin.getConfigManager().getMaxItemTypesPerPlayer();
+            player.sendMessage(ChatColor.RED + "你已达到最大道具种类数量 (" + currentTypes + "/" + maxTypes + ")！");
             return;
         }
         
