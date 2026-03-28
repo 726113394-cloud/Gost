@@ -135,10 +135,10 @@ public class ActionBarManager {
     }
     
     /**
-     * 发送闪现珍珠使用提示
+     * 发送灵魂探测器使用提示
      */
-    public void sendBlinkPearlHint(Player player) {
-        sendItemUsageHint(player, "闪现珍珠", "右键投掷进行短距离传送");
+    public void sendSoulDetectorHint(Player player) {
+        sendItemUsageHint(player, "灵魂探测器", "右键使用使所有玩家发光25秒");
     }
     
     public void sendStinkySteakHint(Player player) {

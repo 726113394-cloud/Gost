@@ -1,6 +1,7 @@
 package io.Sriptirc_wp_1258.gost.listeners;
 
 import io.Sriptirc_wp_1258.gost.Gost;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -66,12 +67,12 @@ public class ItemListener implements Listener {
             handleIceBall(player, event);
         } else if (displayName.contains("控魂术")) {
             handleSoulControl(player, item);
-        } else if (displayName.contains("闪现珍珠")) {
-            handleBlinkPearl(player, item, event);
         } else if (displayName.contains("臭牛排")) {
             handleStinkySteak(player, item);
         } else if (displayName.contains("传送珍珠")) {
             handleTeleportPearl(player, item, event);
+        } else if (displayName.contains("灵魂探测器")) {
+            handleSoulDetector(player, item);
         }
     }
     
@@ -99,10 +100,16 @@ public class ItemListener implements Listener {
             Player target = (Player) event.getHitEntity();
             
             // 检查目标是否是鬼
-            if (plugin.getPlayerManager().isGhost(target.getUniqueId())) {
+            boolean isGhost = plugin.getPlayerManager().isGhost(target.getUniqueId());
+            plugin.getLogger().info("凝冰球击中玩家: " + target.getName() + " (射击者: " + shooter.getName() + ", 是鬼: " + isGhost + ")");
+            
+            if (isGhost) {
                 // 应用凝冰球效果
                 plugin.getItemManager().applyIceBallEffect(target);
                 shooter.sendMessage(ChatColor.AQUA + "你成功击中了 " + target.getName() + "！");
+                plugin.getLogger().info("凝冰球击中鬼玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")");
+            } else {
+                plugin.getLogger().info("凝冰球击中非鬼玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")，不应用效果");
             }
         }
     }
@@ -181,20 +188,10 @@ public class ItemListener implements Listener {
     }
     
     private void handleBlinkPearl(Player player, ItemStack item, PlayerInteractEvent event) {
-        // 检查玩家是否在游戏中
-        if (!plugin.getGameManager().isGameRunning()) {
-            player.sendMessage(ChatColor.RED + "游戏未开始，无法使用闪现珍珠！");
-            return;
-        }
-        
-        // 发送ActionBar提示
-        plugin.getActionBarManager().sendBlinkPearlHint(player);
-        
-        // 允许使用末影珍珠（不取消事件）
-        event.setCancelled(false);
-        
-        // 末影珍珠是消耗品，使用后会自然消耗
-        // 不需要设置冷却时间，因为每个珍珠只能使用一次
+        // 这个方法已废弃，保留但不使用
+        // 所有传送功能已合并到handleTeleportPearl方法中
+        player.sendMessage(ChatColor.RED + "闪现珍珠已废弃，请使用传送珍珠！");
+        event.setCancelled(true);
     }
     
     private void consumeItem(Player player, ItemStack item) {
@@ -300,5 +297,65 @@ public class ItemListener implements Listener {
         
         // 发送使用提示
         player.sendMessage(ChatColor.GREEN + "你使用了传送珍珠，冷却时间 " + cooldown + " 秒");
+    }
+    
+    private void handleSoulDetector(Player player, ItemStack item) {
+        plugin.getLogger().info("玩家 " + player.getName() + " 尝试使用灵魂探测器");
+        
+        // 检查玩家是否是鬼
+        boolean isGhost = plugin.getPlayerManager().isGhost(player.getUniqueId());
+        plugin.getLogger().info("玩家 " + player.getName() + " 是鬼: " + isGhost);
+        
+        if (!isGhost) {
+            player.sendMessage(ChatColor.RED + "只有鬼可以使用灵魂探测器！");
+            plugin.getLogger().info("玩家 " + player.getName() + " 不是鬼，无法使用灵魂探测器");
+            return;
+        }
+        
+        // 发送ActionBar提示
+        plugin.getActionBarManager().sendSoulDetectorHint(player);
+        
+        // 获取所有游戏中的玩家
+        List<UUID> allPlayerIds = plugin.getPlayerManager().getAllPlayers();
+        plugin.getLogger().info("游戏中玩家数量: " + allPlayerIds.size());
+        
+        List<Player> allPlayers = new ArrayList<>();
+        for (UUID playerId : allPlayerIds) {
+            Player p = Bukkit.getPlayer(playerId);
+            if (p != null && p.isOnline()) {
+                allPlayers.add(p);
+                plugin.getLogger().info("在线玩家: " + p.getName());
+            }
+        }
+        
+        plugin.getLogger().info("在线玩家数量: " + allPlayers.size());
+        
+        if (allPlayers.isEmpty()) {
+            player.sendMessage(ChatColor.RED + "没有找到其他玩家！");
+            plugin.getLogger().warning("灵魂探测器: 没有找到在线玩家");
+            return;
+        }
+        
+        // 应用发光效果给所有玩家
+        plugin.getLogger().info("开始应用发光效果给 " + allPlayers.size() + " 名玩家");
+        for (Player target : allPlayers) {
+            boolean success = target.addPotionEffect(new PotionEffect(
+                PotionEffectType.GLOWING,
+                500, // 25秒 * 20 = 500 ticks
+                0,
+                true,
+                true
+            ));
+            plugin.getLogger().info("给玩家 " + target.getName() + " 应用发光效果: " + (success ? "成功" : "失败"));
+        }
+        
+        // 消耗物品
+        consumeItem(player, item);
+        
+        // 发送消息
+        player.sendMessage(ChatColor.GREEN + "你使用了灵魂探测器！所有玩家发光25秒！");
+        Bukkit.broadcastMessage(ChatColor.YELLOW + player.getName() + " 使用了灵魂探测器，所有玩家发光25秒！");
+        
+        plugin.getLogger().info("玩家 " + player.getName() + " 使用了灵魂探测器，所有玩家发光25秒，共影响 " + allPlayers.size() + " 名玩家");
     }
 }

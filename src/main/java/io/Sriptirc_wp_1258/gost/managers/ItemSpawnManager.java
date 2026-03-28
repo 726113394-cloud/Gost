@@ -68,7 +68,7 @@ public class ItemSpawnManager {
             false, true // ghostOnly
         ));
         
-        plugin.getLogger().info("已加载 " + randomItems.size() + " 种随机道具");
+        plugin.getLogger().info("已加载 " + randomItems.size() + " 种随机道具: 臭牛排(权重15), 传送珍珠(权重20), 灵魂探测器(权重12, 鬼专属)");
     }
     
     /**
@@ -98,7 +98,9 @@ public class ItemSpawnManager {
         );
         
         plugin.getLogger().info("道具刷新系统已启动，间隔: " + 
-            plugin.getConfigManager().getItemSpawnInterval() + "秒");
+            plugin.getConfigManager().getItemSpawnInterval() + "秒，最大每次刷新: " + 
+            plugin.getConfigManager().getItemSpawnMaxPerRefresh() + "，最大每人: " + 
+            plugin.getConfigManager().getItemSpawnMaxPerPlayer());
     }
     
     /**
@@ -112,11 +114,16 @@ public class ItemSpawnManager {
         // 获取所有游戏中的玩家
         List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
         if (allPlayers.isEmpty()) {
+            plugin.getLogger().info("道具刷新: 没有游戏中的玩家");
             return;
         }
         
+        plugin.getLogger().info("道具刷新: 当前游戏中有 " + allPlayers.size() + " 名玩家");
+        
         int maxPerRefresh = plugin.getConfigManager().getItemSpawnMaxPerRefresh();
         int actualSpawnCount = Math.min(maxPerRefresh, allPlayers.size());
+        
+        plugin.getLogger().info("道具刷新: 最大每次刷新=" + maxPerRefresh + ", 实际刷新数量=" + actualSpawnCount);
         
         // 重置玩家道具计数
         playerItemCounts.clear();
@@ -141,7 +148,7 @@ public class ItemSpawnManager {
             }
         }
         
-        plugin.getLogger().info("道具刷新完成，共发放给 " + spawned + " 名玩家");
+        plugin.getLogger().info("道具刷新完成，共发放给 " + spawned + " 名玩家 (臭牛排/传送珍珠/灵魂探测器)");
         
         // 发送游戏剩余时间提示
         if (plugin.getGameManager().isGameRunning()) {
@@ -171,9 +178,9 @@ public class ItemSpawnManager {
         
         // 获取玩家角色
         PlayerManager.PlayerRole playerRole = plugin.getPlayerManager().getPlayerRole(player.getUniqueId());
-        boolean isHuman = playerRole == PlayerManager.PlayerRole.HUMAN;
-        boolean isGhost = playerRole == PlayerManager.PlayerRole.GHOST_MOTHER || 
-                         playerRole == PlayerManager.PlayerRole.GHOST_NORMAL;
+        boolean isHuman = playerRole != null && playerRole == PlayerManager.PlayerRole.HUMAN;
+        boolean isGhost = playerRole != null && (playerRole == PlayerManager.PlayerRole.GHOST_MOTHER || 
+                         playerRole == PlayerManager.PlayerRole.GHOST_NORMAL);
         
         // 随机选择道具（考虑阵营限制）
         RandomItemConfig itemConfig = null;
@@ -197,13 +204,19 @@ public class ItemSpawnManager {
             
             if (valid) {
                 itemConfig = candidate;
+                plugin.getLogger().info("为玩家 " + player.getName() + " 选择道具: " + candidate.id + 
+                    " (阵营: " + (isHuman ? "人类" : isGhost ? "鬼" : "未知") + ")");
                 break;
             }
             
             attempts++;
+            if (attempts >= maxAttempts) {
+                plugin.getLogger().warning("为玩家 " + player.getName() + " 选择道具失败，达到最大尝试次数");
+            }
         }
         
         if (itemConfig == null) {
+            plugin.getLogger().warning("无法为玩家 " + player.getName() + " 选择道具，返回");
             return;
         }
         
@@ -220,7 +233,8 @@ public class ItemSpawnManager {
         plugin.getLanguageManager().sendMessage(player, "item-spawn.received", 
             ChatColor.stripColor(itemConfig.name));
         
-        plugin.getLogger().info("玩家 " + player.getName() + " 获得了随机道具: " + itemConfig.id);
+        plugin.getLogger().info("玩家 " + player.getName() + " 获得了随机道具: " + itemConfig.id + " (阵营: " + 
+            (isHuman ? "人类" : isGhost ? "鬼" : "未知") + ")");
     }
     
     /**
@@ -278,6 +292,31 @@ public class ItemSpawnManager {
         }
         
         return item;
+    }
+    
+    /**
+     * 创建传送珍珠（公开方法，供ItemManager调用）
+     */
+    public ItemStack createTeleportPearl() {
+        // 查找传送珍珠配置
+        for (RandomItemConfig config : randomItems) {
+            if (config.id.equals("teleport-pearl")) {
+                return createRandomItem(config);
+            }
+        }
+        
+        // 如果找不到配置，创建默认的传送珍珠
+        ItemStack teleportPearl = new ItemStack(Material.ENDER_PEARL);
+        ItemMeta meta = teleportPearl.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "传送珍珠");
+            meta.setLore(Arrays.asList(
+                ChatColor.GRAY + "右键投掷传送",
+                ChatColor.GRAY + "冷却时间: 10秒"
+            ));
+            teleportPearl.setItemMeta(meta);
+        }
+        return teleportPearl;
     }
     
     /**

@@ -280,9 +280,10 @@ effects:
   infection-lightning: true              # 感染时是否显示闪电
   infection-sound: true                  # 感染时是否播放音效
 
-# 🎮 服务器模组设置
-mods:
-  injured-effects: false          # 是否使用Injured Effects模组（限制最大生命值为2.0）
+# ❤️ 游戏血量设置
+health:
+  max-health: 2.0                # 游戏期间玩家的最大生命值（默认2颗心）
+  # 推荐添加Injured Effects模组并限制最大生命值为4.0以下，可以添加恐怖氛围
 
 # 🔄 道具刷新系统
 item-spawn:

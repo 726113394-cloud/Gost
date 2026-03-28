@@ -341,6 +341,9 @@ public class GameManager {
                 timeLeft--;
             }
         }.runTaskTimer(plugin, 0L, 20L);
+        
+        // 在准备阶段开始时随机选择母体鬼并启动禁足倒计时
+        selectInitialMotherGhost();
     }
     
     // 随机选择初始母体鬼
@@ -424,8 +427,7 @@ public class GameManager {
         
         Bukkit.broadcastMessage(ChatColor.GREEN + "游戏正式开始！");
         
-        // 随机选择一名玩家作为母体鬼
-        selectInitialMotherGhost();
+        // 注意：母体鬼已经在准备阶段选择并禁足，这里不再重复选择
         
         // 开始游戏倒计时
         startGameTimer();

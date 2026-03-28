@@ -31,7 +31,7 @@ public class ItemManager {
         createFrenzyPotion();
         createIceBall();
         createSoulControl();
-        createBlinkPearl();
+        // createBlinkPearl(); // 已废弃，使用传送珍珠
         
         plugin.getLogger().info("ItemManager初始化完成，创建了 " + customItems.size() + " 个自定义物品");
     }
@@ -133,27 +133,11 @@ public class ItemManager {
         customItems.put("soul_control", soulControl);
     }
     
-    // 创建闪现珍珠
+    // 创建闪现珍珠（已废弃，保留但不使用）
     private void createBlinkPearl() {
-        ItemStack blinkPearl = new ItemStack(Material.ENDER_PEARL);
-        ItemMeta meta = blinkPearl.getItemMeta();
-        
-        if (meta != null) {
-            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "闪现珍珠");
-            meta.setLore(Arrays.asList(
-                ChatColor.GRAY + "右键投掷进行短距离传送",
-                "",
-                ChatColor.DARK_GRAY + "[消耗品]"
-            ));
-            
-            // 添加发光效果
-            meta.addEnchant(Enchantment.LURE, 1, true);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            
-            blinkPearl.setItemMeta(meta);
-        }
-        
-        customItems.put("blink_pearl", blinkPearl);
+        // 这个方法已废弃，保留但不使用
+        // 所有传送功能已合并到传送珍珠中
+        plugin.getLogger().info("闪现珍珠创建方法已废弃，使用传送珍珠代替");
     }
     
     // 获取物品的方法
@@ -174,7 +158,9 @@ public class ItemManager {
     }
     
     public ItemStack getBlinkPearl() {
-        return customItems.get("blink_pearl").clone();
+        // 这个方法已废弃，返回空物品
+        plugin.getLogger().warning("getBlinkPearl() 方法已废弃，请使用传送珍珠");
+        return new ItemStack(Material.AIR);
     }
     
     // 应用物品效果
@@ -212,7 +198,9 @@ public class ItemManager {
         int duration = plugin.getConfigManager().getIceBallSlowDuration() * 20;
         int level = plugin.getConfigManager().getIceBallSlowLevel() - 1;
         
-        target.addPotionEffect(new PotionEffect(
+        plugin.getLogger().info("开始应用凝冰球效果给玩家: " + target.getName() + " (减速等级: " + level + ", 持续时间: " + duration + " ticks)");
+        
+        boolean success = target.addPotionEffect(new PotionEffect(
             PotionEffectType.SLOW,
             duration,
             level,
@@ -221,6 +209,7 @@ public class ItemManager {
         ));
         
         target.sendMessage(ChatColor.AQUA + "你被凝冰球击中了！移动速度降低！");
+        plugin.getLogger().info("凝冰球效果应用给玩家: " + target.getName() + " (减速等级: " + level + ", 持续时间: " + duration + " ticks, 成功: " + success + ")");
     }
     
     public void applySoulControlEffect(List<Player> ghostPlayers) {
@@ -310,17 +299,23 @@ public class ItemManager {
             }
         }
         
-        // 5. 随机6位玩家获得闪现珍珠
-        List<UUID> blinkPearlRecipients = getRandomPlayers(allPlayers, Math.min(6, allPlayers.size()));
-        for (UUID playerId : blinkPearlRecipients) {
+        // 5. 随机6位玩家获得传送珍珠（替换闪现珍珠）
+        List<UUID> teleportPearlRecipients = getRandomPlayers(allPlayers, Math.min(6, allPlayers.size()));
+        for (UUID playerId : teleportPearlRecipients) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                player.getInventory().addItem(getBlinkPearl());
-                player.sendMessage(ChatColor.LIGHT_PURPLE + "你获得了闪现珍珠！");
+                // 给予传送珍珠（从ItemSpawnManager获取）
+                ItemStack teleportPearl = plugin.getItemSpawnManager().createTeleportPearl();
+                player.getInventory().addItem(teleportPearl);
+                player.sendMessage(ChatColor.LIGHT_PURPLE + "你获得了传送珍珠！");
+                plugin.getLogger().info("给予玩家 " + player.getName() + " 传送珍珠");
             }
         }
         
         Bukkit.broadcastMessage(ChatColor.YELLOW + "道具已发放！");
+        plugin.getLogger().info("道具分发完成: 人类=" + humanPlayers.size() + ", 鬼=" + ghostPlayers.size() + 
+            ", 凝冰球=" + iceBallRecipients.size() + ", 控魂术=" + (humanPlayers.isEmpty() ? 0 : Math.min(3, humanPlayers.size())) + 
+            ", 传送珍珠=" + teleportPearlRecipients.size());
     }
     
     // 随机选择玩家

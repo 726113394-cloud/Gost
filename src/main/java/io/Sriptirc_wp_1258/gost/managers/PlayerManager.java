@@ -120,33 +120,47 @@ public class PlayerManager {
     
     // 获取玩家角色
     public PlayerRole getPlayerRole(UUID playerId) {
-        return playerRoles.getOrDefault(playerId, PlayerRole.HUMAN);
+        PlayerRole role = playerRoles.get(playerId);
+        if (role == null) {
+            plugin.getLogger().warning("玩家 " + playerId + " 的角色为null，可能未加入游戏");
+        }
+        return role;
     }
     
     // 检查是否是鬼
     public boolean isGhost(UUID playerId) {
         PlayerRole role = getPlayerRole(playerId);
-        return role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL;
+        return role != null && (role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL);
     }
     
     // 检查是否是人类
     public boolean isHuman(UUID playerId) {
-        return getPlayerRole(playerId) == PlayerRole.HUMAN;
+        PlayerRole role = getPlayerRole(playerId);
+        return role != null && role == PlayerRole.HUMAN;
     }
     
     // 感染玩家
     public void infectPlayer(UUID victimId, UUID infectorId) {
         PlayerRole currentRole = getPlayerRole(victimId);
         
+        if (currentRole == null) {
+            plugin.getLogger().warning("感染失败：玩家 " + victimId + " 角色为null");
+            return;
+        }
+        
         if (currentRole != PlayerRole.HUMAN) {
-            plugin.getLogger().info("感染失败：玩家 " + victimId + " 不是人类");
+            plugin.getLogger().info("感染失败：玩家 " + victimId + " 不是人类，当前角色: " + currentRole);
             return; // 只能感染人类
         }
         
         // 更新感染统计
-        if (infectorId != null && isGhost(infectorId)) {
-            int count = infectionCounts.getOrDefault(infectorId, 0);
-            infectionCounts.put(infectorId, count + 1);
+        if (infectorId != null) {
+            boolean infectorIsGhost = isGhost(infectorId);
+            plugin.getLogger().info("感染者 " + infectorId + " 是鬼: " + infectorIsGhost);
+            if (infectorIsGhost) {
+                int count = infectionCounts.getOrDefault(infectorId, 0);
+                infectionCounts.put(infectorId, count + 1);
+            }
         }
         
         // 决定新鬼的类型
@@ -156,8 +170,13 @@ public class PlayerManager {
         boolean hasMother = playerRoles.values().stream()
             .anyMatch(role -> role == PlayerRole.GHOST_MOTHER);
         
+        plugin.getLogger().info("检查是否有母体鬼: " + hasMother + " (总玩家数: " + playerRoles.size() + ")");
+        
         if (!hasMother) {
             newRole = PlayerRole.GHOST_MOTHER;
+            plugin.getLogger().info("没有母体鬼，将玩家 " + victimId + " 设为母体鬼");
+        } else {
+            plugin.getLogger().info("已有母体鬼，将玩家 " + victimId + " 设为普通鬼");
         }
         
         plugin.getLogger().info("玩家 " + victimId + " 被感染，新角色: " + newRole);
@@ -185,6 +204,12 @@ public class PlayerManager {
         
         // 更新游戏统计
         updateGameStats();
+        
+        // 记录当前鬼玩家数量
+        long ghostCount = playerRoles.values().stream()
+            .filter(role -> role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL)
+            .count();
+        plugin.getLogger().info("感染完成，当前鬼玩家数量: " + ghostCount);
     }
     
     // 显示感染效果
@@ -232,13 +257,22 @@ public class PlayerManager {
             
             Long currentSurvival = survivalTimes.getOrDefault(playerId, 0L);
             survivalTimes.put(playerId, currentSurvival + elapsed);
+            
+            PlayerRole role = getPlayerRole(playerId);
+            plugin.getLogger().info("更新玩家 " + playerId + " 存活时间，角色: " + role + 
+                ", 本次存活: " + (elapsed / 1000) + "秒, 累计: " + ((currentSurvival + elapsed) / 1000) + "秒");
+        } else {
+            plugin.getLogger().warning("更新存活时间失败：玩家 " + playerId + " 没有角色开始时间");
         }
     }
     
     // 获取存活时间（秒）
     public long getSurvivalTime(UUID playerId) {
         updateSurvivalTime(playerId);
-        return survivalTimes.getOrDefault(playerId, 0L) / 1000;
+        long survivalTime = survivalTimes.getOrDefault(playerId, 0L) / 1000;
+        PlayerRole role = getPlayerRole(playerId);
+        plugin.getLogger().info("获取玩家 " + playerId + " 存活时间，角色: " + role + ", 存活: " + survivalTime + "秒");
+        return survivalTime;
     }
     
     // 获取感染次数
@@ -248,12 +282,15 @@ public class PlayerManager {
     
     // 应用游戏状态
     public void applyGameState(Player player) {
+        plugin.getLogger().info("应用游戏状态给玩家: " + player.getName());
+        
         // 设置游戏模式
         player.setGameMode(GameMode.SURVIVAL);
         
         // 设置生命值（4点生命值）
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(4.0);
         player.setHealth(4.0);
+        plugin.getLogger().info("设置玩家 " + player.getName() + " 生命值为4点");
         
         // 清除所有药水效果
         for (PotionEffect effect : player.getActivePotionEffects()) {
@@ -272,36 +309,42 @@ public class PlayerManager {
     
     // 应用角色特定效果
     public void applyRoleEffects(Player player, PlayerRole role) {
+        plugin.getLogger().info("应用角色效果给玩家: " + player.getName() + ", 角色: " + role);
+        
         switch (role) {
             case GHOST_MOTHER:
+                plugin.getLogger().info("应用母体鬼效果给玩家: " + player.getName());
                 // 母体鬼失明效果
                 int blindnessDuration = plugin.getConfigManager().getMotherGhostBlindnessDuration() * 20;
-                player.addPotionEffect(new PotionEffect(
+                boolean blindnessSuccess = player.addPotionEffect(new PotionEffect(
                     PotionEffectType.BLINDNESS,
                     blindnessDuration,
                     0,
                     true,
                     true
                 ));
+                plugin.getLogger().info("应用失明效果: " + (blindnessSuccess ? "成功" : "失败") + ", 持续时间: " + blindnessDuration + " ticks");
                 
                 // 母体鬼20秒无法移动效果（神鬼药水效果）
                 int immobilizeDuration = plugin.getConfigManager().getGhostImmobilizeDuration() * 20;
-                player.addPotionEffect(new PotionEffect(
+                boolean slowSuccess = player.addPotionEffect(new PotionEffect(
                     PotionEffectType.SLOW,
                     immobilizeDuration,
                     255, // 最大等级，几乎无法移动
                     true,
                     true
                 ));
+                plugin.getLogger().info("应用减速效果: " + (slowSuccess ? "成功" : "失败") + ", 持续时间: " + immobilizeDuration + " ticks");
                 
                 // 同时添加挖掘疲劳效果，确保完全无法移动
-                player.addPotionEffect(new PotionEffect(
+                boolean miningSuccess = player.addPotionEffect(new PotionEffect(
                     PotionEffectType.SLOW_DIGGING,
                     immobilizeDuration,
                     255,
                     true,
                     true
                 ));
+                plugin.getLogger().info("应用挖掘疲劳效果: " + (miningSuccess ? "成功" : "失败") + ", 持续时间: " + immobilizeDuration + " ticks");
                 
                 plugin.getLanguageManager().sendMessage(player, "role.ghost-disabled-prep");
                 break;
@@ -310,28 +353,34 @@ public class PlayerManager {
     
     // 更新玩家背包
     public void updatePlayerInventory(Player player, PlayerRole role) {
+        plugin.getLogger().info("更新玩家背包: " + player.getName() + ", 角色: " + role);
         PlayerInventory inventory = player.getInventory();
         
         // 清空背包
         inventory.clear();
+        plugin.getLogger().info("清空玩家 " + player.getName() + " 的背包");
         
         // 根据角色给予初始物品
         switch (role) {
             case HUMAN:
+                plugin.getLogger().info("给予人类 " + player.getName() + " 肾上腺素");
                 // 人类获得肾上腺素
                 inventory.addItem(plugin.getItemManager().getAdrenaline());
                 break;
             case GHOST_MOTHER:
+                plugin.getLogger().info("给予母体鬼 " + player.getName() + " 狂暴药水");
                 // 母体鬼获得狂暴药水
                 inventory.addItem(plugin.getItemManager().getFrenzyPotion());
                 break;
             case GHOST_NORMAL:
+                plugin.getLogger().info("给予普通鬼 " + player.getName() + " 狂暴药水");
                 // 普通鬼获得狂暴药水
                 inventory.addItem(plugin.getItemManager().getFrenzyPotion());
                 break;
         }
         
         player.updateInventory();
+        plugin.getLogger().info("玩家 " + player.getName() + " 背包更新完成");
     }
     
     // 保存玩家原始状态
