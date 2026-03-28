@@ -183,7 +183,10 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         for (AreaManager.GameArea area : areas) {
             int[] dims = area.getDimensions();
             String selected = area.getName().equals(plugin.getAreaManager().getSelectedAreaName()) ? "✓" : " ";
-            sender.sendMessage(ChatColor.YELLOW + "[" + selected + "] " + ChatColor.WHITE + area.getName() + 
+            String enabled = plugin.getAreaManager().isAreaEnabled(area.getName()) ? "✔" : "✘";
+            sender.sendMessage(ChatColor.YELLOW + "[" + selected + "] " + 
+                ChatColor.GREEN + "[" + enabled + "] " + 
+                ChatColor.WHITE + area.getName() + 
                 ChatColor.GRAY + " - " + dims[0] + "×" + dims[1] + "×" + dims[2] + 
                 " (" + area.getUsageCount() + "次使用)");
         }
@@ -193,16 +196,53 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleLoad(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin load <区域名称>");
+            sender.sendMessage(ChatColor.RED + "用法: /gostadmin load <区域名称> [enable|disable]");
+            sender.sendMessage(ChatColor.GRAY + "示例:");
+            sender.sendMessage(ChatColor.GRAY + "  /gostadmin load area1 - 选择区域");
+            sender.sendMessage(ChatColor.GRAY + "  /gostadmin load area1 enable - 启用区域");
+            sender.sendMessage(ChatColor.GRAY + "  /gostadmin load area1 disable - 禁用区域");
             return true;
         }
         
         String areaName = args[1];
         
-        if (plugin.getAreaManager().selectArea(areaName)) {
-            sender.sendMessage(ChatColor.GREEN + "已选择区域: " + areaName);
-        } else {
+        // 检查区域是否存在
+        if (plugin.getAreaManager().getArea(areaName) == null) {
             sender.sendMessage(ChatColor.RED + "区域 '" + areaName + "' 不存在！");
+            return true;
+        }
+        
+        // 如果有第三个参数，处理启用/禁用
+        if (args.length >= 3) {
+            String action = args[2].toLowerCase();
+            switch (action) {
+                case "enable":
+                    if (plugin.getAreaManager().enableArea(areaName)) {
+                        sender.sendMessage(ChatColor.GREEN + "区域 '" + areaName + "' 已启用！");
+                    } else {
+                        sender.sendMessage(ChatColor.YELLOW + "区域 '" + areaName + "' 已经启用或不存在");
+                    }
+                    break;
+                    
+                case "disable":
+                    if (plugin.getAreaManager().disableArea(areaName)) {
+                        sender.sendMessage(ChatColor.GREEN + "区域 '" + areaName + "' 已禁用！");
+                    } else {
+                        sender.sendMessage(ChatColor.YELLOW + "区域 '" + areaName + "' 未启用或不存在");
+                    }
+                    break;
+                    
+                default:
+                    sender.sendMessage(ChatColor.RED + "未知操作！使用 enable 或 disable");
+                    return true;
+            }
+        } else {
+            // 没有第三个参数，选择区域
+            if (plugin.getAreaManager().selectArea(areaName)) {
+                sender.sendMessage(ChatColor.GREEN + "已选择区域: " + areaName);
+            } else {
+                sender.sendMessage(ChatColor.RED + "选择区域失败！");
+            }
         }
         
         return true;
@@ -443,7 +483,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin pos2 - 设置第二个点（使用工具右键）");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin save <名称> - 保存当前选区");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin list - 列出所有存档区域");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin load <名称> - 选择区域");
+        sender.sendMessage(ChatColor.YELLOW + "/gostadmin load <名称> [enable|disable] - 选择/启用/禁用区域");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin delete <名称> - 删除区域");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin info <名称> - 查看区域信息");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin clear - 清除当前选区");
@@ -491,6 +531,18 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 for (String botSubCommand : botSubCommands) {
                     if (botSubCommand.startsWith(args[1].toLowerCase())) {
                         completions.add(botSubCommand);
+                    }
+                }
+            }
+        } else if (args.length == 3) {
+            String subCommand = args[0].toLowerCase();
+            
+            if (subCommand.equals("load")) {
+                // load命令的第三个参数补全：enable/disable
+                String[] actions = {"enable", "disable"};
+                for (String action : actions) {
+                    if (action.startsWith(args[2].toLowerCase())) {
+                        completions.add(action);
                     }
                 }
             }

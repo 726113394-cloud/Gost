@@ -16,7 +16,7 @@ commands:
     aliases: [join, leave]
   gostadmin:
     description: 管理员命令 - 管理游戏和区域
-    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|help]
+    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|bot|help]
     aliases: [ga]
 
 permissions:

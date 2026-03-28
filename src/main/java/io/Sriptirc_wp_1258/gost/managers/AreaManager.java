@@ -28,10 +28,19 @@ public class AreaManager {
     // 当前选中的区域（用于快速开始游戏）
     private String selectedAreaName = null;
     
+    // 启用的区域列表（管理员通过指令加载的区域）
+    private final Set<String> enabledAreas = new HashSet<>();
+    
+    // 启用区域配置文件
+    private final File enabledAreasFile;
+    private FileConfiguration enabledAreasConfig;
+    
     public AreaManager(Gost plugin) {
         this.plugin = plugin;
         this.areasFile = new File(plugin.getDataFolder(), "areas.yml");
+        this.enabledAreasFile = new File(plugin.getDataFolder(), "enabled_areas.yml");
         loadAreas();
+        loadEnabledAreas();
     }
     
     /**
@@ -236,6 +245,44 @@ public class AreaManager {
     }
     
     /**
+     * 加载启用的区域
+     */
+    private void loadEnabledAreas() {
+        enabledAreas.clear();
+        
+        if (!enabledAreasFile.exists()) {
+            // 创建空的配置文件
+            try {
+                enabledAreasFile.createNewFile();
+            } catch (IOException e) {
+                plugin.getLogger().severe("创建启用区域文件失败: " + e.getMessage());
+                return;
+            }
+        }
+        
+        enabledAreasConfig = YamlConfiguration.loadConfiguration(enabledAreasFile);
+        
+        // 加载启用的区域列表
+        List<String> enabledList = enabledAreasConfig.getStringList("enabled_areas");
+        enabledAreas.addAll(enabledList);
+        
+        plugin.getLogger().info("已加载 " + enabledAreas.size() + " 个启用的区域: " + String.join(", ", enabledAreas));
+    }
+    
+    /**
+     * 保存启用的区域
+     */
+    private void saveEnabledAreas() {
+        enabledAreasConfig.set("enabled_areas", new ArrayList<>(enabledAreas));
+        
+        try {
+            enabledAreasConfig.save(enabledAreasFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("保存启用区域文件失败: " + e.getMessage());
+        }
+    }
+    
+    /**
      * 保存所有区域
      */
     private void saveAreas() {
@@ -322,6 +369,27 @@ public class AreaManager {
     }
     
     /**
+     * 获取所有启用的区域名称
+     */
+    public List<String> getEnabledAreaNames() {
+        return new ArrayList<>(enabledAreas);
+    }
+    
+    /**
+     * 获取所有启用的区域
+     */
+    public List<GameArea> getEnabledAreas() {
+        List<GameArea> enabled = new ArrayList<>();
+        for (String areaName : enabledAreas) {
+            GameArea area = areas.get(areaName);
+            if (area != null) {
+                enabled.add(area);
+            }
+        }
+        return enabled;
+    }
+    
+    /**
      * 获取所有区域
      */
     public List<GameArea> getAllAreas() {
@@ -366,6 +434,84 @@ public class AreaManager {
      */
     public String getSelectedAreaName() {
         return selectedAreaName;
+    }
+    
+    /**
+     * 启用区域（管理员指令）
+     */
+    public boolean enableArea(String areaName) {
+        if (!areas.containsKey(areaName)) {
+            return false;
+        }
+        
+        if (enabledAreas.contains(areaName)) {
+            return false; // 已经启用
+        }
+        
+        enabledAreas.add(areaName);
+        saveEnabledAreas();
+        plugin.getLogger().info("区域 " + areaName + " 已启用");
+        return true;
+    }
+    
+    /**
+     * 禁用区域（管理员指令）
+     */
+    public boolean disableArea(String areaName) {
+        if (!enabledAreas.contains(areaName)) {
+            return false; // 未启用
+        }
+        
+        enabledAreas.remove(areaName);
+        saveEnabledAreas();
+        
+        // 如果禁用的是当前选中的区域，清空选中
+        if (areaName.equals(selectedAreaName)) {
+            selectedAreaName = null;
+        }
+        
+        plugin.getLogger().info("区域 " + areaName + " 已禁用");
+        return true;
+    }
+    
+    /**
+     * 检查区域是否已启用
+     */
+    public boolean isAreaEnabled(String areaName) {
+        return enabledAreas.contains(areaName);
+    }
+    
+    /**
+     * 随机选择一个启用的区域
+     */
+    public GameArea selectRandomEnabledArea() {
+        List<GameArea> enabledAreasList = getEnabledAreas();
+        if (enabledAreasList.isEmpty()) {
+            plugin.getLogger().warning("没有启用的区域可供选择");
+            return null;
+        }
+        
+        Random random = new Random();
+        GameArea selectedArea = enabledAreasList.get(random.nextInt(enabledAreasList.size()));
+        selectedAreaName = selectedArea.getName();
+        selectedArea.incrementUsage();
+        saveAreas();
+        
+        plugin.getLogger().info("随机选择了区域: " + selectedArea.getName());
+        return selectedArea;
+    }
+    
+    /**
+     * 自动选择区域（如果有启用的区域则随机选择，否则返回null）
+     */
+    public GameArea autoSelectArea() {
+        List<GameArea> enabledAreasList = getEnabledAreas();
+        if (enabledAreasList.isEmpty()) {
+            plugin.getLogger().warning("没有启用的区域，无法自动选择");
+            return null;
+        }
+        
+        return selectRandomEnabledArea();
     }
     
     /**

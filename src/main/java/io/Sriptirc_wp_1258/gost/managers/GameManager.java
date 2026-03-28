@@ -253,10 +253,22 @@ public class GameManager {
             return false;
         }
         
-        // 检查游戏区域
-        if (plugin.getAreaManager().getSelectedArea() == null) {
-            Bukkit.broadcastMessage(ChatColor.RED + "游戏区域未设置！请管理员先选择游戏区域。");
-            return false;
+        // 检查游戏区域 - 自动选择启用的区域
+        AreaManager.GameArea selectedArea = plugin.getAreaManager().getSelectedArea();
+        if (selectedArea == null) {
+            // 尝试自动选择区域
+            selectedArea = plugin.getAreaManager().autoSelectArea();
+            if (selectedArea == null) {
+                Bukkit.broadcastMessage(ChatColor.RED + "没有启用的游戏区域！请管理员先启用至少一个区域。");
+                return false;
+            }
+            Bukkit.broadcastMessage(ChatColor.YELLOW + "已自动选择区域: " + selectedArea.getName());
+        } else {
+            // 检查选中的区域是否已启用
+            if (!plugin.getAreaManager().isAreaEnabled(selectedArea.getName())) {
+                Bukkit.broadcastMessage(ChatColor.RED + "选中的区域未启用！请管理员先启用该区域。");
+                return false;
+            }
         }
         
         // 生成游戏ID
