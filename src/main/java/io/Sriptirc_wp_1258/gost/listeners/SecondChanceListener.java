@@ -37,10 +37,8 @@ public class SecondChanceListener implements Listener {
         }
         
         // 检查玩家角色
-        PlayerManager.PlayerRole humanRole = plugin.getPlayerManager().getPlayerRole(humanPlayer.getUniqueId());
-        PlayerManager.PlayerRole ghostRole = plugin.getPlayerManager().getPlayerRole(ghostPlayer.getUniqueId());
-        
-        if (humanRole != PlayerManager.PlayerRole.HUMAN || ghostRole != PlayerManager.PlayerRole.GHOST) {
+        if (!plugin.getPlayerManager().isHuman(humanPlayer.getUniqueId()) || 
+            !plugin.getPlayerManager().isGhost(ghostPlayer.getUniqueId())) {
             return;
         }
         

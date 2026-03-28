@@ -206,10 +206,8 @@ public class ItemSpawnManager {
         }
         
         // 获取玩家角色
-        PlayerManager.PlayerRole playerRole = plugin.getPlayerManager().getPlayerRole(player.getUniqueId());
-        boolean isHuman = playerRole != null && playerRole == PlayerManager.PlayerRole.HUMAN;
-        boolean isGhost = playerRole != null && (playerRole == PlayerManager.PlayerRole.GHOST_MOTHER || 
-                         playerRole == PlayerManager.PlayerRole.GHOST_NORMAL);
+        boolean isHuman = plugin.getPlayerManager().isHuman(player.getUniqueId());
+        boolean isGhost = plugin.getPlayerManager().isGhost(player.getUniqueId());
         
         // 随机选择道具（考虑阵营限制）
         RandomItemConfig itemConfig = null;
