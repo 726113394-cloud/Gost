@@ -457,6 +457,9 @@ public class GameManager {
         // 开始每分钟高亮效果任务
         startMinuteGlowingTask();
         
+        // 应用黑暗效果（如果启用）
+        plugin.getDarkEffectManager().applyDarkEffectToAllPlayers();
+        
         // 开始货币发放系统（暂时取消）
         // plugin.getCurrencyManager().startDistribution();
         

@@ -57,6 +57,11 @@ public class ConfigManager {
         config.addDefault("effects.minute-glowing.duration", 5); // 高亮持续时间，单位秒
         config.addDefault("effects.minute-glowing.interval", 60); // 触发间隔时间，单位秒
         
+        // 黑暗效果设置
+        config.addDefault("dark-effect.enabled", false); // 是否启用黑暗效果
+        config.addDefault("dark-effect.duration", 999999); // 黑暗效果持续时间（秒）
+        config.addDefault("dark-effect.amplifier", 0); // 黑暗效果等级
+        
         // 转化功能设置
         config.addDefault("conversion.enabled", false); // 是否启用转化功能
         config.addDefault("conversion.activate-time", 120); // 转化激活时间（游戏剩余时间，秒）
@@ -309,5 +314,24 @@ public class ConfigManager {
     
     public int getMinuteGlowingInterval() {
         return config.getInt("effects.minute-glowing.interval", 60);
+    }
+    
+    // 黑暗效果配置
+    public boolean isDarkEffectEnabled() {
+        return config.getBoolean("dark-effect.enabled", false);
+    }
+    
+    public int getDarkEffectDuration() {
+        return config.getInt("dark-effect.duration", 999999);
+    }
+    
+    public int getDarkEffectAmplifier() {
+        return config.getInt("dark-effect.amplifier", 0);
+    }
+    
+    // 设置黑暗效果开关
+    public void setDarkEffectEnabled(boolean enabled) {
+        config.set("dark-effect.enabled", enabled);
+        plugin.saveConfig();
     }
 }

@@ -66,6 +66,8 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 return handleStatus(sender);
             case "bot":
                 return handleBot(sender, args);
+            case "dark":
+                return handleDark(sender, args);
             case "help":
                 sendHelp(sender);
                 return true;
@@ -474,6 +476,42 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         return true;
     }
     
+    private boolean handleDark(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "用法: /gostadmin dark <on|off|status>");
+            sender.sendMessage(ChatColor.YELLOW + "  on - 启用黑暗效果（给予所有玩家失明效果）");
+            sender.sendMessage(ChatColor.YELLOW + "  off - 禁用黑暗效果（移除所有玩家的失明效果）");
+            sender.sendMessage(ChatColor.YELLOW + "  status - 查看黑暗效果状态");
+            return true;
+        }
+        
+        String action = args[1].toLowerCase();
+        
+        switch (action) {
+            case "on":
+                plugin.getDarkEffectManager().toggleDarkEffect(true);
+                sender.sendMessage(ChatColor.GREEN + "黑暗效果已启用！所有玩家获得失明效果。");
+                break;
+                
+            case "off":
+                plugin.getDarkEffectManager().toggleDarkEffect(false);
+                sender.sendMessage(ChatColor.GREEN + "黑暗效果已禁用！所有玩家的失明效果已移除。");
+                break;
+                
+            case "status":
+                boolean enabled = plugin.getDarkEffectManager().isDarkEffectEnabled();
+                sender.sendMessage(ChatColor.YELLOW + "黑暗效果状态: " + 
+                    (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
+                break;
+                
+            default:
+                sender.sendMessage(ChatColor.RED + "未知操作！使用 /gostadmin dark 查看帮助");
+                break;
+        }
+        
+        return true;
+    }
+    
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "========== Gost 管理员命令 ==========");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin start <区域> - 使用指定区域开始游戏");
@@ -490,6 +528,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin reload - 重新加载配置");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin status - 查看游戏状态");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin bot <add|remove|clear|info|count> - 假人系统管理");
+        sender.sendMessage(ChatColor.YELLOW + "/gostadmin dark <on|off|status> - 黑暗效果管理");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin help - 显示此帮助");
         sender.sendMessage(ChatColor.GOLD + "==================================");
     }
@@ -508,7 +547,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "bot", "help"};
+            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "bot", "dark", "help"};
             for (String subCommand : subCommands) {
                 if (subCommand.startsWith(args[0].toLowerCase())) {
                     completions.add(subCommand);
@@ -531,6 +570,14 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 for (String botSubCommand : botSubCommands) {
                     if (botSubCommand.startsWith(args[1].toLowerCase())) {
                         completions.add(botSubCommand);
+                    }
+                }
+            } else if (subCommand.equals("dark")) {
+                // dark子命令自动补全
+                String[] darkSubCommands = {"on", "off", "status"};
+                for (String darkSubCommand : darkSubCommands) {
+                    if (darkSubCommand.startsWith(args[1].toLowerCase())) {
+                        completions.add(darkSubCommand);
                     }
                 }
             }

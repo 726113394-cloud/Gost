@@ -24,6 +24,7 @@ public class Gost extends JavaPlugin {
     private LanguageManager languageManager;
     private ItemSpawnManager itemSpawnManager;
     private SecondChanceListener secondChanceListener;
+    private DarkEffectManager darkEffectManager;
     // private CurrencyManager currencyManager; // 货币系统已取消
     // private NpcManager npcManager; // NPC系统已取消
     // private SpectatorManager spectatorManager; // 观战系统已搁置
@@ -46,6 +47,7 @@ public class Gost extends JavaPlugin {
         languageManager = new LanguageManager(this);
         itemSpawnManager = new ItemSpawnManager(this);
         secondChanceListener = new SecondChanceListener(this);
+        darkEffectManager = new DarkEffectManager(this);
         // currencyManager = new CurrencyManager(this); // 暂时取消货币系统
         // spectatorManager = new SpectatorManager(this); // 暂时搁置观战系统
         // npcManager = new NpcManager(this); // 取消NPC系统
@@ -132,6 +134,10 @@ public class Gost extends JavaPlugin {
     
     public SecondChanceListener getSecondChanceListener() {
         return secondChanceListener;
+    }
+    
+    public DarkEffectManager getDarkEffectManager() {
+        return darkEffectManager;
     }
     
     // public CurrencyManager getCurrencyManager() {
