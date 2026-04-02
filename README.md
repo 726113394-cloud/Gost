@@ -797,7 +797,7 @@ grep -i "gost" logs/latest.log
   - [Frequently Asked Questions & Solutions](#frequently-asked-questions--solutions)
   - [📊 Log Diagnosis](#-log-diagnosis)
 - [📈 Version Update History](#-version-update-history)
-  - [v2.1.0 (Current Version)](#v210-current-version)
+  - [v2.1.2 (Current Version)](#v212-current-version)
   - [v2.0.2](#v202)
   - [v2.0.0](#v200)
   - [v1.0.0](#v100)
@@ -891,6 +891,37 @@ grep -i "gost" logs/latest.log
 - `/gostadmin heartbeat <on/off/status>` - Control heartbeat sound
 - `/gostadmin dark <on/off/status>` - Control dark effect
 
+#### Divine Guardian Management Commands (v2.1.1 added):
+- `/divineguardian status` - View divine guardian status
+- `/divineguardian enable/disable` - Enable/disable function
+- `/divineguardian reload` - Reload divine guardian configuration
+- `/divineguardian info` - View current divine guardian information
+- `/divineguardian clear` - Clear divine guardian data
+
+#### Configuration Management:
+- `/divineguardian setcharges <count>` - Set maximum usage count (1-10)
+- `/divineguardian setcooldown <seconds>` - Set cooldown time (1-60 seconds)
+- `/divineguardian broadcast <on|off>` - Set broadcast switch
+
+#### Advanced Management:
+- `/divineguardian force <playername>` - Force activate divine guardian for specified player
+
+#### Ghost Particle Effect Management Commands (v2.1.2 added):
+- `/ghostparticle status` - View particle effect status
+- `/ghostparticle enable/disable` - Enable/disable particle effects
+- `/ghostparticle reload` - Reload configuration
+- `/ghostparticle test` - Test particle effects
+- `/ghostparticle listtypes` - List available particle types
+
+#### Configuration Management:
+- `/ghostparticle settype <type>` - Set particle type
+- `/ghostparticle setcount <count>` - Set particle count
+- `/ghostparticle setinterval <interval>` - Set generation interval (ticks)
+- `/ghostparticle setmothercolor <red,green,blue>` - Set mother ghost color
+- `/ghostparticle setnormalcolor <red,green,blue>` - Set normal ghost color
+- `/ghostparticle setsize <size>` - Set particle size
+- `/ghostparticle setpreparation <on|off>` - Set preparation stage display
+
 ## 🎯 Complete Game Flow
 
 ### 1. 🗺️ Area Setup Phase
@@ -921,7 +952,7 @@ grep -i "gost" logs/latest.log
 ### 📋 Main Configuration Items Example:
 ```yaml
 # config.yml
-ScriptIrc-config-version: 12
+ScriptIrc-config-version: 14
 game:
   duration: 600  # Game duration in seconds (10 minutes)
   min-players: 2  # Minimum players to start
@@ -941,6 +972,23 @@ ghost-to-human:
   enabled: false  # Enable ghost to human conversion
   trigger-time: 180  # Time remaining to trigger (seconds)
   max-conversions: 1  # Maximum conversions per trigger
+
+divine-guardian:
+  enabled: false  # Enable divine guardian (last human gets special abilities)
+  max-charges: 3  # Maximum usage count (immunity to infection)
+  cooldown: 5  # Cooldown time per use (seconds)
+  broadcast: true  # Broadcast divine guardian trigger messages
+  invisibility-duration: 10  # Invisibility duration after divine guardian expires (seconds)
+
+ghost-particle:
+  enabled: true  # Enable ghost player particle effects
+  type: REDSTONE  # Particle type: REDSTONE, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANTMENT_TABLE, CRIT_MAGIC, FIREWORKS_SPARK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM_OF_UNDYING, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
+  count: 5  # Number of particles per generation
+  interval: 15  # Particle generation interval (ticks, 20 ticks = 1 second)
+  mother-color: "255,0,0"  # Mother ghost particle color (RGB format: red,green,blue)
+  normal-color: "0,255,0"  # Normal ghost particle color (RGB format: red,green,blue)
+  size: 1.0  # Particle size
+  show-in-preparation: true  # Whether to show particles during preparation stage
 ```
 
 ## 🔐 Permission Nodes
@@ -954,6 +1002,8 @@ ghost-to-human:
 - `gost.admin.delete` - Deletes regional permissions
 - `gost.admin.reload` - Overload configuration permissions
 - `gost.admin.manage` - Manage game permissions
+- `gost.admin.divineguardian` - Manage divine guardian permissions (v2.1.1 added)
+- `gost.admin.ghostparticle` - Manage ghost particle effect permissions (v2.1.2 added)
 
 ## ⚠️ Important Notes
 
@@ -1009,7 +1059,78 @@ grep -i "gost" logs/latest.log
 
 ## 📈 Version Update History
 
-### v2.1.0 (Current Version)
+### v2.1.2 (Current Version)
+- **👻 New Ghost Player Particle Effect System**:
+  - **Continuous Orbiting Particles**: Ghost players continuously display orbiting particle effects
+  - **Color Differentiation**: Mother ghost: red particles, Normal ghost: green particles
+  - **Smart Generation**: 15 tick interval (approx. 0.75 seconds), 5 particles per generation
+  - **Multiple Particle Types**: Support for 21 particle types including REDSTONE, FLAME, SOUL_FIRE_FLAME, etc.
+  - **RGB Color System**: Support custom RGB color format (red,green,blue)
+  - **Preparation Stage Control**: Configurable whether to show particles during preparation stage
+- **🎮 Ghost Particle Effect Management Commands**:
+  - `/ghostparticle` or `/gp` - Main management command
+  - `/ghostparticle status` - View particle effect status
+  - `/ghostparticle enable/disable` - Enable/disable particle effects
+  - `/ghostparticle reload` - Reload configuration
+  - `/ghostparticle settype <type>` - Set particle type
+  - `/ghostparticle setcount <count>` - Set particle count
+  - `/ghostparticle setinterval <interval>` - Set generation interval (ticks)
+  - `/ghostparticle setmothercolor <red,green,blue>` - Set mother ghost color
+  - `/ghostparticle setnormalcolor <red,green,blue>` - Set normal ghost color
+  - `/ghostparticle setsize <size>` - Set particle size
+  - `/ghostparticle setpreparation <on|off>` - Set preparation stage display
+  - `/ghostparticle test` - Test particle effects
+  - `/ghostparticle listtypes` - List available particle types
+- **⚙️ Configuration System Upgrade**:
+  - Added ghost particle effect configuration items (ghost-particle.enabled, etc.)
+  - Configuration version upgraded to 14
+  - Support for 21 particle type selections
+  - Complete RGB color configuration
+- **🔐 Permission System Improvement**:
+  - Added `gost.admin.ghostparticle` permission node
+- **✨ Visual Effect Enhancement**:
+  - **Orbiting Effect**: Particles rotate around players
+  - **Height Adjustment**: Particles around player's body
+  - **Mother Ghost Enhancement**: Mother ghosts have larger orbit radius and additional head particles
+  - **Performance Optimization**: Timer task control to avoid performance issues
+- **🔄 Smart Integration System**:
+  - Seamless integration with existing player role system
+  - Automatic particle effect updates when player roles change
+  - Support for offline player data updates
+  - Automatic data cleanup to prevent memory leaks
+
+### v2.1.1
+- **🛡️ New Divine Guardian System**:
+  - **Last Human**: Automatically activates when only one human player remains
+  - **Infection Immunity**: Has 3 chances to resist infection (configurable)
+  - **Random Teleport**: Randomly teleports to safe location when attacked
+  - **Special Effects**: Gains Speed I effect and glowing effect
+  - **Expiration Mechanism**: Gains invisibility for 10 seconds after charges are depleted
+  - **Complete Management**: Administrators can control all divine guardian parameters
+- **✨ Divine Guardian Visual Effects**:
+  - **Glowing Effect**: Shows divine status
+  - **Particle Effects**: Particles for activation, trigger, teleport, and expiration
+  - **Sound System**: Special sounds for activation, trigger, and teleport
+  - **Screen Titles**: Screen titles for activation, trigger, and expiration
+- **🎮 Divine Guardian Management Commands**:
+  - `/divineguardian status` - View divine guardian status
+  - `/divineguardian enable/disable` - Enable/disable function
+  - `/divineguardian setcharges <count>` - Set maximum usage count
+  - `/divineguardian setcooldown <seconds>` - Set cooldown time
+  - `/divineguardian broadcast <on|off>` - Set broadcast switch
+  - `/divineguardian force <playername>` - Force activate divine guardian
+  - `/divineguardian clear` - Clear divine guardian data
+- **⚙️ Configuration System Upgrade**:
+  - Added divine guardian related configuration items
+  - Configuration version upgraded to 13
+- **🔐 Permission System Improvement**:
+  - Added `gost.admin.divineguardian` permission node
+- **🔄 Infection System Optimization**:
+  - Automatically cancels infection when divine guardian triggers
+  - Checks safe location before random teleport
+  - Cooldown mechanism to prevent abuse
+
+### v2.1.0
 - **🎮 Bonus distribution system fully optimized**:
   - **When humans win**: Human lineup gets 70% of prize pool, Ghost lineup gets 30%
   - **When ghosts win**: Ghost lineup receives 100% of prize pool
