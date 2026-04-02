@@ -1,8 +1,8 @@
 # Gost 插件配置文件
-# 版本: 2.0.2
+# 版本: 2.1.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 8
+ScriptIrc-config-version: 10
 
 # 游戏设置
 game:
@@ -32,13 +32,19 @@ items:
     slow-level: 4 # 凝冰球减速等级
   soul-control:
     freeze-duration: 6 # 控魂术冻结持续时间（秒）
+    cooldown: 18 # 控魂术冷却时间（秒）
   teleport-pearl:
-    cooldown: 10 # 传送珍珠冷却时间（秒）
+    cooldown: 20 # 传送珍珠冷却时间（秒）
+  stinky-steak:
+    speed-duration: 14 # 臭牛排速度效果持续时间（秒）
+    speed-level: 1 # 臭牛排速度效果等级（1=速度II）
+    glowing-duration: 10 # 臭牛排发光效果持续时间（秒）
+    cooldown: 30 # 臭牛排冷却时间（秒）
   soul-detector:
     duration: 25 # 灵魂探测器暴露持续时间（秒）
-    cooldown: 30 # 灵魂探测器冷却时间（秒）
+    cooldown: 35 # 灵魂探测器冷却时间（秒）
   second-chance:
-    cooldown: 60 # 一次机会冷却时间（秒）
+    cooldown: 180 # 一次机会冷却时间（秒）
     human-speed-duration: 10 # 人类玩家速度效果持续时间（秒）
     human-speed-level: 2 # 人类玩家速度效果等级
     human-glowing-duration: 10 # 人类玩家高亮效果持续时间（秒）
@@ -67,6 +73,11 @@ dark-effect:
   enabled: false # 是否启用黑暗效果（给予所有玩家黑暗药水效果）
   duration: 999999 # 黑暗效果持续时间（秒），设置为极大值以持续整个游戏
   amplifier: 0 # 黑暗效果等级（0为默认）
+
+# 心跳声设置
+heartbeat:
+  enabled: true # 是否启用心跳声效果（游戏过程中人类玩家听到监守者心跳声）
+  interval: 10 # 心跳声播放间隔（秒）
 
 # 区域选择设置
 area:

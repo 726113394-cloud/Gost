@@ -1,5 +1,5 @@
 name: Gost
-version: 2.0.2
+version: 2.1.0
 main: io.Sriptirc_wp_1258.gost.Gost
 api-version: 1.20
 description: 极限生存对抗游戏 - 融合猫抓老鼠、鬼抓人、躲猫猫、CF生化模式等多种玩法
@@ -16,7 +16,7 @@ commands:
     aliases: [join, leave]
   gostadmin:
     description: 管理员命令 - 管理游戏和区域
-    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|bot|help]
+    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|bot|dark|heartbeat|help]
     aliases: [ga]
 
 permissions:

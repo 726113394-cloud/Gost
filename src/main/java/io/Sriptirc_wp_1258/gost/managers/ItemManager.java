@@ -120,6 +120,7 @@ public class ItemManager {
             meta.setLore(Arrays.asList(
                 ChatColor.GRAY + "右键使用使所有鬼无法移动",
                 ChatColor.GRAY + "冻结时间: " + plugin.getConfigManager().getSoulControlFreezeDuration() + "秒",
+                ChatColor.GRAY + "冷却时间: " + plugin.getConfigManager().getSoulControlCooldown() + "秒",
                 "",
                 ChatColor.DARK_GRAY + "[消耗品]"
             ));
@@ -366,6 +367,8 @@ public class ItemManager {
                 ChatColor.GRAY + "• 人类: 速度II " + plugin.getConfigManager().getSecondChanceHumanSpeedDuration() + "秒",
                 ChatColor.GRAY + "• 人类: 高亮 " + plugin.getConfigManager().getSecondChanceHumanGlowingDuration() + "秒",
                 ChatColor.GRAY + "• 鬼: 缓慢I " + plugin.getConfigManager().getSecondChanceGhostSlowDuration() + "秒",
+                "",
+                ChatColor.GRAY + "冷却时间: " + plugin.getConfigManager().getSecondChanceCooldown() + "秒",
                 "",
                 ChatColor.DARK_GRAY + "[被动触发]"
             ));

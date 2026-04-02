@@ -158,6 +158,13 @@ public class ItemListener implements Listener {
     }
     
     private void handleSoulControl(Player player, ItemStack item) {
+        // 检查冷却时间
+        if (isOnCooldown(player, "soul-control")) {
+            int remaining = getRemainingCooldown(player, "soul-control");
+            player.sendMessage(ChatColor.RED + "控魂术冷却中，剩余 " + remaining + " 秒");
+            return;
+        }
+        
         // 检查玩家是否是人类
         if (!plugin.getPlayerManager().isHuman(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "只有人类可以使用控魂术！");
@@ -182,6 +189,10 @@ public class ItemListener implements Listener {
         
         // 应用控魂术效果
         plugin.getItemManager().applySoulControlEffect(ghostPlayers);
+        
+        // 设置冷却时间
+        int cooldown = plugin.getConfigManager().getSoulControlCooldown();
+        setCooldown(player, "soul-control", cooldown);
         
         // 消耗物品
         consumeItem(player, item);
@@ -252,6 +263,13 @@ public class ItemListener implements Listener {
     }
     
     private void handleStinkySteak(Player player, ItemStack item) {
+        // 检查冷却时间
+        if (isOnCooldown(player, "stinky-steak")) {
+            int remaining = getRemainingCooldown(player, "stinky-steak");
+            player.sendMessage(ChatColor.RED + "臭牛排冷却中，剩余 " + remaining + " 秒");
+            return;
+        }
+        
         // 发送ActionBar提示
         plugin.getActionBarManager().sendStinkySteakHint(player);
         
@@ -263,8 +281,20 @@ public class ItemListener implements Listener {
         player.setFoodLevel(20);
         player.setSaturation(20);
         
-        // 应用臭牛排效果 - 速度II效果14秒
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 280, 1)); // 14秒 * 20 = 280 ticks
+        // 从配置获取效果参数
+        int speedDuration = plugin.getConfigManager().getStinkySteakSpeedDuration();
+        int speedLevel = plugin.getConfigManager().getStinkySteakSpeedLevel();
+        int glowingDuration = plugin.getConfigManager().getStinkySteakGlowingDuration();
+        int cooldown = plugin.getConfigManager().getStinkySteakCooldown();
+        
+        // 应用臭牛排效果 - 速度效果
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, speedDuration * 20, speedLevel));
+        
+        // 应用发光效果
+        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, glowingDuration * 20, 0));
+        
+        // 设置冷却时间
+        setCooldown(player, "stinky-steak", cooldown);
         
         // 消耗物品
         consumeItem(player, item);
@@ -274,7 +304,7 @@ public class ItemListener implements Listener {
         player.setSaturation(savedSaturation);
         
         // 发送使用提示
-        player.sendMessage(ChatColor.GREEN + "你食用了臭牛排，获得了速度II效果！");
+        player.sendMessage(ChatColor.GREEN + "你食用了臭牛排，获得了速度" + (speedLevel + 1) + "效果和发光效果！");
     }
     
     private void handleTeleportPearl(Player player, ItemStack item, PlayerInteractEvent event) {
@@ -300,6 +330,13 @@ public class ItemListener implements Listener {
     }
     
     private void handleSoulDetector(Player player, ItemStack item) {
+        // 检查冷却时间
+        if (isOnCooldown(player, "soul-detector")) {
+            int remaining = getRemainingCooldown(player, "soul-detector");
+            player.sendMessage(ChatColor.RED + "灵魂探测器冷却中，剩余 " + remaining + " 秒");
+            return;
+        }
+        
         plugin.getLogger().info("玩家 " + player.getName() + " 尝试使用灵魂探测器");
         
         // 检查玩家是否是鬼
@@ -351,6 +388,10 @@ public class ItemListener implements Listener {
         
         // 消耗物品
         consumeItem(player, item);
+        
+        // 设置冷却时间
+        int cooldown = plugin.getConfigManager().getSoulDetectorCooldown();
+        setCooldown(player, "soul-detector", cooldown);
         
         // 发送消息
         player.sendMessage(ChatColor.GREEN + "你使用了灵魂探测器！所有玩家发光25秒！");

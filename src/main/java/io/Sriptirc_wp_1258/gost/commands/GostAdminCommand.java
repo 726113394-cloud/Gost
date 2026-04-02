@@ -68,6 +68,8 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 return handleBot(sender, args);
             case "dark":
                 return handleDark(sender, args);
+            case "heartbeat":
+                return handleHeartbeat(sender, args);
             case "help":
                 sendHelp(sender);
                 return true;
@@ -512,6 +514,43 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         return true;
     }
     
+    private boolean handleHeartbeat(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "用法: /gostadmin heartbeat <on|off|status>");
+            sender.sendMessage(ChatColor.YELLOW + "  on - 启用心跳声效果（游戏过程中人类玩家听到监守者心跳声）");
+            sender.sendMessage(ChatColor.YELLOW + "  off - 禁用心跳声效果");
+            sender.sendMessage(ChatColor.YELLOW + "  status - 查看心跳声效果状态");
+            return true;
+        }
+        
+        String action = args[1].toLowerCase();
+        
+        switch (action) {
+            case "on":
+                plugin.getHeartbeatManager().toggleHeartbeat(true);
+                break;
+                
+            case "off":
+                plugin.getHeartbeatManager().toggleHeartbeat(false);
+                break;
+                
+            case "status":
+                boolean enabled = plugin.getConfigManager().isHeartbeatEnabled();
+                boolean running = plugin.getHeartbeatManager().isHeartbeatEnabled();
+                sender.sendMessage(ChatColor.GOLD + "=== 心跳声效果状态 ===");
+                sender.sendMessage(ChatColor.YELLOW + "配置状态: " + (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
+                sender.sendMessage(ChatColor.YELLOW + "运行状态: " + (running ? ChatColor.GREEN + "运行中" : ChatColor.RED + "已停止"));
+                sender.sendMessage(ChatColor.YELLOW + "播放间隔: " + ChatColor.AQUA + plugin.getConfigManager().getHeartbeatInterval() + "秒");
+                break;
+                
+            default:
+                sender.sendMessage(ChatColor.RED + "未知操作！使用 /gostadmin heartbeat 查看帮助");
+                break;
+        }
+        
+        return true;
+    }
+    
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "========== Gost 管理员命令 ==========");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin start <区域> - 使用指定区域开始游戏");
@@ -529,6 +568,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin status - 查看游戏状态");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin bot <add|remove|clear|info|count> - 假人系统管理");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin dark <on|off|status> - 黑暗效果管理");
+        sender.sendMessage(ChatColor.YELLOW + "/gostadmin heartbeat <on|off|status> - 心跳声效果管理");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin help - 显示此帮助");
         sender.sendMessage(ChatColor.GOLD + "==================================");
     }
@@ -547,7 +587,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "bot", "dark", "help"};
+            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "bot", "dark", "heartbeat", "help"};
             for (String subCommand : subCommands) {
                 if (subCommand.startsWith(args[0].toLowerCase())) {
                     completions.add(subCommand);
@@ -578,6 +618,14 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 for (String darkSubCommand : darkSubCommands) {
                     if (darkSubCommand.startsWith(args[1].toLowerCase())) {
                         completions.add(darkSubCommand);
+                    }
+                }
+            } else if (subCommand.equals("heartbeat")) {
+                // heartbeat子命令自动补全
+                String[] heartbeatSubCommands = {"on", "off", "status"};
+                for (String heartbeatSubCommand : heartbeatSubCommands) {
+                    if (heartbeatSubCommand.startsWith(args[1].toLowerCase())) {
+                        completions.add(heartbeatSubCommand);
                     }
                 }
             }

@@ -142,7 +142,7 @@ public class ActionBarManager {
     }
     
     public void sendStinkySteakHint(Player player) {
-        sendItemUsageHint(player, "臭牛排", "右键食用获得速度II效果");
+        sendItemUsageHint(player, "臭牛排", "右键食用获得速度II效果和发光效果");
     }
     
     public void sendTeleportPearlHint(Player player) {

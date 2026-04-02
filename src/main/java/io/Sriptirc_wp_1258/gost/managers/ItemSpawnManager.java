@@ -37,14 +37,17 @@ public class ItemSpawnManager {
     private void loadRandomItems() {
         randomItems.clear();
         
-        // 臭牛排 - 速度2效果14秒
+        // 臭牛排 - 速度2效果14秒 + 发光效果10秒 + 冷却30秒
         randomItems.add(new RandomItemConfig(
             "stinky-steak",
             Material.COOKED_BEEF,
             "&a臭牛排",
-            Arrays.asList("&7食用后获得速度II效果", "&7持续时间: 14秒"),
+            Arrays.asList("&7食用后获得速度II效果和发光效果", "&7速度持续时间: 14秒", "&7发光持续时间: 10秒", "&7冷却时间: 30秒"),
             15,
-            Collections.singletonList(new PotionEffect(PotionEffectType.SPEED, 280, 1)) // 14秒 * 20 = 280 ticks
+            Arrays.asList(
+                new PotionEffect(PotionEffectType.SPEED, 280, 1), // 14秒 * 20 = 280 ticks
+                new PotionEffect(PotionEffectType.GLOWING, 200, 0) // 10秒 * 20 = 200 ticks
+            )
         ));
         
         // 传送珍珠 - 双方可用
@@ -52,7 +55,7 @@ public class ItemSpawnManager {
             "teleport-pearl",
             Material.ENDER_PEARL,
             "&5传送珍珠",
-            Arrays.asList("&7右键投掷传送", "&7冷却时间: 10秒"),
+            Arrays.asList("&7右键投掷传送", "&7冷却时间: 20秒"),
             20,
             null // 传送珍珠没有药水效果，只有传送功能
         ));
@@ -62,7 +65,7 @@ public class ItemSpawnManager {
             "soul-detector",
             Material.COMPASS,
             "&d灵魂探测器",
-            Arrays.asList("&7使用后所有玩家发光25秒", "&7鬼专属道具"),
+            Arrays.asList("&7使用后所有玩家发光25秒", "&7冷却时间: 35秒", "&7鬼专属道具"),
             12,
             Collections.singletonList(new PotionEffect(PotionEffectType.GLOWING, 500, 0)), // 25秒 * 20 = 500 ticks
             false, true // ghostOnly
@@ -82,7 +85,9 @@ public class ItemSpawnManager {
                 "&7效果:",
                 "&7• 人类: 速度II 10秒",
                 "&7• 人类: 高亮 10秒",
-                "&7• 鬼: 缓慢I 7秒"
+                "&7• 鬼: 缓慢I 7秒",
+                "",
+                "&7冷却时间: 180秒"
             ),
             10,
             null, // 被动触发，没有直接药水效果

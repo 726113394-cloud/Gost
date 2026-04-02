@@ -25,6 +25,7 @@ public class Gost extends JavaPlugin {
     private ItemSpawnManager itemSpawnManager;
     private SecondChanceListener secondChanceListener;
     private DarkEffectManager darkEffectManager;
+    private HeartbeatManager heartbeatManager;
     // private CurrencyManager currencyManager; // 货币系统已取消
     // private NpcManager npcManager; // NPC系统已取消
     // private SpectatorManager spectatorManager; // 观战系统已搁置
@@ -48,6 +49,7 @@ public class Gost extends JavaPlugin {
         itemSpawnManager = new ItemSpawnManager(this);
         secondChanceListener = new SecondChanceListener(this);
         darkEffectManager = new DarkEffectManager(this);
+        heartbeatManager = new HeartbeatManager(this);
         // currencyManager = new CurrencyManager(this); // 暂时取消货币系统
         // spectatorManager = new SpectatorManager(this); // 暂时搁置观战系统
         // npcManager = new NpcManager(this); // 取消NPC系统
@@ -65,7 +67,7 @@ public class Gost extends JavaPlugin {
         getServer().getPluginManager().registerEvents(secondChanceListener, this);
         
         getLogger().info("==========================================");
-        getLogger().info("Gost 插件已启用 - 生化模式小游戏 v2.0.2");
+        getLogger().info("Gost 插件已启用 - 生化模式小游戏 v2.1.0");
         getLogger().info("作者: 来自太空的小头脑");
         getLogger().info("主页: https://space.bilibili.com/3493116665400113");
         getLogger().info("==========================================");
@@ -142,6 +144,10 @@ public class Gost extends JavaPlugin {
     
     public DarkEffectManager getDarkEffectManager() {
         return darkEffectManager;
+    }
+    
+    public HeartbeatManager getHeartbeatManager() {
+        return heartbeatManager;
     }
     
     // public CurrencyManager getCurrencyManager() {

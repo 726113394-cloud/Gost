@@ -27,10 +27,21 @@ public class DarkEffectManager {
         int duration = plugin.getConfigManager().getDarkEffectDuration();
         int amplifier = plugin.getConfigManager().getDarkEffectAmplifier();
         
+        // 检查是否在准备阶段
+        boolean isPreparationPhase = plugin.getGameManager().isPreparationPhase();
+        
         for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                applyDarkEffect(player, duration, amplifier);
+                // 如果在准备阶段，只给鬼应用黑暗效果
+                if (isPreparationPhase) {
+                    if (plugin.getPlayerManager().isGhost(playerId)) {
+                        applyDarkEffect(player, duration, amplifier);
+                    }
+                } else {
+                    // 游戏阶段，给所有玩家应用黑暗效果
+                    applyDarkEffect(player, duration, amplifier);
+                }
             }
         }
     }
@@ -46,7 +57,20 @@ public class DarkEffectManager {
         
         int duration = plugin.getConfigManager().getDarkEffectDuration();
         int amplifier = plugin.getConfigManager().getDarkEffectAmplifier();
-        applyDarkEffect(player, duration, amplifier);
+        
+        // 检查是否在准备阶段
+        boolean isPreparationPhase = plugin.getGameManager().isPreparationPhase();
+        
+        // 如果在准备阶段，只给鬼应用黑暗效果
+        if (isPreparationPhase) {
+            UUID playerId = player.getUniqueId();
+            if (plugin.getPlayerManager().isGhost(playerId)) {
+                applyDarkEffect(player, duration, amplifier);
+            }
+        } else {
+            // 游戏阶段，给所有玩家应用黑暗效果
+            applyDarkEffect(player, duration, amplifier);
+        }
     }
     
     /**

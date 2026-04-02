@@ -18,7 +18,7 @@ public class ConfigManager {
         config = plugin.getConfig();
         
         // 设置默认值
-        config.addDefault("ScriptIrc-config-version", 7);
+        config.addDefault("ScriptIrc-config-version", 9);
         config.addDefault("game.duration", 420); // 7分钟，单位秒
         config.addDefault("game.preparation-time", 20); // 准备时间，单位秒
         config.addDefault("game.queue-time", 60); // 队列等待时间，单位秒
@@ -39,10 +39,15 @@ public class ConfigManager {
         config.addDefault("items.ice-ball.slow-duration", 4); // 凝冰球减速持续时间，单位秒
         config.addDefault("items.ice-ball.slow-level", 4); // 凝冰球减速等级
         config.addDefault("items.soul-control.freeze-duration", 6); // 控魂术冻结持续时间，单位秒
-        config.addDefault("items.teleport-pearl.cooldown", 10); // 传送珍珠冷却时间，单位秒
+        config.addDefault("items.soul-control.cooldown", 18); // 控魂术冷却时间，单位秒
+        config.addDefault("items.teleport-pearl.cooldown", 20); // 传送珍珠冷却时间，单位秒
+        config.addDefault("items.stinky-steak.speed-duration", 14); // 臭牛排速度效果持续时间，单位秒
+        config.addDefault("items.stinky-steak.speed-level", 1); // 臭牛排速度效果等级（1=速度II）
+        config.addDefault("items.stinky-steak.glowing-duration", 10); // 臭牛排发光效果持续时间，单位秒
+        config.addDefault("items.stinky-steak.cooldown", 30); // 臭牛排冷却时间，单位秒
         config.addDefault("items.soul-detector.duration", 25); // 灵魂探测器暴露持续时间，单位秒
-        config.addDefault("items.soul-detector.cooldown", 30); // 灵魂探测器冷却时间，单位秒
-        config.addDefault("items.second-chance.cooldown", 60); // 一次机会冷却时间，单位秒
+        config.addDefault("items.soul-detector.cooldown", 35); // 灵魂探测器冷却时间，单位秒
+        config.addDefault("items.second-chance.cooldown", 180); // 一次机会冷却时间，单位秒
         config.addDefault("items.second-chance.human-speed-duration", 10); // 人类玩家速度效果持续时间，单位秒
         config.addDefault("items.second-chance.human-speed-level", 2); // 人类玩家速度效果等级
         config.addDefault("items.second-chance.human-glowing-duration", 10); // 人类玩家高亮效果持续时间，单位秒
@@ -63,6 +68,10 @@ public class ConfigManager {
         config.addDefault("dark-effect.enabled", false); // 是否启用黑暗效果
         config.addDefault("dark-effect.duration", 999999); // 黑暗效果持续时间（秒）
         config.addDefault("dark-effect.amplifier", 0); // 黑暗效果等级
+        
+        // 心跳声设置
+        config.addDefault("heartbeat.enabled", true); // 是否启用心跳声
+        config.addDefault("heartbeat.interval", 10); // 心跳声播放间隔（秒）
         
         // 转化功能设置
         config.addDefault("conversion.enabled", false); // 是否启用转化功能
@@ -170,6 +179,10 @@ public class ConfigManager {
     
     public int getSoulControlFreezeDuration() {
         return config.getInt("items.soul-control.freeze-duration", 6);
+    }
+    
+    public int getSoulControlCooldown() {
+        return config.getInt("items.soul-control.cooldown", 18);
     }
     
     public int getMotherGhostBlindnessDuration() {
@@ -286,6 +299,22 @@ public class ConfigManager {
         return config.getInt("items.teleport-pearl.cooldown", 10);
     }
     
+    public int getStinkySteakSpeedDuration() {
+        return config.getInt("items.stinky-steak.speed-duration", 14);
+    }
+    
+    public int getStinkySteakSpeedLevel() {
+        return config.getInt("items.stinky-steak.speed-level", 1);
+    }
+    
+    public int getStinkySteakGlowingDuration() {
+        return config.getInt("items.stinky-steak.glowing-duration", 10);
+    }
+    
+    public int getStinkySteakCooldown() {
+        return config.getInt("items.stinky-steak.cooldown", 30);
+    }
+    
     public int getSecondChanceCooldown() {
         return config.getInt("items.second-chance.cooldown", 60);
     }
@@ -342,6 +371,21 @@ public class ConfigManager {
     // 设置黑暗效果开关
     public void setDarkEffectEnabled(boolean enabled) {
         config.set("dark-effect.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    // 心跳声配置
+    public boolean isHeartbeatEnabled() {
+        return config.getBoolean("heartbeat.enabled", true);
+    }
+    
+    public int getHeartbeatInterval() {
+        return config.getInt("heartbeat.interval", 10);
+    }
+    
+    // 设置心跳声开关
+    public void setHeartbeatEnabled(boolean enabled) {
+        config.set("heartbeat.enabled", enabled);
         plugin.saveConfig();
     }
 }

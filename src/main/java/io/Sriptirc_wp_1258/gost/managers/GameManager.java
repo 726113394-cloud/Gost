@@ -460,6 +460,9 @@ public class GameManager {
         // 应用黑暗效果（如果启用）
         plugin.getDarkEffectManager().applyDarkEffectToAllPlayers();
         
+        // 开始心跳声效果（如果启用）
+        plugin.getHeartbeatManager().startHeartbeat();
+        
         // 开始货币发放系统（暂时取消）
         // plugin.getCurrencyManager().startDistribution();
         
@@ -636,6 +639,9 @@ public class GameManager {
         // 计算并分发奖金
         plugin.getEconomyManager().distributeRewards(humanWin);
         
+        // 停止心跳声效果
+        plugin.getHeartbeatManager().stopHeartbeat();
+        
         // 清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
         
@@ -691,6 +697,9 @@ public class GameManager {
                 player.sendMessage(ChatColor.YELLOW + "你的入场金已退还！");
             }
         }
+        
+        // 停止心跳声效果
+        plugin.getHeartbeatManager().stopHeartbeat();
         
         // 清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
@@ -752,6 +761,9 @@ public class GameManager {
                 player.sendMessage(ChatColor.RED + "游戏被管理员强制停止！");
             }
         }
+        
+        // 停止心跳声效果
+        plugin.getHeartbeatManager().stopHeartbeat();
         
         // 然后清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
@@ -891,6 +903,13 @@ public class GameManager {
      */
     public int getRemainingGameTime() {
         return remainingGameTime;
+    }
+    
+    /**
+     * 检查是否在准备阶段
+     */
+    public boolean isPreparationPhase() {
+        return preparationPhase;
     }
     
     /**
