@@ -393,8 +393,20 @@ public class PlayerManager {
     public void applyGameState(Player player) {
         plugin.getLogger().info("应用游戏状态给玩家: " + player.getName());
         
-        // 设置游戏模式
-        player.setGameMode(GameMode.SURVIVAL);
+        // 检查玩家是否处于创造模式，如果是则强制切换并提示
+        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
+            GameMode originalMode = player.getGameMode();
+            player.setGameMode(GameMode.SURVIVAL);
+            
+            // 发送提示消息
+            player.sendMessage(ChatColor.YELLOW + "⚠ 注意：创造/旁观模式已自动切换为生存模式！");
+            player.sendMessage(ChatColor.YELLOW + "游戏期间所有玩家必须使用生存模式以确保公平性。");
+            
+            plugin.getLogger().info("强制切换玩家 " + player.getName() + " 从 " + originalMode + " 到 SURVIVAL 模式");
+        } else {
+            // 设置游戏模式为生存模式
+            player.setGameMode(GameMode.SURVIVAL);
+        }
         
         // 设置生命值（4点生命值）
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(4.0);
@@ -420,40 +432,69 @@ public class PlayerManager {
     public void applyRoleEffects(Player player, PlayerRole role) {
         plugin.getLogger().info("应用角色效果给玩家: " + player.getName() + ", 角色: " + role);
         
+        // 无论玩家是否是管理员或创造模式，都强制应用游戏效果
+        // 这是为了确保游戏平衡性，所有玩家参与游戏时应该受到相同的影响
+        
+        boolean isAdmin = player.hasPermission("gost.admin");
+        boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
+        
         switch (role) {
             case GHOST_MOTHER:
-                plugin.getLogger().info("应用母体鬼效果给玩家: " + player.getName());
-                // 母体鬼失明效果
+                String playerType = "";
+                if (isAdmin) playerType = "管理员";
+                if (wasCreative) playerType += (playerType.isEmpty() ? "" : "且") + "创造模式玩家";
+                if (playerType.isEmpty()) playerType = "玩家";
+                
+                plugin.getLogger().info("应用母体鬼效果给" + playerType + ": " + player.getName() + " (强制应用效果)");
+                
+                // 首先清除可能存在的免疫效果
+                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                player.removePotionEffect(PotionEffectType.SLOW);
+                player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+                
+                // 母体鬼失明效果 - 强制应用
                 int blindnessDuration = plugin.getConfigManager().getMotherGhostBlindnessDuration() * 20;
-                boolean blindnessSuccess = player.addPotionEffect(new PotionEffect(
+                PotionEffect blindnessEffect = new PotionEffect(
                     PotionEffectType.BLINDNESS,
                     blindnessDuration,
                     0,
                     true,
                     true
-                ));
-                plugin.getLogger().info("应用失明效果: " + (blindnessSuccess ? "成功" : "失败") + ", 持续时间: " + blindnessDuration + " ticks");
+                );
+                // 使用 forceAddPotionEffect 确保效果被应用
+                player.addPotionEffect(blindnessEffect, true); // true 表示强制覆盖现有效果
+                plugin.getLogger().info("强制应用失明效果给" + playerType + ": " + player.getName() + ", 持续时间: " + blindnessDuration + " ticks");
                 
-                // 母体鬼20秒无法移动效果（神鬼药水效果）
+                // 母体鬼20秒无法移动效果（神鬼药水效果） - 强制应用
                 int immobilizeDuration = plugin.getConfigManager().getGhostImmobilizeDuration() * 20;
-                boolean slowSuccess = player.addPotionEffect(new PotionEffect(
+                PotionEffect slowEffect = new PotionEffect(
                     PotionEffectType.SLOW,
                     immobilizeDuration,
                     255, // 最大等级，几乎无法移动
                     true,
                     true
-                ));
-                plugin.getLogger().info("应用减速效果: " + (slowSuccess ? "成功" : "失败") + ", 持续时间: " + immobilizeDuration + " ticks");
+                );
+                player.addPotionEffect(slowEffect, true); // 强制覆盖
+                plugin.getLogger().info("强制应用减速效果给" + playerType + ": " + player.getName() + ", 持续时间: " + immobilizeDuration + " ticks");
                 
-                // 同时添加挖掘疲劳效果，确保完全无法移动
-                boolean miningSuccess = player.addPotionEffect(new PotionEffect(
+                // 同时添加挖掘疲劳效果，确保完全无法移动 - 强制应用
+                PotionEffect miningEffect = new PotionEffect(
                     PotionEffectType.SLOW_DIGGING,
                     immobilizeDuration,
                     255,
                     true,
                     true
-                ));
-                plugin.getLogger().info("应用挖掘疲劳效果: " + (miningSuccess ? "成功" : "失败") + ", 持续时间: " + immobilizeDuration + " ticks");
+                );
+                player.addPotionEffect(miningEffect, true); // 强制覆盖
+                plugin.getLogger().info("强制应用挖掘疲劳效果给" + playerType + ": " + player.getName() + ", 持续时间: " + immobilizeDuration + " ticks");
+                
+                // 发送提示消息
+                if (isAdmin || wasCreative) {
+                    player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
+                                     (isAdmin && wasCreative ? "且" : "") + 
+                                     (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到母体鬼禁足效果的影响！");
+                    player.sendMessage(ChatColor.YELLOW + "禁足时间: " + plugin.getConfigManager().getGhostImmobilizeDuration() + "秒");
+                }
                 
                 plugin.getLanguageManager().sendMessage(player, "role.ghost-disabled-prep");
                 break;

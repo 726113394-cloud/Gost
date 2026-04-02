@@ -3,10 +3,12 @@ package io.Sriptirc_wp_1258.gost.managers;
 import io.Sriptirc_wp_1258.gost.Gost;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -356,8 +358,46 @@ public class GameManager {
             }
         }.runTaskTimer(plugin, 0L, 20L);
         
+        // 清理所有玩家的游戏效果，确保公平性
+        cleanupPlayerEffects();
+        
         // 在准备阶段开始时随机选择母体鬼并启动禁足倒计时
         selectInitialMotherGhost();
+    }
+    
+    // 清理所有玩家的游戏效果，确保公平性
+    private void cleanupPlayerEffects() {
+        plugin.getLogger().info("清理所有玩家的游戏效果，确保管理员和普通玩家公平游戏...");
+        
+        for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                // 清除所有可能影响游戏平衡的效果
+                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                player.removePotionEffect(PotionEffectType.SLOW);
+                player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+                player.removePotionEffect(PotionEffectType.SPEED);
+                player.removePotionEffect(PotionEffectType.INVISIBILITY);
+                player.removePotionEffect(PotionEffectType.GLOWING);
+                player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+                
+                // 如果是管理员或创造模式玩家，发送提示消息
+                boolean isAdmin = player.hasPermission("gost.admin");
+                boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
+                
+                if (isAdmin || wasCreative) {
+                    player.sendMessage(ChatColor.YELLOW + "⚠ 游戏开始：所有效果已重置，确保公平游戏！");
+                    player.sendMessage(ChatColor.YELLOW + "作为" + (isAdmin ? "管理员" : "") + 
+                                     (isAdmin && wasCreative ? "且" : "") + 
+                                     (wasCreative ? "创造模式玩家" : "") + "，你也会受到所有游戏效果的影响。");
+                }
+                
+                plugin.getLogger().info("已清理玩家效果: " + player.getName() + 
+                    (isAdmin ? " (管理员)" : "") + (wasCreative ? " (创造模式)" : ""));
+            }
+        }
+        
+        plugin.getLogger().info("游戏效果清理完成！");
     }
     
     // 随机选择初始母体鬼

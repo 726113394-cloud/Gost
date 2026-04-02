@@ -599,7 +599,19 @@ grep -i "gost" logs/latest.log
 
 ## 📈 版本更新记录
 
-### v2.1.2（当前版本）
+### v2.1.3（当前版本）
+- **🔧 修复管理员游戏效果免疫问题**：
+  - **管理员黑暗效果修复**：管理员现在会正常受到黑暗效果影响
+  - **母体鬼禁足修复**：管理员母体鬼现在会正常受到失明和禁足效果
+  - **强制效果应用**：游戏效果现在会强制应用，确保管理员无法绕过
+  - **游戏开始清理**：游戏开始时清理所有玩家效果，确保公平性
+  - **管理员提示**：管理员收到游戏效果应用时的提示消息
+- **🎮 创造模式玩家自动切换**：
+  - **自动模式切换**：创造模式玩家进入游戏时自动切换为生存模式
+  - **强制效果应用**：创造模式玩家也会被强制应用游戏效果
+  - **公平性保障**：确保所有玩家在相同条件下进行游戏
+
+### v2.1.2
 - **👻 新增鬼玩家粒子效果系统**：
   - **持续环绕粒子**：鬼玩家身上持续显示环绕粒子效果
   - **颜色区分**：母体鬼为红色粒子，普通鬼为绿色粒子
@@ -797,7 +809,7 @@ grep -i "gost" logs/latest.log
   - [Frequently Asked Questions & Solutions](#frequently-asked-questions--solutions)
   - [📊 Log Diagnosis](#-log-diagnosis)
 - [📈 Version Update History](#-version-update-history)
-  - [v2.1.2 (Current Version)](#v212-current-version)
+  - [v2.1.3 (Current Version)](#v213-current-version)
   - [v2.0.2](#v202)
   - [v2.0.0](#v200)
   - [v1.0.0](#v100)
@@ -1059,7 +1071,15 @@ grep -i "gost" logs/latest.log
 
 ## 📈 Version Update History
 
-### v2.1.2 (Current Version)
+### v2.1.3 (Current Version)
+- **🔧 Fixed Admin Game Effect Immunity Issue**:
+  - **Admin Dark Effect Fix**: Administrators now properly receive dark effects during gameplay
+  - **Mother Ghost Immobilization Fix**: Admin mother ghosts now properly receive blindness and immobilization effects
+  - **Force Effect Application**: Game effects are now forcibly applied to ensure admins cannot bypass them
+  - **Game Start Cleanup**: All player effects are cleared at game start to ensure fairness
+  - **Admin Notifications**: Admins receive notifications when game effects are applied to them
+
+### v2.1.2
 - **👻 New Ghost Player Particle Effect System**:
   - **Continuous Orbiting Particles**: Ghost players continuously display orbiting particle effects
   - **Color Differentiation**: Mother ghost: red particles, Normal ghost: green particles

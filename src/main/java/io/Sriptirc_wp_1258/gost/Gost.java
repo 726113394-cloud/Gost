@@ -96,7 +96,11 @@ public class Gost extends JavaPlugin {
         getServer().getPluginManager().registerEvents(secondChanceListener, this);
         
         getLogger().info("==========================================");
-        getLogger().info("Gost 插件已启用 - 生化模式小游戏 v2.1.0");
+        getLogger().info("Gost v2.1.3 已成功加载！");
+        getLogger().info("✨ 新增功能：鬼玩家粒子效果系统");
+        getLogger().info("🔧 修复：管理员和创造模式玩家效果免疫问题");
+        getLogger().info("🎮 新增：创造模式自动切换为生存模式");
+        getLogger().info("⚖️ 确保：所有玩家公平游戏环境");
         getLogger().info("作者: 来自太空的小头脑");
         getLogger().info("主页: https://space.bilibili.com/3493116665400113");
         getLogger().info("==========================================");

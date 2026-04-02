@@ -2,6 +2,8 @@ package io.Sriptirc_wp_1258.gost.managers;
 
 import io.Sriptirc_wp_1258.gost.Gost;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -36,11 +38,33 @@ public class DarkEffectManager {
                 // 如果在准备阶段，只给鬼应用黑暗效果
                 if (isPreparationPhase) {
                     if (plugin.getPlayerManager().isGhost(playerId)) {
-                        applyDarkEffect(player, duration, amplifier);
+                        // 强制应用黑暗效果，确保管理员也会受到影响
+                        applyDarkEffect(player, duration, amplifier, true);
+                        
+                        // 如果是管理员或创造模式玩家，发送提示消息
+                        boolean isAdmin = player.hasPermission("gost.admin");
+                        boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
+                        
+                        if (isAdmin || wasCreative) {
+                            player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
+                                             (isAdmin && wasCreative ? "且" : "") + 
+                                             (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+                        }
                     }
                 } else {
                     // 游戏阶段，给所有玩家应用黑暗效果
-                    applyDarkEffect(player, duration, amplifier);
+                    // 强制应用黑暗效果，确保管理员也会受到影响
+                    applyDarkEffect(player, duration, amplifier, true);
+                    
+                    // 如果是管理员或创造模式玩家，发送提示消息
+                    boolean isAdmin = player.hasPermission("gost.admin");
+                    boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
+                    
+                    if (isAdmin || wasCreative) {
+                        player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
+                                         (isAdmin && wasCreative ? "且" : "") + 
+                                         (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+                    }
                 }
             }
         }
@@ -65,11 +89,33 @@ public class DarkEffectManager {
         if (isPreparationPhase) {
             UUID playerId = player.getUniqueId();
             if (plugin.getPlayerManager().isGhost(playerId)) {
-                applyDarkEffect(player, duration, amplifier);
+                // 无论是否是管理员，都强制应用黑暗效果
+                applyDarkEffect(player, duration, amplifier, true);
+                
+                // 如果是管理员或创造模式玩家，发送提示消息
+                boolean isAdmin = player.hasPermission("gost.admin");
+                boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
+                
+                if (isAdmin || wasCreative) {
+                    player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
+                                     (isAdmin && wasCreative ? "且" : "") + 
+                                     (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+                }
             }
         } else {
             // 游戏阶段，给所有玩家应用黑暗效果
-            applyDarkEffect(player, duration, amplifier);
+            // 无论是否是管理员，都强制应用黑暗效果
+            applyDarkEffect(player, duration, amplifier, true);
+            
+            // 如果是管理员或创造模式玩家，发送提示消息
+            boolean isAdmin = player.hasPermission("gost.admin");
+            boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
+            
+            if (isAdmin || wasCreative) {
+                player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
+                                 (isAdmin && wasCreative ? "且" : "") + 
+                                 (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+            }
         }
     }
     
@@ -80,6 +126,22 @@ public class DarkEffectManager {
      * @param amplifier 效果等级
      */
     private void applyDarkEffect(Player player, int duration, int amplifier) {
+        applyDarkEffect(player, duration, amplifier, false);
+    }
+    
+    /**
+     * 给指定玩家应用黑暗效果（可强制应用）
+     * @param player 玩家
+     * @param duration 持续时间（秒）
+     * @param amplifier 效果等级
+     * @param force 是否强制应用（覆盖现有效果）
+     */
+    private void applyDarkEffect(Player player, int duration, int amplifier, boolean force) {
+        // 首先清除可能存在的黑暗效果
+        if (force) {
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
+        }
+        
         // 黑暗效果使用BLINDNESS（失明）药水效果
         PotionEffect darkEffect = new PotionEffect(
             PotionEffectType.BLINDNESS,
@@ -90,7 +152,12 @@ public class DarkEffectManager {
             false // 不显示图标
         );
         
-        player.addPotionEffect(darkEffect);
+        // 强制应用效果，确保管理员也会受到影响
+        player.addPotionEffect(darkEffect, force);
+        
+        if (force && player.hasPermission("gost.admin")) {
+            plugin.getLogger().info("强制应用黑暗效果给管理员: " + player.getName());
+        }
     }
     
     /**
