@@ -1,0 +1,146 @@
+# Gost Plugin - English Language File
+# Version: 2.1.0
+
+# ========== General Messages ==========
+general:
+  plugin_enabled: "§aGost plugin enabled - Biochemical Mode Mini-game v2.1.0"
+  plugin_disabled: "§cGost plugin disabled"
+  reload_complete: "§aConfiguration reloaded"
+  no_permission: "§cYou don't have permission to execute this command"
+  player_only: "§cThis command can only be executed by players"
+  invalid_command: "§cInvalid command, use /gost help for help"
+  
+# ========== Game Status Messages ==========
+game:
+  not_running: "§cGame is not running"
+  already_running: "§cGame is already running"
+  starting: "§aGame is starting..."
+  started: "§aGame has started!"
+  stopped: "§cGame stopped"
+  force_stopped: "§cGame force stopped"
+  time_remaining: "§eTime remaining: %d minutes %d seconds"
+  waiting_for_players: "§eWaiting for more players... (Current: %d/%d)"
+  
+# ========== Player Messages ==========
+player:
+  joined_queue: "§aYou have joined the game queue"
+  left_queue: "§cYou have left the game queue"
+  already_in_queue: "§cYou are already in the queue"
+  not_in_queue: "§cYou are not in the queue"
+  queue_info: "§eQueue status: %d/%d players"
+  role_assigned: "§aYour role: %s"
+  infected: "§cYou were infected by %s! Now you are a ghost!"
+  infected_other: "§aYou successfully infected %s!"
+  converted_to_human: "§aYou have been converted back to the human team!"
+  conversion_broadcast: "§e🎮 %s has been converted back to the human team in the final stage!"
+  
+# ========== Team Messages ==========
+team:
+  human: "§aHuman"
+  ghost: "§cGhost"
+  ghost_mother: "§4Mother Ghost"
+  ghost_normal: "§cNormal Ghost"
+  
+# ========== Area Management Messages ==========
+area:
+  created: "§aArea '%s' created"
+  deleted: "§cArea '%s' deleted"
+  loaded: "§aArea '%s' loaded"
+  not_found: "§cArea '%s' not found"
+  list_header: "§e=== Saved Areas ==="
+  list_item: "§7- %s (World: %s, Size: %dx%dx%d)"
+  no_areas: "§cNo saved areas"
+  selection_start: "§aPlease use Magma Cream to left-click and right-click to select two diagonal points"
+  selection_complete: "§aArea selection complete! Use /gostadmin create <name> to save"
+  selection_incomplete: "§cPlease complete area selection first"
+  
+# ========== Item Messages ==========
+item:
+  stinky_steak_used: "§aYou ate Stinky Steak, gained speed effect!"
+  teleport_pearl_used: "§aTeleport Pearl used!"
+  soul_detector_used: "§cSoul Detector activated, all players are glowing!"
+  one_chance_triggered: "§aOne Chance triggered, resisted one infection!"
+  random_teleport: "§aYou have been randomly teleported to a safe location!"
+  teleport_coordinates: "§eCoordinates: X=%d, Y=%d, Z=%d"
+  teleport_failed: "§cRandom teleport failed, cannot find safe location"
+  second_chance_teleport_broadcast: "§6Holder has been randomly teleported!"
+  cooldown: "§cItem on cooldown, remaining: %d seconds"
+  max_items: "§cYou have reached the maximum item limit"
+  faction_restricted: "§cThis item can only be used by %s"
+  
+# ========== Economy System Messages ==========
+economy:
+  entry_fee_paid: "§aEntry fee paid: %d coins"
+  insufficient_funds: "§cInsufficient funds, need %d coins"
+  prize_pool: "§ePrize pool total: %.2f coins"
+  human_victory: "§aHumans win!"
+  ghost_victory: "§cGhosts win!"
+  bonus_distribution: "§eBonus distribution starting..."
+  survival_time: "⏱️ Your survival time: %d seconds"
+  infection_count: "🦠 Your infection count: %d players"
+  distribution_ratio: "📊 Distribution ratio: %.1f%%"
+  human_bonus: "💰 Human bonus: %.2f coins"
+  ghost_bonus: "💰 Ghost bonus: %.2f coins"
+  total_bonus: "💰 Total bonus: %.2f coins"
+  conversion_bonus: "✨ Conversion bonus: %.2f coins"
+  ghost_accumulated_time: "👻 Accumulated ghost time: %d seconds"
+  
+# ========== Admin Command Messages ==========
+admin:
+  game_started: "§aAdmin started the game"
+  game_stopped: "§cAdmin stopped the game"
+  config_reloaded: "§aConfiguration reloaded"
+  heartbeat_enabled: "§aHeartbeat sound enabled"
+  heartbeat_disabled: "§cHeartbeat sound disabled"
+  heartbeat_status: "§eHeartbeat sound status: %s"
+  dark_enabled: "§aDark effect enabled"
+  dark_disabled: "§cDark effect disabled"
+  dark_status: "§eDark effect status: %s"
+  
+# ========== Error Messages ==========
+error:
+  vault_not_found: "§cVault economy plugin not found, economy system unavailable"
+  economy_not_setup: "§cEconomy system not properly set up"
+  area_not_set: "§cGame area not set, please create an area first"
+  min_players_not_met: "§cNot enough players, need at least %d players"
+  max_players_exceeded: "§cToo many players, maximum %d players allowed"
+  world_not_loaded: "§cWorld not loaded, cannot create area"
+  invalid_selection: "§cInvalid area selection"
+  
+# ========== Help Messages ==========
+help:
+  player_header: "§e=== Player Commands ==="
+  player_join: "§7/gost join §f- Join game queue"
+  player_leave: "§7/gost leave §f- Leave game queue"
+  player_info: "§7/gost info §f- View game information"
+  player_help: "§7/gost help §f- View help"
+  
+  admin_header: "§e=== Admin Commands ==="
+  admin_create: "§7/gostadmin create <name> §f- Create game area"
+  admin_delete: "§7/gostadmin delete <name> §f- Delete game area"
+  admin_list: "§7/gostadmin list §f- List all areas"
+  admin_load: "§7/gostadmin load <name> §f- Load game area"
+  admin_start: "§7/gostadmin start §f- Start game"
+  admin_stop: "§7/gostadmin stop §f- Stop game"
+  admin_reload: "§7/gostadmin reload §f- Reload configuration"
+  admin_heartbeat: "§7/gostadmin heartbeat <on/off/status> §f- Control heartbeat sound"
+  admin_dark: "§7/gostadmin dark <on/off/status> §f- Control dark effect"
+  
+# ========== Game Stage Messages ==========
+stage:
+  preparation: "§ePreparation phase started, you have 30 seconds to prepare!"
+  running: "§aGame is running!"
+  ending: "§6Game ending soon..."
+  ended: "§cGame ended!"
+  
+# ========== Special Effect Messages ==========
+effect:
+  heartbeat_enabled: "§cYou hear a heartbeat sound..."
+  dark_effect_enabled: "§8Darkness envelops everything..."
+  adrenaline_received: "§aYou received an adrenaline item"
+  items_cleared: "§eOther items have been cleared"
+  
+# ========== Configuration Messages ==========
+config:
+  language_changed: "§aLanguage changed to: %s"
+  available_languages: "§eAvailable languages: zh_CN (Chinese), en_US (English)"

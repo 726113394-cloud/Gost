@@ -427,7 +427,8 @@ public class ItemManager {
         ));
         
         // 发送消息
-        humanPlayer.sendMessage(ChatColor.GOLD + "一次机会已触发！你获得了速度和高亮效果！");
+        humanPlayer.sendMessage(plugin.getLanguageManager().getMessage("item.one_chance_triggered"));
+        humanPlayer.sendMessage(plugin.getLanguageManager().getMessage("item.random_teleport"));
         ghostPlayer.sendMessage(ChatColor.RED + "目标使用了一次机会！你被减速了！");
         
         // 广播消息

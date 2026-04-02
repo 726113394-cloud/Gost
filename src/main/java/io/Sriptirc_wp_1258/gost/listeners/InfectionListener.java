@@ -40,6 +40,13 @@ public class InfectionListener implements Listener {
             return;
         }
         
+        // 检查神圣守护
+        if (plugin.getDivineGuardianManager().handleDivineGuardianTrigger(victim, attacker)) {
+            // 神圣守护触发，取消感染
+            event.setCancelled(true);
+            return;
+        }
+        
         // 执行感染
         plugin.getPlayerManager().infectPlayer(victim.getUniqueId(), attacker.getUniqueId());
         
@@ -73,6 +80,12 @@ public class InfectionListener implements Listener {
         
         // 检查受害者是否是人类
         if (!plugin.getPlayerManager().isHuman(victim.getUniqueId())) {
+            return;
+        }
+        
+        // 检查神圣守护
+        if (plugin.getDivineGuardianManager().handleDivineGuardianTrigger(victim, attacker)) {
+            // 神圣守护触发，取消感染
             return;
         }
         

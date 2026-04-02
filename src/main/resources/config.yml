@@ -2,7 +2,7 @@
 # 版本: 2.1.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 12
+ScriptIrc-config-version: 14
 
 # 游戏设置
 game:
@@ -97,4 +97,28 @@ item-spawn:
   interval: 60               # 刷新间隔（秒）
   max-per-refresh: 3         # 每次刷新数量上限
   max-per-player: 1          # 每位玩家最多获得数量
+
+# 语言设置
+language:
+  default: zh_CN             # 默认语言: zh_CN (中文), en_US (英文)
+  auto-detect: true          # 是否自动检测玩家语言（基于客户端语言）
   max-item-types-per-player: 6 # 玩家最多拥有的道具种类数量
+
+# 神圣守护设置
+divine-guardian:
+  enabled: false             # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
+  max-charges: 3             # 最大使用次数（免疫感染的次数）
+  cooldown: 5                # 每次使用冷却时间（秒）
+  broadcast: true            # 是否广播神圣守护触发消息
+  invisibility-duration: 10  # 神圣守护失效后隐身持续时间（秒）
+
+# 鬼玩家粒子效果设置
+ghost-particle:
+  enabled: true              # 是否启用鬼玩家粒子效果
+  type: REDSTONE             # 粒子类型：REDSTONE, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANTMENT_TABLE, CRIT_MAGIC, FIREWORKS_SPARK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM_OF_UNDYING, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
+  count: 5                   # 每次生成粒子数量
+  interval: 15               # 粒子生成间隔（刻，20刻=1秒）
+  mother-color: "255,0,0"    # 母体鬼粒子颜色（RGB格式：红,绿,蓝）
+  normal-color: "0,255,0"    # 普通鬼粒子颜色（RGB格式：红,绿,蓝）
+  size: 1.0                  # 粒子大小
+  show-in-preparation: true  # 准备阶段是否显示粒子

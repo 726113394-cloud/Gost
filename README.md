@@ -40,6 +40,7 @@
   - [v1.0.0](#v100)
 - [🤝 技术支持与反馈](#-技术支持与反馈)
 - [🎉 开始你的生存对抗之旅！](#-开始你的生存对抗之旅)
+- [🇬🇧 English Version](#-english-version)
 
 ## ✨ 核心特色
 
@@ -77,7 +78,7 @@
 - **🍖 臭牛排**（权重15）：无视饱食度直接食用，获得速度II效果14秒和发光效果10秒，冷却30秒
 - **💎 传送珍珠**（权重20）：双方可用，右键投掷传送，冷却时间20秒
 - **🧭 灵魂探测器**（鬼专属，权重12）：使用后所有玩家发光25秒，冷却35秒
-- **🛡️ 一次机会**（人类专属，权重10）：被动触发抵挡感染，冷却时间180秒
+- **🛡️ 一次机会**（人类专属，权重10）：被动触发抵挡感染，冷却时间180秒，触发时持有者会被随机传送到安全位置
 
 #### 📊 道具限制系统
 - **种类限制**：每个玩家最多只能拥有6种不同种类的道具（可配置）
@@ -95,6 +96,14 @@
 - **即时提示**：使用道具时ActionBar显示使用方法
 - **重要通知**：关键时刻显示居中大文本提示
 - **视听效果**：感染闪电/音效、幽灵感知高亮等特效
+
+### 🛡️ 神圣守护系统（v2.1.1新增）
+- **最后一位人类**：当只剩下一位人类玩家时，自动激活神圣守护
+- **免疫感染**：拥有3次免疫感染的机会（可配置）
+- **随机传送**：被攻击时随机传送到地图安全位置
+- **特殊效果**：获得速度I效果、发光效果
+- **失效机制**：使用次数耗尽后获得隐身10秒效果
+- **完整管理**：管理员可控制所有神圣守护参数
 
 ### 🗺️ 灵活区域管理系统
 - **简易选区**：使用岩浆膏进行左键/右键选区（物品可配置）
@@ -230,14 +239,19 @@
 
 #### 🛡️ 一次机会（人类专属道具 - 不死图腾）
 - **物品图标**：不死图腾
-- **详细效果**：**被动触发**，抵挡一次鬼玩家的感染攻击
+- **详细效果**：**被动触发**，抵挡一次鬼玩家的感染攻击，并随机传送持有者
 - **触发条件**：当鬼玩家**右键点击**试图感染时自动触发
 - **人类效果**：
   - 速度II效果，持续10秒（可配置）
   - 高亮效果，持续10秒（可配置）
+  - **随机传送**：被传送到游戏区域内的随机安全位置
 - **鬼效果**：
   - 缓慢I效果，持续7秒（可配置）
 - **冷却时间**：180秒（可在config.yml中配置）
+- **传送机制**：
+  - 在游戏区域内随机选择安全位置
+  - 确保位置安全（不在液体中，有足够空间）
+  - 显示传送坐标给玩家
 - **使用方法**：自动触发，无需手动使用
 - **使用反馈**：
   - **屏幕居中字幕**：`✨ 一次机会触发！` / `成功抵挡感染！`
@@ -275,6 +289,43 @@
 /gostadmin dark <on|off|status>  # 黑暗效果管理
 /gostadmin heartbeat <on|off|status>  # 心跳声效果管理
 /gostadmin help            # 显示管理员帮助
+```
+
+#### 神圣守护管理命令（v2.1.1新增）
+```bash
+/divineguardian status      # 查看神圣守护状态
+/divineguardian enable      # 启用神圣守护功能
+/divineguardian disable     # 禁用神圣守护功能
+/divineguardian reload      # 重新加载神圣守护配置
+/divineguardian info        # 查看当前神圣守护信息
+/divineguardian clear       # 清除神圣守护数据
+
+# 配置管理
+/divineguardian setcharges <次数>    # 设置最大使用次数（1-10）
+/divineguardian setcooldown <秒数>   # 设置冷却时间（1-60秒）
+/divineguardian broadcast <on|off>   # 设置广播开关
+
+# 高级管理
+/divineguardian force <玩家名>       # 强制为指定玩家激活神圣守护
+```
+
+#### 鬼玩家粒子效果管理命令（v2.1.2新增）
+```bash
+/ghostparticle status      # 查看粒子效果状态
+/ghostparticle enable      # 启用粒子效果
+/ghostparticle disable     # 禁用粒子效果
+/ghostparticle reload      # 重新加载配置
+/ghostparticle test        # 测试粒子效果
+/ghostparticle listtypes   # 列出可用粒子类型
+
+# 配置管理
+/ghostparticle settype <类型>        # 设置粒子类型
+/ghostparticle setcount <数量>       # 设置粒子数量
+/ghostparticle setinterval <间隔>    # 设置生成间隔（刻）
+/ghostparticle setmothercolor <红,绿,蓝>  # 设置母体鬼颜色
+/ghostparticle setnormalcolor <红,绿,蓝>  # 设置普通鬼颜色
+/ghostparticle setsize <大小>        # 设置粒子大小
+/ghostparticle setpreparation <on|off>  # 设置准备阶段显示
 ```
 
 ## 🎯 完整游戏流程
@@ -455,6 +506,25 @@ item-spawn:
   max-per-player: 1             # 每位玩家最多获得数量
   max-item-types-per-player: 6  # 玩家最多拥有的道具种类数量
 
+# 🛡️ 神圣守护设置（v2.1.1新增）
+divine-guardian:
+  enabled: false                # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
+  max-charges: 3                # 最大使用次数（免疫感染的次数）
+  cooldown: 5                   # 每次使用冷却时间（秒）
+  broadcast: true               # 是否广播神圣守护触发消息
+  invisibility-duration: 10     # 神圣守护失效后隐身持续时间（秒）
+
+# 👻 鬼玩家粒子效果设置（v2.1.2新增）
+ghost-particle:
+  enabled: true                 # 是否启用鬼玩家粒子效果
+  type: REDSTONE                # 粒子类型：REDSTONE, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANTMENT_TABLE, CRIT_MAGIC, FIREWORKS_SPARK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM_OF_UNDYING, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
+  count: 5                      # 每次生成粒子数量
+  interval: 15                  # 粒子生成间隔（刻，20刻=1秒）
+  mother-color: "255,0,0"       # 母体鬼粒子颜色（RGB格式：红,绿,蓝）
+  normal-color: "0,255,0"       # 普通鬼粒子颜色（RGB格式：红,绿,蓝）
+  size: 1.0                     # 粒子大小
+  show-in-preparation: true     # 准备阶段是否显示粒子
+
 # 🗺️ 区域选择设置
 area:
   selection-tool: MAGMA_CREAM   # 选区工具物品（默认为岩浆膏）
@@ -473,6 +543,8 @@ area:
 - `gost.admin.delete` - 删除区域权限
 - `gost.admin.reload` - 重载配置权限
 - `gost.admin.manage` - 管理游戏权限
+- `gost.admin.divineguardian` - 管理神圣守护权限（v2.1.1新增）
+- `gost.admin.ghostparticle` - 管理鬼玩家粒子效果权限（v2.1.2新增）
 
 ## ⚠️ 重要注意事项
 
@@ -527,7 +599,78 @@ grep -i "gost" logs/latest.log
 
 ## 📈 版本更新记录
 
-### v2.1.0（当前版本）
+### v2.1.2（当前版本）
+- **👻 新增鬼玩家粒子效果系统**：
+  - **持续环绕粒子**：鬼玩家身上持续显示环绕粒子效果
+  - **颜色区分**：母体鬼为红色粒子，普通鬼为绿色粒子
+  - **智能生成**：15刻间隔（约0.75秒），每次生成5个粒子
+  - **多种粒子类型**：支持21种粒子类型，包括REDSTONE、FLAME、SOUL_FIRE_FLAME等
+  - **RGB颜色系统**：支持自定义RGB颜色格式（红,绿,蓝）
+  - **准备阶段控制**：可配置准备阶段是否显示粒子
+- **🎮 鬼玩家粒子效果管理命令**：
+  - `/ghostparticle` 或 `/gp` - 粒子效果管理主命令
+  - `/ghostparticle status` - 查看粒子效果状态
+  - `/ghostparticle enable/disable` - 启用/禁用粒子效果
+  - `/ghostparticle reload` - 重新加载配置
+  - `/ghostparticle settype <类型>` - 设置粒子类型
+  - `/ghostparticle setcount <数量>` - 设置粒子数量
+  - `/ghostparticle setinterval <间隔>` - 设置生成间隔（刻）
+  - `/ghostparticle setmothercolor <红,绿,蓝>` - 设置母体鬼颜色
+  - `/ghostparticle setnormalcolor <红,绿,蓝>` - 设置普通鬼颜色
+  - `/ghostparticle setsize <大小>` - 设置粒子大小
+  - `/ghostparticle setpreparation <on|off>` - 设置准备阶段显示
+  - `/ghostparticle test` - 测试粒子效果
+  - `/ghostparticle listtypes` - 列出可用粒子类型
+- **⚙️ 配置系统升级**：
+  - 添加鬼玩家粒子效果相关配置项（ghost-particle.enabled等）
+  - 配置版本升级到14
+  - 支持21种粒子类型选择
+  - 完整的RGB颜色配置
+- **🔐 权限系统完善**：
+  - 新增 `gost.admin.ghostparticle` 权限节点
+- **✨ 视觉效果增强**：
+  - **环绕效果**：粒子围绕玩家旋转
+  - **高度调整**：粒子在玩家身体周围
+  - **母体增强**：母体鬼有更大的环绕半径和额外头顶粒子
+  - **性能优化**：定时任务控制，避免性能问题
+- **🔄 智能集成系统**：
+  - 与现有玩家角色系统无缝集成
+  - 玩家角色变化时自动更新粒子效果
+  - 支持离线玩家数据更新
+  - 自动清理数据防止内存泄漏
+
+### v2.1.1
+- **🛡️ 新增神圣守护系统**：
+  - **最后一位人类**：当只剩下一位人类玩家时，自动激活神圣守护
+  - **免疫感染**：拥有3次免疫感染的机会（可配置）
+  - **随机传送**：被攻击时随机传送到地图安全位置
+  - **特殊效果**：获得速度I效果、发光效果
+  - **失效机制**：使用次数耗尽后获得隐身10秒效果
+  - **完整管理**：管理员可控制所有神圣守护参数
+- **✨ 神圣守护视觉效果**：
+  - **发光效果**：显示神圣状态
+  - **粒子效果**：激活、触发、传送、失效时都有粒子效果
+  - **音效系统**：激活、触发、传送时播放特殊音效
+  - **屏幕标题**：激活、触发、失效时显示屏幕标题
+- **🎮 神圣守护管理命令**：
+  - `/divineguardian status` - 查看神圣守护状态
+  - `/divineguardian enable/disable` - 启用/禁用功能
+  - `/divineguardian setcharges <次数>` - 设置最大使用次数
+  - `/divineguardian setcooldown <秒数>` - 设置冷却时间
+  - `/divineguardian broadcast <on|off>` - 设置广播开关
+  - `/divineguardian force <玩家名>` - 强制激活神圣守护
+  - `/divineguardian clear` - 清除神圣守护数据
+- **⚙️ 配置系统升级**：
+  - 添加神圣守护相关配置项（divine-guardian.enabled等）
+  - 配置版本升级到13
+- **🔐 权限系统完善**：
+  - 新增 `gost.admin.divineguardian` 权限节点
+- **🔄 感染系统优化**：
+  - 神圣守护触发时自动取消感染
+  - 随机传送前检查安全位置
+  - 冷却时间机制防止滥用
+
+### v2.1.0
 - **🎮 奖金分配系统全面优化**：
   - **人类胜利时**：人类阵容获得奖池的70%，鬼阵容获得奖池的30%
   - **鬼胜利时**：鬼阵容获得奖池的100%
@@ -612,3 +755,326 @@ grep -i "gost" logs/latest.log
 ---
 
 *"在Gost的世界里，生存不仅需要速度，更需要智慧与策略。"*
+
+---
+
+## 🇬🇧 English Version
+
+# 🎮 Gost - Extreme Survival Confrontation Game
+
+**Gost** is a Minecraft server addon that combines multiple gameplays such as **cat and mouse, ghost catch, peek-a-boo, CF biochemical mode**, and more. Experience the life-and-death chase between humans and ghosts in a tense and exciting confrontation, using strategies and props to become the last survivor!
+
+## 📋 Table of Contents
+
+- [✨ Core Features](#-core-features)
+  - [🏃‍♂️ An Exciting Chase Experience](#-an-exciting-chase-experience)
+  - [🏆 Economy and Reward System](#-economy-and-reward-system)
+  - [🏃‍♀️ Smart Matchmaking & Queue System](#-smart-matchmaking--queue-system)
+  - [🧰 Multi-level Item System](#-multi-level-item-system)
+  - [👥 Immersive Visual System](#-immersive-visual-system)
+  - [🗺️ Flexible Area Management System](#️-flexible-area-management-system)
+- [🚀 Quick Start](#-quick-start)
+  - [📦 Installation Requirements](#-installation-requirements)
+- [🎮 Game Guide](#-game-guide)
+  - [📝 Player Basic Commands](#-player-basic-commands)
+  - [🧰 Item Usage Guide](#-item-usage-guide)
+  - [⚙️ Admin Commands](#️-admin-commands)
+- [🎯 Complete Game Flow](#-complete-game-flow)
+  - [1. 🗺️ Area Setup Phase](#1-️-area-setup-phase)
+  - [2. 👥 Player Preparation Phase](#2-player-preparation-phase)
+  - [3. 🚀 Game Running Phase](#3-game-running-phase)
+  - [4. 🏆 Game End Phase](#4-game-end-phase)
+- [⚙️ Configuration File Details](#️-configuration-file-details)
+  - [📋 Main Configuration Items Example](#-main-configuration-items-example)
+- [🔐 Permission Nodes](#-permission-nodes)
+  - [Player Permissions (Default for all players)](#player-permissions-default-for-all-players)
+  - [Admin Permissions](#admin-permissions)
+- [⚠️ Important Notes](#️-important-notes)
+  - [Required Conditions](#required-conditions)
+  - [Optional Enhancements](#optional-enhancements)
+  - [Game Rules](#game-rules)
+- [🔧 Troubleshooting Guide](#-troubleshooting-guide)
+  - [Frequently Asked Questions & Solutions](#frequently-asked-questions--solutions)
+  - [📊 Log Diagnosis](#-log-diagnosis)
+- [📈 Version Update History](#-version-update-history)
+  - [v2.1.0 (Current Version)](#v210-current-version)
+  - [v2.0.2](#v202)
+  - [v2.0.0](#v200)
+  - [v1.0.0](#v100)
+- [🤝 Technical Support & Feedback](#-technical-support--feedback)
+- [🎉 Start Your Survival Confrontation Journey!](#-start-your-survival-confrontation-journey)
+
+## ✨ Core Features
+
+### 🏃‍♂️ An Exciting Chase Experience
+- **Faction Confrontation**: Humans vs Ghosts, life-and-death chase, extreme escape
+- **Time Pressure**: Decide the winner within the time limit, tense and exciting
+- **Infection Transformation**: Transformed into a ghost after being touched by a ghost, dynamic camp changes
+- **Strategic Survival**: Utilize terrain, power-ups, and teamwork to survive
+
+### 🏆 Economy and Reward System
+- **Entry Mechanism**: 100 gold entry fee (configurable) to ensure player engagement
+- **Prize Pool System**: All Entry Fees + 5000 Coins Server Bonus (Configurable)
+- **Smart Distribution**:
+  - **When humans win**: 70% of the prize pool for the Human lineup, 30% of the prize pool for the Ghost lineup
+  - **When ghosts win**: The ghost lineup receives 100% of the prize pool
+  - **Human Bonus Distribution**: 100% proportional to survival time (the longer you survive, the more prizes you have)
+  - **Ghost bonus distribution**: 70% is distributed according to the survival time of the ghost, and 30% is distributed according to the number of infected people
+  - **Detailed feedback**: Each player receives detailed instructions on the distribution of bonuses, including survival time, number of infections, distribution ratio, etc.
+- **Risk and Reward**: High risk and high reward, encouraging active participation and strategic play
+
+### 🏃‍♀️ Smart Matchmaking & Queue System
+- **Automatic Queue**: Players automatically join the queue when they join the game
+- **Intelligent Matching**: Automatically starts the game when the number of players reaches the minimum requirement
+- **Queue Management**: View queue status, number of players, and estimated waiting time
+- **Fair Distribution**: Randomly assign initial roles (humans/ghosts) to ensure fairness
+
+### 🧰 Multi-level Item System
+- **🔄 Randomly refresh items** (automatically refresh every minute)
+  - **🍖 Stinky Steak** (Weight 15): Eat directly regardless of satiety, gain Speed II for 14 seconds and Glow for 10 seconds, cooldown for 30 seconds
+  - **💎 Teleport Pearl** (Weight 20): Available to both sides, right-click to throw teleport, cooldown 20 seconds
+  - **🧭 Soul Detector** (Ghost Exclusive, Weight 12): After use, all players glow for 25 seconds and cool down for 35 seconds
+  - **🛡️ 1 Chance** (Human Exclusive, Weight 10): Passively triggers Resist Infection with a cooldown of 180 seconds, and randomly teleports the holder to a safe location
+
+- **📊 Item restriction system**
+  - **Variety Limit**: Each player can only have up to 6 different types of items (configurable)
+  - **Quantity limit**: Each player can get up to 1 refresh item (configurable)
+  - **Faction Restrictions**: Some items can only be used by certain factions
+  - **Uniqueness**: Some items (such as a chance) can only be owned by one per player
+
+### 👥 Immersive Visual System
+- **🎵 Heartbeat Sound System**: Humans hear the Warden's heartbeat sound during the game (configurable)
+- **🌑 Dark Effect System**: Global blindness effect to enhance the horror atmosphere (configurable)
+- **👻 Ghost Visual Effects**: Ghost players have special visual effects
+- **🎮 Game Stage Effects**: Different visual effects for different game stages
+
+### 🗺️ Flexible Area Management System
+- **Easy Selection**: Use Magma Paste for left/right click selection (item configurable)
+- **Region Save**: Supports saving up to 20 game areas
+- **One-click management**: Save, load, delete, and view area information
+- **Auto-Optimize**: Automatically teleport players to the regional center at the start of the game
+- **Boundary Protection**: It is forbidden to leave designated safe areas during gameplay
+
+## 🚀 Quick Start
+
+### 📦 Installation Requirements:
+- **Required plugins**
+  - **Vault + Economy Plugins** (e.g., EssentialsX) - Economy system support
+- **Optional mods**
+  - **Injured Effects** - Achieve 2 health effects (enhance gameplay)
+- **Recommended environment**
+  - **Minecraft version**: 1.20.x (best compatibility)
+  - **Server core**: Paper/Spigot (recommended for best performance)
+
+## 🎮 Game Guide
+
+### 📝 Player Basic Commands:
+- `/gost join` - Join the game queue
+- `/gost leave` - Leave the game queue
+- `/gost info` - View game information
+- `/gost help` - View help information
+
+### 🧰 Item Usage Guide:
+1. **Stinky Steak**: Right-click to eat, gain speed and glow effects
+2. **Teleport Pearl**: Right-click to throw, teleport to landing location
+3. **Soul Detector** (Ghost only): Right-click to use, reveal all players
+4. **1 Chance** (Human only): Automatically triggers when infected, resists one infection
+
+### ⚙️ Admin Commands:
+- `/gostadmin create <name>` - Create a game area
+- `/gostadmin delete <name>` - Delete a game area
+- `/gostadmin list` - List all saved areas
+- `/gostadmin load <name>` - Load a game area
+- `/gostadmin start` - Start the game
+- `/gostadmin stop` - Stop the game
+- `/gostadmin reload` - Reload configuration
+- `/gostadmin heartbeat <on/off/status>` - Control heartbeat sound
+- `/gostadmin dark <on/off/status>` - Control dark effect
+
+## 🎯 Complete Game Flow
+
+### 1. 🗺️ Area Setup Phase
+- Admin uses Magma Paste to select game area
+- Save area with `/gostadmin create <name>`
+- Load area with `/gostadmin load <name>`
+
+### 2. 👥 Player Preparation Phase
+- Players join queue with `/gost join`
+- When minimum players reached, game automatically starts
+- Players randomly assigned roles (Human/Ghost)
+- 30-second preparation time
+
+### 3. 🚀 Game Running Phase
+- **Game duration**: 10 minutes (configurable)
+- **Infection mechanism**: Ghosts infect humans by touching
+- **Item refresh**: Items randomly refresh every minute
+- **Ghost to Human conversion**: In last 3 minutes, non-parent ghosts may convert back to humans
+
+### 4. 🏆 Game End Phase
+- **Human victory**: At least one human survives until time ends
+- **Ghost victory**: All humans infected before time ends
+- **Bonus distribution**: Based on survival time and infection count
+- **Detailed feedback**: Each player receives bonus breakdown
+
+## ⚙️ Configuration File Details
+
+### 📋 Main Configuration Items Example:
+```yaml
+# config.yml
+ScriptIrc-config-version: 12
+game:
+  duration: 600  # Game duration in seconds (10 minutes)
+  min-players: 2  # Minimum players to start
+  max-players: 20  # Maximum players
+  entry-fee: 100  # Entry fee in coins
+  server-bonus: 5000  # Server bonus in coins
+  
+heartbeat:
+  enabled: true  # Enable heartbeat sound
+  interval: 20  # Heartbeat interval in seconds
+  
+dark-effect:
+  enabled: true  # Enable dark effect
+  intensity: 10  # Effect intensity
+  
+ghost-to-human:
+  enabled: false  # Enable ghost to human conversion
+  trigger-time: 180  # Time remaining to trigger (seconds)
+  max-conversions: 1  # Maximum conversions per trigger
+```
+
+## 🔐 Permission Nodes
+
+### Player Permissions (Default for all players):
+- `gost.player` - Base player permissions (use all player commands: join/leave/info)
+
+### Admin Permissions:
+- `gost.admin` - Basic admin permissions
+- `gost.admin.create` - Create zone permissions
+- `gost.admin.delete` - Deletes regional permissions
+- `gost.admin.reload` - Overload configuration permissions
+- `gost.admin.manage` - Manage game permissions
+
+## ⚠️ Important Notes
+
+### Required Conditions:
+1. **Vault + Economy plugin** must be installed
+2. **PVP must be enabled** on the server
+3. **Game area must be set** before starting game
+
+### Optional Enhancements:
+1. **Injured Effects mod** for better visual effects
+2. **Custom maps** for varied gameplay
+3. **Sound packs** for enhanced atmosphere
+
+### Game Rules:
+1. Players cannot leave game area during gameplay
+2. Ghosts cannot infect other ghosts
+3. Humans cannot infect anyone
+4. Items have cooldowns and usage limits
+
+## 🔧 Troubleshooting Guide
+
+### Frequently Asked Questions & Solutions:
+
+#### ❌ Game cannot be started
+- **Check Locale Settings**: Ensure that the region is set up using the `/gostadmin` tool and saved
+- **Check the number of players**: wait for the minimum number of players to reach the minimum (2 by default)
+- **Check Game Status**: Confirm that no other games are playing
+
+#### ❌ Economic system problems
+- **Check Plugin Installation**: Verify that Vault and Economy plugins are installed correctly
+- **Check permission settings**: Make sure players have enough coins to pay for the entrance fee
+- **Check the profile**: Verify that the economy-related configuration items are set correctly
+
+#### ❌ The infection mechanism is ineffective
+- **Check PVP settings**: The server must have PVP turned on
+- **Check the area range**: Players must be within the set game area
+- **Check Faction Status**: Confirm that players are in the correct game state
+
+#### ❌ Item system issues
+- **Check the refresh configuration**: Confirm that item-spawn.enabled is true
+- **Check the game stage**: Items only refresh during the game stage
+- **Check player status**: Confirm that the player is in the game and alive
+- **Soul detector issue**: The soul detector may not be invalid in v2.0.1, please upgrade to v2.0.2
+
+### 📊 Log Diagnosis:
+```bash
+# View real-time logs
+tail -f logs/latest.log
+
+# Search for Gost related errors
+grep -i "gost" logs/latest.log
+```
+
+## 📈 Version Update History
+
+### v2.1.0 (Current Version)
+- **🎮 Bonus distribution system fully optimized**:
+  - **When humans win**: Human lineup gets 70% of prize pool, Ghost lineup gets 30%
+  - **When ghosts win**: Ghost lineup receives 100% of prize pool
+  - **Human Bonus Distribution**: 100% proportional to survival time
+  - **Ghost bonus distribution**: 70% by ghost survival time, 30% by infection count
+  - **Detailed feedback**: Each player receives detailed bonus distribution instructions
+- **👻 Conversion Player Bonus Optimization**:
+  - **Cumulative Ghost Time Record**: Records player's accumulated time as ghost
+  - **Human Bonus Compensation**: Players converted back to human receive 20% extra bonus
+  - **Ghost Bonus Inheritance**: Converted players still receive ghost bonuses
+  - **Fair Distribution**: Ensures converting players get reasonable double reward
+- **Game preparation stage optimization**: Humans no dark effects, only ghosts have dark effects
+- **New heartbeat sound system**: Humans hear Warden's heartbeat during game
+- **Added admin command**: `/gostadmin heartbeat on/off/status` control heartbeat sound
+- **Upgraded item system**: Stinky Steak added glow effects and cooldowns
+- **Item cooldown adjustments**: Soul Control (18s), Soul Detector (35s), One Chance (180s), Teleport Pearl (20s)
+- **Added ghost to human function**: Convert non-parent ghosts back to humans in last 3 minutes (disabled by default)
+- **Configuration System Upgrade**: Added heartbeat, item cooldown, and ghost conversion configs
+- **Improved permission system**: `gost.player` permission given to all players by default
+- **Plugin version upgrade**: Unified version number to 2.1.0
+
+### v2.0.2
+- Fix compilation errors: Fix ItemMeta import and enumeration constant errors
+- Fixed functional issues: Fixed the issue of "Soul Detector" props failing in v2.0.1
+- Code Optimization: Simplify the role checking logic using isHuman() and isGhost() methods
+- New dark effect system: Configurable global blindness effect to enhance the horror atmosphere
+- Added the administrator command: `/gostadmin dark on/off/status` to control the dark effect switch
+
+### v2.0.0
+- Initial release with core gameplay features
+- Basic infection system
+- Item system foundation
+- Area management system
+- Economy system integration
+
+### v1.0.0
+- Concept development
+- Basic framework
+- Initial testing phase
+
+## 🤝 Technical Support & Feedback
+
+If you encounter any issues or have suggestions:
+
+1. **Check the FAQ section** above
+2. **Review server logs** for error messages
+3. **Verify plugin compatibility** with your server version
+4. **Join our community** for support and updates
+
+## 🎉 Start Your Survival Confrontation Journey!
+
+### Tips for Server Owners:
+1. **Diverse Maps**: Create different style game areas (city, forest, maze, etc.)
+2. **Balance Configuration**: Adjust item effects and game duration based on player feedback
+3. **Regular Events**: Host tournaments or events to increase player engagement
+4. **Community Building**: Encourage players to share strategies and game recordings
+
+### Tips for Players:
+1. **Team Collaboration**: Humans need to watch each other, ghosts need to coordinate hunting
+2. **Item Strategy**: Use items wisely, turn the tide at critical moments
+3. **Terrain Utilization**: Familiarize with maps, use obstacles and high ground
+4. **Timing**: Best escape time for humans is during mother ghost restriction period
+
+**Ready to start this cat-and-mouse game? Join the queue and experience the heart-pounding chase confrontation!** 🏃‍♂️👻
+
+---
+
+*"In the world of Gost, survival requires not only speed, but also wisdom and strategy."*

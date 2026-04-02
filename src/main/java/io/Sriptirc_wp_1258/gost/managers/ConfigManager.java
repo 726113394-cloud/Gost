@@ -112,6 +112,27 @@ public class ConfigManager {
         config.addDefault("area.max-areas", 20); // 最大存档区域数量
         config.addDefault("area.auto-teleport", true); // 是否自动传送到区域
         
+        // 语言设置
+        config.addDefault("language.default", "zh_CN"); // 默认语言
+        config.addDefault("language.auto-detect", true); // 是否自动检测玩家语言
+        
+        // 神圣守护设置
+        config.addDefault("divine-guardian.enabled", false); // 是否启用神圣守护
+        config.addDefault("divine-guardian.max-charges", 3); // 最大使用次数
+        config.addDefault("divine-guardian.cooldown", 5); // 冷却时间（秒）
+        config.addDefault("divine-guardian.broadcast", true); // 是否广播消息
+        config.addDefault("divine-guardian.invisibility-duration", 10); // 失效隐身持续时间（秒）
+        
+        // 鬼玩家粒子效果设置
+        config.addDefault("ghost-particle.enabled", true); // 是否启用鬼玩家粒子效果
+        config.addDefault("ghost-particle.type", "REDSTONE"); // 粒子类型：REDSTONE, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANTMENT_TABLE, CRIT_MAGIC, FIREWORKS_SPARK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM_OF_UNDYING, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
+        config.addDefault("ghost-particle.count", 5); // 每次生成粒子数量
+        config.addDefault("ghost-particle.interval", 15); // 粒子生成间隔（刻，20刻=1秒）
+        config.addDefault("ghost-particle.mother-color", "255,0,0"); // 母体鬼粒子颜色（RGB格式：红,绿,蓝）
+        config.addDefault("ghost-particle.normal-color", "0,255,0"); // 普通鬼粒子颜色（RGB格式：红,绿,蓝）
+        config.addDefault("ghost-particle.size", 1.0); // 粒子大小
+        config.addDefault("ghost-particle.show-in-preparation", true); // 准备阶段是否显示粒子
+        
         config.options().copyDefaults(true);
         plugin.saveConfig();
     }
@@ -404,6 +425,139 @@ public class ConfigManager {
     // 设置心跳声开关
     public void setHeartbeatEnabled(boolean enabled) {
         config.set("heartbeat.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    // 语言配置
+    public String getDefaultLanguage() {
+        return config.getString("language.default", "zh_CN");
+    }
+    
+    public boolean isAutoDetectLanguage() {
+        return config.getBoolean("language.auto-detect", true);
+    }
+    
+    public void setDefaultLanguage(String language) {
+        config.set("language.default", language);
+        plugin.saveConfig();
+    }
+    
+    public void setAutoDetectLanguage(boolean autoDetect) {
+        config.set("language.auto-detect", autoDetect);
+        plugin.saveConfig();
+    }
+    
+    // 神圣守护配置
+    public boolean isDivineGuardianEnabled() {
+        return config.getBoolean("divine-guardian.enabled", false);
+    }
+    
+    public int getDivineGuardianMaxCharges() {
+        return config.getInt("divine-guardian.max-charges", 3);
+    }
+    
+    public int getDivineGuardianCooldown() {
+        return config.getInt("divine-guardian.cooldown", 5);
+    }
+    
+    public boolean isDivineGuardianBroadcastEnabled() {
+        return config.getBoolean("divine-guardian.broadcast", true);
+    }
+    
+    public int getDivineGuardianInvisibilityDuration() {
+        return config.getInt("divine-guardian.invisibility-duration", 10);
+    }
+    
+    public void setDivineGuardianEnabled(boolean enabled) {
+        config.set("divine-guardian.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianMaxCharges(int maxCharges) {
+        config.set("divine-guardian.max-charges", maxCharges);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianCooldown(int cooldown) {
+        config.set("divine-guardian.cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianBroadcastEnabled(boolean enabled) {
+        config.set("divine-guardian.broadcast", enabled);
+        plugin.saveConfig();
+    }
+    
+    // 鬼玩家粒子效果配置
+    public boolean isGhostParticleEnabled() {
+        return config.getBoolean("ghost-particle.enabled", true);
+    }
+    
+    public String getGhostParticleType() {
+        return config.getString("ghost-particle.type", "REDSTONE");
+    }
+    
+    public int getGhostParticleCount() {
+        return config.getInt("ghost-particle.count", 5);
+    }
+    
+    public int getGhostParticleInterval() {
+        return config.getInt("ghost-particle.interval", 15);
+    }
+    
+    public String getGhostParticleMotherColor() {
+        return config.getString("ghost-particle.mother-color", "255,0,0");
+    }
+    
+    public String getGhostParticleNormalColor() {
+        return config.getString("ghost-particle.normal-color", "0,255,0");
+    }
+    
+    public double getGhostParticleSize() {
+        return config.getDouble("ghost-particle.size", 1.0);
+    }
+    
+    public boolean isGhostParticleShowInPreparation() {
+        return config.getBoolean("ghost-particle.show-in-preparation", true);
+    }
+    
+    public void setGhostParticleEnabled(boolean enabled) {
+        config.set("ghost-particle.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleType(String type) {
+        config.set("ghost-particle.type", type);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleCount(int count) {
+        config.set("ghost-particle.count", count);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleInterval(int interval) {
+        config.set("ghost-particle.interval", interval);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleMotherColor(String color) {
+        config.set("ghost-particle.mother-color", color);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleNormalColor(String color) {
+        config.set("ghost-particle.normal-color", color);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleSize(double size) {
+        config.set("ghost-particle.size", size);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleShowInPreparation(boolean show) {
+        config.set("ghost-particle.show-in-preparation", show);
         plugin.saveConfig();
     }
 }

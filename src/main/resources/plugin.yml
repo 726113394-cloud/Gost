@@ -1,5 +1,5 @@
 name: Gost
-version: 2.1.0
+version: 2.1.2
 main: io.Sriptirc_wp_1258.gost.Gost
 api-version: 1.20
 description: 极限生存对抗游戏 - 融合猫抓老鼠、鬼抓人、躲猫猫、CF生化模式等多种玩法
@@ -18,6 +18,14 @@ commands:
     description: 管理员命令 - 管理游戏和区域
     usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|bot|dark|heartbeat|help]
     aliases: [ga]
+  divineguardian:
+    description: 神圣守护管理命令
+    usage: /<command> [status|enable|disable|reload|setcharges|setcooldown|broadcast|info|force|clear]
+    aliases: [dg]
+  ghostparticle:
+    description: 鬼玩家粒子效果管理命令
+    usage: /<command> [status|enable|disable|reload|settype|setcount|setinterval|setmothercolor|setnormalcolor|setsize|setpreparation|test|listtypes]
+    aliases: [gp]
 
 permissions:
   gost.player:
@@ -31,4 +39,10 @@ permissions:
     default: true
   gost.admin:
     description: 管理员权限
+    default: op
+  gost.admin.divineguardian:
+    description: 允许管理神圣守护
+    default: op
+  gost.admin.ghostparticle:
+    description: 允许管理鬼玩家粒子效果
     default: op

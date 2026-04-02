@@ -686,4 +686,28 @@ public class AreaManager {
     public void reload() {
         loadAreas();
     }
+    
+    /**
+     * 获取当前选中区域的最小点
+     * @return 区域最小点，如果没有选中区域则返回null
+     */
+    public Location getAreaMin() {
+        GameArea selectedArea = getSelectedArea();
+        if (selectedArea != null) {
+            return selectedArea.getMinPoint();
+        }
+        return null;
+    }
+    
+    /**
+     * 获取当前选中区域的最大点
+     * @return 区域最大点，如果没有选中区域则返回null
+     */
+    public Location getAreaMax() {
+        GameArea selectedArea = getSelectedArea();
+        if (selectedArea != null) {
+            return selectedArea.getMaxPoint();
+        }
+        return null;
+    }
 }

@@ -4,13 +4,17 @@ import io.Sriptirc_wp_1258.gost.Gost;
 import io.Sriptirc_wp_1258.gost.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +98,9 @@ public class SecondChanceListener implements Listener {
         // 应用效果
         plugin.getItemManager().applySecondChanceEffect(humanPlayer, ghostPlayer);
         
+        // 随机传送持有者
+        teleportPlayerRandomly(humanPlayer);
+        
         // 移除道具（因为是一次性道具）
         removeSecondChanceItem(humanPlayer, secondChanceItem);
         
@@ -104,6 +111,7 @@ public class SecondChanceListener implements Listener {
         Bukkit.broadcastMessage(ChatColor.YELLOW + "════════════════════════════════");
         Bukkit.broadcastMessage(ChatColor.GOLD + "✨ " + humanPlayer.getName() + " 使用了一次机会！");
         Bukkit.broadcastMessage(ChatColor.GOLD + "✨ 成功抵挡了 " + ghostPlayer.getName() + " 的感染！");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.second_chance_teleport_broadcast"));
         Bukkit.broadcastMessage(ChatColor.YELLOW + "════════════════════════════════");
     }
     
@@ -175,5 +183,159 @@ public class SecondChanceListener implements Listener {
         long timeLeft = (lastUseTime + cooldownTime) - currentTime;
         
         return Math.max(0, timeLeft);
+    }
+    
+    /**
+     * 随机传送玩家到游戏区域内的随机位置
+     */
+    private void teleportPlayerRandomly(Player player) {
+        try {
+            // 获取游戏区域
+            Location areaMin = plugin.getAreaManager().getAreaMin();
+            Location areaMax = plugin.getAreaManager().getAreaMax();
+            
+            if (areaMin == null || areaMax == null) {
+                plugin.getLogger().warning("无法随机传送玩家: 游戏区域未设置");
+                return;
+            }
+            
+            World world = areaMin.getWorld();
+            if (world == null) {
+                plugin.getLogger().warning("无法随机传送玩家: 世界未加载");
+                return;
+            }
+            
+            // 计算区域边界
+            int minX = (int) Math.min(areaMin.getX(), areaMax.getX());
+            int maxX = (int) Math.max(areaMin.getX(), areaMax.getX());
+            int minZ = (int) Math.min(areaMin.getZ(), areaMax.getZ());
+            int maxZ = (int) Math.max(areaMin.getZ(), areaMax.getZ());
+            
+            Random random = new Random();
+            
+            // 尝试寻找安全位置
+            Location safeLocation = null;
+            int attempts = 0;
+            int maxAttempts = 20;
+            
+            while (safeLocation == null && attempts < maxAttempts) {
+                attempts++;
+                
+                // 生成随机坐标
+                int randomX = minX + random.nextInt(maxX - minX + 1);
+                int randomZ = minZ + random.nextInt(maxZ - minZ + 1);
+                
+                // 获取该位置的地面Y坐标
+                int groundY = findGroundY(world, randomX, randomZ);
+                
+                if (groundY > world.getMinHeight() && groundY < world.getMaxHeight()) {
+                    // 创建安全位置
+                    safeLocation = new Location(world, randomX + 0.5, groundY + 1, randomZ + 0.5);
+                    
+                    // 检查位置是否安全（没有液体，不是虚空）
+                    if (isLocationSafe(safeLocation)) {
+                        break;
+                    } else {
+                        safeLocation = null;
+                    }
+                }
+            }
+            
+            if (safeLocation != null) {
+                // 执行传送
+                player.teleport(safeLocation);
+                
+                // 发送传送消息
+                player.sendMessage(plugin.getLanguageManager().getMessage("item.random_teleport"));
+                player.sendMessage(plugin.getLanguageManager().getMessage("item.teleport_coordinates",
+                    (int)safeLocation.getX(),
+                    (int)safeLocation.getY(),
+                    (int)safeLocation.getZ()));
+                
+                plugin.getLogger().info("玩家 " + player.getName() + " 被随机传送到: " + safeLocation);
+            } else {
+                plugin.getLogger().warning("无法为玩家 " + player.getName() + " 找到安全传送位置");
+                player.sendMessage(plugin.getLanguageManager().getMessage("item.teleport_failed"));
+            }
+            
+        } catch (Exception e) {
+            plugin.getLogger().severe("随机传送玩家时发生错误: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * 查找地面Y坐标
+     */
+    private int findGroundY(World world, int x, int z) {
+        // 从最高处开始向下查找
+        int maxY = world.getMaxHeight() - 1;
+        
+        for (int y = maxY; y > world.getMinHeight(); y--) {
+            Location loc = new Location(world, x, y, z);
+            
+            // 检查当前位置是否是固体方块
+            if (!loc.getBlock().getType().isAir() && 
+                !loc.getBlock().isLiquid() && 
+                loc.getBlock().getType().isSolid()) {
+                
+                // 检查上方是否有足够空间
+                if (y + 2 < world.getMaxHeight()) {
+                    Location above1 = new Location(world, x, y + 1, z);
+                    Location above2 = new Location(world, x, y + 2, z);
+                    
+                    if (above1.getBlock().getType().isAir() && 
+                        above2.getBlock().getType().isAir()) {
+                        return y;
+                    }
+                }
+            }
+        }
+        
+        return world.getMinHeight();
+    }
+    
+    /**
+     * 检查位置是否安全
+     */
+    private boolean isLocationSafe(Location location) {
+        World world = location.getWorld();
+        if (world == null) return false;
+        
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+        
+        // 检查当前位置是否是空气
+        if (!world.getBlockAt(x, y, z).getType().isAir()) {
+            return false;
+        }
+        
+        // 检查脚下是否是固体方块
+        if (!world.getBlockAt(x, y - 1, z).getType().isSolid()) {
+            return false;
+        }
+        
+        // 检查上方是否有足够空间
+        if (!world.getBlockAt(x, y + 1, z).getType().isAir()) {
+            return false;
+        }
+        
+        // 检查是否在液体中
+        if (world.getBlockAt(x, y, z).isLiquid() || 
+            world.getBlockAt(x, y - 1, z).isLiquid()) {
+            return false;
+        }
+        
+        // 检查是否在危险方块上（岩浆等）
+        Material floorMaterial = world.getBlockAt(x, y - 1, z).getType();
+        if (floorMaterial == Material.LAVA || 
+            floorMaterial == Material.FIRE || 
+            floorMaterial == Material.CAMPFIRE || 
+            floorMaterial == Material.SOUL_CAMPFIRE) {
+            return false;
+        }
+        
+        return true;
     }
 }

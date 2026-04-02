@@ -1,0 +1,146 @@
+# Gost 插件 - 中文语言文件
+# 版本: 2.1.0
+
+# ========== 通用消息 ==========
+general:
+  plugin_enabled: "§aGost 插件已启用 - 生化模式小游戏 v2.1.0"
+  plugin_disabled: "§cGost 插件已禁用"
+  reload_complete: "§a配置已重新加载"
+  no_permission: "§c你没有权限执行此命令"
+  player_only: "§c此命令只能由玩家执行"
+  invalid_command: "§c无效的命令，使用 /gost help 查看帮助"
+  
+# ========== 游戏状态消息 ==========
+game:
+  not_running: "§c游戏未在进行中"
+  already_running: "§c游戏已经在进行中"
+  starting: "§a游戏即将开始..."
+  started: "§a游戏已开始！"
+  stopped: "§c游戏已停止"
+  force_stopped: "§c游戏被强制停止"
+  time_remaining: "§e剩余时间: %d分%d秒"
+  waiting_for_players: "§e等待更多玩家加入... (当前: %d/%d)"
+  
+# ========== 玩家消息 ==========
+player:
+  joined_queue: "§a你已加入游戏队列"
+  left_queue: "§c你已离开游戏队列"
+  already_in_queue: "§c你已经在队列中"
+  not_in_queue: "§c你不在队列中"
+  queue_info: "§e队列状态: %d/%d 玩家"
+  role_assigned: "§a你的角色: %s"
+  infected: "§c你被 %s 感染了！现在你变成了鬼！"
+  infected_other: "§a你成功感染了 %s！"
+  converted_to_human: "§a你被转换回了人类阵容！"
+  conversion_broadcast: "§e🎮 %s 在游戏最后阶段被转换回了人类阵容！"
+  
+# ========== 队伍消息 ==========
+team:
+  human: "§a人类"
+  ghost: "§c鬼"
+  ghost_mother: "§4母体鬼"
+  ghost_normal: "§c普通鬼"
+  
+# ========== 区域管理消息 ==========
+area:
+  created: "§a区域 '%s' 已创建"
+  deleted: "§c区域 '%s' 已删除"
+  loaded: "§a区域 '%s' 已加载"
+  not_found: "§c区域 '%s' 不存在"
+  list_header: "§e=== 已保存的区域 ==="
+  list_item: "§7- %s (世界: %s, 大小: %dx%dx%d)"
+  no_areas: "§c没有保存的区域"
+  selection_start: "§a请使用岩浆膏左键和右键选择区域的两个对角点"
+  selection_complete: "§a区域选择完成！使用 /gostadmin create <名称> 保存"
+  selection_incomplete: "§c请先完成区域选择"
+  
+# ========== 道具消息 ==========
+item:
+  stinky_steak_used: "§a你吃下了臭牛排，获得速度效果！"
+  teleport_pearl_used: "§a传送珍珠已使用！"
+  soul_detector_used: "§c灵魂探测器已激活，所有玩家发光！"
+  one_chance_triggered: "§a一次机会已触发，抵抗了一次感染！"
+  random_teleport: "§a你被随机传送到了安全位置！"
+  teleport_coordinates: "§e坐标: X=%d, Y=%d, Z=%d"
+  teleport_failed: "§c随机传送失败，无法找到安全位置"
+  second_chance_teleport_broadcast: "§6持有者被随机传送！"
+  cooldown: "§c道具冷却中，剩余: %d秒"
+  max_items: "§c你已达到最大道具数量限制"
+  faction_restricted: "§c此道具只能由%s使用"
+  
+# ========== 经济系统消息 ==========
+economy:
+  entry_fee_paid: "§a已支付入场费: %d金币"
+  insufficient_funds: "§c金币不足，需要 %d 金币"
+  prize_pool: "§e奖池总额: %.2f 金币"
+  human_victory: "§a人类胜利！"
+  ghost_victory: "§c鬼胜利！"
+  bonus_distribution: "§e奖金分配开始..."
+  survival_time: "⏱️ 你的存活时间: %d秒"
+  infection_count: "🦠 你的感染人数: %d人"
+  distribution_ratio: "📊 获得比例: %.1f%%"
+  human_bonus: "💰 人类奖金: %.2f金币"
+  ghost_bonus: "💰 鬼奖金: %.2f金币"
+  total_bonus: "💰 总奖金: %.2f金币"
+  conversion_bonus: "✨ 转换补偿奖金: %.2f金币"
+  ghost_accumulated_time: "👻 累计鬼时间: %d秒"
+  
+# ========== 管理员命令消息 ==========
+admin:
+  game_started: "§a管理员已启动游戏"
+  game_stopped: "§c管理员已停止游戏"
+  config_reloaded: "§a配置已重新加载"
+  heartbeat_enabled: "§a心跳声已启用"
+  heartbeat_disabled: "§c心跳声已禁用"
+  heartbeat_status: "§e心跳声状态: %s"
+  dark_enabled: "§a黑暗效果已启用"
+  dark_disabled: "§c黑暗效果已禁用"
+  dark_status: "§e黑暗效果状态: %s"
+  
+# ========== 错误消息 ==========
+error:
+  vault_not_found: "§c未找到Vault经济插件，经济系统不可用"
+  economy_not_setup: "§c经济系统未正确设置"
+  area_not_set: "§c未设置游戏区域，请先创建区域"
+  min_players_not_met: "§c玩家数量不足，需要至少 %d 名玩家"
+  max_players_exceeded: "§c玩家数量超过限制，最多 %d 名玩家"
+  world_not_loaded: "§c世界未加载，无法创建区域"
+  invalid_selection: "§c无效的区域选择"
+  
+# ========== 帮助消息 ==========
+help:
+  player_header: "§e=== 玩家命令 ==="
+  player_join: "§7/gost join §f- 加入游戏队列"
+  player_leave: "§7/gost leave §f- 离开游戏队列"
+  player_info: "§7/gost info §f- 查看游戏信息"
+  player_help: "§7/gost help §f- 查看帮助"
+  
+  admin_header: "§e=== 管理员命令 ==="
+  admin_create: "§7/gostadmin create <名称> §f- 创建游戏区域"
+  admin_delete: "§7/gostadmin delete <名称> §f- 删除游戏区域"
+  admin_list: "§7/gostadmin list §f- 列出所有区域"
+  admin_load: "§7/gostadmin load <名称> §f- 加载游戏区域"
+  admin_start: "§7/gostadmin start §f- 开始游戏"
+  admin_stop: "§7/gostadmin stop §f- 停止游戏"
+  admin_reload: "§7/gostadmin reload §f- 重新加载配置"
+  admin_heartbeat: "§7/gostadmin heartbeat <on/off/status> §f- 控制心跳声"
+  admin_dark: "§7/gostadmin dark <on/off/status> §f- 控制黑暗效果"
+  
+# ========== 游戏阶段消息 ==========
+stage:
+  preparation: "§e准备阶段开始，你有30秒时间准备！"
+  running: "§a游戏进行中！"
+  ending: "§6游戏即将结束..."
+  ended: "§c游戏结束！"
+  
+# ========== 特殊效果消息 ==========
+effect:
+  heartbeat_enabled: "§c你听到了心跳声..."
+  dark_effect_enabled: "§8黑暗笼罩了一切..."
+  adrenaline_received: "§a你获得了肾上腺素道具"
+  items_cleared: "§e其他道具已被清空"
+  
+# ========== 配置消息 ==========
+config:
+  language_changed: "§a语言已切换为: %s"
+  available_languages: "§e可用语言: zh_CN (中文), en_US (英文)"

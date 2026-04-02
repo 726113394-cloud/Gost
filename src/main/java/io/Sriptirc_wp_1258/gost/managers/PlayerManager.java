@@ -124,6 +124,32 @@ public class PlayerManager {
             String roleName = plugin.getTeamManager().getTeamName(role);
             ChatColor color = plugin.getTeamManager().getTeamColor(role);
             player.sendMessage(color + "你的角色已变更为: " + roleName);
+            
+            // 更新鬼玩家粒子效果数据
+            updateGhostParticleData(playerId, role);
+        } else {
+            // 玩家离线，仍然更新粒子数据
+            updateGhostParticleData(playerId, role);
+        }
+    }
+    
+    // 更新鬼玩家粒子效果数据
+    private void updateGhostParticleData(UUID playerId, PlayerRole role) {
+        if (plugin.getGhostParticleManager() != null) {
+            // 将PlayerRole转换为GhostParticleManager的PlayerRole
+            GhostParticleManager.PlayerRole particleRole;
+            switch (role) {
+                case GHOST_MOTHER:
+                    particleRole = GhostParticleManager.PlayerRole.GHOST_MOTHER;
+                    break;
+                case GHOST_NORMAL:
+                    particleRole = GhostParticleManager.PlayerRole.GHOST_NORMAL;
+                    break;
+                default:
+                    particleRole = GhostParticleManager.PlayerRole.HUMAN;
+                    break;
+            }
+            plugin.getGhostParticleManager().updatePlayerParticleData(playerId, particleRole);
         }
     }
     
@@ -140,6 +166,12 @@ public class PlayerManager {
     public boolean isGhost(UUID playerId) {
         PlayerRole role = getPlayerRole(playerId);
         return role != null && (role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL);
+    }
+    
+    // 检查是否是母体鬼
+    public boolean isGhostMother(UUID playerId) {
+        PlayerRole role = getPlayerRole(playerId);
+        return role != null && role == PlayerRole.GHOST_MOTHER;
     }
     
     // 检查是否是人类
@@ -225,6 +257,22 @@ public class PlayerManager {
             .filter(role -> role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL)
             .count();
         plugin.getLogger().info("感染完成，当前鬼玩家数量: " + ghostCount);
+        
+        // 检查神圣守护状态
+        checkDivineGuardianStatus();
+    }
+    
+    // 检查神圣守护状态
+    private void checkDivineGuardianStatus() {
+        if (!plugin.getGameManager().isGameRunning()) {
+            return;
+        }
+        
+        // 获取当前人类玩家列表
+        List<UUID> humanPlayers = getHumanPlayers();
+        
+        // 检查神圣守护
+        plugin.getDivineGuardianManager().checkAndActivateDivineGuardian(humanPlayers);
     }
     
     // 显示感染效果
