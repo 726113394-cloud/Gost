@@ -2,7 +2,7 @@
 # 版本: 2.1.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 10
+ScriptIrc-config-version: 11
 
 # 游戏设置
 game:
@@ -62,6 +62,12 @@ effects:
     enabled: true # 是否启用每分钟高亮效果
     duration: 5 # 高亮持续时间（秒）
     interval: 60 # 触发间隔时间（秒）
+
+# 鬼转人类功能设置
+ghost-to-human:
+  enabled: false # 是否启用鬼转人类功能
+  remaining-time: 180 # 剩余多少秒时触发（默认3分钟）
+  count: 1 # 转换数量
 
 # 游戏血量设置
 health:

@@ -140,6 +140,12 @@ public class PlayerManager {
         return role != null && role == PlayerRole.HUMAN;
     }
     
+    // 检查是否是母体鬼
+    public boolean isMotherGhost(UUID playerId) {
+        PlayerRole role = getPlayerRole(playerId);
+        return role != null && role == PlayerRole.GHOST_MOTHER;
+    }
+    
     // 感染玩家
     public void infectPlayer(UUID victimId, UUID infectorId) {
         PlayerRole currentRole = getPlayerRole(victimId);

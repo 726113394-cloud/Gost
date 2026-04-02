@@ -50,6 +50,7 @@ public class GameManager {
     private BukkitTask itemDistributionTask;
     private BukkitTask ghostSenseTask;
     private BukkitTask minuteGlowingTask;
+    private BukkitTask ghostToHumanTask;
     
     public GameManager(Gost plugin) {
         this.plugin = plugin;
@@ -463,6 +464,9 @@ public class GameManager {
         // 开始心跳声效果（如果启用）
         plugin.getHeartbeatManager().startHeartbeat();
         
+        // 开始鬼转人类功能（如果启用）
+        startGhostToHumanTask();
+        
         // 开始货币发放系统（暂时取消）
         // plugin.getCurrencyManager().startDistribution();
         
@@ -622,6 +626,9 @@ public class GameManager {
         if (minuteGlowingTask != null) {
             minuteGlowingTask.cancel();
         }
+        if (ghostToHumanTask != null) {
+            ghostToHumanTask.cancel();
+        }
         
         // 隐藏Boss栏
         gameBossBar.setVisible(false);
@@ -675,6 +682,9 @@ public class GameManager {
         }
         if (minuteGlowingTask != null) {
             minuteGlowingTask.cancel();
+        }
+        if (ghostToHumanTask != null) {
+            ghostToHumanTask.cancel();
         }
         
         // 隐藏Boss栏
@@ -738,6 +748,9 @@ public class GameManager {
         }
         if (minuteGlowingTask != null) {
             minuteGlowingTask.cancel();
+        }
+        if (ghostToHumanTask != null) {
+            ghostToHumanTask.cancel();
         }
         
         // 隐藏Boss栏
@@ -988,5 +1001,128 @@ public class GameManager {
                 );
             }
         }
+    }
+    
+    /**
+     * 开始鬼转人类功能任务
+     */
+    private void startGhostToHumanTask() {
+        // 检查是否启用鬼转人类功能
+        if (!plugin.getConfigManager().isGhostToHumanEnabled()) {
+            plugin.getLogger().info("鬼转人类功能已禁用");
+            return;
+        }
+        
+        int remainingTime = plugin.getConfigManager().getGhostToHumanRemainingTime();
+        int gameDuration = plugin.getConfigManager().getGameDuration();
+        int triggerTime = gameDuration - remainingTime;
+        
+        if (triggerTime <= 0) {
+            plugin.getLogger().warning("鬼转人类触发时间无效，游戏时长: " + gameDuration + "秒，剩余时间: " + remainingTime + "秒");
+            return;
+        }
+        
+        plugin.getLogger().info("开始鬼转人类功能任务，将在游戏剩余 " + remainingTime + " 秒时触发");
+        
+        ghostToHumanTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                // 检查游戏是否还在进行中
+                if (gameState != GameState.RUNNING) {
+                    this.cancel();
+                    return;
+                }
+                
+                // 获取游戏剩余时间
+                long elapsedTime = (System.currentTimeMillis() - gameStartTime) / 1000;
+                long remainingSeconds = gameDuration - elapsedTime;
+                
+                // 检查是否到达触发时间
+                if (remainingSeconds <= remainingTime) {
+                    plugin.getLogger().info("触发鬼转人类功能，游戏剩余时间: " + remainingSeconds + "秒");
+                    convertGhostsToHumans();
+                    this.cancel(); // 只触发一次
+                }
+            }
+        }.runTaskTimer(plugin, 20L, 20L); // 每秒检查一次
+    }
+    
+    /**
+     * 将鬼玩家转换为人类
+     */
+    private void convertGhostsToHumans() {
+        // 获取所有非母体的鬼玩家
+        List<UUID> ghostPlayers = new ArrayList<>();
+        List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
+        
+        for (UUID playerId : allPlayers) {
+            if (plugin.getPlayerManager().isGhost(playerId) && 
+                !plugin.getPlayerManager().isMotherGhost(playerId)) {
+                ghostPlayers.add(playerId);
+            }
+        }
+        
+        if (ghostPlayers.isEmpty()) {
+            plugin.getLogger().info("没有可转换的非母体鬼玩家");
+            return;
+        }
+        
+        int convertCount = plugin.getConfigManager().getGhostToHumanCount();
+        convertCount = Math.min(convertCount, ghostPlayers.size());
+        
+        // 随机选择要转换的鬼玩家
+        Collections.shuffle(ghostPlayers);
+        List<UUID> selectedGhosts = ghostPlayers.subList(0, convertCount);
+        
+        plugin.getLogger().info("准备转换 " + selectedGhosts.size() + " 名鬼玩家为人类");
+        
+        for (UUID ghostId : selectedGhosts) {
+            Player player = Bukkit.getPlayer(ghostId);
+            if (player != null && player.isOnline()) {
+                convertGhostToHuman(player);
+            }
+        }
+    }
+    
+    /**
+     * 将单个鬼玩家转换为人类
+     */
+    private void convertGhostToHuman(Player player) {
+        UUID playerId = player.getUniqueId();
+        String playerName = player.getName();
+        
+        plugin.getLogger().info("开始转换鬼玩家 " + playerName + " 为人类");
+        
+        // 1. 从鬼阵容移除
+        plugin.getPlayerManager().removeGhost(playerId);
+        
+        // 2. 添加到人类阵容
+        plugin.getPlayerManager().addHuman(playerId);
+        
+        // 3. 清空玩家所有道具
+        player.getInventory().clear();
+        
+        // 4. 给予肾上腺素道具
+        ItemStack adrenaline = plugin.getItemManager().getAdrenaline();
+        player.getInventory().addItem(adrenaline);
+        
+        // 5. 发送消息给玩家
+        player.sendMessage(ChatColor.GREEN + "════════════════════════════════");
+        player.sendMessage(ChatColor.GOLD + "✨ 你被转换回了人类阵容！");
+        player.sendMessage(ChatColor.GREEN + "✓ 你获得了肾上腺素道具");
+        player.sendMessage(ChatColor.YELLOW + "✓ 其他道具已被清空");
+        player.sendMessage(ChatColor.GREEN + "════════════════════════════════");
+        
+        // 6. 广播消息给所有玩家
+        Bukkit.broadcastMessage(ChatColor.YELLOW + "🎮 " + playerName + " 在游戏最后阶段被转换回了人类阵容！");
+        
+        // 7. 发送屏幕居中字幕
+        player.sendTitle(
+            ChatColor.GOLD + "✨ 转换回人类",
+            ChatColor.YELLOW + "你获得了肾上腺素道具",
+            10, 60, 10
+        );
+        
+        plugin.getLogger().info("成功转换鬼玩家 " + playerName + " 为人类");
     }
 }

@@ -64,6 +64,11 @@ public class ConfigManager {
         config.addDefault("effects.minute-glowing.duration", 5); // 高亮持续时间，单位秒
         config.addDefault("effects.minute-glowing.interval", 60); // 触发间隔时间，单位秒
         
+        // 鬼转人类功能设置
+        config.addDefault("ghost-to-human.enabled", false); // 是否启用鬼转人类功能
+        config.addDefault("ghost-to-human.remaining-time", 180); // 剩余多少秒时触发（默认3分钟）
+        config.addDefault("ghost-to-human.count", 1); // 转换数量
+        
         // 黑暗效果设置
         config.addDefault("dark-effect.enabled", false); // 是否启用黑暗效果
         config.addDefault("dark-effect.duration", 999999); // 黑暗效果持续时间（秒）
@@ -353,6 +358,19 @@ public class ConfigManager {
     
     public int getMinuteGlowingInterval() {
         return config.getInt("effects.minute-glowing.interval", 60);
+    }
+    
+    // 鬼转人类功能配置
+    public boolean isGhostToHumanEnabled() {
+        return config.getBoolean("ghost-to-human.enabled", false);
+    }
+    
+    public int getGhostToHumanRemainingTime() {
+        return config.getInt("ghost-to-human.remaining-time", 180);
+    }
+    
+    public int getGhostToHumanCount() {
+        return config.getInt("ghost-to-human.count", 1);
     }
     
     // 黑暗效果配置
