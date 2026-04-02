@@ -64,7 +64,11 @@ public class Gost extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SelectionListener(this), this);
         getServer().getPluginManager().registerEvents(secondChanceListener, this);
         
-        getLogger().info("Gost 插件已启用 - 生化模式小游戏 v2.0.1");
+        getLogger().info("==========================================");
+        getLogger().info("Gost 插件已启用 - 生化模式小游戏 v2.0.2");
+        getLogger().info("作者: 来自太空的小头脑");
+        getLogger().info("主页: https://space.bilibili.com/3493116665400113");
+        getLogger().info("==========================================");
     }
     
     @Override

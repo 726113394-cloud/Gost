@@ -20,6 +20,9 @@ commands:
     aliases: [ga]
 
 permissions:
+  gost.player:
+    description: 允许玩家使用基本命令
+    default: true
   gost.join:
     description: 允许玩家加入游戏
     default: true

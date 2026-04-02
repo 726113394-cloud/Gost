@@ -40,6 +40,8 @@ public class ConfigManager {
         config.addDefault("items.ice-ball.slow-level", 4); // 凝冰球减速等级
         config.addDefault("items.soul-control.freeze-duration", 6); // 控魂术冻结持续时间，单位秒
         config.addDefault("items.teleport-pearl.cooldown", 10); // 传送珍珠冷却时间，单位秒
+        config.addDefault("items.soul-detector.duration", 25); // 灵魂探测器暴露持续时间，单位秒
+        config.addDefault("items.soul-detector.cooldown", 30); // 灵魂探测器冷却时间，单位秒
         config.addDefault("items.second-chance.cooldown", 60); // 一次机会冷却时间，单位秒
         config.addDefault("items.second-chance.human-speed-duration", 10); // 人类玩家速度效果持续时间，单位秒
         config.addDefault("items.second-chance.human-speed-level", 2); // 人类玩家速度效果等级
@@ -270,6 +272,14 @@ public class ConfigManager {
     
     public int getMatchQueueTime() {
         return config.getInt("game.match-queue-time", 30);
+    }
+    
+    public int getSoulDetectorDuration() {
+        return config.getInt("items.soul-detector.duration", 25);
+    }
+    
+    public int getSoulDetectorCooldown() {
+        return config.getInt("items.soul-detector.cooldown", 30);
     }
     
     public int getTeleportPearlCooldown() {

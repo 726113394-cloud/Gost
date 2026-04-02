@@ -35,12 +35,24 @@ public class GostCommand implements CommandExecutor, TabCompleter {
         
         switch (args[0].toLowerCase()) {
             case "join":
+                if (!player.hasPermission("gost.player")) {
+                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                    return true;
+                }
                 handleJoin(player);
                 break;
             case "leave":
+                if (!player.hasPermission("gost.player")) {
+                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                    return true;
+                }
                 handleLeave(player);
                 break;
             case "info":
+                if (!player.hasPermission("gost.player")) {
+                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                    return true;
+                }
                 handleInfo(player);
                 break;
             case "help":

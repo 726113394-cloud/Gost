@@ -319,7 +319,7 @@
 ### 📋 主要配置项示例
 ```yaml
 # 配置版本（勿手动修改）
-ScriptIrc-config-version: 5
+ScriptIrc-config-version: 8
 
 # 🎮 游戏核心设置
 game:
@@ -351,6 +351,16 @@ items:
     freeze-duration: 6          # 控魂术冻结持续时间（秒）
   teleport-pearl:
     cooldown: 10                # 传送珍珠冷却时间（秒）
+  soul-detector:
+    duration: 25                # 灵魂探测器暴露持续时间（秒）
+    cooldown: 30                # 灵魂探测器冷却时间（秒）
+  second-chance:
+    cooldown: 60                # 一次机会冷却时间（秒）
+    human-speed-duration: 10    # 人类玩家速度效果持续时间（秒）
+    human-speed-level: 2        # 人类玩家速度效果等级
+    human-glowing-duration: 10  # 人类玩家高亮效果持续时间（秒）
+    ghost-slow-duration: 7      # 鬼玩家缓慢效果持续时间（秒）
+    ghost-slow-level: 1         # 鬼玩家缓慢效果等级
 
 # ⚡ 游戏效果设置
 effects:
@@ -369,12 +379,19 @@ health:
   max-health: 2.0                # 游戏期间玩家的最大生命值（默认2颗心）
   # 推荐添加Injured Effects模组并限制最大生命值为4.0以下，可以添加恐怖氛围
 
+# 🌑 黑暗效果设置
+dark-effect:
+  enabled: false                 # 是否启用黑暗效果（给予所有玩家黑暗药水效果）
+  duration: 999999               # 黑暗效果持续时间（秒），设置为极大值以持续整个游戏
+  amplifier: 0                   # 黑暗效果等级（0为默认）
+
 # 🔄 道具刷新系统
 item-spawn:
   enabled: true                 # 是否启用道具刷新
   interval: 60                  # 刷新间隔（秒）
   max-per-refresh: 3            # 每次刷新数量上限
   max-per-player: 1             # 每位玩家最多获得数量
+  max-item-types-per-player: 6  # 玩家最多拥有的道具种类数量
 
 # 🗺️ 区域选择设置
 area:
@@ -386,7 +403,7 @@ area:
 ## 🔐 权限节点
 
 ### 玩家权限（默认所有玩家拥有）
-- `gost.player` - 基础玩家权限（加入/离开游戏）
+- `gost.player` - 基础玩家权限（使用所有玩家命令：join/leave/info）
 
 ### 管理员权限
 - `gost.admin` - 管理员基础权限

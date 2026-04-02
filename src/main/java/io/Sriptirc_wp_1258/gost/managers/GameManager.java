@@ -798,6 +798,14 @@ public class GameManager {
      * 发送游戏开始标题
      */
     private void sendGameStartTitles() {
+        // 获取当前区域名称
+        String areaName = plugin.getAreaManager().getSelectedAreaName();
+        String welcomeMessage = "";
+        
+        if (areaName != null && !areaName.isEmpty()) {
+            welcomeMessage = ChatColor.GOLD + "欢迎来到：" + ChatColor.YELLOW + areaName;
+        }
+        
         List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
         
         for (UUID playerId : allPlayers) {
@@ -806,9 +814,9 @@ public class GameManager {
                 PlayerManager.PlayerRole role = plugin.getPlayerManager().getPlayerRole(playerId);
                 
                 if (role == PlayerManager.PlayerRole.HUMAN) {
-                    plugin.getLanguageManager().sendTitle(player, "game.started-human", "");
+                    plugin.getLanguageManager().sendTitle(player, "game.started-human", welcomeMessage);
                 } else if (role == PlayerManager.PlayerRole.GHOST_MOTHER || role == PlayerManager.PlayerRole.GHOST_NORMAL) {
-                    plugin.getLanguageManager().sendTitle(player, "game.started-ghost", "");
+                    plugin.getLanguageManager().sendTitle(player, "game.started-ghost", welcomeMessage);
                 }
             }
         }
@@ -857,8 +865,16 @@ public class GameManager {
      * 发送准备阶段倒计时标题
      */
     public void sendPreparationTitle(int timeLeft) {
+        // 获取当前区域名称
+        String areaName = plugin.getAreaManager().getSelectedAreaName();
+        String welcomeMessage = "";
+        
+        if (areaName != null && !areaName.isEmpty()) {
+            welcomeMessage = ChatColor.GOLD + "欢迎来到：" + ChatColor.YELLOW + areaName + "\n";
+        }
+        
         String title = plugin.getLanguageManager().getMessage("game.starting");
-        String subtitle = plugin.getLanguageManager().getMessage("time.preparation", timeLeft);
+        String subtitle = welcomeMessage + plugin.getLanguageManager().getMessage("time.preparation", timeLeft);
         
         List<UUID> allPlayers = plugin.getPlayerManager().getAllPlayers();
         

@@ -34,6 +34,9 @@ items:
     freeze-duration: 6 # 控魂术冻结持续时间（秒）
   teleport-pearl:
     cooldown: 10 # 传送珍珠冷却时间（秒）
+  soul-detector:
+    duration: 25 # 灵魂探测器暴露持续时间（秒）
+    cooldown: 30 # 灵魂探测器冷却时间（秒）
   second-chance:
     cooldown: 60 # 一次机会冷却时间（秒）
     human-speed-duration: 10 # 人类玩家速度效果持续时间（秒）
