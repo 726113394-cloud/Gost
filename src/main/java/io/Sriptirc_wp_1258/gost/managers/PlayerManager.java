@@ -31,6 +31,7 @@ public class PlayerManager {
     private final Map<UUID, Integer> infectionCounts = new HashMap<>();
     private final Map<UUID, Long> survivalTimes = new HashMap<>();
     private final Map<UUID, Long> roleStartTimes = new HashMap<>();
+    private final Map<UUID, Long> ghostAccumulatedTimes = new HashMap<>(); // 累计鬼时间（毫秒）
     
     public PlayerManager(Gost plugin) {
         this.plugin = plugin;
@@ -96,6 +97,13 @@ public class PlayerManager {
         // 更新角色开始时间
         if (oldRole != null) {
             updateSurvivalTime(playerId);
+            
+            // 如果从鬼转换为人类，记录累计鬼时间
+            if ((oldRole == PlayerRole.GHOST_MOTHER || oldRole == PlayerRole.GHOST_NORMAL) 
+                && role == PlayerRole.HUMAN) {
+                recordGhostAccumulatedTime(playerId);
+                plugin.getLogger().info("玩家 " + playerId + " 从鬼转换为人类，记录累计鬼时间");
+            }
         }
         roleStartTimes.put(playerId, System.currentTimeMillis());
         
@@ -282,6 +290,52 @@ public class PlayerManager {
         return survivalTime;
     }
     
+    // 获取鬼的存活时间（秒）- 从成为鬼开始计算
+    public long getGhostTime(UUID playerId) {
+        PlayerRole role = getPlayerRole(playerId);
+        
+        // 如果不是鬼，返回0
+        if (role != PlayerRole.GHOST_MOTHER && role != PlayerRole.GHOST_NORMAL) {
+            return 0;
+        }
+        
+        // 获取角色开始时间
+        Long startTime = roleStartTimes.get(playerId);
+        if (startTime == null) {
+            return 0;
+        }
+        
+        // 计算从成为鬼开始到现在的存活时间
+        long currentTime = System.currentTimeMillis();
+        long ghostTime = currentTime - startTime;
+        
+        plugin.getLogger().info("获取玩家 " + playerId + " 鬼存活时间，角色: " + role + ", 鬼存活: " + (ghostTime / 1000) + "秒");
+        return ghostTime / 1000; // 转换为秒
+    }
+    
+    // 记录累计鬼时间（当鬼转换为人类时调用）
+    private void recordGhostAccumulatedTime(UUID playerId) {
+        Long startTime = roleStartTimes.get(playerId);
+        if (startTime == null) {
+            return;
+        }
+        
+        long currentTime = System.currentTimeMillis();
+        long ghostTime = currentTime - startTime;
+        
+        // 累加到累计鬼时间
+        long accumulatedTime = ghostAccumulatedTimes.getOrDefault(playerId, 0L);
+        accumulatedTime += ghostTime;
+        ghostAccumulatedTimes.put(playerId, accumulatedTime);
+        
+        plugin.getLogger().info("记录玩家 " + playerId + " 累计鬼时间: " + (accumulatedTime / 1000) + "秒");
+    }
+    
+    // 获取累计鬼时间（秒）- 用于奖金计算
+    public long getGhostAccumulatedTime(UUID playerId) {
+        return ghostAccumulatedTimes.getOrDefault(playerId, 0L) / 1000; // 转换为秒
+    }
+    
     // 获取感染次数
     public int getInfectionCount(UUID playerId) {
         return infectionCounts.getOrDefault(playerId, 0);
@@ -461,6 +515,7 @@ public class PlayerManager {
         infectionCounts.clear();
         survivalTimes.clear();
         roleStartTimes.clear();
+        ghostAccumulatedTimes.clear();
         
         // 清理玩家数据完成
         plugin.getLogger().info("清理玩家数据完成");

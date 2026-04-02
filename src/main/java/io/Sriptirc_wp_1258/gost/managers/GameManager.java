@@ -1093,30 +1093,20 @@ public class GameManager {
         
         plugin.getLogger().info("开始转换鬼玩家 " + playerName + " 为人类");
         
-        // 1. 从鬼阵容移除
-        plugin.getPlayerManager().removeGhost(playerId);
+        // 1. 将玩家角色设置为人类
+        plugin.getPlayerManager().setPlayerRole(playerId, PlayerManager.PlayerRole.HUMAN);
         
-        // 2. 添加到人类阵容
-        plugin.getPlayerManager().addHuman(playerId);
-        
-        // 3. 清空玩家所有道具
-        player.getInventory().clear();
-        
-        // 4. 给予肾上腺素道具
-        ItemStack adrenaline = plugin.getItemManager().getAdrenaline();
-        player.getInventory().addItem(adrenaline);
-        
-        // 5. 发送消息给玩家
+        // 2. 发送消息给玩家
         player.sendMessage(ChatColor.GREEN + "════════════════════════════════");
         player.sendMessage(ChatColor.GOLD + "✨ 你被转换回了人类阵容！");
         player.sendMessage(ChatColor.GREEN + "✓ 你获得了肾上腺素道具");
         player.sendMessage(ChatColor.YELLOW + "✓ 其他道具已被清空");
         player.sendMessage(ChatColor.GREEN + "════════════════════════════════");
         
-        // 6. 广播消息给所有玩家
+        // 3. 广播消息给所有玩家
         Bukkit.broadcastMessage(ChatColor.YELLOW + "🎮 " + playerName + " 在游戏最后阶段被转换回了人类阵容！");
         
-        // 7. 发送屏幕居中字幕
+        // 4. 发送屏幕居中字幕
         player.sendTitle(
             ChatColor.GOLD + "✨ 转换回人类",
             ChatColor.YELLOW + "你获得了肾上腺素道具",
