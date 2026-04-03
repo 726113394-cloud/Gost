@@ -168,6 +168,30 @@ public class PlayerManager {
         return role != null && (role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL);
     }
     
+    // 将鬼玩家转换为人类（用于救赎者系统）
+    public boolean convertGhostToHuman(UUID playerId) {
+        if (!isGhost(playerId)) {
+            return false; // 不是鬼玩家，无法转换
+        }
+        
+        Player player = Bukkit.getPlayer(playerId);
+        if (player == null || !player.isOnline()) {
+            return false; // 玩家不在线
+        }
+        
+        // 设置玩家角色为人类
+        setPlayerRole(playerId, PlayerRole.HUMAN);
+        
+        // 应用人类效果
+        applyHumanEffects(player);
+        
+        // 更新存活时间
+        updateSurvivalTime(playerId);
+        
+        plugin.getLogger().info("鬼玩家 " + player.getName() + " 被转换为人类");
+        return true;
+    }
+    
     // 检查是否是母体鬼
     public boolean isGhostMother(UUID playerId) {
         PlayerRole role = getPlayerRole(playerId);

@@ -30,9 +30,6 @@ public class Gost extends JavaPlugin {
     private HeartbeatManager heartbeatManager;
     private DivineGuardianManager divineGuardianManager;
     private GhostParticleManager ghostParticleManager;
-    // private CurrencyManager currencyManager; // 货币系统已取消
-    // private NpcManager npcManager; // NPC系统已取消
-    // private SpectatorManager spectatorManager; // 观战系统已搁置
     
     @Override
     public void onEnable() {
@@ -56,9 +53,6 @@ public class Gost extends JavaPlugin {
         heartbeatManager = new HeartbeatManager(this);
         divineGuardianManager = new DivineGuardianManager(this);
         ghostParticleManager = new GhostParticleManager(this);
-        // currencyManager = new CurrencyManager(this); // 暂时取消货币系统
-        // spectatorManager = new SpectatorManager(this); // 暂时搁置观战系统
-        // npcManager = new NpcManager(this); // 取消NPC系统
         
         // 加载语言
         languageManager.loadLanguage();
@@ -70,13 +64,6 @@ public class Gost extends JavaPlugin {
         ghostParticleManager.loadConfig();
         
         // 插件加载完成提示
-        getLogger().info("==========================================");
-        getLogger().info("Gost v2.1.2 已成功加载！");
-        getLogger().info("✨ 新增功能：鬼玩家粒子效果系统");
-        getLogger().info("👻 母体鬼：红色环绕粒子");
-        getLogger().info("👻 普通鬼：绿色环绕粒子");
-        getLogger().info("⚙️ 管理命令：/ghostparticle 或 /gp");
-        getLogger().info("🔧 配置版本：14");
         getLogger().info("==========================================");
         
         // 注册命令
@@ -94,13 +81,9 @@ public class Gost extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ItemListener(this), this);
         getServer().getPluginManager().registerEvents(new SelectionListener(this), this);
         getServer().getPluginManager().registerEvents(secondChanceListener, this);
+        getServer().getPluginManager().registerEvents(new HolyRedemptionListener(this), this);
         
         getLogger().info("==========================================");
-        getLogger().info("Gost v2.1.3 已成功加载！");
-        getLogger().info("✨ 新增功能：鬼玩家粒子效果系统");
-        getLogger().info("🔧 修复：管理员和创造模式玩家效果免疫问题");
-        getLogger().info("🎮 新增：创造模式自动切换为生存模式");
-        getLogger().info("⚖️ 确保：所有玩家公平游戏环境");
         getLogger().info("作者: 来自太空的小头脑");
         getLogger().info("主页: https://space.bilibili.com/3493116665400113");
         getLogger().info("==========================================");
@@ -201,15 +184,9 @@ public class Gost extends JavaPlugin {
         return ghostParticleManager;
     }
     
-    // public CurrencyManager getCurrencyManager() {
-    //     return currencyManager;
-    // }
+
     
-    // public NpcManager getNpcManager() {
-    //     return npcManager;
-    // }
+
     
-    // public SpectatorManager getSpectatorManager() {
-    //     return spectatorManager;
-    // }
+
 }

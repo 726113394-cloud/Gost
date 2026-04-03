@@ -91,19 +91,7 @@ public class ConfigManager {
         config.addDefault("item-spawn.max-per-player", 1); // 每位玩家最多获得数量
         config.addDefault("item-spawn.max-item-types-per-player", 6); // 玩家最多拥有的道具种类数量
         
-        // 货币发放设置
-        config.addDefault("currency.distribution-interval", 25); // 发放间隔（秒）
-        config.addDefault("currency.distribution-amount", 1); // 每次发放数量
-        config.addDefault("currency.enchanted", true); // 是否带有附魔光效
-        
-        // 观战系统设置
-        config.addDefault("spectator.enabled", true); // 是否启用观战系统
-        config.addDefault("spectator.confirmation-required", true); // 是否需要确认观战
-        
-        // NPC设置
-        config.addDefault("npc.enabled", true); // 是否启用NPC系统
-        config.addDefault("npc.entity-type", "VILLAGER"); // NPC实体类型
-        config.addDefault("npc.name", "&e&lGost商人"); // NPC名称
+
         
         // 服务器模组设置（预留）
         
@@ -118,10 +106,18 @@ public class ConfigManager {
         
         // 神圣守护设置
         config.addDefault("divine-guardian.enabled", false); // 是否启用神圣守护
+        config.addDefault("divine-guardian.mode", "1"); // 模式：1=神圣守护，2=救赎者
         config.addDefault("divine-guardian.max-charges", 3); // 最大使用次数
         config.addDefault("divine-guardian.cooldown", 5); // 冷却时间（秒）
         config.addDefault("divine-guardian.broadcast", true); // 是否广播消息
         config.addDefault("divine-guardian.invisibility-duration", 10); // 失效隐身持续时间（秒）
+        
+        // 救赎者设置（模式2）
+        config.addDefault("redeemer.max-uses", 2); // 神之救赎最大使用次数
+        config.addDefault("redeemer.speed-level", 1); // 救赎者速度效果等级（1=速度I）
+        config.addDefault("redeemer.holy-redemption-cooldown", 10); // 神之救赎冷却时间（秒）
+        config.addDefault("redeemer.conversion-invincibility-time", 5); // 转化后无敌时间（秒）
+        config.addDefault("redeemer.broadcast", true); // 是否广播救赎者消息
         
         // 鬼玩家粒子效果设置
         config.addDefault("ghost-particle.enabled", true); // 是否启用鬼玩家粒子效果
@@ -277,9 +273,7 @@ public class ConfigManager {
         return config.getInt("item-spawn.max-per-player", 1);
     }
     
-    public int getCurrencyDistributionInterval() {
-        return config.getInt("currency.distribution-interval", 25);
-    }
+
     
     public int getCurrencyDistributionAmount() {
         return config.getInt("currency.distribution-amount", 1);
@@ -485,6 +479,61 @@ public class ConfigManager {
     
     public void setDivineGuardianBroadcastEnabled(boolean enabled) {
         config.set("divine-guardian.broadcast", enabled);
+        plugin.saveConfig();
+    }
+    
+    public String getDivineGuardianMode() {
+        return config.getString("divine-guardian.mode", "1");
+    }
+    
+    public void setDivineGuardianMode(String mode) {
+        config.set("divine-guardian.mode", mode);
+        plugin.saveConfig();
+    }
+    
+    // 救赎者配置（模式2）
+    public int getRedeemerMaxUses() {
+        return config.getInt("redeemer.max-uses", 2);
+    }
+    
+    public int getRedeemerSpeedLevel() {
+        return config.getInt("redeemer.speed-level", 1);
+    }
+    
+    public int getHolyRedemptionCooldown() {
+        return config.getInt("redeemer.holy-redemption-cooldown", 10);
+    }
+    
+    public int getConversionInvincibilityTime() {
+        return config.getInt("redeemer.conversion-invincibility-time", 5);
+    }
+    
+    public boolean isRedeemerBroadcastEnabled() {
+        return config.getBoolean("redeemer.broadcast", true);
+    }
+    
+    public void setRedeemerMaxUses(int maxUses) {
+        config.set("redeemer.max-uses", maxUses);
+        plugin.saveConfig();
+    }
+    
+    public void setRedeemerSpeedLevel(int speedLevel) {
+        config.set("redeemer.speed-level", speedLevel);
+        plugin.saveConfig();
+    }
+    
+    public void setHolyRedemptionCooldown(int cooldown) {
+        config.set("redeemer.holy-redemption-cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setConversionInvincibilityTime(int time) {
+        config.set("redeemer.conversion-invincibility-time", time);
+        plugin.saveConfig();
+    }
+    
+    public void setRedeemerBroadcastEnabled(boolean enabled) {
+        config.set("redeemer.broadcast", enabled);
         plugin.saveConfig();
     }
     

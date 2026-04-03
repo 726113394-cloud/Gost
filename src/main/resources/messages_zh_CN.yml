@@ -1,5 +1,5 @@
 # Gost 插件 - 中文语言文件
-# 版本: 2.1.0
+# 版本: 2.2.0
 
 # ========== 通用消息 ==========
 general:
@@ -20,11 +20,16 @@ game:
   force_stopped: "§c游戏被强制停止"
   time_remaining: "§e剩余时间: %d分%d秒"
   waiting_for_players: "§e等待更多玩家加入... (当前: %d/%d)"
+  queue_cancelled_insufficient: "§c玩家数量不足，队列已取消！"
+  queue_auto_cleared: "§c队列人数不足，自动清空队列并退还金币"
   
 # ========== 玩家消息 ==========
 player:
   joined_queue: "§a你已加入游戏队列"
+  queue_join_hint: "§e使用命令 /gost leave 可以随时退出队列"
   left_queue: "§c你已离开游戏队列"
+  refund_received: "§a入场金币已退还！"
+  queue_cancelled_personal: "§e队列取消，入场金币已退还！"
   already_in_queue: "§c你已经在队列中"
   not_in_queue: "§c你不在队列中"
   queue_info: "§e队列状态: %d/%d 玩家"

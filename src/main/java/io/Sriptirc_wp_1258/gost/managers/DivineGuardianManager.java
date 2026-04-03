@@ -9,29 +9,101 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * 神圣守护管理器 - 为最后一位人类玩家提供特殊能力
+ * v2.2 新增救赎者模式
  */
 public class DivineGuardianManager {
+    
+    // 神圣守护模式枚举
+    public enum GuardianMode {
+        MODE_1("神圣守护", "最后一名人类获得感染免疫和随机传送能力"),
+        MODE_2("救赎者", "最后一名人类成为救赎者，可以转化鬼玩家回人类");
+        
+        private final String displayName;
+        private final String description;
+        
+        GuardianMode(String displayName, String description) {
+            this.displayName = displayName;
+            this.description = description;
+        }
+        
+        public String getDisplayName() {
+            return displayName;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+        
+        public static GuardianMode fromString(String mode) {
+            if (mode.equalsIgnoreCase("1") || mode.equalsIgnoreCase("mode1")) {
+                return MODE_1;
+            } else if (mode.equalsIgnoreCase("2") || mode.equalsIgnoreCase("mode2")) {
+                return MODE_2;
+            }
+            return MODE_1; // 默认模式1
+        }
+    }
+    
+    // 救赎者数据类
+    private static class RedeemerData {
+        UUID playerId;              // 玩家ID
+        int remainingUses;          // 剩余使用次数
+        long lastUseTime;           // 上次使用时间
+        boolean isActive;           // 是否激活
+        ItemStack holyRedemptionItem; // 神之救赎道具
+        
+        RedeemerData(UUID playerId, int maxUses) {
+            this.playerId = playerId;
+            this.remainingUses = maxUses;
+            this.lastUseTime = 0;
+            this.isActive = true;
+            this.holyRedemptionItem = createHolyRedemptionItem();
+        }
+        
+        private ItemStack createHolyRedemptionItem() {
+            ItemStack item = new ItemStack(Material.GOLDEN_APPLE);
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(ChatColor.GOLD + "神之救赎");
+                List<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GRAY + "右键点击鬼玩家将其转化回人类");
+                lore.add(ChatColor.GRAY + "使用后你会被随机传送");
+                lore.add(ChatColor.YELLOW + "剩余使用次数: " + remainingUses);
+                lore.add(ChatColor.DARK_GRAY + "救赎者专属道具");
+                meta.setLore(lore);
+                meta.setUnbreakable(true);
+                item.setItemMeta(meta);
+            }
+            return item;
+        }
+    }
     
     private final Gost plugin;
     private final Random random = new Random();
     
-    // 神圣守护数据存储
+    // 神圣守护数据存储（模式1）
     private final Map<UUID, DivineGuardianData> guardianData = new HashMap<>();
+    
+    // 救赎者数据存储（模式2）
+    private final Map<UUID, RedeemerData> redeemerData = new HashMap<>();
     
     // 神圣守护状态
     private boolean enabled = false;
+    private GuardianMode currentMode = GuardianMode.MODE_1; // 当前模式
     private UUID lastHumanPlayer = null;
     private boolean isActive = false;
+    private boolean hasTriggered = false; // 是否已经触发过神圣守护/救赎者
     
     public DivineGuardianManager(Gost plugin) {
         this.plugin = plugin;
@@ -57,7 +129,43 @@ public class DivineGuardianManager {
      */
     public void loadConfig() {
         enabled = plugin.getConfigManager().isDivineGuardianEnabled();
-        plugin.getLogger().info("神圣守护功能: " + (enabled ? "已启用" : "已禁用"));
+        currentMode = GuardianMode.fromString(plugin.getConfigManager().getDivineGuardianMode());
+        plugin.getLogger().info("神圣守护功能: " + (enabled ? "已启用" : "已禁用") + " | 模式: " + currentMode.getDisplayName());
+    }
+    
+    /**
+     * 设置神圣守护模式
+     * @param mode 模式字符串 (1/mode1 或 2/mode2)
+     * @return 是否设置成功
+     */
+    public boolean setGuardianMode(String mode) {
+        GuardianMode newMode = GuardianMode.fromString(mode);
+        if (newMode != currentMode) {
+            currentMode = newMode;
+            plugin.getLogger().info("神圣守护模式已切换为: " + currentMode.getDisplayName());
+            
+            // 如果游戏正在进行中，需要重新检查并激活
+            if (plugin.getGameManager().isGameRunning() && enabled) {
+                List<UUID> humanPlayers = plugin.getPlayerManager().getHumanPlayers();
+                checkAndActivateDivineGuardian(humanPlayers);
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 获取当前模式
+     */
+    public GuardianMode getCurrentMode() {
+        return currentMode;
+    }
+    
+    /**
+     * 获取模式显示名称
+     */
+    public String getModeDisplayName() {
+        return currentMode.getDisplayName();
     }
     
     /**
@@ -69,23 +177,31 @@ public class DivineGuardianManager {
             return;
         }
         
-        // 如果只剩下一个人类玩家，激活神圣守护
+        // 如果已经触发过神圣守护/救赎者，不再触发
+        if (hasTriggered) {
+            return;
+        }
+        
+        // 如果只剩下一个人类玩家，根据当前模式激活相应能力
         if (humanPlayers.size() == 1) {
             UUID lastHuman = humanPlayers.get(0);
             
-            // 如果已经激活了神圣守护，检查是否还是同一个玩家
+            // 如果已经激活了，检查是否还是同一个玩家
             if (isActive && lastHumanPlayer != null && lastHumanPlayer.equals(lastHuman)) {
-                return; // 同一个玩家，神圣守护已激活
+                return; // 同一个玩家，能力已激活
             }
             
-            // 激活神圣守护
-            activateDivineGuardian(lastHuman);
-        } else {
-            // 如果有多于一个人类玩家，取消神圣守护
-            if (isActive) {
-                deactivateDivineGuardian();
+            // 根据当前模式激活相应能力
+            switch (currentMode) {
+                case MODE_1:
+                    activateDivineGuardian(lastHuman);
+                    break;
+                case MODE_2:
+                    activateRedeemer(lastHuman);
+                    break;
             }
         }
+        // 注意：移除了人类数量大于1时取消激活的逻辑，能力将一直持续到自然结束
     }
     
     /**
@@ -102,6 +218,7 @@ public class DivineGuardianManager {
         guardianData.put(playerId, new DivineGuardianData(maxCharges));
         lastHumanPlayer = playerId;
         isActive = true;
+        hasTriggered = true; // 标记已触发
         
         // 应用神圣守护效果
         applyDivineGuardianEffects(player);
@@ -110,6 +227,103 @@ public class DivineGuardianManager {
         sendActivationMessages(player);
         
         plugin.getLogger().info("神圣守护已激活，玩家: " + player.getName());
+    }
+    
+    /**
+     * 激活救赎者
+     */
+    private void activateRedeemer(UUID playerId) {
+        Player player = Bukkit.getPlayer(playerId);
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+        
+        // 设置救赎者数据
+        int maxUses = plugin.getConfigManager().getRedeemerMaxUses();
+        redeemerData.put(playerId, new RedeemerData(playerId, maxUses));
+        lastHumanPlayer = playerId;
+        isActive = true;
+        hasTriggered = true; // 标记已触发
+        
+        // 应用救赎者效果
+        applyRedeemerEffects(player);
+        
+        // 给予神之救赎道具
+        giveHolyRedemptionItem(player);
+        
+        // 发送激活消息
+        sendRedeemerActivationMessages(player);
+        
+        plugin.getLogger().info("救赎者已激活，玩家: " + player.getName());
+    }
+    
+    /**
+     * 应用救赎者效果
+     */
+    private void applyRedeemerEffects(Player player) {
+        // 速度效果（根据配置）
+        int speedLevel = plugin.getConfigManager().getRedeemerSpeedLevel();
+        player.addPotionEffect(new PotionEffect(
+            PotionEffectType.SPEED,
+            20 * 60 * 10, // 10分钟（足够长的时间）
+            speedLevel - 1, // 速度等级（0=速度I，1=速度II）
+            true,
+            true
+        ));
+        
+        // 发光效果（高亮显示）
+        player.addPotionEffect(new PotionEffect(
+            PotionEffectType.GLOWING,
+            20 * 60 * 10, // 10分钟
+            0,
+            true,
+            true
+        ));
+    }
+    
+    /**
+     * 给予神之救赎道具
+     */
+    private void giveHolyRedemptionItem(Player player) {
+        RedeemerData data = redeemerData.get(player.getUniqueId());
+        if (data != null && data.holyRedemptionItem != null) {
+            // 清空玩家手中可能已有的道具
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            if (mainHand != null && mainHand.getType() != Material.AIR) {
+                // 如果手中已有物品，尝试放到背包空位
+                HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(mainHand);
+                if (!leftover.isEmpty()) {
+                    // 如果背包满了，掉落物品
+                    player.getWorld().dropItemNaturally(player.getLocation(), mainHand);
+                }
+            }
+            
+            // 给予神之救赎道具
+            player.getInventory().setItemInMainHand(data.holyRedemptionItem);
+            player.updateInventory();
+        }
+    }
+    
+    /**
+     * 发送救赎者激活消息
+     */
+    private void sendRedeemerActivationMessages(Player player) {
+        // 给救赎者发送消息
+        player.sendTitle(ChatColor.GOLD + "⚡ 救赎者 ⚡", ChatColor.YELLOW + "你已成为救赎者！", 10, 60, 10);
+        player.sendMessage(ChatColor.GOLD + "==========================================");
+        player.sendMessage(ChatColor.GOLD + "              ⚡ 救赎者 ⚡");
+        player.sendMessage(ChatColor.YELLOW + "你已被选为救赎者！");
+        player.sendMessage(ChatColor.GREEN + "• 你获得了神之救赎道具");
+        player.sendMessage(ChatColor.GREEN + "• 右键点击鬼玩家可以将其转化回人类");
+        player.sendMessage(ChatColor.GREEN + "• 使用后你会被随机传送到安全位置");
+        player.sendMessage(ChatColor.GREEN + "• 道具可使用 " + plugin.getConfigManager().getRedeemerMaxUses() + " 次");
+        player.sendMessage(ChatColor.GOLD + "==========================================");
+        
+        // 广播消息（如果配置允许）
+        if (plugin.getConfigManager().isRedeemerBroadcastEnabled()) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "⚡ " + player.getName() + " 已成为救赎者！");
+            Bukkit.broadcastMessage(ChatColor.YELLOW + "救赎者拥有转化鬼玩家的能力，小心！");
+        }
     }
     
     /**
@@ -398,6 +612,347 @@ public class DivineGuardianManager {
     }
     
     /**
+     * 取消当前激活的能力（根据模式）
+     */
+    private void deactivateCurrentAbility() {
+        if (lastHumanPlayer == null) {
+            return;
+        }
+        
+        switch (currentMode) {
+            case MODE_1:
+                deactivateDivineGuardian();
+                break;
+            case MODE_2:
+                deactivateRedeemer();
+                break;
+        }
+    }
+    
+    /**
+     * 取消救赎者
+     */
+    private void deactivateRedeemer() {
+        if (lastHumanPlayer == null) {
+            return;
+        }
+        
+        Player player = Bukkit.getPlayer(lastHumanPlayer);
+        if (player != null && player.isOnline()) {
+            // 移除救赎者效果
+            removeRedeemerEffects(player);
+            
+            // 移除神之救赎道具
+            removeHolyRedemptionItem(player);
+            
+            // 发送失效消息
+            sendRedeemerDeactivationMessages(player);
+        }
+        
+        // 清理数据
+        redeemerData.remove(lastHumanPlayer);
+        lastHumanPlayer = null;
+        isActive = false;
+        
+        plugin.getLogger().info("救赎者已失效");
+    }
+    
+    /**
+     * 移除救赎者效果
+     */
+    private void removeRedeemerEffects(Player player) {
+        // 移除速度效果
+        player.removePotionEffect(PotionEffectType.SPEED);
+        
+        // 移除发光效果
+        player.removePotionEffect(PotionEffectType.GLOWING);
+    }
+    
+    /**
+     * 移除神之救赎道具
+     */
+    private void removeHolyRedemptionItem(Player player) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        if (mainHand != null && mainHand.hasItemMeta()) {
+            ItemMeta meta = mainHand.getItemMeta();
+            if (meta != null && meta.hasDisplayName() && 
+                meta.getDisplayName().equals(ChatColor.GOLD + "神之救赎")) {
+                player.getInventory().setItemInMainHand(null);
+                player.updateInventory();
+            }
+        }
+    }
+    
+    /**
+     * 发送救赎者失效消息
+     */
+    private void sendRedeemerDeactivationMessages(Player player) {
+        player.sendTitle(ChatColor.RED + "救赎者失效", ChatColor.YELLOW + "你已回归普通人类", 10, 40, 10);
+        player.sendMessage(ChatColor.YELLOW + "救赎者能力已失效，你已回归普通人类身份。");
+    }
+    
+    /**
+     * 处理神之救赎道具使用
+     * @param redeemer 救赎者玩家
+     * @param target 目标鬼玩家
+     * @return 是否使用成功
+     */
+    public boolean useHolyRedemption(Player redeemer, Player target) {
+        UUID redeemerId = redeemer.getUniqueId();
+        RedeemerData data = redeemerData.get(redeemerId);
+        
+        if (data == null || !data.isActive) {
+            return false;
+        }
+        
+        // 检查剩余使用次数
+        if (data.remainingUses <= 0) {
+            redeemer.sendMessage(ChatColor.RED + "神之救赎道具已用完！");
+            return false;
+        }
+        
+        // 检查冷却时间
+        long currentTime = System.currentTimeMillis();
+        long cooldownTime = plugin.getConfigManager().getHolyRedemptionCooldown() * 1000L;
+        if (currentTime - data.lastUseTime < cooldownTime) {
+            long remainingCooldown = (cooldownTime - (currentTime - data.lastUseTime)) / 1000;
+            redeemer.sendMessage(ChatColor.RED + "神之救赎道具冷却中，剩余 " + remainingCooldown + " 秒");
+            return false;
+        }
+        
+        // 检查目标是否为鬼玩家
+        if (!plugin.getPlayerManager().isGhost(target.getUniqueId())) {
+            redeemer.sendMessage(ChatColor.RED + "只能对鬼玩家使用神之救赎！");
+            return false;
+        }
+        
+        // 执行转化
+        convertGhostToHuman(redeemer, target);
+        
+        // 更新使用次数
+        data.remainingUses--;
+        data.lastUseTime = currentTime;
+        
+        // 更新道具显示
+        updateHolyRedemptionItem(redeemer, data);
+        
+        // 随机传送救赎者
+        teleportRedeemerRandomly(redeemer);
+        
+        // 检查是否用完次数
+        if (data.remainingUses <= 0) {
+            // 救赎者回归普通人类
+            deactivateRedeemer();
+            redeemer.sendMessage(ChatColor.GOLD + "神之救赎道具已用完，你已回归普通人类身份。");
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 将鬼玩家转化回人类
+     */
+    private void convertGhostToHuman(Player redeemer, Player ghost) {
+        // 移除鬼玩家身份
+        plugin.getPlayerManager().convertGhostToHuman(ghost.getUniqueId());
+        
+        // 应用转化效果
+        applyConversionEffects(ghost);
+        
+        // 发送转化消息
+        sendConversionMessages(redeemer, ghost);
+        
+        plugin.getLogger().info("鬼玩家 " + ghost.getName() + " 被救赎者 " + redeemer.getName() + " 转化回人类");
+    }
+    
+    /**
+     * 应用转化效果
+     */
+    private void applyConversionEffects(Player convertedPlayer) {
+        // 音效
+        convertedPlayer.getWorld().playSound(convertedPlayer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+        
+        // 粒子效果
+        convertedPlayer.getWorld().spawnParticle(Particle.TOTEM, convertedPlayer.getLocation().add(0, 1, 0), 
+            50, 0.5, 1, 0.5, 0.1);
+        
+        // 速度效果（根据配置）
+        int speedDuration = 20 * 10; // 10秒
+        convertedPlayer.addPotionEffect(new PotionEffect(
+            PotionEffectType.SPEED,
+            speedDuration,
+            0, // 速度I
+            true,
+            true
+        ));
+        
+        // 无敌时间（根据配置）
+        int invincibilityTime = plugin.getConfigManager().getConversionInvincibilityTime();
+        if (invincibilityTime > 0) {
+            convertedPlayer.addPotionEffect(new PotionEffect(
+                PotionEffectType.DAMAGE_RESISTANCE,
+                20 * invincibilityTime,
+                4, // 无敌效果
+                true,
+                true
+            ));
+        }
+    }
+    
+    /**
+     * 发送转化消息
+     */
+    private void sendConversionMessages(Player redeemer, Player convertedPlayer) {
+        // 给被转化的玩家
+        convertedPlayer.sendTitle(ChatColor.GREEN + "救赎", ChatColor.YELLOW + "你被救赎者转化回人类", 10, 60, 10);
+        convertedPlayer.sendMessage(ChatColor.GREEN + "你被救赎者 " + redeemer.getName() + " 转化回人类！");
+        
+        // 给救赎者
+        redeemer.sendMessage(ChatColor.GREEN + "成功将 " + convertedPlayer.getName() + " 转化回人类！");
+        
+        // 广播消息（如果配置允许）
+        if (plugin.getConfigManager().isRedeemerBroadcastEnabled()) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "⚡ " + convertedPlayer.getName() + 
+                                   " 被救赎者 " + redeemer.getName() + " 转化回人类！");
+        }
+    }
+    
+    /**
+     * 更新神之救赎道具显示
+     */
+    private void updateHolyRedemptionItem(Player player, RedeemerData data) {
+        ItemStack item = data.holyRedemptionItem;
+        if (item != null && item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null && meta.hasLore()) {
+                List<String> lore = meta.getLore();
+                if (lore != null && lore.size() >= 3) {
+                    // 更新剩余使用次数显示
+                    lore.set(2, ChatColor.YELLOW + "剩余使用次数: " + data.remainingUses);
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                    
+                    // 更新玩家手中的道具
+                    ItemStack mainHand = player.getInventory().getItemInMainHand();
+                    if (mainHand != null && mainHand.hasItemMeta()) {
+                        ItemMeta mainHandMeta = mainHand.getItemMeta();
+                        if (mainHandMeta != null && mainHandMeta.hasDisplayName() && 
+                            mainHandMeta.getDisplayName().equals(ChatColor.GOLD + "神之救赎")) {
+                            player.getInventory().setItemInMainHand(item);
+                            player.updateInventory();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * 随机传送救赎者
+     */
+    private void teleportRedeemerRandomly(Player redeemer) {
+        Location safeLocation = findSafeTeleportLocation(redeemer.getWorld(), redeemer.getLocation());
+        
+        if (safeLocation != null) {
+            // 传送音效
+            redeemer.getWorld().playSound(redeemer.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+            
+            // 传送前粒子效果
+            redeemer.getWorld().spawnParticle(Particle.PORTAL, redeemer.getLocation().add(0, 1, 0), 
+                30, 0.5, 1, 0.5, 0.1);
+            
+            // 执行传送
+            redeemer.teleport(safeLocation);
+            
+            // 传送后粒子效果
+            redeemer.getWorld().spawnParticle(Particle.PORTAL, safeLocation.add(0, 1, 0), 
+                30, 0.5, 1, 0.5, 0.1);
+            
+            // 传送音效
+            redeemer.getWorld().playSound(safeLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+            
+            // 发送提示消息
+            redeemer.sendMessage(ChatColor.YELLOW + "你被随机传送到安全位置！");
+        } else {
+            redeemer.sendMessage(ChatColor.RED + "无法找到安全的传送位置！");
+        }
+    }
+    
+    /**
+     * 查找安全的传送位置
+     */
+    private Location findSafeTeleportLocation(World world, Location center) {
+        int maxAttempts = 50;
+        int teleportRadius = 50; // 传送半径
+        
+        for (int i = 0; i < maxAttempts; i++) {
+            // 随机生成位置
+            double x = center.getX() + (random.nextDouble() * 2 - 1) * teleportRadius;
+            double z = center.getZ() + (random.nextDouble() * 2 - 1) * teleportRadius;
+            
+            // 获取该位置的地面Y坐标
+            int y = world.getHighestBlockYAt((int) x, (int) z);
+            
+            if (y > 0) {
+                Location location = new Location(world, x + 0.5, y + 1, z + 0.5);
+                
+                // 检查位置是否安全（非虚空、非液体、有站立空间）
+                if (isLocationSafe(location)) {
+                    return location;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * 检查位置是否安全
+     */
+    private boolean isLocationSafe(Location location) {
+        World world = location.getWorld();
+        if (world == null) return false;
+        
+        // 检查脚下方块
+        Material blockBelow = world.getBlockAt(location.clone().subtract(0, 1, 0)).getType();
+        if (blockBelow == Material.AIR || blockBelow == Material.LAVA || 
+            blockBelow == Material.WATER || blockBelow == Material.CACTUS) {
+            return false;
+        }
+        
+        // 检查站立位置
+        Material feetBlock = world.getBlockAt(location).getType();
+        if (feetBlock != Material.AIR && feetBlock != Material.CAVE_AIR && 
+            feetBlock != Material.VOID_AIR) {
+            return false;
+        }
+        
+        // 检查头部位置
+        Material headBlock = world.getBlockAt(location.clone().add(0, 1, 0)).getType();
+        if (headBlock != Material.AIR && headBlock != Material.CAVE_AIR && 
+            headBlock != Material.VOID_AIR) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 检查玩家是否为救赎者
+     */
+    public boolean isRedeemer(UUID playerId) {
+        return redeemerData.containsKey(playerId) && redeemerData.get(playerId).isActive;
+    }
+    
+    /**
+     * 获取救赎者剩余使用次数
+     */
+    public int getRedeemerRemainingUses(UUID playerId) {
+        RedeemerData data = redeemerData.get(playerId);
+        return data != null ? data.remainingUses : 0;
+    }
+    
+    /**
      * 移除神圣守护效果
      */
     private void removeDivineGuardianEffects(Player player) {
@@ -659,6 +1214,22 @@ public class DivineGuardianManager {
     }
     
     /**
+     * 重置游戏状态（每局游戏开始时调用）
+     */
+    public void resetGame() {
+        hasTriggered = false;
+        // 如果当前有激活的能力，清理它
+        if (isActive) {
+            cleanup();
+        }
+        // 确保所有状态重置
+        lastHumanPlayer = null;
+        isActive = false;
+        guardianData.clear();
+        redeemerData.clear();
+    }
+    
+    /**
      * 清理数据
      */
     public void cleanup() {
@@ -670,8 +1241,10 @@ public class DivineGuardianManager {
         }
         
         guardianData.clear();
+        redeemerData.clear();
         lastHumanPlayer = null;
         isActive = false;
+        hasTriggered = false; // 重置触发状态
         
         plugin.getLogger().info("神圣守护数据已清理");
     }

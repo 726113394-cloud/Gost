@@ -1,5 +1,5 @@
 # Gost Plugin - English Language File
-# Version: 2.1.0
+# Version: 2.2.0
 
 # ========== General Messages ==========
 general:
@@ -20,11 +20,16 @@ game:
   force_stopped: "§cGame force stopped"
   time_remaining: "§eTime remaining: %d minutes %d seconds"
   waiting_for_players: "§eWaiting for more players... (Current: %d/%d)"
+  queue_cancelled_insufficient: "§cNot enough players, queue cancelled!"
+  queue_auto_cleared: "§cQueue auto cleared due to insufficient players, coins refunded"
   
 # ========== Player Messages ==========
 player:
   joined_queue: "§aYou have joined the game queue"
+  queue_join_hint: "§eUse command /gost leave to exit queue anytime"
   left_queue: "§cYou have left the game queue"
+  refund_received: "§aEntry coins refunded!"
+  queue_cancelled_personal: "§eQueue cancelled, entry coins refunded!"
   already_in_queue: "§cYou are already in the queue"
   not_in_queue: "§cYou are not in the queue"
   queue_info: "§eQueue status: %d/%d players"

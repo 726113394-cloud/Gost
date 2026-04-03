@@ -108,6 +108,7 @@ public class GameManager {
         // 加入队列
         waitingPlayers.add(playerId);
         player.sendMessage(ChatColor.GREEN + "你已加入游戏队列！");
+        player.sendMessage(ChatColor.YELLOW + "使用命令 /gost leave 可以随时退出队列");
         
         // 广播加入队列消息
         Bukkit.broadcastMessage(ChatColor.YELLOW + player.getName() + " 加入了游戏队列 (" + waitingPlayers.size() + "/" + plugin.getConfigManager().getMaxPlayers() + ")");
@@ -134,6 +135,7 @@ public class GameManager {
         
         // 退还金币
         plugin.getEconomyManager().refundEntryFee(player);
+        player.sendMessage(ChatColor.GREEN + "入场金币已退还！");
         
         // 移除队列
         waitingPlayers.remove(playerId);
@@ -145,8 +147,27 @@ public class GameManager {
         // 更新队列Boss栏
         updateQueueBossBar();
         
+        // 如果队列人数少于最小玩家数，强制清空队列
+        if (waitingPlayers.size() < plugin.getConfigManager().getMinPlayers() && queueTask != null) {
+            Bukkit.broadcastMessage(ChatColor.RED + "玩家数量不足，队列已取消！");
+            
+            // 退还所有剩余玩家的金币
+            for (UUID remainingPlayerId : new HashSet<>(waitingPlayers)) {
+                Player remainingPlayer = Bukkit.getPlayer(remainingPlayerId);
+                if (remainingPlayer != null && remainingPlayer.isOnline()) {
+                    plugin.getEconomyManager().refundEntryFee(remainingPlayer);
+                    remainingPlayer.sendMessage(ChatColor.YELLOW + "队列取消，入场金币已退还！");
+                }
+            }
+            
+            // 取消队列任务
+            queueTask.cancel();
+            queueTask = null;
+            queueBossBar.setVisible(false);
+            waitingPlayers.clear();
+        }
         // 如果队列为空，取消队列任务
-        if (waitingPlayers.isEmpty() && queueTask != null) {
+        else if (waitingPlayers.isEmpty() && queueTask != null) {
             queueTask.cancel();
             queueTask = null;
             queueBossBar.setVisible(false);
@@ -479,6 +500,9 @@ public class GameManager {
         gameStartTime = System.currentTimeMillis();
         gameBossBar.setColor(BarColor.GREEN);
         
+        // 重置神圣守护状态，确保一局游戏只触发一次
+        plugin.getDivineGuardianManager().resetGame();
+        
         Bukkit.broadcastMessage(ChatColor.GREEN + "游戏正式开始！");
         
         // 注意：母体鬼已经在准备阶段选择并禁足，这里不再重复选择
@@ -506,9 +530,6 @@ public class GameManager {
         
         // 开始鬼转人类功能（如果启用）
         startGhostToHumanTask();
-        
-        // 开始货币发放系统（暂时取消）
-        // plugin.getCurrencyManager().startDistribution();
         
         // 发送游戏开始标题
         sendGameStartTitles();
@@ -691,6 +712,7 @@ public class GameManager {
         
         // 清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
+        plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;
@@ -753,6 +775,7 @@ public class GameManager {
         
         // 清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
+        plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;
@@ -820,6 +843,7 @@ public class GameManager {
         
         // 然后清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
+        plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;

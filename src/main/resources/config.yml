@@ -1,8 +1,8 @@
 # Gost 插件配置文件
-# 版本: 2.1.0
+# 版本: 2.2.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 14
+ScriptIrc-config-version: 15
 
 # 游戏设置
 game:
@@ -107,10 +107,19 @@ language:
 # 神圣守护设置
 divine-guardian:
   enabled: false             # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
+  mode: "1"                  # 模式：1=神圣守护（感染免疫+随机传送），2=救赎者（转化鬼玩家）
   max-charges: 3             # 最大使用次数（免疫感染的次数）
   cooldown: 5                # 每次使用冷却时间（秒）
   broadcast: true            # 是否广播神圣守护触发消息
   invisibility-duration: 10  # 神圣守护失效后隐身持续时间（秒）
+
+# 救赎者设置（神圣守护模式2）
+redeemer:
+  max-uses: 2                # 神之救赎最大使用次数
+  speed-level: 1             # 救赎者速度效果等级（1=速度I）
+  holy-redemption-cooldown: 10 # 神之救赎冷却时间（秒）
+  conversion-invincibility-time: 5 # 转化后无敌时间（秒）
+  broadcast: true            # 是否广播救赎者消息
 
 # 鬼玩家粒子效果设置
 ghost-particle:

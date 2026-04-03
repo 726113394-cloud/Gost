@@ -91,6 +91,16 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                 handleClear(sender);
                 break;
                 
+            case "setmode":
+                if (args.length < 2) {
+                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setmode <1|2>");
+                    sender.sendMessage(ChatColor.GRAY + "模式1: 神圣守护（感染免疫+随机传送）");
+                    sender.sendMessage(ChatColor.GRAY + "模式2: 救赎者（转化鬼玩家回人类）");
+                    return true;
+                }
+                handleSetMode(sender, args[1]);
+                break;
+                
             default:
                 sendUsage(sender);
                 break;
@@ -115,6 +125,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian setcharges <次数>" + ChatColor.GRAY + " - 设置最大使用次数");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian setcooldown <秒数>" + ChatColor.GRAY + " - 设置冷却时间");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian broadcast <on|off>" + ChatColor.GRAY + " - 设置广播开关");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setmode <1|2>" + ChatColor.GRAY + " - 设置模式（1=神圣守护，2=救赎者）");
         sender.sendMessage("");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian force <玩家名>" + ChatColor.GRAY + " - 强制激活神圣守护");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian clear" + ChatColor.GRAY + " - 清除神圣守护数据");
@@ -126,10 +137,19 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
      */
     private void handleStatus(CommandSender sender) {
         boolean enabled = plugin.getConfigManager().isDivineGuardianEnabled();
+        String mode = plugin.getConfigManager().getDivineGuardianMode();
+        String modeDisplay = mode.equals("1") ? "神圣守护" : "救赎者";
         int maxCharges = plugin.getConfigManager().getDivineGuardianMaxCharges();
         int cooldown = plugin.getConfigManager().getDivineGuardianCooldown();
         boolean broadcast = plugin.getConfigManager().isDivineGuardianBroadcastEnabled();
         int invisibilityDuration = plugin.getConfigManager().getDivineGuardianInvisibilityDuration();
+        
+        // 救赎者配置
+        int redeemerMaxUses = plugin.getConfigManager().getRedeemerMaxUses();
+        int redeemerSpeedLevel = plugin.getConfigManager().getRedeemerSpeedLevel();
+        int holyRedemptionCooldown = plugin.getConfigManager().getHolyRedemptionCooldown();
+        int conversionInvincibilityTime = plugin.getConfigManager().getConversionInvincibilityTime();
+        boolean redeemerBroadcast = plugin.getConfigManager().isRedeemerBroadcastEnabled();
         
         UUID divineGuardian = plugin.getDivineGuardianManager().getDivineGuardianPlayer();
         String guardianName = divineGuardian != null ? Bukkit.getOfflinePlayer(divineGuardian).getName() : "无";
@@ -140,14 +160,34 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护状态 ✨");
         sender.sendMessage("");
         sender.sendMessage(ChatColor.YELLOW + "状态: " + (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
+        sender.sendMessage(ChatColor.YELLOW + "模式: " + ChatColor.GREEN + modeDisplay);
         sender.sendMessage(ChatColor.YELLOW + "当前神圣守护玩家: " + ChatColor.GREEN + guardianName);
-        sender.sendMessage(ChatColor.YELLOW + "剩余使用次数: " + ChatColor.GREEN + remainingCharges);
+        
+        if (modeDisplay.equals("神圣守护")) {
+            sender.sendMessage(ChatColor.YELLOW + "剩余使用次数: " + ChatColor.GREEN + remainingCharges);
+        } else if (modeDisplay.equals("救赎者") && divineGuardian != null) {
+            int remainingUses = plugin.getDivineGuardianManager().getRedeemerRemainingUses(divineGuardian);
+            sender.sendMessage(ChatColor.YELLOW + "神之救赎剩余次数: " + ChatColor.GREEN + remainingUses);
+        }
+        
         sender.sendMessage("");
         sender.sendMessage(ChatColor.YELLOW + "配置信息:");
+        sender.sendMessage(ChatColor.GRAY + "  • 模式: " + ChatColor.GREEN + modeDisplay + " (" + mode + ")");
         sender.sendMessage(ChatColor.GRAY + "  • 最大使用次数: " + ChatColor.GREEN + maxCharges);
         sender.sendMessage(ChatColor.GRAY + "  • 冷却时间: " + ChatColor.GREEN + cooldown + "秒");
         sender.sendMessage(ChatColor.GRAY + "  • 广播消息: " + (broadcast ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
         sender.sendMessage(ChatColor.GRAY + "  • 失效隐身时间: " + ChatColor.GREEN + invisibilityDuration + "秒");
+        
+        if (modeDisplay.equals("救赎者")) {
+            sender.sendMessage("");
+            sender.sendMessage(ChatColor.YELLOW + "救赎者配置:");
+            sender.sendMessage(ChatColor.GRAY + "  • 神之救赎最大次数: " + ChatColor.GREEN + redeemerMaxUses);
+            sender.sendMessage(ChatColor.GRAY + "  • 救赎者速度等级: " + ChatColor.GREEN + redeemerSpeedLevel);
+            sender.sendMessage(ChatColor.GRAY + "  • 神之救赎冷却: " + ChatColor.GREEN + holyRedemptionCooldown + "秒");
+            sender.sendMessage(ChatColor.GRAY + "  • 转化后无敌时间: " + ChatColor.GREEN + conversionInvincibilityTime + "秒");
+            sender.sendMessage(ChatColor.GRAY + "  • 救赎者广播: " + (redeemerBroadcast ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
+        }
+        
         sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
     }
     
@@ -239,6 +279,34 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
     }
     
     /**
+     * 处理设置模式命令
+     */
+    private void handleSetMode(CommandSender sender, String modeStr) {
+        if (!modeStr.equals("1") && !modeStr.equals("2") && 
+            !modeStr.equalsIgnoreCase("mode1") && !modeStr.equalsIgnoreCase("mode2")) {
+            sender.sendMessage(ChatColor.RED + "❌ 无效的模式！请使用 1 或 2");
+            sender.sendMessage(ChatColor.GRAY + "模式1: 神圣守护（感染免疫+随机传送）");
+            sender.sendMessage(ChatColor.GRAY + "模式2: 救赎者（转化鬼玩家回人类）");
+            return;
+        }
+        
+        // 设置配置
+        plugin.getConfigManager().setDivineGuardianMode(modeStr);
+        
+        // 更新管理器中的模式
+        boolean success = plugin.getDivineGuardianManager().setGuardianMode(modeStr);
+        
+        if (success) {
+            String modeName = modeStr.equals("1") || modeStr.equalsIgnoreCase("mode1") ? 
+                "神圣守护" : "救赎者";
+            sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护模式已切换为: " + modeName);
+            sender.sendMessage(ChatColor.YELLOW + "注意：如果游戏正在进行中，模式切换会立即生效");
+        } else {
+            sender.sendMessage(ChatColor.YELLOW + "⚠ 已经是该模式，无需切换");
+        }
+    }
+    
+    /**
      * 处理信息命令
      */
     private void handleInfo(CommandSender sender) {
@@ -257,11 +325,20 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         
         int remainingCharges = plugin.getDivineGuardianManager().getRemainingCharges(divineGuardian);
         
+        String modeDisplay = plugin.getDivineGuardianManager().getModeDisplayName();
+        
         sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
         sender.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护信息 ✨");
         sender.sendMessage("");
+        sender.sendMessage(ChatColor.YELLOW + "模式: " + ChatColor.GREEN + modeDisplay);
         sender.sendMessage(ChatColor.YELLOW + "玩家: " + ChatColor.GREEN + player.getName());
-        sender.sendMessage(ChatColor.YELLOW + "剩余使用次数: " + ChatColor.GREEN + remainingCharges);
+        
+        if (modeDisplay.equals("神圣守护")) {
+            sender.sendMessage(ChatColor.YELLOW + "剩余使用次数: " + ChatColor.GREEN + remainingCharges);
+        } else if (modeDisplay.equals("救赎者")) {
+            int remainingUses = plugin.getDivineGuardianManager().getRedeemerRemainingUses(divineGuardian);
+            sender.sendMessage(ChatColor.YELLOW + "神之救赎剩余次数: " + ChatColor.GREEN + remainingUses);
+        }
         sender.sendMessage(ChatColor.YELLOW + "位置: " + ChatColor.GREEN + 
             "X=" + (int)player.getLocation().getX() + 
             ", Y=" + (int)player.getLocation().getY() + 
@@ -319,7 +396,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
             completions.addAll(Arrays.asList(
                 "status", "enable", "disable", "reload", 
                 "setcharges", "setcooldown", "broadcast", 
-                "info", "force", "clear"
+                "setmode", "info", "force", "clear"
             ));
         } else if (args.length == 2) {
             String subCommand = args[0].toLowerCase();
@@ -335,6 +412,10 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                     
                 case "broadcast":
                     completions.addAll(Arrays.asList("on", "off", "true", "false"));
+                    break;
+                    
+                case "setmode":
+                    completions.addAll(Arrays.asList("1", "2", "mode1", "mode2"));
                     break;
                     
                 case "force":

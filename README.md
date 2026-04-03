@@ -1,6 +1,34 @@
 # 🎮 Gost - 极限生存对抗游戏
 
-**Gost** 是一款融合了 **猫抓老鼠、鬼抓人、躲猫猫、CF生化模式** 等多种玩法的 Minecraft 服务器插件。在紧张刺激的对抗中，体验人类与鬼之间的生死追逐，运用策略与道具，成为最后的幸存者！
+**Gost v2.2.0** 是一款融合了 **猫抓老鼠、鬼抓人、躲猫猫、CF生化模式** 等多种玩法的 Minecraft 服务器插件。在紧张刺激的对抗中，体验人类与鬼之间的生死追逐，运用策略与道具，成为最后的幸存者！
+
+## 🆕 v2.2.0 更新亮点
+
+### ⚡ 神圣守护模式2 - 救赎者系统
+- **救赎者**：当人类数量减少到1时，最后一名人类成为救赎者
+- **神之救赎道具**：救赎者获得专属道具，可转化鬼玩家回人类
+- **随机传送**：使用道具后救赎者会被随机传送到安全位置
+- **次数限制**：道具可使用2次（可配置），使用完后回归普通人类
+- **视觉效果**：救赎者全程高亮显示，拥有速度效果
+
+### 🎮 游戏模式切换
+- **模式1**：传统神圣守护（感染免疫+随机传送）
+- **模式2**：全新救赎者模式（转化鬼玩家）
+- **命令切换**：`/divineguardian setmode <1|2>`
+- **动态生效**：游戏进行中切换模式会立即生效
+
+### 🔧 队列系统全面优化
+- **智能队列清理**：当队列人数少于最小玩家数时，自动清空队列并退还金币
+- **退出队列提示**：玩家退出队列时会收到明确的金币退还提示
+- **加入队列引导**：玩家加入队列时收到使用`/gost leave`退出的提示
+- **Boss栏同步修复**：修复队列玩家离开后Boss栏不消失的问题
+- **队列状态透明**：实时显示队列状态，避免玩家困惑
+
+### 🗑️ 代码精简与性能提升
+- **移除冗余系统**：删除NPC、独立货币发放、观战系统，节省插件空间
+- **配置清理**：清理config.yml中相关配置项，简化配置管理
+- **内存优化**：移除未使用的代码和依赖，提升插件性能
+- **错误修复**：修复队列状态同步问题，提升稳定性
 
 ## 📋 目录
 
@@ -35,7 +63,9 @@
   - [常见问题与解决方案](#常见问题与解决方案)
   - [📊 日志诊断](#-日志诊断)
 - [📈 版本更新记录](#-版本更新记录)
-  - [v2.0.2（当前版本）](#v202当前版本)
+  - [v2.2.0（当前版本）](#v220当前版本)
+  - [v2.1.3](#v213)
+  - [v2.0.2](#v202)
   - [v2.0.0](#v200)
   - [v1.0.0](#v100)
 - [🤝 技术支持与反馈](#-技术支持与反馈)
@@ -291,7 +321,7 @@
 /gostadmin help            # 显示管理员帮助
 ```
 
-#### 神圣守护管理命令（v2.1.1新增）
+#### 神圣守护管理命令（v2.2.0更新）
 ```bash
 /divineguardian status      # 查看神圣守护状态
 /divineguardian enable      # 启用神圣守护功能
@@ -304,6 +334,7 @@
 /divineguardian setcharges <次数>    # 设置最大使用次数（1-10）
 /divineguardian setcooldown <秒数>   # 设置冷却时间（1-60秒）
 /divineguardian broadcast <on|off>   # 设置广播开关
+/divineguardian setmode <1|2>        # 设置模式（1=神圣守护，2=救赎者）
 
 # 高级管理
 /divineguardian force <玩家名>       # 强制为指定玩家激活神圣守护
@@ -506,13 +537,22 @@ item-spawn:
   max-per-player: 1             # 每位玩家最多获得数量
   max-item-types-per-player: 6  # 玩家最多拥有的道具种类数量
 
-# 🛡️ 神圣守护设置（v2.1.1新增）
+# 🛡️ 神圣守护设置（v2.2.0更新）
 divine-guardian:
   enabled: false                # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
+  mode: "1"                     # 模式：1=神圣守护（感染免疫+随机传送），2=救赎者（转化鬼玩家）
   max-charges: 3                # 最大使用次数（免疫感染的次数）
   cooldown: 5                   # 每次使用冷却时间（秒）
   broadcast: true               # 是否广播神圣守护触发消息
   invisibility-duration: 10     # 神圣守护失效后隐身持续时间（秒）
+
+# ⚡ 救赎者设置（神圣守护模式2）
+redeemer:
+  max-uses: 2                   # 神之救赎最大使用次数
+  speed-level: 1                # 救赎者速度效果等级（1=速度I）
+  holy-redemption-cooldown: 10  # 神之救赎冷却时间（秒）
+  conversion-invincibility-time: 5 # 转化后无敌时间（秒）
+  broadcast: true               # 是否广播救赎者消息
 
 # 👻 鬼玩家粒子效果设置（v2.1.2新增）
 ghost-particle:
@@ -571,6 +611,13 @@ area:
 2. **检查玩家数量**：等待玩家数达到最小要求（默认2人）
 3. **检查游戏状态**：确认没有其他游戏正在进行
 
+#### ❌ 队列系统问题（v2.2.0修复）
+1. **队列卡住不启动**：如果只有一个玩家在队列中，游戏不会启动，这是正常设计
+2. **无法退出队列**：使用 `/gost leave` 命令可以退出队列，退出时会退还入场金币
+3. **Boss栏不消失**：v2.2.0已修复队列玩家离开后Boss栏不消失的问题
+4. **队列人数不足自动清空**：当队列人数少于最小玩家数时，队列会自动清空并退还所有玩家金币
+5. **队列状态提示**：加入队列时会收到退出提示，退出队列时会收到金币退还提示
+
 #### ❌ 经济系统问题
 1. **检查插件安装**：确认 Vault 和经济插件已正确安装
 2. **检查权限设置**：确保玩家有足够金币支付入场费
@@ -599,7 +646,34 @@ grep -i "gost" logs/latest.log
 
 ## 📈 版本更新记录
 
-### v2.1.3（当前版本）
+### v2.2.0（当前版本）
+- **⚡ 神圣守护模式2 - 救赎者系统**：
+  - **救赎者**：当人类数量减少到1时，最后一名人类成为救赎者
+  - **神之救赎道具**：救赎者获得专属道具，可转化鬼玩家回人类
+  - **随机传送**：使用道具后救赎者会被随机传送到安全位置
+  - **次数限制**：道具可使用2次（可配置），使用完后回归普通人类
+  - **视觉效果**：救赎者全程高亮显示，拥有速度效果
+- **🎮 游戏模式切换**：
+  - **模式1**：传统神圣守护（感染免疫+随机传送）
+  - **模式2**：全新救赎者模式（转化鬼玩家）
+  - **命令切换**：`/divineguardian setmode <1|2>`
+  - **动态生效**：游戏进行中切换模式会立即生效
+- **🔧 队列系统优化与修复**：
+  - **队列人数不足强制清空**：当队列人数少于最小玩家数时，自动清空队列并退还所有玩家金币
+  - **退出队列金币退还提示**：玩家退出队列时会收到金币退还的明确提示
+  - **加入队列退出提示**：玩家加入队列时会收到使用`/gost leave`退出队列的提示
+  - **Boss栏修复**：修复了队列中玩家离开后Boss栏不消失的问题
+- **🗑️ 代码清理与优化**：
+  - **移除NPC系统**：删除所有NPC相关代码，节省空间
+  - **移除货币系统**：删除独立的货币发放系统
+  - **移除观战系统**：删除观战相关代码
+  - **配置清理**：清理config.yml中相关的配置项
+- **🔧 性能与稳定性**：
+  - **内存优化**：移除未使用的代码和依赖
+  - **错误修复**：修复队列状态同步问题
+  - **提示完善**：完善玩家操作反馈提示
+
+### v2.1.3
 - **🔧 修复管理员游戏效果免疫问题**：
   - **管理员黑暗效果修复**：管理员现在会正常受到黑暗效果影响
   - **母体鬼禁足修复**：管理员母体鬼现在会正常受到失明和禁足效果
@@ -809,7 +883,8 @@ grep -i "gost" logs/latest.log
   - [Frequently Asked Questions & Solutions](#frequently-asked-questions--solutions)
   - [📊 Log Diagnosis](#-log-diagnosis)
 - [📈 Version Update History](#-version-update-history)
-  - [v2.1.3 (Current Version)](#v213-current-version)
+  - [v2.2.0 (Current Version)](#v220-current-version)
+  - [v2.1.3](#v213)
   - [v2.0.2](#v202)
   - [v2.0.0](#v200)
   - [v1.0.0](#v100)
@@ -1071,7 +1146,35 @@ grep -i "gost" logs/latest.log
 
 ## 📈 Version Update History
 
-### v2.1.3 (Current Version)
+### v2.2.0 (Current Version)
+- **⚡ Divine Guardian Mode 2 - Redeemer System**:
+  - **Redeemer**: When only one human player remains, they become the Redeemer
+  - **Holy Redemption Item**: Redeemer receives exclusive item to convert ghost players back to human
+  - **Random Teleport**: After using the item, Redeemer is randomly teleported to a safe location
+  - **Usage Limit**: Item can be used 2 times (configurable), after which Redeemer returns to normal human
+  - **Visual Effects**: Redeemer is highlighted throughout and has speed effects
+- **🎮 Game Mode Switching**:
+  - **Mode 1**: Traditional Divine Guardian (infection immunity + random teleport)
+  - **Mode 2**: New Redeemer mode (converts ghost players)
+  - **Command Switching**: `/divineguardian setmode <1|2>`
+  - **Dynamic Activation**: Mode changes take effect immediately, even during gameplay
+- **🔧 Queue System Optimization & Fixes**:
+  - **Automatic Queue Clearance**: When queue players are less than minimum required, queue auto-clears with gold refunds
+  - **Exit Queue Gold Refund Notifications**: Players receive clear notifications when gold is refunded upon leaving queue
+  - **Queue Join Guidance**: Players receive instructions on using `/gost leave` when joining queue
+  - **Boss Bar Fix**: Fixed issue where Boss bar wouldn't disappear after players left queue
+  - **Queue Status Transparency**: Real-time queue status display to avoid player confusion
+- **🗑️ Code Cleanup & Optimization**:
+  - **NPC System Removed**: All NPC-related code deleted to save space
+  - **Currency System Removed**: Independent currency distribution system removed
+  - **Spectator System Removed**: Spectator-related code deleted
+  - **Config Cleanup**: Related configuration items cleaned from config.yml
+- **🔧 Performance & Stability**:
+  - **Memory Optimization**: Removed unused code and dependencies
+  - **Bug Fixes**: Fixed queue status synchronization issues
+  - **Notification Improvements**: Enhanced player feedback for operations
+
+### v2.1.3
 - **🔧 Fixed Admin Game Effect Immunity Issue**:
   - **Admin Dark Effect Fix**: Administrators now properly receive dark effects during gameplay
   - **Mother Ghost Immobilization Fix**: Admin mother ghosts now properly receive blindness and immobilization effects
