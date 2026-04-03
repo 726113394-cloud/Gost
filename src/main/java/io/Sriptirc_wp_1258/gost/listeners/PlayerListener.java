@@ -60,7 +60,7 @@ public class PlayerListener implements Listener {
         // 如果玩家在游戏中，禁止丢弃物品
         if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "游戏期间禁止丢弃物品！");
+            plugin.getLanguageManager().sendMessage(player, "general.game_forbidden_drop");
         }
     }
     

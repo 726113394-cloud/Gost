@@ -63,7 +63,7 @@ public class SecondChanceListener implements Listener {
             
             if (timeLeft > 0) {
                 // 还在冷却中
-                humanPlayer.sendMessage(ChatColor.RED + "一次机会还在冷却中！剩余时间: " + (timeLeft / 1000) + "秒");
+                plugin.getLanguageManager().sendMessage(humanPlayer, "item.one_chance_cooldown", timeLeft / 1000);
                 return;
             }
         }
@@ -86,7 +86,7 @@ public class SecondChanceListener implements Listener {
             if (item != null && item.getType() == Material.TOTEM_OF_UNDYING) {
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null && meta.hasDisplayName() && 
-                    meta.getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', "&6一次机会"))) {
+                    meta.getDisplayName().equals(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("item.one_chance_name")))) {
                     return item;
                 }
             }
@@ -108,11 +108,11 @@ public class SecondChanceListener implements Listener {
         sendDialogMessages(humanPlayer, ghostPlayer);
         
         // 发送公告
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "════════════════════════════════");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "✨ " + humanPlayer.getName() + " 使用了一次机会！");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "✨ 成功抵挡了 " + ghostPlayer.getName() + " 的感染！");
-        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.second_chance_teleport_broadcast"));
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "════════════════════════════════");
+        plugin.getLanguageManager().broadcastMessage("item.second_chance_broadcast_header");
+        plugin.getLanguageManager().broadcastMessage("item.second_chance_broadcast_title", humanPlayer.getName());
+        plugin.getLanguageManager().broadcastMessage("item.second_chance_broadcast_subtitle", ghostPlayer.getName());
+        plugin.getLanguageManager().broadcastMessage("item.second_chance_teleport_broadcast");
+        plugin.getLanguageManager().broadcastMessage("item.second_chance_broadcast_footer");
     }
     
     private void removeSecondChanceItem(Player player, ItemStack itemToRemove) {
@@ -134,36 +134,36 @@ public class SecondChanceListener implements Listener {
     private void sendTitleMessages(Player humanPlayer, Player ghostPlayer) {
         // 给人类玩家发送标题
         humanPlayer.sendTitle(
-            ChatColor.GOLD + "✨ 一次机会触发！",
-            ChatColor.GREEN + "成功抵挡感染！获得速度和高亮效果",
+            plugin.getLanguageManager().getMessage("item.second_chance_human_title"),
+            plugin.getLanguageManager().getMessage("item.second_chance_human_subtitle"),
             10, 40, 10
         );
         
         // 给鬼玩家发送标题
         ghostPlayer.sendTitle(
-            ChatColor.RED + "⚠ 感染被抵挡！",
-            ChatColor.YELLOW + "目标使用了一次机会！你被减速了",
+            plugin.getLanguageManager().getMessage("item.second_chance_ghost_title"),
+            plugin.getLanguageManager().getMessage("item.second_chance_ghost_subtitle"),
             10, 40, 10
         );
     }
     
     private void sendDialogMessages(Player humanPlayer, Player ghostPlayer) {
         // 给人类玩家的对话框消息
-        humanPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
-        humanPlayer.sendMessage(ChatColor.GOLD + "             一次机会触发！");
+        plugin.getLanguageManager().sendMessage(humanPlayer, "item.second_chance_broadcast_header");
+        plugin.getLanguageManager().sendMessage(humanPlayer, "item.second_chance_human_title");
         humanPlayer.sendMessage("");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 成功抵挡了 " + ghostPlayer.getName() + " 的感染");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 获得速度II效果 " + plugin.getConfigManager().getSecondChanceHumanSpeedDuration() + "秒");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 获得高亮效果 " + plugin.getConfigManager().getSecondChanceHumanGlowingDuration() + "秒");
-        humanPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
+        plugin.getLanguageManager().sendMessage(humanPlayer, "item.second_chance_human_subtitle", ghostPlayer.getName());
+        plugin.getLanguageManager().sendMessage(humanPlayer, "item.second_chance_human_speed", plugin.getConfigManager().getSecondChanceHumanSpeedDuration());
+        plugin.getLanguageManager().sendMessage(humanPlayer, "item.second_chance_human_glow", plugin.getConfigManager().getSecondChanceHumanGlowingDuration());
+        plugin.getLanguageManager().sendMessage(humanPlayer, "item.second_chance_broadcast_footer");
         
         // 给鬼玩家的对话框消息
-        ghostPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
-        ghostPlayer.sendMessage(ChatColor.RED + "             感染被抵挡！");
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "item.second_chance_broadcast_header");
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "item.second_chance_ghost_title");
         ghostPlayer.sendMessage("");
-        ghostPlayer.sendMessage(ChatColor.RED + "✗ 对 " + humanPlayer.getName() + " 的感染被抵挡");
-        ghostPlayer.sendMessage(ChatColor.RED + "✗ 获得缓慢I效果 " + plugin.getConfigManager().getSecondChanceGhostSlowDuration() + "秒");
-        ghostPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "item.second_chance_ghost_slow", humanPlayer.getName());
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "item.second_chance_ghost_debuff", plugin.getConfigManager().getSecondChanceGhostSlowDuration());
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "item.second_chance_broadcast_footer");
     }
     
     // 清理冷却时间

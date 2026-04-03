@@ -150,31 +150,30 @@ public class DivineGuardianManager {
     private void sendActivationMessages(Player player) {
         // 屏幕标题
         player.sendTitle(
-            ChatColor.GOLD + "✨ 神圣守护激活！",
-            ChatColor.YELLOW + "你获得了神圣守护能力",
+            plugin.getLanguageManager().getMessage("divine_guardian.title"),
+            plugin.getLanguageManager().getMessage("divine_guardian.subtitle"),
             10, 60, 10
         );
         
         // 个人消息
-        player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        player.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护 ✨");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.header");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.center_title");
         player.sendMessage("");
-        player.sendMessage(ChatColor.YELLOW + "✓ 你是最后一位人类玩家！");
-        player.sendMessage(ChatColor.YELLOW + "✓ 获得神圣守护能力：");
-        player.sendMessage(ChatColor.GREEN + "  • 免疫感染 ×" + plugin.getConfigManager().getDivineGuardianMaxCharges());
-        player.sendMessage(ChatColor.GREEN + "  • 被攻击时随机传送");
-        player.sendMessage(ChatColor.GREEN + "  • 速度I效果");
-        player.sendMessage(ChatColor.GREEN + "  • 冷却时间: " + plugin.getConfigManager().getDivineGuardianCooldown() + "秒");
-        player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.last_human");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.abilities_title");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.ability_immune", plugin.getConfigManager().getDivineGuardianMaxCharges());
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.ability_teleport");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.ability_speed");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.ability_cooldown", plugin.getConfigManager().getDivineGuardianCooldown());
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.header");
         
         // 广播消息
         if (plugin.getConfigManager().isDivineGuardianBroadcastEnabled()) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "✨ " + player.getName() + " 是最后一位人类玩家！");
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "✨ 神圣守护已激活！");
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "✨ 他获得了特殊能力：免疫感染×" + 
-                plugin.getConfigManager().getDivineGuardianMaxCharges() + "，随机传送");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.header");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_activated", player.getName());
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_activated_2");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_abilities", plugin.getConfigManager().getDivineGuardianMaxCharges());
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.header");
         }
     }
     
@@ -205,7 +204,7 @@ public class DivineGuardianManager {
         
         if (currentTime - data.lastUseTime < cooldownTime) {
             long timeLeft = (data.lastUseTime + cooldownTime - currentTime) / 1000;
-            humanPlayer.sendMessage(ChatColor.RED + "神圣守护冷却中，剩余: " + timeLeft + "秒");
+            humanPlayer.sendMessage(plugin.getLanguageManager().getMessage("divine_guardian.cooldown_message", timeLeft));
             return false;
         }
         
@@ -307,15 +306,14 @@ public class DivineGuardianManager {
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
                 
                 // 发送传送消息
-                player.sendMessage(ChatColor.GOLD + "✨ 神圣守护将你传送到安全位置！");
-                player.sendMessage(ChatColor.YELLOW + "坐标: X=" + (int)safeLocation.getX() + 
-                                 ", Y=" + (int)safeLocation.getY() + 
-                                 ", Z=" + (int)safeLocation.getZ());
+                plugin.getLanguageManager().sendMessage(player, "divine_guardian.teleport_success");
+                plugin.getLanguageManager().sendMessage(player, "divine_guardian.teleport_coords",
+                    (int)safeLocation.getX(), (int)safeLocation.getY(), (int)safeLocation.getZ());
                 
                 plugin.getLogger().info("神圣守护传送玩家 " + player.getName() + " 到: " + safeLocation);
             } else {
                 plugin.getLogger().warning("无法为玩家 " + player.getName() + " 找到安全传送位置");
-                player.sendMessage(ChatColor.RED + "⚠ 神圣守护传送失败，无法找到安全位置");
+                plugin.getLanguageManager().sendMessage(player, "divine_guardian.teleport_failed");
             }
             
         } catch (Exception e) {
@@ -330,42 +328,40 @@ public class DivineGuardianManager {
     private void sendTriggerMessages(Player humanPlayer, Player ghostPlayer, int remainingCharges) {
         // 屏幕标题
         humanPlayer.sendTitle(
-            ChatColor.GOLD + "✨ 神圣守护触发！",
-            ChatColor.YELLOW + "免疫感染，随机传送",
+            plugin.getLanguageManager().getMessage("divine_guardian.trigger_title"),
+            plugin.getLanguageManager().getMessage("divine_guardian.trigger_subtitle"),
             10, 40, 10
         );
         
         ghostPlayer.sendTitle(
-            ChatColor.RED + "⚠ 神圣守护！",
-            ChatColor.YELLOW + "目标免疫感染并被传送",
+            plugin.getLanguageManager().getMessage("divine_guardian.ghost_trigger_title"),
+            plugin.getLanguageManager().getMessage("divine_guardian.ghost_trigger_subtitle"),
             10, 40, 10
         );
         
         // 个人消息
-        humanPlayer.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        humanPlayer.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护触发 ✨");
+        plugin.getLanguageManager().sendMessage(humanPlayer, "divine_guardian.header");
+        plugin.getLanguageManager().sendMessage(humanPlayer, "divine_guardian.trigger_header");
         humanPlayer.sendMessage("");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 成功免疫了 " + ghostPlayer.getName() + " 的感染！");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 你被随机传送到安全位置");
-        humanPlayer.sendMessage(ChatColor.YELLOW + "⏱️ 剩余神圣守护次数: " + remainingCharges);
-        humanPlayer.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        plugin.getLanguageManager().sendMessage(humanPlayer, "divine_guardian.trigger_immune", ghostPlayer.getName());
+        plugin.getLanguageManager().sendMessage(humanPlayer, "divine_guardian.trigger_teleport");
+        plugin.getLanguageManager().sendMessage(humanPlayer, "divine_guardian.trigger_remaining", remainingCharges);
+        plugin.getLanguageManager().sendMessage(humanPlayer, "divine_guardian.header");
         
-        ghostPlayer.sendMessage(ChatColor.RED + "════════════════════════════════");
-        ghostPlayer.sendMessage(ChatColor.RED + "              ⚠ 神圣守护 ⚠");
+        ghostPlayer.sendMessage(plugin.getLanguageManager().getMessage("divine_guardian.ghost_trigger_header"));
         ghostPlayer.sendMessage("");
-        ghostPlayer.sendMessage(ChatColor.RED + "✗ 对 " + humanPlayer.getName() + " 的感染被神圣守护抵挡");
-        ghostPlayer.sendMessage(ChatColor.RED + "✗ 目标被随机传送");
-        ghostPlayer.sendMessage(ChatColor.YELLOW + "⏱️ 目标剩余神圣守护次数: " + remainingCharges);
-        ghostPlayer.sendMessage(ChatColor.RED + "════════════════════════════════");
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "divine_guardian.ghost_trigger_blocked", humanPlayer.getName());
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "divine_guardian.ghost_trigger_teleport");
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "divine_guardian.ghost_trigger_remaining", remainingCharges);
+        ghostPlayer.sendMessage(plugin.getLanguageManager().getMessage("divine_guardian.ghost_trigger_header"));
         
         // 广播消息
         if (plugin.getConfigManager().isDivineGuardianBroadcastEnabled()) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "✨ " + humanPlayer.getName() + " 的神圣守护触发！");
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "✨ 免疫了 " + ghostPlayer.getName() + " 的感染");
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "✨ 被随机传送到安全位置");
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "⏱️ 剩余神圣守护次数: " + remainingCharges);
-            Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.header");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_trigger", humanPlayer.getName(), ghostPlayer.getName());
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_trigger_3");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_trigger_remaining", remainingCharges);
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.header");
         }
     }
     
@@ -436,28 +432,24 @@ public class DivineGuardianManager {
      */
     private void sendDeactivationMessages(Player player) {
         // 屏幕标题
-        player.sendTitle(
-            ChatColor.RED + "⚠ 神圣守护失效！",
-            ChatColor.YELLOW + "获得隐身10秒效果",
-            10, 60, 10
-        );
+        plugin.getLanguageManager().sendTitle(player, "divine_guardian.expired_title", "divine_guardian.expired_subtitle", 10, 60, 10);
         
         // 个人消息
-        player.sendMessage(ChatColor.RED + "════════════════════════════════");
-        player.sendMessage(ChatColor.RED + "              ⚠ 神圣守护失效 ⚠");
-        player.sendMessage("");
-        player.sendMessage(ChatColor.RED + "✗ 神圣守护使用次数已耗尽");
-        player.sendMessage(ChatColor.YELLOW + "✓ 获得隐身效果10秒");
-        player.sendMessage(ChatColor.YELLOW + "⚠ 注意：你现在可以被感染了！");
-        player.sendMessage(ChatColor.RED + "════════════════════════════════");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.expired_header");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.expired_header_center");
+        plugin.getLanguageManager().sendMessage(player, "");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.expired_no_charges");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.expired_invisibility");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.expired_warning");
+        plugin.getLanguageManager().sendMessage(player, "divine_guardian.expired_header");
         
         // 广播消息
         if (plugin.getConfigManager().isDivineGuardianBroadcastEnabled()) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
-            Bukkit.broadcastMessage(ChatColor.RED + "⚠ " + player.getName() + " 的神圣守护已失效！");
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "⚠ 他现在可以被感染了");
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "✨ 获得隐身效果10秒");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_expired_header");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_expired", player.getName());
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_expired_2");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_expired_3");
+            plugin.getLanguageManager().broadcastMessage("divine_guardian.broadcast_expired_header");
         }
     }
     

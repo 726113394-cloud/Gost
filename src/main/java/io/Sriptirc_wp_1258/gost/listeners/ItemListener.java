@@ -106,8 +106,7 @@ public class ItemListener implements Listener {
             if (isGhost) {
                 // 应用凝冰球效果
                 plugin.getItemManager().applyIceBallEffect(target);
-                shooter.sendMessage(ChatColor.AQUA + "你成功击中了 " + target.getName() + "！");
-                plugin.getLogger().info("凝冰球击中鬼玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")");
+                plugin.getLanguageManager().sendMessage(shooter, "item.ice_ball_hit", target.getName());
             } else {
                 plugin.getLogger().info("凝冰球击中非鬼玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")，不应用效果");
             }
@@ -117,7 +116,7 @@ public class ItemListener implements Listener {
     private void handleAdrenaline(Player player, ItemStack item) {
         // 检查玩家是否是人类
         if (!plugin.getPlayerManager().isHuman(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "只有人类可以使用肾上腺素！");
+            plugin.getLanguageManager().sendMessage(player, "item.adrenaline_human_only");
             return;
         }
         
@@ -134,7 +133,7 @@ public class ItemListener implements Listener {
     private void handleFrenzyPotion(Player player, ItemStack item) {
         // 检查玩家是否是鬼
         if (!plugin.getPlayerManager().isGhost(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "只有鬼可以使用狂暴药水！");
+            plugin.getLanguageManager().sendMessage(player, "item.frenzy_ghost_only");
             return;
         }
         
@@ -161,13 +160,13 @@ public class ItemListener implements Listener {
         // 检查冷却时间
         if (isOnCooldown(player, "soul-control")) {
             int remaining = getRemainingCooldown(player, "soul-control");
-            player.sendMessage(ChatColor.RED + "控魂术冷却中，剩余 " + remaining + " 秒");
+            plugin.getLanguageManager().sendMessage(player, "item.soul_control_cooldown", remaining);
             return;
         }
         
         // 检查玩家是否是人类
         if (!plugin.getPlayerManager().isHuman(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "只有人类可以使用控魂术！");
+            plugin.getLanguageManager().sendMessage(player, "item.soul_control_human_only");
             return;
         }
         
@@ -180,7 +179,7 @@ public class ItemListener implements Listener {
         }
         
         if (ghostPlayers.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "附近没有鬼玩家！");
+            plugin.getLanguageManager().sendMessage(player, "item.soul_control_no_ghosts");
             return;
         }
         
@@ -201,7 +200,7 @@ public class ItemListener implements Listener {
     private void handleBlinkPearl(Player player, ItemStack item, PlayerInteractEvent event) {
         // 这个方法已废弃，保留但不使用
         // 所有传送功能已合并到handleTeleportPearl方法中
-        player.sendMessage(ChatColor.RED + "闪现珍珠已废弃，请使用传送珍珠！");
+        plugin.getLanguageManager().sendMessage(player, "item.teleport_pearl_deprecated");
         event.setCancelled(true);
     }
     
@@ -266,7 +265,7 @@ public class ItemListener implements Listener {
         // 检查冷却时间
         if (isOnCooldown(player, "stinky-steak")) {
             int remaining = getRemainingCooldown(player, "stinky-steak");
-            player.sendMessage(ChatColor.RED + "臭牛排冷却中，剩余 " + remaining + " 秒");
+            plugin.getLanguageManager().sendMessage(player, "item.stinky_steak_cooldown", remaining);
             return;
         }
         
@@ -304,14 +303,14 @@ public class ItemListener implements Listener {
         player.setSaturation(savedSaturation);
         
         // 发送使用提示
-        player.sendMessage(ChatColor.GREEN + "你食用了臭牛排，获得了速度" + (speedLevel + 1) + "效果和发光效果！");
+        plugin.getLanguageManager().sendMessage(player, "item.stinky_steak_effect", speedLevel + 1);
     }
     
     private void handleTeleportPearl(Player player, ItemStack item, PlayerInteractEvent event) {
         // 检查冷却时间
         if (isOnCooldown(player, "teleport-pearl")) {
             int remaining = getRemainingCooldown(player, "teleport-pearl");
-            player.sendMessage(ChatColor.RED + "传送珍珠冷却中，剩余 " + remaining + " 秒");
+            plugin.getLanguageManager().sendMessage(player, "item.teleport_pearl_cooldown", remaining);
             return;
         }
         
@@ -326,14 +325,14 @@ public class ItemListener implements Listener {
         setCooldown(player, "teleport-pearl", cooldown);
         
         // 发送使用提示
-        player.sendMessage(ChatColor.GREEN + "你使用了传送珍珠，冷却时间 " + cooldown + " 秒");
+        plugin.getLanguageManager().sendMessage(player, "item.teleport_pearl_success", cooldown);
     }
     
     private void handleSoulDetector(Player player, ItemStack item) {
         // 检查冷却时间
         if (isOnCooldown(player, "soul-detector")) {
             int remaining = getRemainingCooldown(player, "soul-detector");
-            player.sendMessage(ChatColor.RED + "灵魂探测器冷却中，剩余 " + remaining + " 秒");
+            plugin.getLanguageManager().sendMessage(player, "item.soul_detector_cooldown", remaining);
             return;
         }
         
@@ -344,8 +343,7 @@ public class ItemListener implements Listener {
         plugin.getLogger().info("玩家 " + player.getName() + " 是鬼: " + isGhost);
         
         if (!isGhost) {
-            player.sendMessage(ChatColor.RED + "只有鬼可以使用灵魂探测器！");
-            plugin.getLogger().info("玩家 " + player.getName() + " 不是鬼，无法使用灵魂探测器");
+            plugin.getLanguageManager().sendMessage(player, "item.soul_detector_only_ghost");
             return;
         }
         
@@ -368,8 +366,7 @@ public class ItemListener implements Listener {
         plugin.getLogger().info("在线玩家数量: " + allPlayers.size());
         
         if (allPlayers.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "没有找到其他玩家！");
-            plugin.getLogger().warning("灵魂探测器: 没有找到在线玩家");
+            plugin.getLanguageManager().sendMessage(player, "item.soul_detector_no_players");
             return;
         }
         
@@ -394,9 +391,7 @@ public class ItemListener implements Listener {
         setCooldown(player, "soul-detector", cooldown);
         
         // 发送消息
-        player.sendMessage(ChatColor.GREEN + "你使用了灵魂探测器！所有玩家发光25秒！");
-        Bukkit.broadcastMessage(ChatColor.YELLOW + player.getName() + " 使用了灵魂探测器，所有玩家发光25秒！");
-        
-        plugin.getLogger().info("玩家 " + player.getName() + " 使用了灵魂探测器，所有玩家发光25秒，共影响 " + allPlayers.size() + " 名玩家");
+        plugin.getLanguageManager().sendMessage(player, "item.soul_detector_success");
+        plugin.getLanguageManager().broadcastMessage("item.soul_detector_broadcast", player.getName());
     }
 }

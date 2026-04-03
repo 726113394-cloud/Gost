@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Build outputs
+build/
+out/
+target/
+*.jar
+!gradle-wrapper.jar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~

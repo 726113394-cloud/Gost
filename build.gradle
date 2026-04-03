@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'io.Sriptirc_wp_1258'
+version = '2.1.3'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc-repo'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name = 'jitpack'
+        url = 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7.1'
+}
+
+shadowJar {
+    archiveBaseName.set('Gost')
+    archiveClassifier.set('')
+    archiveVersion.set(project.version)
+    
+    minimize()
+}
+
+build {
+    dependsOn shadowJar
+}
+
+java {
+    withSourcesJar()
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand(
+            'version': project.version,
+            'name': project.name
+        )
+    }
+}

@@ -1,12 +1,7 @@
 package io.Sriptirc_wp_1258.gost.managers;
 
 import io.Sriptirc_wp_1258.gost.Gost;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -36,7 +31,7 @@ public class BotManager {
         UUID uuid;
         BotState state;
         Location spawnLocation;
-        BukkitTask movementTask;
+        CancellableTask movementTask;
         
         BotData(String name, UUID uuid) {
             this.name = name;
@@ -68,7 +63,7 @@ public class BotManager {
         maxToAdd = Math.min(maxToAdd, plugin.getConfigManager().getMaxPlayers() - plugin.getGameManager().getQueueSize());
         
         if (maxToAdd <= 0) {
-            plugin.getLogger().warning("无法添加假人：队列已满或没有可用名称");
+            plugin.getLogger().warning(plugin.getLanguageManager().getMessage("bot.queue_full"));
             return 0;
         }
         
@@ -90,7 +85,7 @@ public class BotManager {
             }
         }
         
-        plugin.getLogger().info("已添加 " + added + " 个假人到队列");
+        plugin.getLogger().info(plugin.getLanguageManager().getMessage("bot.added_to_queue", added));
         return added;
     }
     
@@ -101,11 +96,12 @@ public class BotManager {
         botData.state = BotState.QUEUED;
         
         // 广播假人加入队列
-        Bukkit.broadcastMessage(ChatColor.YELLOW + botData.name + " 加入了游戏队列 (" + 
-            plugin.getGameManager().getQueueSize() + "/" + plugin.getConfigManager().getMaxPlayers() + ")");
+        int currentPlayers = plugin.getGameManager().getQueueSize();
+        int maxPlayers = plugin.getConfigManager().getMaxPlayers();
+        plugin.getLanguageManager().broadcastMessage("bot.join_broadcast", botData.name, currentPlayers, maxPlayers);
         
         // 记录日志
-        plugin.getLogger().info("假人 " + botData.name + " 已加入队列");
+        plugin.getLogger().info(plugin.getLanguageManager().getMessage("bot.bot_queued", botData.name));
     }
     
     /**
@@ -143,7 +139,7 @@ public class BotManager {
             }
         }
         
-        plugin.getLogger().info("已从队列移除 " + removed + " 个假人");
+        plugin.getLogger().info(plugin.getLanguageManager().getMessage("bot.removed_from_queue", removed));
         return removed;
     }
     
@@ -152,11 +148,12 @@ public class BotManager {
      */
     private void simulateLeaveQueue(BotData botData) {
         // 广播假人离开队列
-        Bukkit.broadcastMessage(ChatColor.YELLOW + botData.name + " 离开了游戏队列 (" + 
-            (plugin.getGameManager().getQueueSize() - 1) + "/" + plugin.getConfigManager().getMaxPlayers() + ")");
+        int currentPlayers = plugin.getGameManager().getQueueSize();
+        int maxPlayers = plugin.getConfigManager().getMaxPlayers();
+        plugin.getLanguageManager().broadcastMessage("bot.leave_broadcast", botData.name, currentPlayers, maxPlayers);
         
         // 记录日志
-        plugin.getLogger().info("假人 " + botData.name + " 已离开队列");
+        plugin.getLogger().info(plugin.getLanguageManager().getMessage("bot.bot_left_queue", botData.name));
     }
     
     /**
@@ -172,12 +169,12 @@ public class BotManager {
             }
             
             if (bot.state == BotState.QUEUED) {
-                Bukkit.broadcastMessage(ChatColor.YELLOW + bot.name + " 离开了游戏队列");
+                plugin.getLanguageManager().broadcastMessage("bot.leave_simple", bot.name);
             }
         }
         
         activeBots.clear();
-        plugin.getLogger().info("已清除所有 " + count + " 个假人");
+        plugin.getLogger().info(plugin.getLanguageManager().getMessage("bot.cleared_all", count));
     }
     
     /**
@@ -228,13 +225,13 @@ public class BotManager {
         int inGame = total - queued;
         
         StringBuilder info = new StringBuilder();
-        info.append("§e假人系统状态:\n");
-        info.append("§7总假人数: §f").append(total).append("\n");
-        info.append("§7队列中: §f").append(queued).append("\n");
-        info.append("§7游戏中: §f").append(inGame).append("\n");
+        info.append(plugin.getLanguageManager().getMessage("bot.status_header")).append("\n");
+        info.append(plugin.getLanguageManager().getMessage("bot.status_total", total)).append("\n");
+        info.append(plugin.getLanguageManager().getMessage("bot.status_queued", queued)).append("\n");
+        info.append(plugin.getLanguageManager().getMessage("bot.status_in_game", inGame)).append("\n");
         
         if (total > 0) {
-            info.append("§7活跃假人: §f");
+            info.append(plugin.getLanguageManager().getMessage("bot.status_active"));
             List<String> botNames = new ArrayList<>();
             for (BotData bot : activeBots.values()) {
                 String stateSymbol = getStateSymbol(bot.state);
@@ -251,10 +248,10 @@ public class BotManager {
      */
     private String getStateSymbol(BotState state) {
         switch (state) {
-            case QUEUED: return "§e[Q]";
-            case IN_GAME: return "§a[G]";
-            case MOVING: return "§b[M]";
-            default: return "§7[I]";
+            case QUEUED: return plugin.getLanguageManager().getMessage("bot.state_queued");
+            case IN_GAME: return plugin.getLanguageManager().getMessage("bot.state_in_game");
+            case MOVING: return plugin.getLanguageManager().getMessage("bot.state_moving");
+            default: return plugin.getLanguageManager().getMessage("bot.state_idle");
         }
     }
     
@@ -265,7 +262,7 @@ public class BotManager {
         BotData bot = activeBots.get(botUuid);
         if (bot != null) {
             bot.state = BotState.IN_GAME;
-            plugin.getLogger().info("假人 " + bot.name + " 已进入游戏");
+            plugin.getLogger().info(plugin.getLanguageManager().getMessage("bot.bot_joined_game", bot.name));
         }
     }
     
@@ -279,7 +276,7 @@ public class BotManager {
                 bot.movementTask.cancel();
             }
             activeBots.remove(botUuid);
-            plugin.getLogger().info("假人 " + bot.name + " 已从游戏移除");
+            plugin.getLogger().info(plugin.getLanguageManager().getMessage("bot.bot_left_game", bot.name));
         }
     }
 }
