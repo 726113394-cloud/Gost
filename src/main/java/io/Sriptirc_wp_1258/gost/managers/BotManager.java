@@ -1,12 +1,7 @@
 package io.Sriptirc_wp_1258.gost.managers;
 
 import io.Sriptirc_wp_1258.gost.Gost;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -36,7 +31,7 @@ public class BotManager {
         UUID uuid;
         BotState state;
         Location spawnLocation;
-        BukkitTask movementTask;
+        CancellableTask movementTask;
         
         BotData(String name, UUID uuid) {
             this.name = name;

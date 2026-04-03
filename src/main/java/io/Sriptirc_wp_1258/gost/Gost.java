@@ -6,6 +6,7 @@ import io.Sriptirc_wp_1258.gost.commands.DivineGuardianCommand;
 import io.Sriptirc_wp_1258.gost.commands.GhostParticleCommand;
 import io.Sriptirc_wp_1258.gost.listeners.*;
 import io.Sriptirc_wp_1258.gost.managers.*;
+import io.Sriptirc_wp_1258.gost.platform.PlatformScheduler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Gost extends JavaPlugin {
@@ -30,9 +31,7 @@ public class Gost extends JavaPlugin {
     private HeartbeatManager heartbeatManager;
     private DivineGuardianManager divineGuardianManager;
     private GhostParticleManager ghostParticleManager;
-    // private CurrencyManager currencyManager; // 货币系统已取消
-    // private NpcManager npcManager; // NPC系统已取消
-    // private SpectatorManager spectatorManager; // 观战系统已搁置
+    private PlatformScheduler platformScheduler;
     
     @Override
     public void onEnable() {
@@ -56,9 +55,9 @@ public class Gost extends JavaPlugin {
         heartbeatManager = new HeartbeatManager(this);
         divineGuardianManager = new DivineGuardianManager(this);
         ghostParticleManager = new GhostParticleManager(this);
-        // currencyManager = new CurrencyManager(this); // 暂时取消货币系统
-        // spectatorManager = new SpectatorManager(this); // 暂时搁置观战系统
-        // npcManager = new NpcManager(this); // 取消NPC系统
+        platformScheduler = PlatformScheduler.create();
+        
+        getLogger().info("检测到平台: " + PlatformScheduler.getPlatform());
         
         // 加载语言
         languageManager.loadLanguage();
@@ -187,6 +186,10 @@ public class Gost extends JavaPlugin {
     
     public GhostParticleManager getGhostParticleManager() {
         return ghostParticleManager;
+    }
+    
+    public PlatformScheduler getPlatformScheduler() {
+        return platformScheduler;
     }
     
     // public CurrencyManager getCurrencyManager() {

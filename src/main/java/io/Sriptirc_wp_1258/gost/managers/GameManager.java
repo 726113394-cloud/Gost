@@ -2,15 +2,12 @@ package io.Sriptirc_wp_1258.gost.managers;
 
 import io.Sriptirc_wp_1258.gost.Gost;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -46,13 +43,13 @@ public class GameManager {
     private BossBar gameBossBar;
     
     // 任务
-    private BukkitTask queueTask;
-    private BukkitTask preparationTask;
-    private BukkitTask gameTask;
-    private BukkitTask itemDistributionTask;
-    private BukkitTask ghostSenseTask;
-    private BukkitTask minuteGlowingTask;
-    private BukkitTask ghostToHumanTask;
+    private CancellableTask queueTask;
+    private CancellableTask preparationTask;
+    private CancellableTask gameTask;
+    private CancellableTask itemDistributionTask;
+    private CancellableTask ghostSenseTask;
+    private CancellableTask minuteGlowingTask;
+    private CancellableTask ghostToHumanTask;
     
     public GameManager(Gost plugin) {
         this.plugin = plugin;
@@ -160,17 +157,16 @@ public class GameManager {
         queueTime = plugin.getConfigManager().getQueueTime();
         queueBossBar.setVisible(true);
         
-        queueTask = new BukkitRunnable() {
+        queueTask = new CancellableTask(plugin) {
             int timeLeft = queueTime;
             boolean matchQueueStarted = false;
             int matchQueueTimeLeft = 0;
             
             @Override
-            public void run() {
+            public boolean execute() {
                 if (waitingPlayers.isEmpty()) {
                     queueBossBar.setVisible(false);
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 检查是否达到最大玩家数，开始匹配队列倒计时
@@ -206,8 +202,7 @@ public class GameManager {
                     } else {
                         // 匹配队列倒计时结束，开始游戏
                         startGame();
-                        this.cancel();
-                        return;
+                        return false;
                     }
                 }
                 
@@ -245,13 +240,14 @@ public class GameManager {
                         waitingPlayers.clear();
                         queueBossBar.setVisible(false);
                     }
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 timeLeft--;
+                return true;
             }
-        }.runTaskTimer(plugin, 0L, 20L); // 每秒执行一次
+        };
+        queueTask.startTimer(0L);
     }
     
     // 开始游戏
@@ -313,14 +309,13 @@ public class GameManager {
         gameBossBar.setVisible(true);
         gameBossBar.setColor(BarColor.YELLOW);
         
-        preparationTask = new BukkitRunnable() {
+        preparationTask = new CancellableTask(plugin) {
             int timeLeft = preparationTime;
             
             @Override
-            public void run() {
+            public boolean execute() {
                 if (!preparationPhase) {
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 更新Boss栏
@@ -340,8 +335,7 @@ public class GameManager {
                 if (timeLeft <= 0) {
                     preparationPhase = false;
                     startGamePhase();
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 每5秒提醒一次
@@ -358,8 +352,10 @@ public class GameManager {
                 }
                 
                 timeLeft--;
+                return true;
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        };
+        preparationTask.startTimer(0L);
         
         // 清理所有玩家的游戏效果，确保公平性
         cleanupPlayerEffects();
@@ -442,15 +438,14 @@ public class GameManager {
     private void startMotherGhostImmobilizeCountdown(Player motherGhost) {
         int immobilizeDuration = plugin.getConfigManager().getGhostImmobilizeDuration();
         
-        new BukkitRunnable() {
+        new CancellableTask(plugin) {
             int timeLeft = immobilizeDuration;
             
             @Override
-            public void run() {
+            public boolean execute() {
                 if (!motherGhost.isOnline() || 
                     plugin.getPlayerManager().getPlayerRole(motherGhost.getUniqueId()) != PlayerManager.PlayerRole.GHOST_MOTHER) {
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 if (timeLeft > 0) {
@@ -475,10 +470,11 @@ public class GameManager {
                         plugin.getLanguageManager().getMessage("game.immobilize_end_subtitle"),
                         10, 40, 10);
                     motherGhost.sendMessage(plugin.getLanguageManager().getMessage("game.immobilize_end_message"));
-                    this.cancel();
+                    return false;
                 }
+                return true;
             }
-        }.runTaskTimer(plugin, 0L, 20L); // 每秒执行一次
+        }.startTimer(0L);
     }
     
     // 开始游戏阶段
@@ -526,16 +522,15 @@ public class GameManager {
     private void startGameTimer() {
         remainingGameTime = gameDuration;
         
-        gameTask = new BukkitRunnable() {
+        gameTask = new CancellableTask(plugin) {
             int timeLeft = gameDuration;
             
             @Override
-            public void run() {
+            public boolean execute() {
                 remainingGameTime = timeLeft;
                 
                 if (gameState != GameState.RUNNING) {
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 更新Boss栏
@@ -556,23 +551,20 @@ public class GameManager {
                 // 检查游戏结束条件
                 if (timeLeft <= 0) {
                     endGame(true); // 人类胜利
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 检查是否所有人类都被感染
                 if (humanCount == 0) {
                     endGame(false); // 鬼胜利
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 检查鬼数量是否为0
                 if (ghostCount == 0) {
                     // 鬼数量为0，人类自动胜利，但不发放奖金，退还入场金
                     endGameWithNoGhosts();
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 最后2分钟：随机将一名鬼变回人类（如果转化功能启用）
@@ -583,34 +575,36 @@ public class GameManager {
                 }
                 
                 timeLeft--;
+                return true;
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        };
+        gameTask.startTimer(0L);
     }
     
     // 开始道具分发任务
     private void startItemDistributionTask() {
-        itemDistributionTask = new BukkitRunnable() {
+        itemDistributionTask = new CancellableTask(plugin) {
             @Override
-            public void run() {
+            public boolean execute() {
                 if (gameState != GameState.RUNNING) {
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 分发道具
                 plugin.getItemManager().distributeItems();
+                return true;
             }
-        }.runTaskTimer(plugin, 1200L, 1200L); // 每分钟执行一次（20 ticks * 60 = 1200）
+        };
+        itemDistributionTask.startTimer(1200L); // 每分钟执行一次
     }
     
     // 开始幽灵感知任务
     private void startGhostSenseTask() {
-        ghostSenseTask = new BukkitRunnable() {
+        ghostSenseTask = new CancellableTask(plugin) {
             @Override
-            public void run() {
+            public boolean execute() {
                 if (gameState != GameState.RUNNING) {
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 获取所有游戏中的玩家
@@ -624,8 +618,10 @@ public class GameManager {
                 
                 // 应用幽灵感知效果
                 plugin.getItemManager().applyGhostSenseEffect(allPlayers);
+                return true;
             }
-        }.runTaskTimer(plugin, 1200L, 1200L); // 每分钟执行一次
+        };
+        ghostSenseTask.startTimer(1200L); // 每分钟执行一次
     }
     
     // 更新Boss栏统计
@@ -987,18 +983,19 @@ public class GameManager {
         
         plugin.getLogger().info("开始每分钟高亮效果任务，间隔: " + interval + "秒，持续时间: " + duration + "秒");
         
-        minuteGlowingTask = new BukkitRunnable() {
+        minuteGlowingTask = new CancellableTask(plugin) {
             @Override
-            public void run() {
+            public boolean execute() {
                 if (gameState != GameState.RUNNING) {
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 给所有玩家应用高亮效果
                 applyMinuteGlowingEffect();
+                return true;
             }
-        }.runTaskTimer(plugin, interval * 20L, interval * 20L); // 转换为ticks
+        };
+        minuteGlowingTask.startTimer(interval * 20L); // 转换为ticks
     }
     
     /**
@@ -1071,13 +1068,12 @@ public class GameManager {
         
         plugin.getLogger().info("开始鬼转人类功能任务，将在游戏剩余 " + remainingTime + " 秒时触发");
         
-        ghostToHumanTask = new BukkitRunnable() {
+        ghostToHumanTask = new CancellableTask(plugin) {
             @Override
-            public void run() {
+            public boolean execute() {
                 // 检查游戏是否还在进行中
                 if (gameState != GameState.RUNNING) {
-                    this.cancel();
-                    return;
+                    return false;
                 }
                 
                 // 获取游戏剩余时间
@@ -1088,10 +1084,12 @@ public class GameManager {
                 if (remainingSeconds <= remainingTime) {
                     plugin.getLogger().info("触发鬼转人类功能，游戏剩余时间: " + remainingSeconds + "秒");
                     convertGhostsToHumans();
-                    this.cancel(); // 只触发一次
+                    return false; // 只触发一次
                 }
+                return true;
             }
-        }.runTaskTimer(plugin, 20L, 20L); // 每秒检查一次
+        };
+        ghostToHumanTask.startTimer(20L); // 每秒检查一次
     }
     
     /**

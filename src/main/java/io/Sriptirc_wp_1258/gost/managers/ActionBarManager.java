@@ -1,10 +1,7 @@
 package io.Sriptirc_wp_1258.gost.managers;
 
 import io.Sriptirc_wp_1258.gost.Gost;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +11,7 @@ public class ActionBarManager {
     
     private final Gost plugin;
     private final Map<UUID, String> actionBarMessages = new HashMap<>();
-    private final Map<UUID, Integer> actionBarTasks = new HashMap<>();
+    private final Map<UUID, CancellableTask> actionBarTasks = new HashMap<>();
     
     public ActionBarManager(Gost plugin) {
         this.plugin = plugin;
@@ -40,15 +37,13 @@ public class ActionBarManager {
         
         // 如果需要持续显示，创建定时任务
         if (duration > 0) {
-            int taskId = new BukkitRunnable() {
+            CancellableTask task = new CancellableTask(plugin) {
                 int remaining = duration;
                 
                 @Override
-                public void run() {
+                public boolean execute() {
                     if (!player.isOnline() || !actionBarMessages.containsKey(playerId)) {
-                        cancel();
-                        actionBarTasks.remove(playerId);
-                        return;
+                        return false;
                     }
                     
                     // 每秒发送一次
@@ -56,14 +51,15 @@ public class ActionBarManager {
                     
                     remaining--;
                     if (remaining <= 0) {
-                        cancel();
                         actionBarMessages.remove(playerId);
                         actionBarTasks.remove(playerId);
+                        return false;
                     }
+                    return true;
                 }
-            }.runTaskTimer(plugin, 20L, 20L).getTaskId();
-            
-            actionBarTasks.put(playerId, taskId);
+            };
+            task.startTimer(20L);
+            actionBarTasks.put(playerId, task);
         }
     }
     
@@ -91,7 +87,7 @@ public class ActionBarManager {
      */
     public void cancelActionBar(UUID playerId) {
         if (actionBarTasks.containsKey(playerId)) {
-            Bukkit.getScheduler().cancelTask(actionBarTasks.get(playerId));
+            actionBarTasks.get(playerId).cancel();
             actionBarTasks.remove(playerId);
         }
         actionBarMessages.remove(playerId);
@@ -153,7 +149,7 @@ public class ActionBarManager {
      */
     public void cleanup() {
         for (UUID playerId : actionBarTasks.keySet()) {
-            Bukkit.getScheduler().cancelTask(actionBarTasks.get(playerId));
+            actionBarTasks.get(playerId).cancel();
         }
         actionBarTasks.clear();
         actionBarMessages.clear();

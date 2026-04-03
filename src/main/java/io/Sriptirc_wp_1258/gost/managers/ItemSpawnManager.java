@@ -10,8 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ItemSpawnManager {
     
     private final Gost plugin;
-    private BukkitTask spawnTask;
+    private CancellableTask spawnTask;
     private final Map<UUID, Integer> playerItemCounts = new ConcurrentHashMap<>();
     private final Random random = new Random();
     
@@ -130,19 +128,18 @@ public class ItemSpawnManager {
             spawnTask.cancel();
         }
         
-        spawnTask = new BukkitRunnable() {
+        spawnTask = new CancellableTask(plugin) {
             @Override
-            public void run() {
+            public boolean execute() {
                 if (!plugin.getGameManager().isGameRunning()) {
-                    return;
+                    return false;
                 }
                 
                 refreshItems();
+                return true;
             }
-        }.runTaskTimer(plugin, 
-            plugin.getConfigManager().getItemSpawnInterval() * 20L,  // 初始延迟
-            plugin.getConfigManager().getItemSpawnInterval() * 20L   // 间隔
-        );
+        };
+        spawnTask.startTimer(plugin.getConfigManager().getItemSpawnInterval() * 20L);
         
         plugin.getLogger().info("道具刷新系统已启动，间隔: " + 
             plugin.getConfigManager().getItemSpawnInterval() + "秒，最大每次刷新: " + 

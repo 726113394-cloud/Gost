@@ -7,8 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +19,7 @@ import java.util.UUID;
 public class GhostParticleManager {
     
     private final Gost plugin;
-    private BukkitTask particleTask;
+    private CancellableTask particleTask;
     private final Map<UUID, ParticleData> particleDataMap = new HashMap<>();
     
     // 粒子效果数据类
@@ -68,11 +66,11 @@ public class GhostParticleManager {
             particleTask.cancel();
         }
         
-        particleTask = new BukkitRunnable() {
+        particleTask = new CancellableTask(plugin) {
             @Override
-            public void run() {
+            public boolean execute() {
                 if (!plugin.getGameManager().isGameRunning()) {
-                    return;
+                    return false;
                 }
                 
                 // 检查是否在准备阶段
@@ -80,13 +78,15 @@ public class GhostParticleManager {
                 boolean showInPreparation = plugin.getConfigManager().isGhostParticleShowInPreparation();
                 
                 if (isPreparationPhase && !showInPreparation) {
-                    return;
+                    return true;
                 }
                 
                 // 为所有鬼玩家生成粒子
                 generateParticlesForAllGhosts();
+                return true;
             }
-        }.runTaskTimer(plugin, 0L, plugin.getConfigManager().getGhostParticleInterval());
+        };
+        particleTask.startTimer(plugin.getConfigManager().getGhostParticleInterval());
     }
     
     /**
@@ -97,9 +97,6 @@ public class GhostParticleManager {
             particleTask.cancel();
             particleTask = null;
         }
-        
-        // 清理粒子数据
-        particleDataMap.clear();
     }
     
     /**
