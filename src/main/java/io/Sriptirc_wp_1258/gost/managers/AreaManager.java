@@ -584,7 +584,7 @@ public class AreaManager {
      */
     public boolean teleportPlayerToArea(Player player, GameArea area) {
         if (area == null) {
-            player.sendMessage("§c区域不存在！");
+            player.sendMessage(plugin.getLanguageManager().getMessage("area.not_found"));
             return false;
         }
         
@@ -594,13 +594,13 @@ public class AreaManager {
             // 如果找不到安全位置，尝试使用中心点
             safeLocation = area.getCenter();
             if (safeLocation == null) {
-                player.sendMessage("§c无法获取传送位置！");
+                player.sendMessage(plugin.getLanguageManager().getMessage("area.teleport_no_location"));
                 return false;
             }
         }
         
         player.teleport(safeLocation);
-        player.sendMessage("§a你已被传送到游戏区域！");
+        player.sendMessage(plugin.getLanguageManager().getMessage("area.teleport_success"));
         return true;
     }
     

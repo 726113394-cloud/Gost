@@ -54,8 +54,8 @@ public class InfectionListener implements Listener {
         event.setCancelled(true);
         
         // 发送消息
-        attacker.sendMessage("§a你成功感染了 " + victim.getName() + "！");
-        victim.sendMessage("§c你被 " + attacker.getName() + " 感染了！现在你变成了鬼！");
+        plugin.getLanguageManager().sendMessage(attacker, "infection.infected_self", victim.getName());
+        plugin.getLanguageManager().sendMessage(victim, "infection.infected_victim", attacker.getName());
     }
     
     @EventHandler
@@ -93,7 +93,7 @@ public class InfectionListener implements Listener {
         plugin.getPlayerManager().infectPlayer(victim.getUniqueId(), attacker.getUniqueId());
         
         // 发送消息
-        attacker.sendMessage("§a你成功感染了 " + victim.getName() + "！");
-        victim.sendMessage("§c你被 " + attacker.getName() + " 感染了！现在你变成了鬼！");
+        plugin.getLanguageManager().sendMessage(attacker, "infection.infected_self", victim.getName());
+        plugin.getLanguageManager().sendMessage(victim, "infection.infected_victim", attacker.getName());
     }
 }

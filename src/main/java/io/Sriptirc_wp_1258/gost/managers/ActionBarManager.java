@@ -101,8 +101,7 @@ public class ActionBarManager {
      * 发送道具使用提示
      */
     public void sendItemUsageHint(Player player, String itemName, String usage) {
-        String message = ChatColor.YELLOW + "道具: " + ChatColor.GOLD + itemName + 
-                        ChatColor.YELLOW + " - " + ChatColor.GRAY + usage;
+        String message = plugin.getLanguageManager().getMessage("actionbar.item_usage", itemName, usage);
         sendActionBar(player, message, 5); // 显示5秒
     }
     

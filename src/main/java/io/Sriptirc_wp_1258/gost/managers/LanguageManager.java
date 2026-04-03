@@ -76,20 +76,11 @@ public class LanguageManager {
     
     /**
      * 加载默认消息（当文件加载失败时）
+     * 所有消息现在从 yml 文件加载，此方法保留为空实现作为后备
      */
     private void loadDefaultMessages() {
-        messages.put("game.starting", "§e§l游戏开始倒计时");
-        messages.put("game.started-human", "§a§l坚持到最后！");
-        messages.put("game.started-ghost", "§c§l狩猎开始！");
-        messages.put("game.ending", "§e§l游戏结束");
-        messages.put("game.ended", "§a§l游戏已结束");
-        messages.put("role.infected", "§c§l你已被感染！");
-        messages.put("role.converted", "§a§l幸运星！这次重新做人！");
-        messages.put("role.ghost-disabled-prep", "§c你是母体鬼，前20秒无法移动！");
-        messages.put("broadcast.mother-ghost-selected", "§4{0} 被选为母体鬼！");
-        messages.put("broadcast.player-infected", "§c{0} 被 {1} 感染了！");
-        messages.put("queue.spectator-confirm", "§e游戏已在进行，再次点击确认观战");
-        messages.put("queue.spectator-joined", "§a你已进入观战模式");
+        // 所有默认消息现在从 messages_zh_CN.yml / messages_en_US.yml 加载
+        // 此方法仅作为后备，不应再有硬编码消息
     }
     
     /**
@@ -98,7 +89,7 @@ public class LanguageManager {
      * @return 格式化后的消息
      */
     public String getMessage(String key) {
-        return messages.getOrDefault(key, "§cMissing message: " + key);
+        return messages.getOrDefault(key, "&cMissing message: " + key);
     }
     
     /**
@@ -162,6 +153,16 @@ public class LanguageManager {
     public void sendActionBar(Player player, String key, Object... args) {
         String message = getMessage(key, args);
         plugin.getActionBarManager().sendActionBar(player, message, 100); // 5秒持续时间
+    }
+    
+    /**
+     * 向所有在线玩家广播消息
+     * @param key 消息键
+     * @param args 参数
+     */
+    public void broadcastMessage(String key, Object... args) {
+        String message = getMessage(key, args);
+        org.bukkit.Bukkit.broadcastMessage(message);
     }
     
     /**

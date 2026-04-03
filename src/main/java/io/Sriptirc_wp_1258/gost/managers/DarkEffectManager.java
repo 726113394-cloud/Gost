@@ -46,9 +46,10 @@ public class DarkEffectManager {
                         boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
                         
                         if (isAdmin || wasCreative) {
-                            player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
-                                             (isAdmin && wasCreative ? "且" : "") + 
-                                             (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+                            String roleStr = (isAdmin ? plugin.getLanguageManager().getMessage("effect.dark_effect_admin") : "") +
+                                             (isAdmin && wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_and") : "") +
+                                             (wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_creative") : "");
+                            plugin.getLanguageManager().sendMessage(player, "effect.dark_effect_warning", roleStr);
                         }
                     }
                 } else {
@@ -61,9 +62,10 @@ public class DarkEffectManager {
                     boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
                     
                     if (isAdmin || wasCreative) {
-                        player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
-                                         (isAdmin && wasCreative ? "且" : "") + 
-                                         (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+                        String roleStr = (isAdmin ? plugin.getLanguageManager().getMessage("effect.dark_effect_admin") : "") +
+                                         (isAdmin && wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_and") : "") +
+                                         (wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_creative") : "");
+                        plugin.getLanguageManager().sendMessage(player, "effect.dark_effect_warning", roleStr);
                     }
                 }
             }
@@ -97,9 +99,10 @@ public class DarkEffectManager {
                 boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
                 
                 if (isAdmin || wasCreative) {
-                    player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
-                                     (isAdmin && wasCreative ? "且" : "") + 
-                                     (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+                    String roleStr = (isAdmin ? plugin.getLanguageManager().getMessage("effect.dark_effect_admin") : "") +
+                                     (isAdmin && wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_and") : "") +
+                                     (wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_creative") : "");
+                    plugin.getLanguageManager().sendMessage(player, "effect.dark_effect_warning", roleStr);
                 }
             }
         } else {
@@ -112,9 +115,10 @@ public class DarkEffectManager {
             boolean wasCreative = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
             
             if (isAdmin || wasCreative) {
-                player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
-                                 (isAdmin && wasCreative ? "且" : "") + 
-                                 (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到黑暗效果的影响！");
+                String roleStr = (isAdmin ? plugin.getLanguageManager().getMessage("effect.dark_effect_admin") : "") +
+                                 (isAdmin && wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_and") : "") +
+                                 (wasCreative ? plugin.getLanguageManager().getMessage("effect.dark_effect_creative") : "");
+                plugin.getLanguageManager().sendMessage(player, "effect.dark_effect_warning", roleStr);
             }
         }
     }
@@ -190,11 +194,11 @@ public class DarkEffectManager {
         if (enabled) {
             // 如果启用，给所有玩家应用黑暗效果
             applyDarkEffectToAllPlayers();
-            Bukkit.broadcastMessage("§8[§cGost§8] §7黑暗效果已启用！所有玩家获得失明效果。");
+            plugin.getLanguageManager().broadcastMessage("dark.enabled");
         } else {
             // 如果禁用，移除所有玩家的黑暗效果
             removeDarkEffectFromAllPlayers();
-            Bukkit.broadcastMessage("§8[§cGost§8] §7黑暗效果已禁用！所有玩家的失明效果已移除。");
+            plugin.getLanguageManager().broadcastMessage("dark.disabled");
         }
     }
     

@@ -34,8 +34,8 @@ public class TeamManager {
             humanTeam = scoreboard.registerNewTeam("gost_human");
         }
         humanTeam.setColor(ChatColor.WHITE);
-        humanTeam.setDisplayName("人类");
-        humanTeam.setPrefix(ChatColor.WHITE + "[人类] ");
+        humanTeam.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("team.human").replaceAll("§[0-9a-fk-or]", "")));
+        humanTeam.setPrefix(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("team.team_human_prefix")));
         humanTeam.setAllowFriendlyFire(false);
         humanTeam.setCanSeeFriendlyInvisibles(true);
         teams.put("human", humanTeam);
@@ -46,8 +46,8 @@ public class TeamManager {
             ghostTeam = scoreboard.registerNewTeam("gost_ghost");
         }
         ghostTeam.setColor(ChatColor.RED);
-        ghostTeam.setDisplayName("鬼");
-        ghostTeam.setPrefix(ChatColor.RED + "[鬼] ");
+        ghostTeam.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("team.ghost").replaceAll("§[0-9a-fk-or]", "")));
+        ghostTeam.setPrefix(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("team.team_ghost_prefix")));
         ghostTeam.setAllowFriendlyFire(false);
         ghostTeam.setCanSeeFriendlyInvisibles(true);
         teams.put("ghost", ghostTeam);
@@ -58,13 +58,13 @@ public class TeamManager {
             motherGhostTeam = scoreboard.registerNewTeam("gost_mother_ghost");
         }
         motherGhostTeam.setColor(ChatColor.DARK_RED);
-        motherGhostTeam.setDisplayName("母体鬼");
-        motherGhostTeam.setPrefix(ChatColor.DARK_RED + "[母体] ");
+        motherGhostTeam.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("team.ghost_mother").replaceAll("§[0-9a-fk-or]", "")));
+        motherGhostTeam.setPrefix(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("team.team_mother_ghost_prefix")));
         motherGhostTeam.setAllowFriendlyFire(false);
         motherGhostTeam.setCanSeeFriendlyInvisibles(true);
         teams.put("mother_ghost", motherGhostTeam);
         
-        plugin.getLogger().info("队伍系统初始化完成");
+        plugin.getLogger().info(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("team.team_init_done")));
     }
     
     // 设置玩家队伍
@@ -74,18 +74,18 @@ public class TeamManager {
         switch (role) {
             case HUMAN:
                 teams.get("human").addEntry(player.getName());
-                player.setDisplayName(ChatColor.WHITE + player.getName());
-                player.setPlayerListName(ChatColor.WHITE + player.getName());
+                player.setDisplayName(getTeamColor(role) + player.getName());
+                player.setPlayerListName(getTeamColor(role) + player.getName());
                 break;
             case GHOST_MOTHER:
                 teams.get("mother_ghost").addEntry(player.getName());
-                player.setDisplayName(ChatColor.DARK_RED + player.getName());
-                player.setPlayerListName(ChatColor.DARK_RED + player.getName());
+                player.setDisplayName(getTeamColor(role) + player.getName());
+                player.setPlayerListName(getTeamColor(role) + player.getName());
                 break;
             case GHOST_NORMAL:
                 teams.get("ghost").addEntry(player.getName());
-                player.setDisplayName(ChatColor.RED + player.getName());
-                player.setPlayerListName(ChatColor.RED + player.getName());
+                player.setDisplayName(getTeamColor(role) + player.getName());
+                player.setPlayerListName(getTeamColor(role) + player.getName());
                 break;
         }
         

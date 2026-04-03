@@ -69,16 +69,6 @@ public class Gost extends JavaPlugin {
         // 加载鬼玩家粒子效果配置
         ghostParticleManager.loadConfig();
         
-        // 插件加载完成提示
-        getLogger().info("==========================================");
-        getLogger().info("Gost v2.1.2 已成功加载！");
-        getLogger().info("✨ 新增功能：鬼玩家粒子效果系统");
-        getLogger().info("👻 母体鬼：红色环绕粒子");
-        getLogger().info("👻 普通鬼：绿色环绕粒子");
-        getLogger().info("⚙️ 管理命令：/ghostparticle 或 /gp");
-        getLogger().info("🔧 配置版本：14");
-        getLogger().info("==========================================");
-        
         // 注册命令
         getCommand("gost").setExecutor(new GostCommand(this));
         getCommand("gostadmin").setExecutor(new GostAdminCommand(this));
@@ -95,12 +85,10 @@ public class Gost extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SelectionListener(this), this);
         getServer().getPluginManager().registerEvents(secondChanceListener, this);
         
+        // 插件加载完成提示（统一输出）
+        String version = getDescription().getVersion();
         getLogger().info("==========================================");
-        getLogger().info("Gost v2.1.3 已成功加载！");
-        getLogger().info("✨ 新增功能：鬼玩家粒子效果系统");
-        getLogger().info("🔧 修复：管理员和创造模式玩家效果免疫问题");
-        getLogger().info("🎮 新增：创造模式自动切换为生存模式");
-        getLogger().info("⚖️ 确保：所有玩家公平游戏环境");
+        getLogger().info("Gost v" + version + " 已成功加载！");
         getLogger().info("作者: 来自太空的小头脑");
         getLogger().info("主页: https://space.bilibili.com/3493116665400113");
         getLogger().info("==========================================");

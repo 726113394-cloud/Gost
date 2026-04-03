@@ -52,7 +52,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
                 
             case "settype":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /ghostparticle settype <粒子类型>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_settype"));
                     return true;
                 }
                 handleSetType(sender, args[1]);
@@ -60,7 +60,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
                 
             case "setcount":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /ghostparticle setcount <数量>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setcount"));
                     return true;
                 }
                 handleSetCount(sender, args[1]);
@@ -68,7 +68,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
                 
             case "setinterval":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /ghostparticle setinterval <间隔>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setinterval"));
                     return true;
                 }
                 handleSetInterval(sender, args[1]);
@@ -76,7 +76,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
                 
             case "setmothercolor":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /ghostparticle setmothercolor <红,绿,蓝>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setmothercolor"));
                     return true;
                 }
                 handleSetMotherColor(sender, args[1]);
@@ -84,7 +84,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
                 
             case "setnormalcolor":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /ghostparticle setnormalcolor <红,绿,蓝>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setnormalcolor"));
                     return true;
                 }
                 handleSetNormalColor(sender, args[1]);
@@ -92,7 +92,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
                 
             case "setsize":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /ghostparticle setsize <大小>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setsize"));
                     return true;
                 }
                 handleSetSize(sender, args[1]);
@@ -100,7 +100,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
                 
             case "setpreparation":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /ghostparticle setpreparation <on|off>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setpreparation"));
                     return true;
                 }
                 handleSetPreparation(sender, args[1]);
@@ -126,24 +126,24 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
      * 发送命令用法
      */
     private void sendUsage(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              👻 鬼玩家粒子效果管理 👻");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_header"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_title"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle status" + ChatColor.GRAY + " - 查看粒子效果状态");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle enable" + ChatColor.GRAY + " - 启用粒子效果");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle disable" + ChatColor.GRAY + " - 禁用粒子效果");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle reload" + ChatColor.GRAY + " - 重新加载配置");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle test" + ChatColor.GRAY + " - 测试粒子效果");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle listtypes" + ChatColor.GRAY + " - 列出可用粒子类型");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_status"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_enable"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_disable"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_reload"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_test"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_listtypes"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle settype <类型>" + ChatColor.GRAY + " - 设置粒子类型");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle setcount <数量>" + ChatColor.GRAY + " - 设置粒子数量");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle setinterval <间隔>" + ChatColor.GRAY + " - 设置生成间隔（刻）");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle setmothercolor <红,绿,蓝>" + ChatColor.GRAY + " - 设置母体鬼颜色");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle setnormalcolor <红,绿,蓝>" + ChatColor.GRAY + " - 设置普通鬼颜色");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle setsize <大小>" + ChatColor.GRAY + " - 设置粒子大小");
-        sender.sendMessage(ChatColor.YELLOW + "/ghostparticle setpreparation <on|off>" + ChatColor.GRAY + " - 设置准备阶段显示");
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_settype"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setcount"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setinterval"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setmothercolor"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setnormalcolor"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setsize"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_setpreparation"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_header"));
     }
     
     /**
@@ -159,18 +159,18 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
         double size = plugin.getConfigManager().getGhostParticleSize();
         boolean showInPreparation = plugin.getConfigManager().isGhostParticleShowInPreparation();
         
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              👻 鬼玩家粒子效果状态 👻");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_header"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_title"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "状态: " + (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
-        sender.sendMessage(ChatColor.YELLOW + "粒子类型: " + ChatColor.GREEN + type);
-        sender.sendMessage(ChatColor.YELLOW + "粒子数量: " + ChatColor.GREEN + count);
-        sender.sendMessage(ChatColor.YELLOW + "生成间隔: " + ChatColor.GREEN + interval + "刻 (" + (interval / 20.0) + "秒)");
-        sender.sendMessage(ChatColor.YELLOW + "母体鬼颜色: " + ChatColor.GREEN + motherColor + ChatColor.GRAY + " (RGB)");
-        sender.sendMessage(ChatColor.YELLOW + "普通鬼颜色: " + ChatColor.GREEN + normalColor + ChatColor.GRAY + " (RGB)");
-        sender.sendMessage(ChatColor.YELLOW + "粒子大小: " + ChatColor.GREEN + size);
-        sender.sendMessage(ChatColor.YELLOW + "准备阶段显示: " + (showInPreparation ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        sender.sendMessage(enabled ? plugin.getLanguageManager().getMessage("ghost_particle_command.status_enabled") : plugin.getLanguageManager().getMessage("ghost_particle_command.status_disabled"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_type", type));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_count", count));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_interval", interval, interval / 20.0));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_mother_color", motherColor));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_normal_color", normalColor));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.status_size", size));
+        sender.sendMessage(showInPreparation ? plugin.getLanguageManager().getMessage("ghost_particle_command.status_preparation_on") : plugin.getLanguageManager().getMessage("ghost_particle_command.status_preparation_off"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_header"));
     }
     
     /**
@@ -180,8 +180,8 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
         plugin.getConfigManager().setGhostParticleEnabled(true);
         plugin.getGhostParticleManager().reload();
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子效果已启用！");
-        sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.enabled"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
     }
     
     /**
@@ -191,8 +191,8 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
         plugin.getConfigManager().setGhostParticleEnabled(false);
         plugin.getGhostParticleManager().reload();
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子效果已禁用！");
-        sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.disabled"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
     }
     
     /**
@@ -201,7 +201,7 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
     private void handleReload(CommandSender sender) {
         plugin.getGhostParticleManager().reload();
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子效果配置已重新加载！");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reloaded"));
     }
     
     /**
@@ -213,12 +213,12 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
             Particle particle = Particle.valueOf(type.toUpperCase());
             plugin.getConfigManager().setGhostParticleType(type.toUpperCase());
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子类型已设置为: " + type.toUpperCase());
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.settype_success", type.toUpperCase()));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
             
         } catch (IllegalArgumentException e) {
-            sender.sendMessage(ChatColor.RED + "❌ 无效的粒子类型！");
-            sender.sendMessage(ChatColor.YELLOW + "使用 /ghostparticle listtypes 查看可用类型");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.settype_invalid"));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.settype_hint"));
         }
     }
     
@@ -230,17 +230,17 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
             int count = Integer.parseInt(countStr);
             
             if (count < 1 || count > 20) {
-                sender.sendMessage(ChatColor.RED + "❌ 粒子数量必须在1-20之间！");
+                sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setcount_invalid"));
                 return;
             }
             
             plugin.getConfigManager().setGhostParticleCount(count);
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子数量已设置为: " + count);
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setcount_success", count));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
             
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.gp_not_number"));
         }
     }
     
@@ -252,17 +252,17 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
             int interval = Integer.parseInt(intervalStr);
             
             if (interval < 1 || interval > 100) {
-                sender.sendMessage(ChatColor.RED + "❌ 生成间隔必须在1-100刻之间！");
+                sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setinterval_invalid"));
                 return;
             }
             
             plugin.getConfigManager().setGhostParticleInterval(interval);
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子生成间隔已设置为: " + interval + "刻 (" + (interval / 20.0) + "秒)");
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setinterval_success", interval, interval / 20.0));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
             
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.gp_not_number"));
         }
     }
     
@@ -273,12 +273,12 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
         if (isValidColorFormat(colorStr)) {
             plugin.getConfigManager().setGhostParticleMotherColor(colorStr);
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 母体鬼粒子颜色已设置为: " + colorStr);
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setmothercolor_success", colorStr));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
         } else {
-            sender.sendMessage(ChatColor.RED + "❌ 无效的颜色格式！");
-            sender.sendMessage(ChatColor.YELLOW + "正确格式: 红,绿,蓝 (例如: 255,0,0)");
-            sender.sendMessage(ChatColor.YELLOW + "每个值范围: 0-255");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setmothercolor_invalid"));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setmothercolor_hint"));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setmothercolor_range"));
         }
     }
     
@@ -289,12 +289,12 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
         if (isValidColorFormat(colorStr)) {
             plugin.getConfigManager().setGhostParticleNormalColor(colorStr);
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 普通鬼粒子颜色已设置为: " + colorStr);
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setnormalcolor_success", colorStr));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
         } else {
-            sender.sendMessage(ChatColor.RED + "❌ 无效的颜色格式！");
-            sender.sendMessage(ChatColor.YELLOW + "正确格式: 红,绿,蓝 (例如: 0,255,0)");
-            sender.sendMessage(ChatColor.YELLOW + "每个值范围: 0-255");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setnormalcolor_invalid"));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setnormalcolor_hint"));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setnormalcolor_range"));
         }
     }
     
@@ -324,17 +324,17 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
             double size = Double.parseDouble(sizeStr);
             
             if (size < 0.1 || size > 5.0) {
-                sender.sendMessage(ChatColor.RED + "❌ 粒子大小必须在0.1-5.0之间！");
+                sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setsize_invalid"));
                 return;
             }
             
             plugin.getConfigManager().setGhostParticleSize(size);
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子大小已设置为: " + size);
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setsize_success", size));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
             
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.gp_not_number"));
         }
     }
     
@@ -346,27 +346,27 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
         
         plugin.getConfigManager().setGhostParticleShowInPreparation(enable);
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 准备阶段粒子显示已" + (enable ? "开启" : "关闭"));
-        sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.setpreparation_success", enable ? "开启" : "关闭"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.reload_hint"));
     }
     
     /**
      * 处理测试命令
      */
     private void handleTest(CommandSender sender) {
-        sender.sendMessage(ChatColor.GREEN + "✅ 鬼玩家粒子效果测试命令已执行");
-        sender.sendMessage(ChatColor.YELLOW + "注意：需要在游戏中进行测试");
-        sender.sendMessage(ChatColor.YELLOW + "1. 开始游戏");
-        sender.sendMessage(ChatColor.YELLOW + "2. 观察鬼玩家身上的粒子效果");
-        sender.sendMessage(ChatColor.YELLOW + "3. 母体鬼为红色，普通鬼为绿色");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.test_success"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.test_hint"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.test_step1"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.test_step2"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.test_step3"));
     }
     
     /**
      * 处理列出粒子类型命令
      */
     private void handleListTypes(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              📋 可用粒子类型 📋");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.listtypes_header"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.listtypes_title"));
         sender.sendMessage("");
         
         // 常用粒子类型
@@ -387,10 +387,10 @@ public class GhostParticleCommand implements CommandExecutor, TabCompleter {
         }
         
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "推荐使用: " + ChatColor.GREEN + "REDSTONE" + ChatColor.GRAY + " (支持颜色)");
-        sender.sendMessage(ChatColor.YELLOW + "火焰效果: " + ChatColor.GREEN + "FLAME, SOUL_FIRE_FLAME");
-        sender.sendMessage(ChatColor.YELLOW + "魔法效果: " + ChatColor.GREEN + "SPELL_MOB, SPELL_WITCH");
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.listtypes_recommend", "REDSTONE"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.listtypes_flame", "FLAME, SOUL_FIRE_FLAME"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.listtypes_magic", "SPELL_MOB, SPELL_WITCH"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("ghost_particle_command.usage_header"));
     }
     
     @Override

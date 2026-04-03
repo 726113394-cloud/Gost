@@ -26,7 +26,11 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("gost.admin")) {
-            sender.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+            if (sender instanceof Player) {
+                plugin.getLanguageManager().sendMessage((Player) sender, "general.no_permission");
+            } else {
+                sender.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+            }
             return true;
         }
         
@@ -111,7 +115,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         
         // 强制停止游戏
         plugin.getGameManager().forceStopGame();
-        sender.sendMessage(ChatColor.GREEN + "游戏已强制停止！");
+        sender.sendMessage(ChatColor.GREEN + "��戏已强制停止！");
         return true;
     }
     
@@ -122,7 +126,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         }
         
         Player player = (Player) sender;
-        player.sendMessage(ChatColor.YELLOW + "请使用选区工具左键点击方块设置第一个点");
+        plugin.getSelectionManager().setPos1(player, player.getTargetBlock(null, 100).getLocation());
         return true;
     }
     
@@ -133,7 +137,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         }
         
         Player player = (Player) sender;
-        player.sendMessage(ChatColor.YELLOW + "请使用选区工具右键点击方块设置第二个点");
+        plugin.getSelectionManager().setPos2(player, player.getTargetBlock(null, 100).getLocation());
         return true;
     }
     
@@ -154,22 +158,24 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         // 检查选区是否完整
         SelectionManager.PlayerSelection selection = plugin.getSelectionManager().getSelection(player);
         if (selection == null || !selection.isComplete()) {
-            player.sendMessage(ChatColor.RED + "请先设置两个点！");
-            player.sendMessage(ChatColor.YELLOW + "使用选区工具：左键设置第一个点，右键设置第二个点");
+            plugin.getLanguageManager().sendMessage(player, "area.selection_incomplete");
+            plugin.getLanguageManager().sendMessage(player, "area.selection_tool_usage_title");
+            plugin.getLanguageManager().sendMessage(player, "area.selection_tool_usage_1");
+            plugin.getLanguageManager().sendMessage(player, "area.selection_tool_usage_2");
             return true;
         }
         
         // 检查是否在同一世界
         if (!selection.isValid()) {
-            player.sendMessage(ChatColor.RED + "错误：两个点必须在同一世界！");
+            plugin.getLanguageManager().sendMessage(player, "area.same_world_required");
             return true;
         }
         
         // 保存区域
         if (plugin.getAreaManager().saveArea(areaName, selection.getPos1(), selection.getPos2())) {
-            player.sendMessage(ChatColor.GREEN + "区域 '" + areaName + "' 已保存！");
+            plugin.getLanguageManager().sendMessage(player, "area.created", areaName);
         } else {
-            player.sendMessage(ChatColor.RED + "保存失败！区域名称可能已存在或达到最大数量限制。");
+            plugin.getLanguageManager().sendMessage(player, "area.save_failed");
         }
         
         return true;
@@ -320,9 +326,9 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         
         Player player = (Player) sender;
         if (plugin.getSelectionManager().clearSelection(player)) {
-            player.sendMessage(ChatColor.YELLOW + "选区已清除");
+            plugin.getLanguageManager().sendMessage(player, "area.selection_cleared");
         } else {
-            player.sendMessage(ChatColor.YELLOW + "没有选区需要清除");
+            plugin.getLanguageManager().sendMessage(player, "area.no_selection_to_clear");
         }
         return true;
     }

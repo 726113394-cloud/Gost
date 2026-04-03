@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,18 +41,18 @@ public class SelectionManager {
         try {
             toolMaterial = Material.valueOf(toolMaterialName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            plugin.getLogger().warning("配置的选区工具物品 " + toolMaterialName + " 无效，使用默认值 MAGMA_CREAM");
+            plugin.getLogger().warning(plugin.getLanguageManager().getMessage("config.invalid_tool", toolMaterialName));
             toolMaterial = Material.MAGMA_CREAM;
         }
         
         selectionTool = new ItemStack(toolMaterial);
         ItemMeta meta = selectionTool.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GOLD + "区域选择工具");
-            meta.setLore(java.util.Arrays.asList(
-                ChatColor.GRAY + "左键点击方块设置第一个点",
-                ChatColor.GRAY + "右键点击方块设置第二个点",
-                ChatColor.GRAY + "使用 /gostadmin save <名称> 保存区域"
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("area.selection_tool_name")));
+            meta.setLore(Arrays.asList(
+                ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("area.selection_tool_lore1")),
+                ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("area.selection_tool_lore2")),
+                ChatColor.translateAlternateColorCodes('&', plugin.getLanguageManager().getMessage("area.selection_tool_lore3"))
             ));
             selectionTool.setItemMeta(meta);
         }
@@ -69,11 +70,11 @@ public class SelectionManager {
      */
     public void giveSelectionTool(Player player) {
         player.getInventory().addItem(getSelectionTool());
-        player.sendMessage(ChatColor.GREEN + "已获得区域选择工具！");
-        player.sendMessage(ChatColor.YELLOW + "使用说明：");
-        player.sendMessage(ChatColor.GRAY + "  • 左键点击方块设置第一个点");
-        player.sendMessage(ChatColor.GRAY + "  • 右键点击方块设置第二个点");
-        player.sendMessage(ChatColor.GRAY + "  • 使用 /gostadmin save <名称> 保存区域");
+        plugin.getLanguageManager().sendMessage(player, "area.selection_tool_received");
+        plugin.getLanguageManager().sendMessage(player, "area.selection_tool_usage_title");
+        plugin.getLanguageManager().sendMessage(player, "area.selection_tool_usage_1");
+        plugin.getLanguageManager().sendMessage(player, "area.selection_tool_usage_2");
+        plugin.getLanguageManager().sendMessage(player, "area.selection_tool_usage_3");
     }
     
     /**
@@ -84,7 +85,7 @@ public class SelectionManager {
         PlayerSelection selection = playerSelections.computeIfAbsent(playerId, k -> new PlayerSelection());
         
         selection.setPos1(location);
-        player.sendMessage(ChatColor.GREEN + "第一个点已设置: " + formatLocation(location));
+        plugin.getLanguageManager().sendMessage(player, "area.point1_set", formatLocation(location));
         
         // 如果两个点都已设置，显示区域信息
         if (selection.isComplete()) {
@@ -102,7 +103,7 @@ public class SelectionManager {
         PlayerSelection selection = playerSelections.computeIfAbsent(playerId, k -> new PlayerSelection());
         
         selection.setPos2(location);
-        player.sendMessage(ChatColor.GREEN + "第二个点已设置: " + formatLocation(location));
+        plugin.getLanguageManager().sendMessage(player, "area.point2_set", formatLocation(location));
         
         // 如果两个点都已设置，显示区域信息
         if (selection.isComplete()) {
@@ -119,7 +120,7 @@ public class SelectionManager {
         UUID playerId = player.getUniqueId();
         if (playerSelections.containsKey(playerId)) {
             playerSelections.remove(playerId);
-            player.sendMessage(ChatColor.YELLOW + "选区已清除");
+            plugin.getLanguageManager().sendMessage(player, "area.selection_cleared");
             return true;
         }
         return false;
@@ -153,7 +154,7 @@ public class SelectionManager {
         
         // 检查是否在同一世界
         if (!pos1.getWorld().equals(pos2.getWorld())) {
-            player.sendMessage(ChatColor.RED + "错误：两个点必须在同一世界！");
+            plugin.getLanguageManager().sendMessage(player, "area.same_world_required");
             return;
         }
         
@@ -170,14 +171,14 @@ public class SelectionManager {
         int length = (int) Math.abs(maxZ - minZ) + 1;
         int volume = width * height * length;
         
-        player.sendMessage(ChatColor.GOLD + "========== 选区信息 ==========");
-        player.sendMessage(ChatColor.YELLOW + "世界: " + ChatColor.WHITE + pos1.getWorld().getName());
-        player.sendMessage(ChatColor.YELLOW + "点1: " + ChatColor.WHITE + formatLocation(pos1));
-        player.sendMessage(ChatColor.YELLOW + "点2: " + ChatColor.WHITE + formatLocation(pos2));
-        player.sendMessage(ChatColor.YELLOW + "尺寸: " + ChatColor.WHITE + width + "×" + height + "×" + length);
-        player.sendMessage(ChatColor.YELLOW + "体积: " + ChatColor.WHITE + volume + " 方块");
-        player.sendMessage(ChatColor.GOLD + "==============================");
-        player.sendMessage(ChatColor.GREEN + "使用 /gostadmin save <名称> 保存此区域");
+        plugin.getLanguageManager().sendMessage(player, "area.info_header");
+        plugin.getLanguageManager().sendMessage(player, "area.info_world", pos1.getWorld().getName());
+        plugin.getLanguageManager().sendMessage(player, "area.info_point1", formatLocation(pos1));
+        plugin.getLanguageManager().sendMessage(player, "area.info_point2", formatLocation(pos2));
+        plugin.getLanguageManager().sendMessage(player, "area.info_size", width, height, length);
+        plugin.getLanguageManager().sendMessage(player, "area.info_volume", volume);
+        plugin.getLanguageManager().sendMessage(player, "area.info_footer");
+        plugin.getLanguageManager().sendMessage(player, "area.info_save_hint");
     }
     
     /**

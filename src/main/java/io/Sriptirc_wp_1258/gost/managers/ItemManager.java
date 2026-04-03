@@ -178,7 +178,7 @@ public class ItemManager {
             true
         ));
         
-        player.sendMessage(ChatColor.GREEN + "你使用了肾上腺素！速度提升！");
+        plugin.getLanguageManager().sendMessage(player, "item_names.adrenaline_used");
     }
     
     public void applyFrenzyEffect(Player player) {
@@ -193,7 +193,7 @@ public class ItemManager {
             true
         ));
         
-        player.sendMessage(ChatColor.RED + "你使用了狂暴药水！速度提升！");
+        plugin.getLanguageManager().sendMessage(player, "item_names.frenzy_used");
     }
     
     public void applyIceBallEffect(Player target) {
@@ -245,7 +245,7 @@ public class ItemManager {
             ));
         }
         
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "幽灵感知激活！所有玩家高亮显示！");
+        plugin.getLanguageManager().broadcastMessage("item.soulcontrol_used");
     }
     
     // 随机分配道具
@@ -263,7 +263,7 @@ public class ItemManager {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
                 player.getInventory().addItem(getAdrenaline());
-                player.sendMessage(ChatColor.GREEN + "你获得了肾上腺素！");
+                plugin.getLanguageManager().sendMessage(player, "item_names.adrenaline_received");
             }
         }
         
@@ -272,7 +272,7 @@ public class ItemManager {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
                 player.getInventory().addItem(getFrenzyPotion());
-                player.sendMessage(ChatColor.RED + "你获得了狂暴药水！");
+                plugin.getLanguageManager().sendMessage(player, "item_names.frenzy_received");
             }
         }
         
@@ -282,7 +282,7 @@ public class ItemManager {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
                 player.getInventory().addItem(getIceBall());
-                player.sendMessage(ChatColor.AQUA + "你获得了凝冰球！");
+                plugin.getLanguageManager().sendMessage(player, "item_names.iceball_received");
             }
         }
         
@@ -296,7 +296,7 @@ public class ItemManager {
                 Player player = Bukkit.getPlayer(playerId);
                 if (player != null && player.isOnline()) {
                     player.getInventory().addItem(getSoulControl());
-                    player.sendMessage(ChatColor.DARK_PURPLE + "你获得了控魂术！");
+                    plugin.getLanguageManager().sendMessage(player, "item_names.soul_control_received");
                 }
             }
         }
@@ -309,12 +309,12 @@ public class ItemManager {
                 // 给予传送珍珠（从ItemSpawnManager获取）
                 ItemStack teleportPearl = plugin.getItemSpawnManager().createTeleportPearl();
                 player.getInventory().addItem(teleportPearl);
-                player.sendMessage(ChatColor.LIGHT_PURPLE + "你获得了传送珍珠！");
+                plugin.getLanguageManager().sendMessage(player, "item_names.teleport_pearl_received");
                 plugin.getLogger().info("给予玩家 " + player.getName() + " 传送珍珠");
             }
         }
         
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "道具已发放！");
+        plugin.getLanguageManager().broadcastMessage("item_names.items_distributed");
         plugin.getLogger().info("道具分发完成: 人类=" + humanPlayers.size() + ", 鬼=" + ghostPlayers.size() + 
             ", 凝冰球=" + iceBallRecipients.size() + ", 控魂术=" + (humanPlayers.isEmpty() ? 0 : Math.min(3, humanPlayers.size())) + 
             ", 传送珍珠=" + teleportPearlRecipients.size());
@@ -345,8 +345,8 @@ public class ItemManager {
         
         Player player = Bukkit.getPlayer(selectedGhost);
         if (player != null) {
-            player.sendMessage(ChatColor.GREEN + "你在最后时刻被治愈了！变回了人类！");
-            Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " 在最后时刻被治愈，变回了人类！");
+            plugin.getLanguageManager().sendMessage(player, "item_names.last_moment_heal");
+            plugin.getLanguageManager().broadcastMessage("item.ghost_to_human_converted", player.getName());
         }
     }
     
@@ -356,19 +356,23 @@ public class ItemManager {
         ItemMeta meta = secondChance.getItemMeta();
         
         if (meta != null) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6一次机会"));
+            meta.setDisplayName(plugin.getLanguageManager().getMessage("item_names.one_chance_name"));
             meta.setLore(Arrays.asList(
-                ChatColor.translateAlternateColorCodes('&', "&7可抵挡一次鬼的感染"),
-                ChatColor.translateAlternateColorCodes('&', "&6被动触发道具"),
-                ChatColor.translateAlternateColorCodes('&', "&a仅限人类使用"),
-                ChatColor.translateAlternateColorCodes('&', "&c[唯一道具]"),
+                plugin.getLanguageManager().getMessage("item_names.one_chance_lore1"),
+                plugin.getLanguageManager().getMessage("item_names.one_chance_lore2"),
+                plugin.getLanguageManager().getMessage("item_names.one_chance_lore3"),
+                plugin.getLanguageManager().getMessage("item_names.one_chance_lore4"),
                 "",
-                ChatColor.GRAY + "效果:",
-                ChatColor.GRAY + "• 人类: 速度II " + plugin.getConfigManager().getSecondChanceHumanSpeedDuration() + "秒",
-                ChatColor.GRAY + "• 人类: 高亮 " + plugin.getConfigManager().getSecondChanceHumanGlowingDuration() + "秒",
-                ChatColor.GRAY + "• 鬼: 缓慢I " + plugin.getConfigManager().getSecondChanceGhostSlowDuration() + "秒",
+                plugin.getLanguageManager().getMessage("item_names.second_chance_lore1"),
+                plugin.getLanguageManager().getMessage("item_names.second_chance_lore2", 
+                    plugin.getConfigManager().getSecondChanceHumanSpeedDuration()),
+                plugin.getLanguageManager().getMessage("item_names.second_chance_lore3", 
+                    plugin.getConfigManager().getSecondChanceHumanGlowingDuration()),
+                plugin.getLanguageManager().getMessage("item_names.second_chance_lore4", 
+                    plugin.getConfigManager().getSecondChanceGhostSlowDuration()),
                 "",
-                ChatColor.GRAY + "冷却时间: " + plugin.getConfigManager().getSecondChanceCooldown() + "秒",
+                plugin.getLanguageManager().getMessage("item_names.second_chance_lore5", 
+                    plugin.getConfigManager().getSecondChanceCooldown()),
                 "",
                 ChatColor.DARK_GRAY + "[被动触发]"
             ));
@@ -381,7 +385,7 @@ public class ItemManager {
         }
         
         customItems.put("second_chance", secondChance);
-        plugin.getLogger().info("已创建一次机会道具");
+        plugin.getLogger().info(plugin.getLanguageManager().getMessage("log.second_chance_created"));
     }
     
     // 获取一次机会道具
@@ -429,10 +433,10 @@ public class ItemManager {
         // 发送消息
         humanPlayer.sendMessage(plugin.getLanguageManager().getMessage("item.one_chance_triggered"));
         humanPlayer.sendMessage(plugin.getLanguageManager().getMessage("item.random_teleport"));
-        ghostPlayer.sendMessage(ChatColor.RED + "目标使用了一次机会！你被减速了！");
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "item_names.second_chance_ghost_slow");
         
         // 广播消息
-        Bukkit.broadcastMessage(ChatColor.YELLOW + humanPlayer.getName() + " 使用了一次机会抵挡了 " + ghostPlayer.getName() + " 的感染！");
+        plugin.getLanguageManager().broadcastMessage("item.second_chance_broadcast_subtitle", humanPlayer.getName(), ghostPlayer.getName());
         
         plugin.getLogger().info("一次机会效果应用完成");
     }

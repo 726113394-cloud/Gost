@@ -53,7 +53,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                 
             case "setcharges":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setcharges <次数>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.usage_setcharges"));
                     return true;
                 }
                 handleSetCharges(sender, args[1]);
@@ -61,7 +61,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                 
             case "setcooldown":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setcooldown <秒数>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.usage_setcooldown"));
                     return true;
                 }
                 handleSetCooldown(sender, args[1]);
@@ -69,7 +69,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                 
             case "broadcast":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian broadcast <on|off>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.usage_broadcast"));
                     return true;
                 }
                 handleBroadcast(sender, args[1]);
@@ -81,7 +81,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                 
             case "force":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian force <玩家名>");
+                    sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.usage_force"));
                     return true;
                 }
                 handleForce(sender, args[1]);
@@ -103,22 +103,22 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
      * 发送命令用法
      */
     private void sendUsage(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护管理 ✨");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_header"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_title"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian status" + ChatColor.GRAY + " - 查看神圣守护状态");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian enable" + ChatColor.GRAY + " - 启用神圣守护");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian disable" + ChatColor.GRAY + " - 禁用神圣守护");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian reload" + ChatColor.GRAY + " - 重新加载配置");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian info" + ChatColor.GRAY + " - 查看当前神圣守护信息");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_status"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_enable"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_disable"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_reload"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_info"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setcharges <次数>" + ChatColor.GRAY + " - 设置最大使用次数");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setcooldown <秒数>" + ChatColor.GRAY + " - 设置冷却时间");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian broadcast <on|off>" + ChatColor.GRAY + " - 设置广播开关");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_setcharges"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_setcooldown"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_broadcast"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian force <玩家名>" + ChatColor.GRAY + " - 强制激活神圣守护");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian clear" + ChatColor.GRAY + " - 清除神圣守护数据");
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_force"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_clear"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_separator"));
     }
     
     /**
@@ -136,19 +136,21 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         int remainingCharges = divineGuardian != null ? 
             plugin.getDivineGuardianManager().getRemainingCharges(divineGuardian) : 0;
         
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护状态 ✨");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_status_header"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_status_title"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "状态: " + (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
-        sender.sendMessage(ChatColor.YELLOW + "当前神圣守护玩家: " + ChatColor.GREEN + guardianName);
-        sender.sendMessage(ChatColor.YELLOW + "剩余使用次数: " + ChatColor.GREEN + remainingCharges);
+        sender.sendMessage(enabled ? plugin.getLanguageManager().getMessage("dg_command.dg_status_enabled") : plugin.getLanguageManager().getMessage("dg_command.dg_status_disabled"));
+        sender.sendMessage(guardianName.equals("无") ? 
+            plugin.getLanguageManager().getMessage("dg_command.dg_status_player_none") : 
+            plugin.getLanguageManager().getMessage("dg_command.dg_status_player", guardianName));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_status_remaining", remainingCharges));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "配置信息:");
-        sender.sendMessage(ChatColor.GRAY + "  • 最大使用次数: " + ChatColor.GREEN + maxCharges);
-        sender.sendMessage(ChatColor.GRAY + "  • 冷却时间: " + ChatColor.GREEN + cooldown + "秒");
-        sender.sendMessage(ChatColor.GRAY + "  • 广播消息: " + (broadcast ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
-        sender.sendMessage(ChatColor.GRAY + "  • 失效隐身时间: " + ChatColor.GREEN + invisibilityDuration + "秒");
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_status_config"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_status_max_charges", maxCharges));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_status_cooldown", cooldown));
+        sender.sendMessage(broadcast ? plugin.getLanguageManager().getMessage("dg_command.dg_status_broadcast_on") : plugin.getLanguageManager().getMessage("dg_command.dg_status_broadcast_off"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_status_invisibility", invisibilityDuration));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_separator"));
     }
     
     /**
@@ -158,8 +160,8 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         plugin.getConfigManager().setDivineGuardianEnabled(true);
         plugin.getDivineGuardianManager().reload();
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护功能已启用！");
-        sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_enabled"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_reload_hint"));
     }
     
     /**
@@ -169,8 +171,8 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         plugin.getConfigManager().setDivineGuardianEnabled(false);
         plugin.getDivineGuardianManager().reload();
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护功能已禁用！");
-        sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_disabled"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_reload_hint"));
     }
     
     /**
@@ -179,7 +181,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
     private void handleReload(CommandSender sender) {
         plugin.getDivineGuardianManager().reload();
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护配置已重新加载！");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_reloaded"));
     }
     
     /**
@@ -190,17 +192,17 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
             int charges = Integer.parseInt(chargesStr);
             
             if (charges < 1 || charges > 10) {
-                sender.sendMessage(ChatColor.RED + "❌ 使用次数必须在1-10之间！");
+                sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_setcharges_invalid"));
                 return;
             }
             
             plugin.getConfigManager().setDivineGuardianMaxCharges(charges);
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护最大使用次数已设置为: " + charges);
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_setcharges_success", charges));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_reload_hint"));
             
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_not_number"));
         }
     }
     
@@ -212,17 +214,17 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
             int cooldown = Integer.parseInt(cooldownStr);
             
             if (cooldown < 1 || cooldown > 60) {
-                sender.sendMessage(ChatColor.RED + "❌ 冷却时间必须在1-60秒之间！");
+                sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_setcooldown_invalid"));
                 return;
             }
             
             plugin.getConfigManager().setDivineGuardianCooldown(cooldown);
             
-            sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护冷却时间已设置为: " + cooldown + "秒");
-            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_setcooldown_success", cooldown));
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_reload_hint"));
             
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_not_number"));
         }
     }
     
@@ -234,8 +236,8 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         
         plugin.getConfigManager().setDivineGuardianBroadcastEnabled(enable);
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护广播消息已" + (enable ? "开启" : "关闭"));
-        sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_broadcast_success", enable ? "开启" : "关闭"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_reload_hint"));
     }
     
     /**
@@ -245,31 +247,31 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         UUID divineGuardian = plugin.getDivineGuardianManager().getDivineGuardianPlayer();
         
         if (divineGuardian == null) {
-            sender.sendMessage(ChatColor.YELLOW + "⚠ 当前没有激活的神圣守护玩家");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_no_active_guardian"));
             return;
         }
         
         Player player = Bukkit.getPlayer(divineGuardian);
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + "❌ 神圣守护玩家不在线！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_player_not_online"));
             return;
         }
         
         int remainingCharges = plugin.getDivineGuardianManager().getRemainingCharges(divineGuardian);
         
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护信息 ✨");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_header"));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_title"));
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "玩家: " + ChatColor.GREEN + player.getName());
-        sender.sendMessage(ChatColor.YELLOW + "剩余使用次数: " + ChatColor.GREEN + remainingCharges);
-        sender.sendMessage(ChatColor.YELLOW + "位置: " + ChatColor.GREEN + 
-            "X=" + (int)player.getLocation().getX() + 
-            ", Y=" + (int)player.getLocation().getY() + 
-            ", Z=" + (int)player.getLocation().getZ());
-        sender.sendMessage(ChatColor.YELLOW + "世界: " + ChatColor.GREEN + player.getWorld().getName());
-        sender.sendMessage(ChatColor.YELLOW + "血量: " + ChatColor.GREEN + player.getHealth() + "/" + player.getMaxHealth());
-        sender.sendMessage(ChatColor.YELLOW + "饥饿值: " + ChatColor.GREEN + player.getFoodLevel() + "/20");
-        sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_player", player.getName()));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_remaining", remainingCharges));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_location",
+            (int)player.getLocation().getX(),
+            (int)player.getLocation().getY(),
+            (int)player.getLocation().getZ()));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_world", player.getWorld().getName()));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_health", (int)player.getHealth(), (int)player.getMaxHealth()));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_info_food", player.getFoodLevel()));
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_usage_separator"));
     }
     
     /**
@@ -277,18 +279,18 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
      */
     private void handleForce(CommandSender sender, String playerName) {
         if (!plugin.getGameManager().isGameRunning()) {
-            sender.sendMessage(ChatColor.RED + "❌ 游戏未开始，无法激活神圣守护！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_force_no_game"));
             return;
         }
         
         Player target = Bukkit.getPlayer(playerName);
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "❌ 玩家 " + playerName + " 不在线！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_force_player_offline", playerName));
             return;
         }
         
         if (!plugin.getPlayerManager().isHuman(target.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "❌ 玩家 " + playerName + " 不是人类，无法激活神圣守护！");
+            sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_force_not_human", playerName));
             return;
         }
         
@@ -297,8 +299,8 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         humanPlayers.add(target.getUniqueId());
         plugin.getDivineGuardianManager().checkAndActivateDivineGuardian(humanPlayers);
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 已强制为玩家 " + target.getName() + " 激活神圣守护！");
-        target.sendMessage(ChatColor.GOLD + "✨ 管理员为你激活了神圣守护！");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_force_success", target.getName()));
+        target.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_force_target"));
     }
     
     /**
@@ -307,7 +309,7 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
     private void handleClear(CommandSender sender) {
         plugin.getDivineGuardianManager().cleanup();
         
-        sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护数据已清除！");
+        sender.sendMessage(plugin.getLanguageManager().getMessage("dg_command.dg_cleared"));
     }
     
     @Override

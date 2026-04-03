@@ -90,10 +90,10 @@ public class HeartbeatManager {
         
         if (enabled) {
             startHeartbeat();
-            Bukkit.broadcastMessage("§8[§cGost§8] §7心跳声效果已启用！人类玩家将听到监守者的心跳声。");
+            plugin.getLanguageManager().broadcastMessage("heartbeat.enabled");
         } else {
             stopHeartbeat();
-            Bukkit.broadcastMessage("§8[§cGost§8] §7心跳声效果已禁用！");
+            plugin.getLanguageManager().broadcastMessage("heartbeat.disabled");
         }
     }
     

@@ -1,5 +1,7 @@
 package io.Sriptirc_wp_1258.gost;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -172,6 +174,25 @@ public class LanguageManager {
     }
     
     /**
+     * 发送标题消息（带时间参数）
+     * @param player 玩家
+     * @param titleKey 标题键
+     * @param subtitleKey 副标题键
+     * @param fadeIn 淡入时间
+     * @param stay 持续时间
+     * @param fadeOut 淡出时间
+     */
+    public void sendTitle(org.bukkit.entity.Player player, String titleKey, String subtitleKey, 
+                          int fadeIn, int stay, int fadeOut) {
+        String title = getMessage(titleKey);
+        String subtitle = getMessage(subtitleKey);
+        
+        if (title != null && !title.isEmpty()) {
+            player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+        }
+    }
+    
+    /**
      * 发送消息给玩家
      * @param player 玩家
      * @param messageKey 消息键
@@ -192,7 +213,19 @@ public class LanguageManager {
     public void sendMessage(org.bukkit.entity.Player player, String messageKey, Object... args) {
         String message = getMessage(messageKey, args);
         if (message != null && !message.isEmpty()) {
-            player.sendMessage(message);
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        }
+    }
+    
+    /**
+     * 向所有在线玩家广播消息
+     * @param key 消息键
+     * @param args 参数
+     */
+    public void broadcastMessage(String key, Object... args) {
+        String message = getMessage(key, args);
+        if (message != null && !message.isEmpty()) {
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
         }
     }
 }
