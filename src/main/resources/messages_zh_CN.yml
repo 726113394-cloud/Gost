@@ -250,6 +250,7 @@ item:
 # ========== 经济系统消息 ==========
 economy:
   system_disabled: "&c经济系统不可用！"
+  insufficient_funds: "&c金币不足！需要 {0} 金币"
   entry_fee_paid: "&a已支付入场费: {0} 金币"
   entry_fee_refunded: "&e入场费已退还: {0} 金币"
   reward_received: "&a💰 你获得了 {0} 金币奖励！"

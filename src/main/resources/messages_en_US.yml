@@ -250,6 +250,7 @@ item:
 # ========== Economy Messages ==========
 economy:
   system_disabled: "&cEconomy system is not available!"
+  insufficient_funds: "&cInsufficient funds! Required: {0} coins"
   entry_fee_paid: "&aEntry fee paid: {0} coins"
   entry_fee_refunded: "&eEntry fee refunded: {0} coins"
   reward_received: "&a💰 You received {0} coins as reward!"
