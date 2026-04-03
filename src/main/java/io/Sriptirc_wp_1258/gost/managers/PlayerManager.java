@@ -183,7 +183,7 @@ public class PlayerManager {
         setPlayerRole(playerId, PlayerRole.HUMAN);
         
         // 应用人类效果
-        applyHumanEffects(player);
+        applyRoleEffects(player, PlayerRole.HUMAN);
         
         // 更新存活时间
         updateSurvivalTime(playerId);

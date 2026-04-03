@@ -906,36 +906,7 @@ public class DivineGuardianManager {
         return null;
     }
     
-    /**
-     * 检查位置是否安全
-     */
-    private boolean isLocationSafe(Location location) {
-        World world = location.getWorld();
-        if (world == null) return false;
-        
-        // 检查脚下方块
-        Material blockBelow = world.getBlockAt(location.clone().subtract(0, 1, 0)).getType();
-        if (blockBelow == Material.AIR || blockBelow == Material.LAVA || 
-            blockBelow == Material.WATER || blockBelow == Material.CACTUS) {
-            return false;
-        }
-        
-        // 检查站立位置
-        Material feetBlock = world.getBlockAt(location).getType();
-        if (feetBlock != Material.AIR && feetBlock != Material.CAVE_AIR && 
-            feetBlock != Material.VOID_AIR) {
-            return false;
-        }
-        
-        // 检查头部位置
-        Material headBlock = world.getBlockAt(location.clone().add(0, 1, 0)).getType();
-        if (headBlock != Material.AIR && headBlock != Material.CAVE_AIR && 
-            headBlock != Material.VOID_AIR) {
-            return false;
-        }
-        
-        return true;
-    }
+
     
     /**
      * 检查玩家是否为救赎者
