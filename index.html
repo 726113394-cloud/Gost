@@ -257,6 +257,25 @@
             display: inline-block;
             margin-left: 0.5rem;
         }
+        /* 角落水印 */
+        .watermark {
+            position: fixed;
+            bottom: 12px;
+            right: 16px;
+            font-size: 0.75rem;
+            color: rgba(255, 90, 90, 0.35);
+            background: rgba(10, 12, 18, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 4px 10px;
+            border-radius: 20px;
+            z-index: 99;
+            font-family: monospace;
+            pointer-events: none;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 640px) {
+            .watermark { font-size: 0.6rem; bottom: 6px; right: 8px; }
+        }
     </style>
 </head>
 <body>
@@ -281,6 +300,8 @@
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
                 <a href="https://github.com/726113394-cloud/Gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-github"></i> GitHub 仓库</a>
+                <a href="https://space.bilibili.com/3493116665400113" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-bilibili"></i> 作者B站主页</a>
+                <a href="https://www.bilibili.com/video/BV1aPQSBsE74/" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fas fa-video"></i> 插件预览视频</a>
             </div>
         </div>
 
@@ -644,13 +665,15 @@ ghost-particle:
         <footer>🎉 开始你的生存对抗之旅！ 使用 <code>/gost join</code> 加入队列 | 感染方式：右键点击 | 道具发放时全体高亮5秒</footer>
     </div>
 
-    <!-- 英文版本（道具详情已翻译） -->
+    <!-- 英文版本（同步新增链接） -->
     <div id="en-content" class="lang-content">
         <div style="padding:1.5rem 0 1rem;"><h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - Extreme Survival Confrontation</h1>
         <p><strong>Gost</strong> combines cat-and-mouse, ghost chase, hide & seek, and CF生化 mode. Experience life-or-death chase between humans and ghosts.</p><div class="badge">⚡ Divine Guardian · Redeemer | 🎮 Mode Switch | 🔧 Queue Optimized | ✨ Global Glow on Item Spawn</div>
         <div class="link-buttons">
             <a href="https://modrinth.com/plugin/gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-modrinth"></i> Download on Modrinth</a>
             <a href="https://github.com/726113394-cloud/Gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-github"></i> GitHub Repository</a>
+            <a href="https://space.bilibili.com/3493116665400113" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-bilibili"></i> Author's Bilibili</a>
+            <a href="https://www.bilibili.com/video/BV1aPQSBsE74/" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fas fa-video"></i> Plugin Preview</a>
         </div>
         </div>
         
@@ -711,6 +734,9 @@ ghost-particle:
         <footer>🎉 Start your survival confrontation! /gost join | Infection: RIGHT CLICK | Item spawn = 5s global glow</footer>
     </div>
 </div>
+
+<!-- 角落水印 -->
+<div class="watermark">来自太空的小头脑 / LittleMind_fromSpace</div>
 
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
 
