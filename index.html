@@ -36,8 +36,8 @@
         .navbar {
             position: sticky;
             top: 0;
-            background: rgba(10, 12, 18, 0.85);
-            backdrop-filter: blur(16px);
+            background: rgba(10, 12, 18, 0.65);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 59, 59, 0.5);
             z-index: 100;
             padding: 0.8rem 0;
@@ -55,10 +55,24 @@
         .logo {
             font-weight: 800;
             font-size: 1.6rem;
-            background: linear-gradient(135deg, #ff5e5e, #f09819);
+        }
+        .logo span:first-child {
+            background: linear-gradient(135deg, #a855f7, #d8b4fe);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+        }
+        .logo .colorful {
+            background: linear-gradient(90deg, #ff5e5e, #ffb347, #2ecc71, #3498db, #e74c3c, #ff5e5e);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow 3s linear infinite;
+        }
+        @keyframes rainbow {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
         }
         .lang-switch {
             display: flex;
@@ -104,6 +118,14 @@
             border-color: #ff5e5e;
             transform: translateY(-3px);
             background: rgba(32, 36, 48, 0.9);
+        }
+        .card-human {
+            background: rgba(34, 139, 34, 0.25);
+            border-left: 3px solid #2ecc71;
+        }
+        .card-ghost {
+            background: rgba(220, 20, 60, 0.25);
+            border-left: 3px solid #e74c3c;
         }
         .badge {
             background: #ff5e5e20;
@@ -165,7 +187,7 @@
         }
         .collapsible-content.show {
             padding: 1.2rem 1.4rem;
-            max-height: 2000px;
+            max-height: 5000px;
         }
         .modal {
             display: none;
@@ -257,7 +279,6 @@
             display: inline-block;
             margin-left: 0.5rem;
         }
-        /* 角落水印 */
         .watermark {
             position: fixed;
             bottom: 12px;
@@ -276,13 +297,28 @@
         @media (max-width: 640px) {
             .watermark { font-size: 0.6rem; bottom: 6px; right: 8px; }
         }
+        .tree {
+            font-family: monospace;
+            background: #0b0e14;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+        .install-note {
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo">Gost <span style="font-size:0.8rem;">完整版</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span></div>
         <div class="lang-switch">
             <button class="lang-btn active" data-lang="zh">中文</button>
             <button class="lang-btn" data-lang="en">English</button>
@@ -318,7 +354,7 @@
             </div>
         </div>
 
-        <!-- 道具系统：全部8个道具以卡片网格展示 -->
+        <!-- 道具系统 -->
         <div class="section">
             <div class="section-title">🧰 完整道具图鉴</div>
             <div class="grid-3col" id="items-list-zh"></div>
@@ -327,8 +363,54 @@
         <!-- 感染机制 & 全局高亮 -->
         <div class="section">
             <div class="section-title">⚡ 感染机制 & 全局高亮效果</div>
-            <div class="card"><p><strong>感染方式</strong>：鬼玩家 <span style="color:#ffa07a;">右键点击</span> 人类玩家进行感染。感染条件：双方必须在游戏区域内，且人类存活。被感染人类立即转为鬼阵营，播放闪电/音效。<br>✨ <strong>一次机会</strong>道具可被动抵挡一次感染。</p>
+            <div class="card"><p><strong>感染方式</strong>：鬼玩家 <span style="color:#ffa07a;">左键/右键点击</span> 人类玩家进行感染。感染条件：双方必须在游戏区域内，且人类存活。被感染人类立即转为鬼阵营，播放闪电/音效。<br>✨ <strong>一次机会</strong>道具可被动抵挡一次感染。</p>
             <hr><p><strong>🌟 道具发放全局高亮</strong>：每次发放道具（固定道具和刷新道具）时，所有存活玩家获得持续 <strong>5秒</strong> 的高亮（发光）效果。此机制固定，帮助玩家感知道具刷新，增加战术博弈。</p></div>
+        </div>
+
+        <!-- 经济与奖励系统 -->
+        <div class="section">
+            <div class="section-title">🏆 经济与奖励系统</div>
+            <div class="collapsible">
+                <div class="collapsible-header">💰 奖池分配规则 <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <p><strong>入场机制</strong>：100金币入场费（可配置），确保玩家投入</p>
+                    <p><strong>奖池系统</strong>：所有入场费 + 5000金币服务器奖金（可配置）</p>
+                    <p><strong>智能分配</strong>：</p>
+                    <ul>
+                        <li>人类胜利时：人类阵容获得奖池的70%，鬼阵容获得奖池的30%</li>
+                        <li>鬼胜利时：鬼阵容获得奖池的100%</li>
+                        <li>鬼奖金分配：70%按鬼存活时间，30%按感染人数比例分配</li>
+                    </ul>
+                    <p><strong>详细反馈</strong>：每个玩家收到详细的奖金分配说明，包括存活时间、感染人数、分配比例等</p>
+                    <p><strong>风险与回报</strong>：高风险高回报，鼓励积极参与和策略性游戏</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安装要求（添加插件下载链接） -->
+        <div class="section">
+            <div class="section-title">📦 安装要求</div>
+            <div class="collapsible">
+                <div class="collapsible-header">🔧 必需插件 & 可选模组 <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <p><strong>必需插件</strong><br>
+                    Vault + 经济插件（如EssentialsX） - 经济系统支持<br>
+                    <span class="install-note">
+                        <a href="https://www.spigotmc.org/resources/vault.34315/" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> Vault (Spigot)</a>
+                        <a href="https://essentialsx.net/downloads" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> EssentialsX</a>
+                    </span>
+                    </p>
+                    <p><strong>可选模组</strong><br>
+                    Injured Effects - 实现2点生命值效果（增强游戏体验）
+                    <span class="install-note">
+                        <a href="https://modrinth.com/mod/injured-effects" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fab fa-modrinth"></i> 下载 Injured Effects</a>
+                    </span>
+                    </p>
+                    <p><strong>推荐环境</strong><br>
+                    Minecraft版本：1.20.x（最佳兼容性）<br>
+                    服务器核心：Paper/Spigot/Bukkit/Mohist（推荐Paper以获得最佳性能）</p>
+                </div>
+            </div>
         </div>
 
         <!-- 玩家基础命令 -->
@@ -346,7 +428,7 @@
             </div>
         </div>
 
-        <!-- 管理员命令大全 - 展开式二级界面 -->
+        <!-- 管理员命令大全 -->
         <div class="section">
             <div class="section-title">⚙️ 管理员命令大全</div>
             <div class="collapsible">
@@ -454,7 +536,7 @@
             </div>
         </div>
 
-        <!-- 神圣守护系统：传统模式 + 救赎者模式 -->
+        <!-- 神圣守护系统 -->
         <div class="section">
             <div class="section-title">🛡️ 神圣守护系统 · 传统模式 & 救赎者模式</div>
             <div class="collapsible">
@@ -501,13 +583,13 @@ ghost-to-human:
 
         <!-- 完整游戏流程 -->
         <div class="section"><div class="section-title">🎯 完整游戏流程</div>
-            <div class="collapsible"><div class="collapsible-header">1. 🗺️ 区域设置阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><code>/gostadmin tool</code> 选区 → <code>/gostadmin save 名称</code> → <code>/gostadmin load 名称</code></div></div>
+            <div class="collapsible"><div class="collapsible-header">1. 🗺️ 区域设置阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><code>/gostadmin tool</code> 选区 → <code>/gostadmin save 名称</code> → <code>/gostadmin load 名称 enable</code></div></div>
             <div class="collapsible"><div class="collapsible-header">2. 👥 玩家准备阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">玩家 <code>/gost join</code>，队列满员后自动开始10秒倒计时，最后10秒居中大字。队列人数不足时自动清空并退还金币。</div></div>
             <div class="collapsible"><div class="collapsible-header">3. 🚀 游戏进行阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">准备阶段20秒，游戏阶段7分钟，每分钟道具刷新，每次发放道具全体高亮5秒，母体鬼前20秒禁足。</div></div>
             <div class="collapsible"><div class="collapsible-header">4. 🏆 游戏结束阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">鬼胜利：所有人类被感染；人类胜利：时间结束仍有幸存者。奖励按比例分配，详细反馈。</div></div>
         </div>
 
-        <!-- 配置文件详解 - 完整版 -->
+        <!-- 配置文件详解 -->
         <div class="section"><div class="section-title">⚙️ 配置文件详解 (config.yml)</div>
             <div class="collapsible"><div class="collapsible-header">📋 完整配置项 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><pre style="background:#0b0e14; padding:1rem; border-radius:1rem; overflow-x:auto; font-size:0.75rem;">
 # Gost 插件配置文件
@@ -653,8 +735,15 @@ ghost-particle:
             <code>gost.admin.divineguardian</code> - 管理神圣守护权限<br>
             <code>gost.admin.ghostparticle</code> - 管理鬼玩家粒子效果权限<br><br>
             <strong>权限继承关系</strong><br>
-            <code>gost.admin</code> → 所有子权限<br>
-            详细配置示例请参考中文版完整文档。
+            <div class="tree">
+                gost.admin<br>
+                ├── gost.admin.create<br>
+                ├── gost.admin.delete<br>
+                ├── gost.admin.manage<br>
+                ├── gost.admin.reload<br>
+                ├── gost.admin.divineguardian<br>
+                └── gost.admin.ghostparticle
+            </div>
             </div>
         </div>
 
@@ -662,10 +751,10 @@ ghost-particle:
         <div class="section"><div class="section-title">📈 版本更新记录</div>
             <div class="collapsible"><div class="collapsible-header">最新版本特性 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p><strong>救赎者系统</strong>：最后人类成为救赎者，转化鬼玩家，随机传送。<br><strong>游戏模式切换</strong>：神圣守护传统模式/救赎者模式。<br><strong>队列系统优化</strong>：智能清理、退出金币退还、Boss栏修复。<br><strong>代码精简</strong>：移除NPC/独立货币/观战系统。<br><strong>v2.1.3</strong>：修复管理员游戏效果免疫问题，创造模式自动切换生存。<br><strong>v2.1.2</strong>：新增鬼玩家粒子效果系统。<br><strong>v2.1.1</strong>：新增神圣守护系统。<br><strong>v2.1.0</strong>：奖金分配优化、心跳声系统、鬼转人类功能。</p></div></div>
         </div>
-        <footer>🎉 开始你的生存对抗之旅！ 使用 <code>/gost join</code> 加入队列 | 感染方式：右键点击 | 道具发放时全体高亮5秒</footer>
+        <footer>🎉 开始你的生存对抗之旅！ 使用 <code>/gost join</code> 加入队列 | 感染方式：左键/右键点击 | 道具发放时全体高亮5秒</footer>
     </div>
 
-    <!-- 英文版本（同步新增链接） -->
+    <!-- 英文版本（同步新增内容） -->
     <div id="en-content" class="lang-content">
         <div style="padding:1.5rem 0 1rem;"><h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - Extreme Survival Confrontation</h1>
         <p><strong>Gost</strong> combines cat-and-mouse, ghost chase, hide & seek, and CF生化 mode. Experience life-or-death chase between humans and ghosts.</p><div class="badge">⚡ Divine Guardian · Redeemer | 🎮 Mode Switch | 🔧 Queue Optimized | ✨ Global Glow on Item Spawn</div>
@@ -686,10 +775,55 @@ ghost-particle:
             <div class="card"><i class="fas fa-map-marked-alt"></i> <strong>Area Management</strong><br>Wand selection, save up to 20 areas</div>
         </div></div>
 
-        <!-- 英文道具卡片网格 -->
         <div class="section"><div class="section-title">🧰 Complete Item Guide</div><div class="grid-3col" id="items-list-en"></div></div>
 
-        <div class="section"><div class="section-title">⚡ Infection & Global Highlight</div><div class="card"><p><strong>Infection method:</strong> Ghosts infect humans via <span style="color:#ffa07a;">RIGHT CLICK</span>.<br>✨ "Second Chance" blocks infection once.</p><hr><p><strong>🌟 Global Highlight on Item Spawn</strong>: All alive players receive a <strong>5-second glowing effect</strong> when items are distributed.</p></div></div>
+        <div class="section"><div class="section-title">⚡ Infection & Global Highlight</div><div class="card"><p><strong>Infection method:</strong> Ghosts infect humans via <span style="color:#ffa07a;">LEFT/RIGHT CLICK</span>.<br>✨ "Second Chance" blocks infection once.</p><hr><p><strong>🌟 Global Highlight on Item Spawn</strong>: All alive players receive a <strong>5-second glowing effect</strong> when items are distributed.</p></div></div>
+
+        <!-- 经济与奖励系统（英文） -->
+        <div class="section">
+            <div class="section-title">🏆 Economy & Reward System</div>
+            <div class="collapsible">
+                <div class="collapsible-header">💰 Prize Pool Rules <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <p><strong>Entry Mechanism</strong>: 100 coin entry fee (configurable)</p>
+                    <p><strong>Prize Pool</strong>: All entry fees + 5000 coin server bonus (configurable)</p>
+                    <p><strong>Smart Distribution</strong>:</p>
+                    <ul>
+                        <li>Human victory: Humans get 70% of pool, Ghosts get 30%</li>
+                        <li>Ghost victory: Ghosts get 100% of pool</li>
+                        <li>Ghost bonus distribution: 70% by survival time, 30% by infection count</li>
+                    </ul>
+                    <p><strong>Detailed Feedback</strong>: Each player receives breakdown including survival time, infections, ratio</p>
+                    <p><strong>Risk & Reward</strong>: High risk, high reward – encourages active participation and strategy</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安装要求（英文，带插件链接） -->
+        <div class="section">
+            <div class="section-title">📦 Installation Requirements</div>
+            <div class="collapsible">
+                <div class="collapsible-header">🔧 Required Plugins & Optional Mods <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <p><strong>Required Plugins</strong><br>
+                    Vault + Economy plugin (e.g., EssentialsX) - Economy support<br>
+                    <span class="install-note">
+                        <a href="https://www.spigotmc.org/resources/vault.34315/" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> Vault (Spigot)</a>
+                        <a href="https://essentialsx.net/downloads" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> EssentialsX</a>
+                    </span>
+                    </p>
+                    <p><strong>Optional Mods</strong><br>
+                    Injured Effects - Enables 2-heart health effect (enhances experience)
+                    <span class="install-note">
+                        <a href="https://modrinth.com/mod/injured-effects" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fab fa-modrinth"></i> Download Injured Effects</a>
+                    </span>
+                    </p>
+                    <p><strong>Recommended Environment</strong><br>
+                    Minecraft version: 1.20.x (best compatibility)<br>
+                    Server core: Paper/Spigot (Paper recommended for best performance)</p>
+                </div>
+            </div>
+        </div>
 
         <div class="section"><div class="section-title">📝 Player Commands</div><div class="card"><div class="command-block">/gost join<br>/gost leave<br>/gost info<br>/gost help</div><p>Permissions: <code>gost.player</code></p></div></div>
 
@@ -710,7 +844,7 @@ ghost-particle:
   count: 1</pre></div></div>
 
         <div class="section"><div class="section-title">🎯 Game Flow</div>
-            <div class="collapsible"><div class="collapsible-header">Area Setup</div><div class="collapsible-content">/gostadmin tool → save → load</div></div>
+            <div class="collapsible"><div class="collapsible-header">Area Setup</div><div class="collapsible-content">/gostadmin tool → save → load enable</div></div>
             <div class="collapsible"><div class="collapsible-header">Queue & Start</div><div class="collapsible-content">/gost join, auto-start when full, 10s countdown</div></div>
             <div class="collapsible"><div class="collapsible-header">Game Phase</div><div class="collapsible-content">20s prep, 7min game, item spawn every minute (global glow 5s), mother ghost immobilized 20s</div></div>
         </div>
@@ -729,13 +863,23 @@ ghost-particle:
         </div>
 
         <div class="section"><div class="section-title">🔐 Permissions</div>
-            <div class="card"><strong>Player:</strong> <code>gost.player</code>, <code>gost.join</code>, <code>gost.leave</code><br><strong>Admin:</strong> <code>gost.admin</code>, <code>gost.admin.create</code>, <code>gost.admin.delete</code>, <code>gost.admin.manage</code>, <code>gost.admin.reload</code>, <code>gost.admin.divineguardian</code>, <code>gost.admin.ghostparticle</code></div>
+            <div class="card"><strong>Player:</strong> <code>gost.player</code>, <code>gost.join</code>, <code>gost.leave</code><br><strong>Admin:</strong> <code>gost.admin</code>, <code>gost.admin.create</code>, <code>gost.admin.delete</code>, <code>gost.admin.manage</code>, <code>gost.admin.reload</code>, <code>gost.admin.divineguardian</code>, <code>gost.admin.ghostparticle</code><br><br>
+            <strong>Inheritance:</strong><br>
+            <div class="tree">
+                gost.admin<br>
+                ├── gost.admin.create<br>
+                ├── gost.admin.delete<br>
+                ├── gost.admin.manage<br>
+                ├── gost.admin.reload<br>
+                ├── gost.admin.divineguardian<br>
+                └── gost.admin.ghostparticle
+            </div>
+            </div>
         </div>
-        <footer>🎉 Start your survival confrontation! /gost join | Infection: RIGHT CLICK | Item spawn = 5s global glow</footer>
+        <footer>🎉 Start your survival confrontation! /gost join | Infection: LEFT/RIGHT CLICK | Item spawn = 5s global glow</footer>
     </div>
 </div>
 
-<!-- 角落水印 -->
 <div class="watermark">来自太空的小头脑 / LittleMind_fromSpace</div>
 
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
@@ -743,272 +887,41 @@ ghost-particle:
 <script>
     // 道具详细数据（中文完整版）
     const itemsDetailZh = {
-        adrenaline: {
-            name: "🧪 肾上腺素",
-            desc: "人类专属 - 速度药水",
-            detail: `物品图标：喷溅型速度药水<br>
-详细效果：立即获得速度II效果，大幅提升移动速度<br>
-持续时间：10秒（可在config.yml中配置）<br>
-使用方法：右键点击物品直接使用<br>
-使用反馈：<br>
-&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>
-&nbsp;&nbsp;- 获得速度粒子效果<br>
-&nbsp;&nbsp;- 聊天框提示：你使用了肾上腺素！速度提升！<br>
-战术价值：逃生、追击、快速转移位置<br>
-注意事项：仅限人类玩家使用，鬼玩家无法使用`
-        },
-        frenzy: {
-            name: "🔥 狂暴药水",
-            desc: "鬼专属 - 速度药水",
-            detail: `物品图标：喷溅型速度药水（红色）<br>
-详细效果：立即获得速度II效果，大幅提升移动速度<br>
-持续时间：10秒（可在config.yml中配置）<br>
-使用方法：右键点击物品直接使用<br>
-使用反馈：<br>
-&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>
-&nbsp;&nbsp;- 获得速度粒子效果<br>
-&nbsp;&nbsp;- 聊天框提示：你使用了狂暴药水！速度提升！<br>
-战术价值：快速追击人类、快速移动感染<br>
-注意事项：仅限鬼玩家使用，人类玩家无法使用`
-        },
-        iceBall: {
-            name: "❄️ 凝冰球",
-            desc: "投掷类道具 - 雪球",
-            detail: `物品图标：雪球<br>
-详细效果：命中鬼玩家后使其获得减速IV效果，大幅降低移动速度<br>
-持续时间：4秒（可在config.yml中配置）<br>
-使用方法：右键点击投掷雪球<br>
-使用反馈：<br>
-&nbsp;&nbsp;- 命中鬼玩家时显示减速粒子效果<br>
-&nbsp;&nbsp;- 被命中鬼玩家收到提示：你被凝冰球击中了！移动速度降低！<br>
-&nbsp;&nbsp;- 使用者收到提示：成功命中鬼玩家！<br>
-战术价值：阻止鬼玩家追击、为队友创造逃生机会<br>
-注意事项：需要准确投掷命中，对鬼玩家以外的目标无效`
-        },
-        soulControl: {
-            name: "👻 控魂术",
-            desc: "人类战略道具 - 末影之眼",
-            detail: `物品图标：末影之眼<br>
-详细效果：使用后冻结区域内所有鬼玩家，使其完全无法移动<br>
-持续时间：6秒（可在config.yml中配置）<br>
-冷却时间：18秒（可在config.yml中配置）<br>
-使用方法：右键点击物品使用<br>
-使用反馈：<br>
-&nbsp;&nbsp;- ActionBar显示：右键使用冻结所有鬼<br>
-&nbsp;&nbsp;- 全服广播：[控魂术] 所有鬼玩家被冻结！<br>
-&nbsp;&nbsp;- 鬼玩家收到提示：你被控魂术影响了！无法移动！<br>
-战术价值：团队逃生、战略转移、关键时刻保命<br>
-注意事项：一次性使用道具，使用后消失，有冷却时间限制`
-        },
-        stinkySteak: {
-            name: "🍖 臭牛排",
-            desc: "刷新道具 - 熟牛排",
-            detail: `物品图标：熟牛排<br>
-详细效果：无视当前饱食度立即食用，获得速度II效果和发光效果<br>
-持续时间：<br>
-&nbsp;&nbsp;- 速度效果：14秒（可配置）<br>
-&nbsp;&nbsp;- 发光效果：10秒（可配置）<br>
-冷却时间：30秒（可配置）<br>
-使用方法：右键点击直接食用<br>
-使用反馈：<br>
-&nbsp;&nbsp;- 立即恢复饱食度<br>
-&nbsp;&nbsp;- 获得速度粒子效果和发光效果<br>
-&nbsp;&nbsp;- 聊天框提示：你食用了臭牛排！获得速度II效果和发光效果！<br>
-特色功能：任何饱食度状态下均可立即食用，无需等待<br>
-战术价值：紧急情况下的快速速度提升和位置暴露（发光效果）`
-        },
-        teleportPearl: {
-            name: "💎 传送珍珠",
-            desc: "战术道具 - 末影珍珠",
-            detail: `物品图标：末影珍珠<br>
-详细效果：右键投掷后传送到落点位置<br>
-冷却时间：20秒（可在config.yml中配置）<br>
-阵营限制：人类和鬼玩家均可使用<br>
-使用方法：右键点击投掷末影珍珠<br>
-使用反馈：<br>
-&nbsp;&nbsp;- 传送时显示末影粒子效果<br>
-&nbsp;&nbsp;- 冷却期间物品显示冷却状态<br>
-&nbsp;&nbsp;- 聊天框显示冷却剩余时间<br>
-战术价值：<br>
-&nbsp;&nbsp;- 人类：快速逃生、跨越障碍<br>
-&nbsp;&nbsp;- 鬼：快速接近目标、突袭<br>
-注意事项：冷却期间无法再次使用，注意传送落点安全`
-        },
-        soulDetector: {
-            name: "🧭 灵魂探测器",
-            desc: "鬼专属道具 - 指南针",
-            detail: `物品图标：指南针<br>
-详细效果：使用后使所有玩家获得高亮效果，暴露位置<br>
-持续时间：25秒（可在config.yml中配置）<br>
-冷却时间：35秒（可在config.yml中配置）<br>
-阵营限制：仅限鬼玩家使用<br>
-使用方法：右键点击使用指南针<br>
-使用反馈：<br>
-&nbsp;&nbsp;- 所有玩家身体发光（高亮效果）<br>
-&nbsp;&nbsp;- 全服广播：灵魂探测器已激活！所有玩家位置暴露！<br>
-&nbsp;&nbsp;- 使用者收到提示：灵魂探测器已启动，持续25秒<br>
-战术价值：发现隐藏的人类、团队围剿、战略侦查<br>
-注意事项：一次性使用道具，使用后消失`
-        },
-        secondChance: {
-            name: "🛡️ 一次机会",
-            desc: "人类专属道具 - 不死图腾",
-            detail: `物品图标：不死图腾<br>
-详细效果：被动触发，抵挡一次鬼玩家的感染攻击，并随机传送持有者<br>
-触发条件：当鬼玩家右键点击试图感染时自动触发<br>
-人类效果：<br>
-&nbsp;&nbsp;- 速度II效果，持续10秒（可配置）<br>
-&nbsp;&nbsp;- 高亮效果，持续10秒（可配置）<br>
-&nbsp;&nbsp;- 随机传送：被传送到游戏区域内的随机安全位置<br>
-鬼效果：<br>
-&nbsp;&nbsp;- 缓慢I效果，持续7秒（可配置）<br>
-冷却时间：180秒（可在config.yml中配置）<br>
-传送机制：在游戏区域内随机选择安全位置，确保不在液体中，有足够空间<br>
-使用方法：自动触发，无需手动使用<br>
-使用反馈：<br>
-&nbsp;&nbsp;- 屏幕居中字幕：✨ 一次机会触发！ / 成功抵挡感染！<br>
-&nbsp;&nbsp;- 对话框消息：详细显示效果信息<br>
-&nbsp;&nbsp;- 全服广播：XXX 使用了一次机会抵挡了 YYY 的感染！<br>
-&nbsp;&nbsp;- 个人提示：人类获得速度和高亮，鬼获得减速<br>
-战术价值：关键时刻保命、反击机会、削弱攻击者<br>
-特殊限制：每个玩家只能拥有一个，触发后道具消失，冷却期间无法再次获得效果<br>
-注意事项：仅抵挡感染，不抵挡其他伤害`
-        }
+        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属 - 速度药水", faction: "human",
+            detail: `物品图标：喷溅型速度药水<br>详细效果：立即获得速度II效果，大幅提升移动速度<br>持续时间：10秒（可在config.yml中配置）<br>使用方法：右键点击物品直接使用<br>使用反馈：<br>&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>&nbsp;&nbsp;- 获得速度粒子效果<br>&nbsp;&nbsp;- 聊天框提示：你使用了肾上腺素！速度提升！<br>战术价值：逃生、追击、快速转移位置<br>注意事项：仅限人类玩家使用，鬼玩家无法使用` },
+        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属 - 速度药水", faction: "ghost",
+            detail: `物品图标：喷溅型速度药水（红色）<br>详细效果：立即获得速度II效果，大幅提升移动速度<br>持续时间：10秒（可在config.yml中配置）<br>使用方法：右键点击物品直接使用<br>使用反馈：<br>&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>&nbsp;&nbsp;- 获得速度粒子效果<br>&nbsp;&nbsp;- 聊天框提示：你使用了狂暴药水！速度提升！<br>战术价值：快速追击人类、快速移动感染<br>注意事项：仅限鬼玩家使用，人类玩家无法使用` },
+        iceBall: { name: "❄️ 凝冰球", desc: "投掷类道具 - 雪球", faction: "neutral",
+            detail: `物品图标：雪球<br>详细效果：命中鬼玩家后使其获得减速IV效果，大幅降低移动速度<br>持续时间：4秒（可在config.yml中配置）<br>使用方法：右键点击投掷雪球<br>使用反馈：<br>&nbsp;&nbsp;- 命中鬼玩家时显示减速粒子效果<br>&nbsp;&nbsp;- 被命中鬼玩家收到提示：你被凝冰球击中了！移动速度降低！<br>&nbsp;&nbsp;- 使用者收到提示：成功命中鬼玩家！<br>战术价值：阻止鬼玩家追击、为队友创造逃生机会<br>注意事项：需要准确投掷命中，对鬼玩家以外的目标无效` },
+        soulControl: { name: "👻 控魂术", desc: "人类战略道具 - 末影之眼", faction: "human",
+            detail: `物品图标：末影之眼<br>详细效果：使用后冻结区域内所有鬼玩家，使其完全无法移动<br>持续时间：6秒（可在config.yml中配置）<br>冷却时间：18秒（可在config.yml中配置）<br>使用方法：右键点击物品使用<br>使用反馈：<br>&nbsp;&nbsp;- ActionBar显示：右键使用冻结所有鬼<br>&nbsp;&nbsp;- 全服广播：[控魂术] 所有鬼玩家被冻结！<br>&nbsp;&nbsp;- 鬼玩家收到提示：你被控魂术影响了！无法移动！<br>战术价值：团队逃生、战略转移、关键时刻保命<br>注意事项：一次性使用道具，使用后消失，有冷却时间限制` },
+        stinkySteak: { name: "🍖 臭牛排", desc: "刷新道具 - 熟牛排", faction: "neutral",
+            detail: `物品图标：熟牛排<br>详细效果：无视当前饱食度立即食用，获得速度II效果和发光效果<br>持续时间：<br>&nbsp;&nbsp;- 速度效果：14秒（可配置）<br>&nbsp;&nbsp;- 发光效果：10秒（可配置）<br>冷却时间：30秒（可配置）<br>使用方法：右键点击直接食用<br>使用反馈：<br>&nbsp;&nbsp;- 立即恢复饱食度<br>&nbsp;&nbsp;- 获得速度粒子效果和发光效果<br>&nbsp;&nbsp;- 聊天框提示：你食用了臭牛排！获得速度II效果和发光效果！<br>特色功能：任何饱食度状态下均可立即食用，无需等待<br>战术价值：紧急情况下的快速速度提升和位置暴露（发光效果）` },
+        teleportPearl: { name: "💎 传送珍珠", desc: "战术道具 - 末影珍珠", faction: "neutral",
+            detail: `物品图标：末影珍珠<br>详细效果：右键投掷后传送到落点位置<br>冷却时间：20秒（可在config.yml中配置）<br>阵营限制：人类和鬼玩家均可使用<br>使用方法：右键点击投掷末影珍珠<br>使用反馈：<br>&nbsp;&nbsp;- 传送时显示末影粒子效果<br>&nbsp;&nbsp;- 冷却期间物品显示冷却状态<br>&nbsp;&nbsp;- 聊天框显示冷却剩余时间<br>战术价值：<br>&nbsp;&nbsp;- 人类：快速逃生、跨越障碍<br>&nbsp;&nbsp;- 鬼：快速接近目标、突袭<br>注意事项：冷却期间无法再次使用，注意传送落点安全` },
+        soulDetector: { name: "🧭 灵魂探测器", desc: "鬼专属道具 - 指南针", faction: "ghost",
+            detail: `物品图标：指南针<br>详细效果：使用后使所有玩家获得高亮效果，暴露位置<br>持续时间：25秒（可在config.yml中配置）<br>冷却时间：35秒（可在config.yml中配置）<br>阵营限制：仅限鬼玩家使用<br>使用方法：右键点击使用指南针<br>使用反馈：<br>&nbsp;&nbsp;- 所有玩家身体发光（高亮效果）<br>&nbsp;&nbsp;- 全服广播：灵魂探测器已激活！所有玩家位置暴露！<br>&nbsp;&nbsp;- 使用者收到提示：灵魂探测器已启动，持续25秒<br>战术价值：发现隐藏的人类、团队围剿、战略侦查<br>注意事项：一次性使用道具，使用后消失` },
+        secondChance: { name: "🛡️ 一次机会", desc: "人类专属道具 - 不死图腾", faction: "human",
+            detail: `物品图标：不死图腾<br>详细效果：被动触发，抵挡一次鬼玩家的感染攻击，并随机传送持有者<br>触发条件：当鬼玩家右键点击试图感染时自动触发<br>人类效果：<br>&nbsp;&nbsp;- 速度II效果，持续10秒（可配置）<br>&nbsp;&nbsp;- 高亮效果，持续10秒（可配置）<br>&nbsp;&nbsp;- 随机传送：被传送到游戏区域内的随机安全位置<br>鬼效果：<br>&nbsp;&nbsp;- 缓慢I效果，持续7秒（可配置）<br>冷却时间：180秒（可在config.yml中配置）<br>传送机制：在游戏区域内随机选择安全位置，确保不在液体中，有足够空间<br>使用方法：自动触发，无需手动使用<br>使用反馈：<br>&nbsp;&nbsp;- 屏幕居中字幕：✨ 一次机会触发！ / 成功抵挡感染！<br>&nbsp;&nbsp;- 对话框消息：详细显示效果信息<br>&nbsp;&nbsp;- 全服广播：XXX 使用了一次机会抵挡了 YYY 的感染！<br>&nbsp;&nbsp;- 个人提示：人类获得速度和高亮，鬼获得减速<br>战术价值：关键时刻保命、反击机会、削弱攻击者<br>特殊限制：每个玩家只能拥有一个，触发后道具消失，冷却期间无法再次获得效果<br>注意事项：仅抵挡感染，不抵挡其他伤害` }
     };
 
-    // 英文道具详细数据
     const itemsDetailEn = {
-        adrenaline: {
-            name: "🧪 Adrenaline",
-            desc: "Human only - Speed Potion",
-            detail: `Item Icon: Splash Potion of Swiftness<br>
-Effect: Instantly grants Speed II, greatly increasing movement speed<br>
-Duration: 10 seconds (configurable in config.yml)<br>
-Usage: Right-click the item<br>
-Feedback:<br>
-&nbsp;&nbsp;- ActionBar: "Right-click to gain speed boost"<br>
-&nbsp;&nbsp;- Speed particle effects<br>
-&nbsp;&nbsp;- Chat message: "You used Adrenaline! Speed boost!"<br>
-Tactical Value: Escape, chase, quick repositioning<br>
-Note: Human only. Ghosts cannot use this item.`
-        },
-        frenzy: {
-            name: "🔥 Frenzy Potion",
-            desc: "Ghost only - Speed Potion",
-            detail: `Item Icon: Splash Potion of Swiftness (red tint)<br>
-Effect: Instantly grants Speed II, greatly increasing movement speed<br>
-Duration: 10 seconds (configurable in config.yml)<br>
-Usage: Right-click the item<br>
-Feedback:<br>
-&nbsp;&nbsp;- ActionBar: "Right-click to gain speed boost"<br>
-&nbsp;&nbsp;- Speed particle effects<br>
-&nbsp;&nbsp;- Chat message: "You used Frenzy Potion! Speed boost!"<br>
-Tactical Value: Fast pursuit of humans, quick infection movement<br>
-Note: Ghost only. Humans cannot use this item.`
-        },
-        iceBall: {
-            name: "❄️ Ice Ball",
-            desc: "Throwable - Snowball",
-            detail: `Item Icon: Snowball<br>
-Effect: Hitting a ghost applies Slow IV, drastically reducing movement speed<br>
-Duration: 4 seconds (configurable)<br>
-Usage: Right-click to throw the snowball<br>
-Feedback:<br>
-&nbsp;&nbsp;- Slow particles on hit ghost<br>
-&nbsp;&nbsp;- Hit ghost message: "You were hit by an Ice Ball! Movement slowed!"<br>
-&nbsp;&nbsp;- Thrower message: "Successfully hit the ghost!"<br>
-Tactical Value: Stop ghost pursuit, create escape opportunities for teammates<br>
-Note: Requires accurate aiming. No effect on non-ghost targets.`
-        },
-        soulControl: {
-            name: "👻 Soul Control",
-            desc: "Human strategic item - Eye of Ender",
-            detail: `Item Icon: Eye of Ender<br>
-Effect: Freezes all ghosts in the area, preventing any movement<br>
-Duration: 6 seconds (configurable)<br>
-Cooldown: 18 seconds (configurable)<br>
-Usage: Right-click the item<br>
-Feedback:<br>
-&nbsp;&nbsp;- ActionBar: "Right-click to freeze all ghosts"<br>
-&nbsp;&nbsp;- Server broadcast: "[Soul Control] All ghosts are frozen!"<br>
-&nbsp;&nbsp;- Ghost message: "You are affected by Soul Control! Cannot move!"<br>
-Tactical Value: Team escape, strategic repositioning, critical lifesaver<br>
-Note: One-time use item, disappears after use. Has cooldown.`
-        },
-        stinkySteak: {
-            name: "🍖 Stinky Steak",
-            desc: "Refresh item - Steak",
-            detail: `Item Icon: Cooked Steak<br>
-Effect: Instantly eat regardless of hunger, grants Speed II and Glowing<br>
-Duration:<br>
-&nbsp;&nbsp;- Speed: 14 seconds (configurable)<br>
-&nbsp;&nbsp;- Glowing: 10 seconds (configurable)<br>
-Cooldown: 30 seconds (configurable)<br>
-Usage: Right-click to eat<br>
-Feedback:<br>
-&nbsp;&nbsp;- Instantly restores hunger<br>
-&nbsp;&nbsp;- Speed and glowing particle effects<br>
-&nbsp;&nbsp;- Chat message: "You ate Stinky Steak! Gained Speed II and Glowing!"<br>
-Special: Can be eaten at any hunger level<br>
-Tactical Value: Emergency speed boost and position reveal (glowing)`
-        },
-        teleportPearl: {
-            name: "💎 Teleport Pearl",
-            desc: "Tactical item - Ender Pearl",
-            detail: `Item Icon: Ender Pearl<br>
-Effect: Right-click to throw, teleports to landing point<br>
-Cooldown: 20 seconds (configurable)<br>
-Faction: Both humans and ghosts can use<br>
-Usage: Right-click to throw<br>
-Feedback:<br>
-&nbsp;&nbsp;- Enderman particle effects on teleport<br>
-&nbsp;&nbsp;- Cooldown display on item<br>
-&nbsp;&nbsp;- Chat shows remaining cooldown<br>
-Tactical Value:<br>
-&nbsp;&nbsp;- Human: Quick escape, cross obstacles<br>
-&nbsp;&nbsp;- Ghost: Rapid approach, surprise attack<br>
-Note: Cannot be used during cooldown. Be aware of landing safety.`
-        },
-        soulDetector: {
-            name: "🧭 Soul Detector",
-            desc: "Ghost only - Compass",
-            detail: `Item Icon: Compass<br>
-Effect: Reveals all players with glowing effect, exposing their positions<br>
-Duration: 25 seconds (configurable)<br>
-Cooldown: 35 seconds (configurable)<br>
-Faction: Ghost only<br>
-Usage: Right-click the compass<br>
-Feedback:<br>
-&nbsp;&nbsp;- All players glow (highlight effect)<br>
-&nbsp;&nbsp;- Server broadcast: "Soul Detector activated! All player positions exposed!"<br>
-&nbsp;&nbsp;- User message: "Soul Detector activated for 25 seconds"<br>
-Tactical Value: Find hidden humans, team encirclement, strategic reconnaissance<br>
-Note: One-time use, disappears after use.`
-        },
-        secondChance: {
-            name: "🛡️ Second Chance",
-            desc: "Human only - Totem of Undying",
-            detail: `Item Icon: Totem of Undying<br>
-Effect: Passively triggers when infected, blocks infection and randomly teleports the holder<br>
-Trigger Condition: Automatically when a ghost right-clicks to infect<br>
-Human Effects:<br>
-&nbsp;&nbsp;- Speed II for 10 seconds (configurable)<br>
-&nbsp;&nbsp;- Glowing for 10 seconds (configurable)<br>
-&nbsp;&nbsp;- Random teleport to a safe location within the game area<br>
-Ghost Effect:<br>
-&nbsp;&nbsp;- Slowness I for 7 seconds (configurable)<br>
-Cooldown: 180 seconds (configurable)<br>
-Teleport Mechanism: Random safe location (not in liquids, sufficient space)<br>
-Usage: Automatic, no manual activation<br>
-Feedback:<br>
-&nbsp;&nbsp;- Center subtitle: "✨ Second Chance Triggered!" / "Successfully resisted infection!"<br>
-&nbsp;&nbsp;- Dialog message with detailed effect info<br>
-&nbsp;&nbsp;- Server broadcast: "XXX used Second Chance to block YYY's infection!"<br>
-&nbsp;&nbsp;- Personal hints: Human gains speed/glowing, ghost gets slowness<br>
-Tactical Value: Lifesaver in critical moments, counterattack chance, weaken attacker<br>
-Limitations: Only one per player, disappears after trigger, cannot gain effect during cooldown<br>
-Note: Only blocks infection, not other damage.`
-        }
+        adrenaline: { name: "🧪 Adrenaline", desc: "Human only - Speed Potion", faction: "human",
+            detail: `Item Icon: Splash Potion of Swiftness<br>Effect: Instantly grants Speed II, greatly increasing movement speed<br>Duration: 10 seconds (configurable)<br>Usage: Right-click<br>Feedback: ActionBar, speed particles, chat message<br>Tactical Value: Escape, chase, repositioning<br>Note: Human only` },
+        frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only - Speed Potion", faction: "ghost",
+            detail: `Item Icon: Splash Potion of Swiftness (red tint)<br>Effect: Instantly grants Speed II<br>Duration: 10 seconds (configurable)<br>Usage: Right-click<br>Feedback: ActionBar, speed particles, chat message<br>Tactical Value: Fast pursuit, quick infection<br>Note: Ghost only` },
+        iceBall: { name: "❄️ Ice Ball", desc: "Throwable - Snowball", faction: "neutral",
+            detail: `Item Icon: Snowball<br>Effect: Hitting a ghost applies Slow IV<br>Duration: 4 seconds (configurable)<br>Usage: Right-click to throw<br>Feedback: Slow particles, hit messages<br>Tactical Value: Stop ghost pursuit<br>Note: Accurate aiming required` },
+        soulControl: { name: "👻 Soul Control", desc: "Human strategic item - Eye of Ender", faction: "human",
+            detail: `Item Icon: Eye of Ender<br>Effect: Freezes all ghosts in area<br>Duration: 6s, Cooldown: 18s (configurable)<br>Usage: Right-click<br>Feedback: ActionBar, server broadcast, ghost message<br>Tactical Value: Team escape, lifesaver<br>Note: One-time use, has cooldown` },
+        stinkySteak: { name: "🍖 Stinky Steak", desc: "Refresh item - Steak", faction: "neutral",
+            detail: `Item Icon: Cooked Steak<br>Effect: Eat regardless of hunger, Speed II + Glowing<br>Duration: Speed 14s, Glowing 10s (configurable)<br>Cooldown: 30s<br>Usage: Right-click to eat<br>Feedback: Restores hunger, particles, chat message<br>Special: Can be eaten at any hunger level<br>Tactical Value: Emergency speed boost and reveal` },
+        teleportPearl: { name: "💎 Teleport Pearl", desc: "Tactical item - Ender Pearl", faction: "neutral",
+            detail: `Item Icon: Ender Pearl<br>Effect: Teleports to landing point<br>Cooldown: 20s (configurable)<br>Faction: Both<br>Usage: Right-click to throw<br>Feedback: Enderman particles, cooldown display<br>Tactical Value: Escape (human), approach (ghost)<br>Note: Cannot use during cooldown` },
+        soulDetector: { name: "🧭 Soul Detector", desc: "Ghost only - Compass", faction: "ghost",
+            detail: `Item Icon: Compass<br>Effect: Reveals all players with glowing<br>Duration: 25s, Cooldown: 35s (configurable)<br>Usage: Right-click<br>Feedback: All players glow, server broadcast<br>Tactical Value: Find hidden humans, reconnaissance<br>Note: One-time use` },
+        secondChance: { name: "🛡️ Second Chance", desc: "Human only - Totem of Undying", faction: "human",
+            detail: `Item Icon: Totem of Undying<br>Effect: Passively blocks infection and teleports holder<br>Trigger: When a ghost tries to infect<br>Human Effects: Speed II 10s, Glowing 10s, random teleport<br>Ghost Effect: Slowness I 7s<br>Cooldown: 180s<br>Usage: Automatic<br>Feedback: Center subtitle, dialog, server broadcast<br>Tactical Value: Critical lifesaver, counterattack<br>Limitations: One per player, disappears after trigger` }
     };
 
     function renderItems(lang) {
@@ -1018,8 +931,11 @@ Note: Only blocks infection, not other damage.`
         container.innerHTML = '';
         for (let key in data) {
             const item = data[key];
+            let factionClass = '';
+            if (item.faction === 'human') factionClass = 'card-human';
+            else if (item.faction === 'ghost') factionClass = 'card-ghost';
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = `card ${factionClass}`;
             card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem;">${item.desc}</span><br>
             <button class="btn-detail" data-item="${key}" data-lang="${lang}">📖 详情</button>`;
             container.appendChild(card);
