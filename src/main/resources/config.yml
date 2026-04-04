@@ -2,7 +2,7 @@
 # 版本: 2.2.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 15
+ScriptIrc-config-version: 16
 
 # 游戏设置
 game:
@@ -90,6 +90,7 @@ area:
   selection-tool: MAGMA_CREAM # 选区工具物品（默认为岩浆膏）
   max-areas: 20 # 最大存档区域数量
   auto-teleport: true # 是否自动传送到区域
+  ignore-y-axis: false # 是否忽略Y轴检查（设为true时，区域检查只考虑X和Z坐标）
 
 # 道具刷新设置
 item-spawn:

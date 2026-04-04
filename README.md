@@ -158,12 +158,42 @@
 ## 🎮 游戏指南
 
 ### 📝 玩家基础命令
+
+#### 主命令
 ```bash
 /gost join      # 加入游戏队列
 /gost leave     # 离开游戏或队列
 /gost info      # 查看当前游戏信息
 /gost help      # 显示帮助信息
 ```
+
+#### 命令别名
+```bash
+/join           # /gost join 的别名
+/leave          # /gost leave 的别名
+```
+
+#### 详细说明
+1. **/gost join**
+   - 功能：加入游戏队列
+   - 权限：`gost.player` 和 `gost.join`
+   - 条件：需要100金币入场费（可配置）
+   - 效果：加入队列，等待其他玩家加入
+
+2. **/gost leave**
+   - 功能：离开游戏或队列
+   - 权限：`gost.player` 和 `gost.leave`
+   - 效果：如果已在队列中，退出队列并退还金币；如果已在游戏中，退出游戏
+
+3. **/gost info**
+   - 功能：查看当前游戏信息
+   - 权限：`gost.player`
+   - 显示：队列状态、游戏状态、玩家数量等信息
+
+4. **/gost help**
+   - 功能：显示玩家帮助信息
+   - 权限：`gost.player`
+   - 显示：所有玩家可用命令列表
 
 ### 🧰 道具使用指南
 
@@ -297,6 +327,12 @@
 
 ### ⚙️ 管理员命令大全
 
+#### 主管理员命令
+```bash
+/gostadmin                 # 显示管理员帮助（需要 gost.admin 权限）
+/ga                        # /gostadmin 的别名
+```
+
 #### 区域管理命令
 ```bash
 /gostadmin tool            # 获取区域选择工具（岩浆膏）
@@ -304,7 +340,7 @@
 /gostadmin pos2            # 设置第二个点（工具右键点击）
 /gostadmin save <名称>     # 保存当前选区为指定名称
 /gostadmin list            # 列出所有已保存的区域
-/gostadmin load <名称>     # 加载指定区域作为游戏区域
+/gostadmin load <名称> [enable|disable]  # 加载/启用/禁用区域
 /gostadmin delete <名称>   # 删除指定的保存区域
 /gostadmin info <名称>     # 查看指定区域的详细信息
 /gostadmin clear           # 清除当前选区
@@ -312,23 +348,38 @@
 
 #### 游戏管理命令
 ```bash
-/gostadmin start           # 强制开始游戏
-/gostadmin stop            # 强制停止当前游戏
-/gostadmin reload          # 重载配置文件
-/gostadmin status          # 查看当前游戏状态
+/gostadmin start <区域名称>  # 使用指定区域强制开始游戏
+/gostadmin stop             # 强制停止当前游戏
+/gostadmin reload           # 重载配置文件
+/gostadmin status           # 查看当前游戏状态
 /gostadmin dark <on|off|status>  # 黑暗效果管理
 /gostadmin heartbeat <on|off|status>  # 心跳声效果管理
-/gostadmin help            # 显示管理员帮助
+/gostadmin help             # 显示管理员帮助
+```
+
+#### 假人系统管理命令
+```bash
+/gostadmin bot add <数量>     # 添加指定数量的假人到队列
+/gostadmin bot remove <数量>  # 从队列移除指定数量的假人
+/gostadmin bot clear          # 清除所有假人
+/gostadmin bot info           # 查看假人信息
+/gostadmin bot count          # 查看假人数量
 ```
 
 #### 神圣守护管理命令（v2.2.0更新）
 ```bash
-/divineguardian status      # 查看神圣守护状态
-/divineguardian enable      # 启用神圣守护功能
-/divineguardian disable     # 禁用神圣守护功能
-/divineguardian reload      # 重新加载神圣守护配置
-/divineguardian info        # 查看当前神圣守护信息
-/divineguardian clear       # 清除神圣守护数据
+/divineguardian              # 显示神圣守护帮助（需要 gost.admin.divineguardian 权限）
+/dg                          # /divineguardian 的别名
+
+# 状态查看
+/divineguardian status       # 查看神圣守护状态
+/divineguardian info         # 查看当前神圣守护信息
+
+# 功能控制
+/divineguardian enable       # 启用神圣守护功能
+/divineguardian disable      # 禁用神圣守护功能
+/divineguardian reload       # 重新加载神圣守护配置
+/divineguardian clear        # 清除神圣守护数据
 
 # 配置管理
 /divineguardian setcharges <次数>    # 设置最大使用次数（1-10）
@@ -342,12 +393,18 @@
 
 #### 鬼玩家粒子效果管理命令（v2.1.2新增）
 ```bash
-/ghostparticle status      # 查看粒子效果状态
-/ghostparticle enable      # 启用粒子效果
-/ghostparticle disable     # 禁用粒子效果
-/ghostparticle reload      # 重新加载配置
-/ghostparticle test        # 测试粒子效果
-/ghostparticle listtypes   # 列出可用粒子类型
+/ghostparticle               # 显示粒子效果帮助（需要 gost.admin.ghostparticle 权限）
+/gp                          # /ghostparticle 的别名
+
+# 状态查看
+/ghostparticle status        # 查看粒子效果状态
+/ghostparticle listtypes     # 列出可用粒子类型
+
+# 功能控制
+/ghostparticle enable        # 启用粒子效果
+/ghostparticle disable       # 禁用粒子效果
+/ghostparticle reload        # 重新加载配置
+/ghostparticle test          # 测试粒子效果
 
 # 配置管理
 /ghostparticle settype <类型>        # 设置粒子类型
@@ -358,6 +415,83 @@
 /ghostparticle setsize <大小>        # 设置粒子大小
 /ghostparticle setpreparation <on|off>  # 设置准备阶段显示
 ```
+
+#### 详细命令说明
+
+##### 区域管理命令
+1. **/gostadmin tool**
+   - 功能：获取区域选择工具（默认岩浆膏）
+   - 权限：`gost.admin`
+   - 效果：给予玩家选区工具
+
+2. **/gostadmin pos1 / pos2**
+   - 功能：设置选区点1和点2
+   - 权限：`gost.admin`
+   - 用法：先用工具左键/右键点击方块，然后执行命令
+
+3. **/gostadmin save <名称>**
+   - 功能：保存当前选区
+   - 权限：`gost.admin.create`
+   - 参数：区域名称（不能包含空格）
+
+4. **/gostadmin load <名称> [enable|disable]**
+   - 功能：加载/启用/禁用区域
+   - 权限：`gost.admin`
+   - 参数：区域名称 + 可选操作（enable/disable）
+
+5. **/gostadmin delete <名称>**
+   - 功能：删除区域
+   - 权限：`gost.admin.delete`
+   - 参数：区域名称
+
+##### 游戏管理命令
+1. **/gostadmin start <区域名称>**
+   - 功能：强制开始游戏
+   - 权限：`gost.admin.manage`
+   - 参数：必须指定已保存的区域名称
+
+2. **/gostadmin stop**
+   - 功能：强制停止游戏
+   - 权限：`gost.admin.manage`
+   - 效果：立即结束当前游戏
+
+3. **/gostadmin reload**
+   - 功能：重载配置文件
+   - 权限：`gost.admin.reload`
+   - 效果：重新加载 config.yml 配置
+
+##### 假人系统命令
+1. **/gostadmin bot add <数量>**
+   - 功能：添加假人到队列
+   - 权限：`gost.admin`
+   - 参数：假人数量（1-16）
+
+2. **/gostadmin bot remove <数量>**
+   - 功能：从队列移除假人
+   - 权限：`gost.admin`
+   - 参数：移除数量
+
+##### 黑暗效果命令
+1. **/gostadmin dark on**
+   - 功能：启用黑暗效果
+   - 权限：`gost.admin`
+   - 效果：给予所有玩家失明效果
+
+2. **/gostadmin dark off**
+   - 功能：禁用黑暗效果
+   - 权限：`gost.admin`
+   - 效果：移除所有玩家的失明效果
+
+##### 心跳声效果命令
+1. **/gostadmin heartbeat on**
+   - 功能：启用心跳声效果
+   - 权限：`gost.admin`
+   - 效果：游戏过程中人类玩家听到监守者心跳声
+
+2. **/gostadmin heartbeat off**
+   - 功能：禁用心跳声效果
+   - 权限：`gost.admin`
+   - 效果：停止心跳声播放
 
 ## 🎯 完整游戏流程
 
@@ -575,16 +709,78 @@ area:
 ## 🔐 权限节点
 
 ### 玩家权限（默认所有玩家拥有）
-- `gost.player` - 基础玩家权限（使用所有玩家命令：join/leave/info）
+- `gost.player` - 基础玩家权限（使用所有玩家命令：join/leave/info/help）
+- `gost.join` - 允许玩家加入游戏队列（默认 true）
+- `gost.leave` - 允许玩家离开游戏或队列（默认 true）
 
 ### 管理员权限
-- `gost.admin` - 管理员基础权限
+#### 基础管理员权限
+- `gost.admin` - 管理员基础权限（默认 op）
+  - 包含所有管理员命令的基础访问权限
+  - 包括：区域管理、游戏管理、假人系统、黑暗效果、心跳声效果
+
+#### 区域管理权限
 - `gost.admin.create` - 创建区域权限
+  - 允许使用 `/gostadmin save <名称>` 保存选区
 - `gost.admin.delete` - 删除区域权限
-- `gost.admin.reload` - 重载配置权限
+  - 允许使用 `/gostadmin delete <名称>` 删除区域
+
+#### 游戏管理权限
 - `gost.admin.manage` - 管理游戏权限
-- `gost.admin.divineguardian` - 管理神圣守护权限（v2.1.1新增）
-- `gost.admin.ghostparticle` - 管理鬼玩家粒子效果权限（v2.1.2新增）
+  - 允许使用 `/gostadmin start <区域>` 开始游戏
+  - 允许使用 `/gostadmin stop` 停止游戏
+- `gost.admin.reload` - 重载配置权限
+  - 允许使用 `/gostadmin reload` 重载配置文件
+
+#### 特殊功能管理权限
+- `gost.admin.divineguardian` - 管理神圣守护权限（v2.1.1新增，默认 op）
+  - 允许使用所有 `/divineguardian` 命令
+  - 包括：启用/禁用、配置管理、强制激活等
+- `gost.admin.ghostparticle` - 管理鬼玩家粒子效果权限（v2.1.2新增，默认 op）
+  - 允许使用所有 `/ghostparticle` 命令
+  - 包括：启用/禁用、粒子配置、测试效果等
+
+### 权限继承关系
+```
+gost.admin
+├── gost.admin.create
+├── gost.admin.delete
+├── gost.admin.manage
+├── gost.admin.reload
+├── gost.admin.divineguardian
+└── gost.admin.ghostparticle
+```
+
+### 权限配置示例
+```yaml
+# 给予玩家基础权限（默认已包含）
+permissions:
+  gost.player:
+    default: true
+  gost.join:
+    default: true
+  gost.leave:
+    default: true
+
+# 给予管理员完整权限
+permissions:
+  gost.admin:
+    default: op
+  gost.admin.divineguardian:
+    default: op
+  gost.admin.ghostparticle:
+    default: op
+
+# 给予特定玩家部分权限
+permissions:
+  gost.admin.create:
+    default: false
+    player1: true
+    player2: true
+  gost.admin.manage:
+    default: false
+    admin1: true
+```
 
 ## ⚠️ 重要注意事项
 
