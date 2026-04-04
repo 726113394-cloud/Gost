@@ -297,58 +297,9 @@
             </div>
         </div>
 
-        <!-- 道具系统：固定发放道具 + 随机刷新道具 -->
+        <!-- 道具系统：全部8个道具以卡片网格展示 -->
         <div class="section">
-            <div class="section-title">🧰 道具系统</div>
-            
-            <!-- 固定发放道具（非刷新） -->
-            <div class="collapsible">
-                <div class="collapsible-header">🎁 固定发放道具（游戏开始时自动获得，非刷新）<i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card" style="margin-bottom:1rem;">
-                        <strong>🧪 肾上腺素（人类专属 - 速度药水）</strong><span class="item-badge">固定发放</span><br>
-                        <strong>物品图标</strong>：喷溅型速度药水<br>
-                        <strong>详细效果</strong>：立即获得<strong>速度II</strong>效果，大幅提升移动速度<br>
-                        <strong>持续时间</strong>：10秒（可在config.yml中配置）<br>
-                        <strong>使用方法</strong>：<strong>右键点击</strong>物品直接使用<br>
-                        <strong>使用反馈</strong>：
-                        <ul style="margin-left:1.5rem; margin-top:0.3rem;">
-                            <li>ActionBar显示：<code>右键使用获得速度提升</code></li>
-                            <li>获得速度粒子效果</li>
-                            <li>聊天框提示：<code>你使用了肾上腺素！速度提升！</code></li>
-                        </ul>
-                        <strong>战术价值</strong>：逃生、追击、快速转移位置<br>
-                        <strong>注意事项</strong>：仅限人类玩家使用，鬼玩家无法使用
-                    </div>
-                    <div class="card">
-                        <strong>🔥 狂暴药水（鬼专属 - 速度药水）</strong><span class="item-badge">固定发放</span><br>
-                        <strong>物品图标</strong>：喷溅型速度药水（红色）<br>
-                        <strong>详细效果</strong>：立即获得<strong>速度II</strong>效果，大幅提升移动速度<br>
-                        <strong>持续时间</strong>：10秒（可在config.yml中配置）<br>
-                        <strong>使用方法</strong>：<strong>右键点击</strong>物品直接使用<br>
-                        <strong>使用反馈</strong>：
-                        <ul style="margin-left:1.5rem; margin-top:0.3rem;">
-                            <li>ActionBar显示：<code>右键使用获得速度提升</code></li>
-                            <li>获得速度粒子效果</li>
-                            <li>聊天框提示：<code>你使用了狂暴药水！速度提升！</code></li>
-                        </ul>
-                        <strong>战术价值</strong>：快速追击人类、快速移动感染<br>
-                        <strong>注意事项</strong>：仅限鬼玩家使用，人类玩家无法使用
-                    </div>
-                </div>
-            </div>
-
-            <!-- 随机刷新道具 -->
-            <div class="collapsible">
-                <div class="collapsible-header">🔄 随机刷新道具（每分钟自动刷新）<i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <ul><li><strong>🍖 臭牛排</strong>（权重15）：无视饱食度直接食用，速度II 14秒+发光10秒，冷却30秒。</li>
-                    <li><strong>💎 传送珍珠</strong>（权重20）：右键投掷传送，冷却20秒，双方通用。</li>
-                    <li><strong>🧭 灵魂探测器</strong>（鬼专属，权重12）：所有玩家发光25秒，冷却35秒。</li>
-                    <li><strong>🛡️ 一次机会</strong>（人类专属，权重10）：被动抵挡感染，随机传送，冷却180秒。</li></ul>
-                    <p><strong>限制</strong>：最多6种道具种类，最多1个刷新道具，部分唯一性。</p>
-                </div>
-            </div>
+            <div class="section-title">🧰 完整道具图鉴</div>
             <div class="grid-3col" id="items-list-zh"></div>
         </div>
 
@@ -693,7 +644,7 @@ ghost-particle:
         <footer>🎉 开始你的生存对抗之旅！ 使用 <code>/gost join</code> 加入队列 | 感染方式：右键点击 | 道具发放时全体高亮5秒</footer>
     </div>
 
-    <!-- 英文版本（同步更新固定道具） -->
+    <!-- 英文版本（道具详情已翻译） -->
     <div id="en-content" class="lang-content">
         <div style="padding:1.5rem 0 1rem;"><h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - Extreme Survival Confrontation</h1>
         <p><strong>Gost</strong> combines cat-and-mouse, ghost chase, hide & seek, and CF生化 mode. Experience life-or-death chase between humans and ghosts.</p><div class="badge">⚡ Divine Guardian · Redeemer | 🎮 Mode Switch | 🔧 Queue Optimized | ✨ Global Glow on Item Spawn</div>
@@ -712,36 +663,8 @@ ghost-particle:
             <div class="card"><i class="fas fa-map-marked-alt"></i> <strong>Area Management</strong><br>Wand selection, save up to 20 areas</div>
         </div></div>
 
-        <!-- 道具系统英文版 -->
-        <div class="section"><div class="section-title">🧰 Item System</div>
-            <!-- Fixed items -->
-            <div class="collapsible">
-                <div class="collapsible-header">🎁 Fixed Items (Granted at game start, non-refresh) <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card" style="margin-bottom:1rem;">
-                        <strong>🧪 Adrenaline (Human only - Speed Potion)</strong><span class="item-badge">Fixed</span><br>
-                        <strong>Effect</strong>: Instant <strong>Speed II</strong> for 10 seconds (configurable)<br>
-                        <strong>Usage</strong>: Right-click<br>
-                        <strong>Feedback</strong>: ActionBar, particle effects, chat message<br>
-                        <strong>Tactical Value</strong>: Escape, chase, quick repositioning<br>
-                        <strong>Note</strong>: Human only
-                    </div>
-                    <div class="card">
-                        <strong>🔥 Frenzy Potion (Ghost only - Speed Potion)</strong><span class="item-badge">Fixed</span><br>
-                        <strong>Effect</strong>: Instant <strong>Speed II</strong> for 10 seconds (configurable)<br>
-                        <strong>Usage</strong>: Right-click<br>
-                        <strong>Feedback</strong>: ActionBar, particle effects, chat message<br>
-                        <strong>Tactical Value</strong>: Fast chase, quick infection<br>
-                        <strong>Note</strong>: Ghost only
-                    </div>
-                </div>
-            </div>
-            <!-- Refresh items -->
-            <div class="collapsible">
-                <div class="collapsible-header">🔄 Minute-Refresh Items <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content"><ul><li><strong>Stinky Steak</strong> (Weight 15): Speed II + Glowing</li><li><strong>Teleport Pearl</strong> (Weight 20): Teleport, 20s cooldown</li><li><strong>Soul Detector</strong> (Ghost only, Weight 12): Reveals all players</li><li><strong>Second Chance</strong> (Human only, Weight 10): Blocks infection once</li></ul></div></div>
-            <div class="grid-3col" id="items-list-en"></div>
-        </div>
+        <!-- 英文道具卡片网格 -->
+        <div class="section"><div class="section-title">🧰 Complete Item Guide</div><div class="grid-3col" id="items-list-en"></div></div>
 
         <div class="section"><div class="section-title">⚡ Infection & Global Highlight</div><div class="card"><p><strong>Infection method:</strong> Ghosts infect humans via <span style="color:#ffa07a;">RIGHT CLICK</span>.<br>✨ "Second Chance" blocks infection once.</p><hr><p><strong>🌟 Global Highlight on Item Spawn</strong>: All alive players receive a <strong>5-second glowing effect</strong> when items are distributed.</p></div></div>
 
@@ -792,30 +715,282 @@ ghost-particle:
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
 
 <script>
-    const itemsDetail = {
-        zh: {
-            adrenaline: { name: "🧪 肾上腺素", desc: "人类专属·固定发放·速度II 10秒", detail: "喷溅型速度药水，右键使用获得速度II 10秒。战术：逃生、追击。仅人类可用。" },
-            frenzy: { name: "🔥 狂暴药水", desc: "鬼专属·固定发放·速度II 10秒", detail: "鬼专属，右键使用速度II 10秒，快速追击。仅鬼可用。" },
-            stinkySteak: { name: "🍖 臭牛排", desc: "速度II+发光", detail: "右键食用获得速度II 14秒+发光10秒，冷却30秒，无视饱食度。" },
-            teleportPearl: { name: "💎 传送珍珠", desc: "传送，冷却20秒", detail: "末影珍珠，右键投掷传送，冷却20秒，人类/鬼通用。" },
-            soulDetector: { name: "🧭 灵魂探测器", desc: "鬼专属，暴露所有玩家", detail: "指南针，使用后所有玩家发光25秒，冷却35秒。" },
-            secondChance: { name: "🛡️ 一次机会", desc: "被动抵挡感染", detail: "人类专属，被动触发抵挡感染+随机传送，触发后给鬼缓慢，冷却180秒。" }
+    // 道具详细数据（中文完整版）
+    const itemsDetailZh = {
+        adrenaline: {
+            name: "🧪 肾上腺素",
+            desc: "人类专属 - 速度药水",
+            detail: `物品图标：喷溅型速度药水<br>
+详细效果：立即获得速度II效果，大幅提升移动速度<br>
+持续时间：10秒（可在config.yml中配置）<br>
+使用方法：右键点击物品直接使用<br>
+使用反馈：<br>
+&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>
+&nbsp;&nbsp;- 获得速度粒子效果<br>
+&nbsp;&nbsp;- 聊天框提示：你使用了肾上腺素！速度提升！<br>
+战术价值：逃生、追击、快速转移位置<br>
+注意事项：仅限人类玩家使用，鬼玩家无法使用`
         },
-        en: {
-            adrenaline: { name: "🧪 Adrenaline", desc: "Human only · Fixed · Speed II 10s", detail: "Splash potion, right-click: Speed II 10s. Escape/chase." },
-            frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only · Fixed · Speed II 10s", detail: "Ghost only, right-click for Speed II 10s. Fast pursuit." },
-            stinkySteak: { name: "🍖 Stinky Steak", desc: "Speed II + Glowing", detail: "Right-click eat: Speed II 14s + Glowing 10s, cd 30s." },
-            teleportPearl: { name: "💎 Teleport Pearl", desc: "Teleport, cd 20s", detail: "Ender pearl, both factions, cd 20s." },
-            soulDetector: { name: "🧭 Soul Detector", desc: "Ghost only, reveals all", detail: "Compass, all players glow 25s, cd 35s." },
-            secondChance: { name: "🛡️ Second Chance", desc: "Passive block infection", detail: "Blocks infection once, teleports user, gives ghost slowness. Cd 180s." }
+        frenzy: {
+            name: "🔥 狂暴药水",
+            desc: "鬼专属 - 速度药水",
+            detail: `物品图标：喷溅型速度药水（红色）<br>
+详细效果：立即获得速度II效果，大幅提升移动速度<br>
+持续时间：10秒（可在config.yml中配置）<br>
+使用方法：右键点击物品直接使用<br>
+使用反馈：<br>
+&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>
+&nbsp;&nbsp;- 获得速度粒子效果<br>
+&nbsp;&nbsp;- 聊天框提示：你使用了狂暴药水！速度提升！<br>
+战术价值：快速追击人类、快速移动感染<br>
+注意事项：仅限鬼玩家使用，人类玩家无法使用`
+        },
+        iceBall: {
+            name: "❄️ 凝冰球",
+            desc: "投掷类道具 - 雪球",
+            detail: `物品图标：雪球<br>
+详细效果：命中鬼玩家后使其获得减速IV效果，大幅降低移动速度<br>
+持续时间：4秒（可在config.yml中配置）<br>
+使用方法：右键点击投掷雪球<br>
+使用反馈：<br>
+&nbsp;&nbsp;- 命中鬼玩家时显示减速粒子效果<br>
+&nbsp;&nbsp;- 被命中鬼玩家收到提示：你被凝冰球击中了！移动速度降低！<br>
+&nbsp;&nbsp;- 使用者收到提示：成功命中鬼玩家！<br>
+战术价值：阻止鬼玩家追击、为队友创造逃生机会<br>
+注意事项：需要准确投掷命中，对鬼玩家以外的目标无效`
+        },
+        soulControl: {
+            name: "👻 控魂术",
+            desc: "人类战略道具 - 末影之眼",
+            detail: `物品图标：末影之眼<br>
+详细效果：使用后冻结区域内所有鬼玩家，使其完全无法移动<br>
+持续时间：6秒（可在config.yml中配置）<br>
+冷却时间：18秒（可在config.yml中配置）<br>
+使用方法：右键点击物品使用<br>
+使用反馈：<br>
+&nbsp;&nbsp;- ActionBar显示：右键使用冻结所有鬼<br>
+&nbsp;&nbsp;- 全服广播：[控魂术] 所有鬼玩家被冻结！<br>
+&nbsp;&nbsp;- 鬼玩家收到提示：你被控魂术影响了！无法移动！<br>
+战术价值：团队逃生、战略转移、关键时刻保命<br>
+注意事项：一次性使用道具，使用后消失，有冷却时间限制`
+        },
+        stinkySteak: {
+            name: "🍖 臭牛排",
+            desc: "刷新道具 - 熟牛排",
+            detail: `物品图标：熟牛排<br>
+详细效果：无视当前饱食度立即食用，获得速度II效果和发光效果<br>
+持续时间：<br>
+&nbsp;&nbsp;- 速度效果：14秒（可配置）<br>
+&nbsp;&nbsp;- 发光效果：10秒（可配置）<br>
+冷却时间：30秒（可配置）<br>
+使用方法：右键点击直接食用<br>
+使用反馈：<br>
+&nbsp;&nbsp;- 立即恢复饱食度<br>
+&nbsp;&nbsp;- 获得速度粒子效果和发光效果<br>
+&nbsp;&nbsp;- 聊天框提示：你食用了臭牛排！获得速度II效果和发光效果！<br>
+特色功能：任何饱食度状态下均可立即食用，无需等待<br>
+战术价值：紧急情况下的快速速度提升和位置暴露（发光效果）`
+        },
+        teleportPearl: {
+            name: "💎 传送珍珠",
+            desc: "战术道具 - 末影珍珠",
+            detail: `物品图标：末影珍珠<br>
+详细效果：右键投掷后传送到落点位置<br>
+冷却时间：20秒（可在config.yml中配置）<br>
+阵营限制：人类和鬼玩家均可使用<br>
+使用方法：右键点击投掷末影珍珠<br>
+使用反馈：<br>
+&nbsp;&nbsp;- 传送时显示末影粒子效果<br>
+&nbsp;&nbsp;- 冷却期间物品显示冷却状态<br>
+&nbsp;&nbsp;- 聊天框显示冷却剩余时间<br>
+战术价值：<br>
+&nbsp;&nbsp;- 人类：快速逃生、跨越障碍<br>
+&nbsp;&nbsp;- 鬼：快速接近目标、突袭<br>
+注意事项：冷却期间无法再次使用，注意传送落点安全`
+        },
+        soulDetector: {
+            name: "🧭 灵魂探测器",
+            desc: "鬼专属道具 - 指南针",
+            detail: `物品图标：指南针<br>
+详细效果：使用后使所有玩家获得高亮效果，暴露位置<br>
+持续时间：25秒（可在config.yml中配置）<br>
+冷却时间：35秒（可在config.yml中配置）<br>
+阵营限制：仅限鬼玩家使用<br>
+使用方法：右键点击使用指南针<br>
+使用反馈：<br>
+&nbsp;&nbsp;- 所有玩家身体发光（高亮效果）<br>
+&nbsp;&nbsp;- 全服广播：灵魂探测器已激活！所有玩家位置暴露！<br>
+&nbsp;&nbsp;- 使用者收到提示：灵魂探测器已启动，持续25秒<br>
+战术价值：发现隐藏的人类、团队围剿、战略侦查<br>
+注意事项：一次性使用道具，使用后消失`
+        },
+        secondChance: {
+            name: "🛡️ 一次机会",
+            desc: "人类专属道具 - 不死图腾",
+            detail: `物品图标：不死图腾<br>
+详细效果：被动触发，抵挡一次鬼玩家的感染攻击，并随机传送持有者<br>
+触发条件：当鬼玩家右键点击试图感染时自动触发<br>
+人类效果：<br>
+&nbsp;&nbsp;- 速度II效果，持续10秒（可配置）<br>
+&nbsp;&nbsp;- 高亮效果，持续10秒（可配置）<br>
+&nbsp;&nbsp;- 随机传送：被传送到游戏区域内的随机安全位置<br>
+鬼效果：<br>
+&nbsp;&nbsp;- 缓慢I效果，持续7秒（可配置）<br>
+冷却时间：180秒（可在config.yml中配置）<br>
+传送机制：在游戏区域内随机选择安全位置，确保不在液体中，有足够空间<br>
+使用方法：自动触发，无需手动使用<br>
+使用反馈：<br>
+&nbsp;&nbsp;- 屏幕居中字幕：✨ 一次机会触发！ / 成功抵挡感染！<br>
+&nbsp;&nbsp;- 对话框消息：详细显示效果信息<br>
+&nbsp;&nbsp;- 全服广播：XXX 使用了一次机会抵挡了 YYY 的感染！<br>
+&nbsp;&nbsp;- 个人提示：人类获得速度和高亮，鬼获得减速<br>
+战术价值：关键时刻保命、反击机会、削弱攻击者<br>
+特殊限制：每个玩家只能拥有一个，触发后道具消失，冷却期间无法再次获得效果<br>
+注意事项：仅抵挡感染，不抵挡其他伤害`
         }
     };
+
+    // 英文道具详细数据
+    const itemsDetailEn = {
+        adrenaline: {
+            name: "🧪 Adrenaline",
+            desc: "Human only - Speed Potion",
+            detail: `Item Icon: Splash Potion of Swiftness<br>
+Effect: Instantly grants Speed II, greatly increasing movement speed<br>
+Duration: 10 seconds (configurable in config.yml)<br>
+Usage: Right-click the item<br>
+Feedback:<br>
+&nbsp;&nbsp;- ActionBar: "Right-click to gain speed boost"<br>
+&nbsp;&nbsp;- Speed particle effects<br>
+&nbsp;&nbsp;- Chat message: "You used Adrenaline! Speed boost!"<br>
+Tactical Value: Escape, chase, quick repositioning<br>
+Note: Human only. Ghosts cannot use this item.`
+        },
+        frenzy: {
+            name: "🔥 Frenzy Potion",
+            desc: "Ghost only - Speed Potion",
+            detail: `Item Icon: Splash Potion of Swiftness (red tint)<br>
+Effect: Instantly grants Speed II, greatly increasing movement speed<br>
+Duration: 10 seconds (configurable in config.yml)<br>
+Usage: Right-click the item<br>
+Feedback:<br>
+&nbsp;&nbsp;- ActionBar: "Right-click to gain speed boost"<br>
+&nbsp;&nbsp;- Speed particle effects<br>
+&nbsp;&nbsp;- Chat message: "You used Frenzy Potion! Speed boost!"<br>
+Tactical Value: Fast pursuit of humans, quick infection movement<br>
+Note: Ghost only. Humans cannot use this item.`
+        },
+        iceBall: {
+            name: "❄️ Ice Ball",
+            desc: "Throwable - Snowball",
+            detail: `Item Icon: Snowball<br>
+Effect: Hitting a ghost applies Slow IV, drastically reducing movement speed<br>
+Duration: 4 seconds (configurable)<br>
+Usage: Right-click to throw the snowball<br>
+Feedback:<br>
+&nbsp;&nbsp;- Slow particles on hit ghost<br>
+&nbsp;&nbsp;- Hit ghost message: "You were hit by an Ice Ball! Movement slowed!"<br>
+&nbsp;&nbsp;- Thrower message: "Successfully hit the ghost!"<br>
+Tactical Value: Stop ghost pursuit, create escape opportunities for teammates<br>
+Note: Requires accurate aiming. No effect on non-ghost targets.`
+        },
+        soulControl: {
+            name: "👻 Soul Control",
+            desc: "Human strategic item - Eye of Ender",
+            detail: `Item Icon: Eye of Ender<br>
+Effect: Freezes all ghosts in the area, preventing any movement<br>
+Duration: 6 seconds (configurable)<br>
+Cooldown: 18 seconds (configurable)<br>
+Usage: Right-click the item<br>
+Feedback:<br>
+&nbsp;&nbsp;- ActionBar: "Right-click to freeze all ghosts"<br>
+&nbsp;&nbsp;- Server broadcast: "[Soul Control] All ghosts are frozen!"<br>
+&nbsp;&nbsp;- Ghost message: "You are affected by Soul Control! Cannot move!"<br>
+Tactical Value: Team escape, strategic repositioning, critical lifesaver<br>
+Note: One-time use item, disappears after use. Has cooldown.`
+        },
+        stinkySteak: {
+            name: "🍖 Stinky Steak",
+            desc: "Refresh item - Steak",
+            detail: `Item Icon: Cooked Steak<br>
+Effect: Instantly eat regardless of hunger, grants Speed II and Glowing<br>
+Duration:<br>
+&nbsp;&nbsp;- Speed: 14 seconds (configurable)<br>
+&nbsp;&nbsp;- Glowing: 10 seconds (configurable)<br>
+Cooldown: 30 seconds (configurable)<br>
+Usage: Right-click to eat<br>
+Feedback:<br>
+&nbsp;&nbsp;- Instantly restores hunger<br>
+&nbsp;&nbsp;- Speed and glowing particle effects<br>
+&nbsp;&nbsp;- Chat message: "You ate Stinky Steak! Gained Speed II and Glowing!"<br>
+Special: Can be eaten at any hunger level<br>
+Tactical Value: Emergency speed boost and position reveal (glowing)`
+        },
+        teleportPearl: {
+            name: "💎 Teleport Pearl",
+            desc: "Tactical item - Ender Pearl",
+            detail: `Item Icon: Ender Pearl<br>
+Effect: Right-click to throw, teleports to landing point<br>
+Cooldown: 20 seconds (configurable)<br>
+Faction: Both humans and ghosts can use<br>
+Usage: Right-click to throw<br>
+Feedback:<br>
+&nbsp;&nbsp;- Enderman particle effects on teleport<br>
+&nbsp;&nbsp;- Cooldown display on item<br>
+&nbsp;&nbsp;- Chat shows remaining cooldown<br>
+Tactical Value:<br>
+&nbsp;&nbsp;- Human: Quick escape, cross obstacles<br>
+&nbsp;&nbsp;- Ghost: Rapid approach, surprise attack<br>
+Note: Cannot be used during cooldown. Be aware of landing safety.`
+        },
+        soulDetector: {
+            name: "🧭 Soul Detector",
+            desc: "Ghost only - Compass",
+            detail: `Item Icon: Compass<br>
+Effect: Reveals all players with glowing effect, exposing their positions<br>
+Duration: 25 seconds (configurable)<br>
+Cooldown: 35 seconds (configurable)<br>
+Faction: Ghost only<br>
+Usage: Right-click the compass<br>
+Feedback:<br>
+&nbsp;&nbsp;- All players glow (highlight effect)<br>
+&nbsp;&nbsp;- Server broadcast: "Soul Detector activated! All player positions exposed!"<br>
+&nbsp;&nbsp;- User message: "Soul Detector activated for 25 seconds"<br>
+Tactical Value: Find hidden humans, team encirclement, strategic reconnaissance<br>
+Note: One-time use, disappears after use.`
+        },
+        secondChance: {
+            name: "🛡️ Second Chance",
+            desc: "Human only - Totem of Undying",
+            detail: `Item Icon: Totem of Undying<br>
+Effect: Passively triggers when infected, blocks infection and randomly teleports the holder<br>
+Trigger Condition: Automatically when a ghost right-clicks to infect<br>
+Human Effects:<br>
+&nbsp;&nbsp;- Speed II for 10 seconds (configurable)<br>
+&nbsp;&nbsp;- Glowing for 10 seconds (configurable)<br>
+&nbsp;&nbsp;- Random teleport to a safe location within the game area<br>
+Ghost Effect:<br>
+&nbsp;&nbsp;- Slowness I for 7 seconds (configurable)<br>
+Cooldown: 180 seconds (configurable)<br>
+Teleport Mechanism: Random safe location (not in liquids, sufficient space)<br>
+Usage: Automatic, no manual activation<br>
+Feedback:<br>
+&nbsp;&nbsp;- Center subtitle: "✨ Second Chance Triggered!" / "Successfully resisted infection!"<br>
+&nbsp;&nbsp;- Dialog message with detailed effect info<br>
+&nbsp;&nbsp;- Server broadcast: "XXX used Second Chance to block YYY's infection!"<br>
+&nbsp;&nbsp;- Personal hints: Human gains speed/glowing, ghost gets slowness<br>
+Tactical Value: Lifesaver in critical moments, counterattack chance, weaken attacker<br>
+Limitations: Only one per player, disappears after trigger, cannot gain effect during cooldown<br>
+Note: Only blocks infection, not other damage.`
+        }
+    };
+
     function renderItems(lang) {
         const container = document.getElementById(`items-list-${lang}`);
-        if(!container) return;
-        const data = itemsDetail[lang];
+        if (!container) return;
+        const data = lang === 'zh' ? itemsDetailZh : itemsDetailEn;
         container.innerHTML = '';
-        for(let key in data){
+        for (let key in data) {
             const item = data[key];
             const card = document.createElement('div');
             card.className = 'card';
@@ -824,18 +999,54 @@ ghost-particle:
             container.appendChild(card);
         }
     }
-    function showItemDetail(lang, key) { const item = itemsDetail[lang][key]; document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><p>${item.detail}</p>`; showModal(); }
+
+    function showItemDetail(lang, key) {
+        const data = lang === 'zh' ? itemsDetailZh : itemsDetailEn;
+        const item = data[key];
+        document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><hr style="margin:0.5rem 0;"><div style="line-height:1.6;">${item.detail}</div>`;
+        showModal();
+    }
+
     function showModal() { document.getElementById('modal').classList.add('show'); }
     function hideModal() { document.getElementById('modal').classList.remove('show'); }
-    function initCollapsibles() { document.querySelectorAll('.collapsible-header').forEach(header => { header.addEventListener('click', () => { const content = header.nextElementSibling; content.classList.toggle('show'); const icon = header.querySelector('i'); if(content.classList.contains('show')) icon.className = 'fas fa-chevron-up'; else icon.className = 'fas fa-chevron-down'; }); }); }
-    function bindModalEvents() {
-        document.querySelectorAll('.btn-detail[data-item]').forEach(btn => { btn.removeEventListener('click', itemHandler); btn.addEventListener('click', itemHandler); });
+    function initCollapsibles() { 
+        document.querySelectorAll('.collapsible-header').forEach(header => { 
+            header.addEventListener('click', () => { 
+                const content = header.nextElementSibling; 
+                content.classList.toggle('show'); 
+                const icon = header.querySelector('i'); 
+                if(content.classList.contains('show')) icon.className = 'fas fa-chevron-up'; 
+                else icon.className = 'fas fa-chevron-down'; 
+            }); 
+        }); 
     }
-    function itemHandler(e) { const btn = e.currentTarget; const key = btn.dataset.item, lang = btn.dataset.lang || 'zh'; showItemDetail(lang, key); }
-    function setLanguage(lang) { const zh = document.getElementById('zh-content'), en = document.getElementById('en-content'); if(lang === 'zh') { zh.classList.add('active-lang'); en.classList.remove('active-lang'); } else { en.classList.add('active-lang'); zh.classList.remove('active-lang'); } document.querySelectorAll('.lang-btn').forEach(btn => { if(btn.dataset.lang === lang) btn.classList.add('active'); else btn.classList.remove('active'); }); renderItems(lang); bindModalEvents(); }
+    function bindModalEvents() {
+        document.querySelectorAll('.btn-detail[data-item]').forEach(btn => { 
+            btn.removeEventListener('click', itemHandler); 
+            btn.addEventListener('click', itemHandler); 
+        });
+    }
+    function itemHandler(e) { 
+        const btn = e.currentTarget; 
+        const key = btn.dataset.item; 
+        const lang = btn.dataset.lang || 'zh'; 
+        showItemDetail(lang, key); 
+    }
+    function setLanguage(lang) { 
+        const zh = document.getElementById('zh-content'), en = document.getElementById('en-content'); 
+        if(lang === 'zh') { zh.classList.add('active-lang'); en.classList.remove('active-lang'); } 
+        else { en.classList.add('active-lang'); zh.classList.remove('active-lang'); } 
+        document.querySelectorAll('.lang-btn').forEach(btn => { 
+            if(btn.dataset.lang === lang) btn.classList.add('active'); 
+            else btn.classList.remove('active'); 
+        }); 
+        renderItems(lang); 
+        bindModalEvents(); 
+    }
     document.querySelector('.modal-close').addEventListener('click', hideModal);
     window.addEventListener('click', (e) => { if(e.target === document.getElementById('modal')) hideModal(); });
-    renderItems('zh'); renderItems('en');
+    renderItems('zh'); 
+    renderItems('en');
     initCollapsibles();
     bindModalEvents();
     document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
