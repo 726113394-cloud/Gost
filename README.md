@@ -71,8 +71,7 @@
   - [常见问题与解决方案](#常见问题与解决方案)
   - [📊 日志诊断](#-日志诊断)
 - [📈 版本更新记录](#-版本更新记录)
-  - [v2.2.0（当前版本）](#v220当前版本)
-  - [v2.1.4（黑暗效果与疾跑并存系统）](#v214黑暗效果与疾跑并存系统)
+  - [v2.2.1（当前版本）](#v221当前版本)
   - [v2.1.3](#v213)
   - [v2.0.2](#v202)
   - [v2.0.0](#v200)
@@ -136,7 +135,7 @@
 - **重要通知**：关键时刻显示居中大文本提示
 - **视听效果**：感染闪电/音效、幽灵感知高亮等特效
 
-### 🛡️ 神圣守护系统（v2.1.1新增）
+### 🛡️ 神圣守护系统（v2.2.1新增）
 - **最后一位人类**：当只剩下一位人类玩家时，自动激活神圣守护
 - **免疫感染**：拥有3次免疫感染的机会（可配置）
 - **随机传送**：被攻击时随机传送到地图安全位置
@@ -366,9 +365,18 @@
 /gostadmin help             # 显示管理员帮助
 ```
 
+#### ⚠️ 历史功能：假人系统管理命令（v2.2.0后已移除）
+```bash
+/gostadmin bot add <数量>     # 添加指定数量的假人到队列（已移除）
+/gostadmin bot remove <数量>  # 从队列移除指定数量的假人（已移除）
+/gostadmin bot clear          # 清除所有假人（已移除）
+/gostadmin bot info           # 查看假人信息（已移除）
+/gostadmin bot count          # 查看假人数量（已移除）
+```
 
 
-#### 神圣守护管理命令（v2.2.0更新）
+
+#### 神圣守护管理命令（v2.2.1更新）
 ```bash
 /divineguardian              # 显示神圣守护帮助（需要 gost.admin.divineguardian 权限）
 /dg                          # /divineguardian 的别名
@@ -664,7 +672,7 @@ item-spawn:
   max-per-player: 1             # 每位玩家最多获得数量
   max-item-types-per-player: 6  # 玩家最多拥有的道具种类数量
 
-# 🛡️ 神圣守护设置（v2.2.0更新）
+# 🛡️ 神圣守护设置（v2.2.1更新）
 divine-guardian:
   enabled: false                # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
   mode: "1"                     # 模式：1=神圣守护（感染免疫+随机传送），2=救赎者（转化鬼玩家）
@@ -726,7 +734,7 @@ area:
   - 允许使用 `/gostadmin reload` 重载配置文件
 
 #### 特殊功能管理权限
-- `gost.admin.divineguardian` - 管理神圣守护权限（v2.1.1新增，默认 op）
+- `gost.admin.divineguardian` - 管理神圣守护权限（v2.2.1新增，默认 op）
   - 允许使用所有 `/divineguardian` 命令
   - 包括：启用/禁用、配置管理、强制激活等
 - `gost.admin.ghostparticle` - 管理鬼玩家粒子效果权限（v2.1.2新增，默认 op）
@@ -800,10 +808,10 @@ permissions:
 2. **检查玩家数量**：等待玩家数达到最小要求（默认2人）
 3. **检查游戏状态**：确认没有其他游戏正在进行
 
-#### ❌ 队列系统问题（v2.2.0修复）
+#### ❌ 队列系统问题（v2.2.1修复）
 1. **队列卡住不启动**：如果只有一个玩家在队列中，游戏不会启动，这是正常设计
 2. **无法退出队列**：使用 `/gost leave` 命令可以退出队列，退出时会退还入场金币
-3. **Boss栏不消失**：v2.2.0已修复队列玩家离开后Boss栏不消失的问题
+3. **Boss栏不消失**：v2.2.1已修复队列玩家离开后Boss栏不消失的问题
 4. **队列人数不足自动清空**：当队列人数少于最小玩家数时，队列会自动清空并退还所有玩家金币
 5. **队列状态提示**：加入队列时会收到退出提示，退出队列时会收到金币退还提示
 
@@ -855,7 +863,7 @@ grep -i "gost" logs/latest.log
 
 ## 📈 版本更新记录
 
-### v2.2.1（当前版本）
+### v2.2.1（当前版本） {#v221当前版本}
 - **⚡ 神圣守护模式2 - 救赎者系统**：
   - **救赎者**：当人类数量减少到1时，最后一名人类成为救赎者
   - **神之救赎道具**：救赎者获得专属道具，可转化鬼玩家回人类
@@ -876,11 +884,20 @@ grep -i "gost" logs/latest.log
   - **移除NPC系统**：删除所有NPC相关代码，节省空间
   - **移除货币系统**：删除独立的货币发放系统
   - **移除观战系统**：删除观战相关代码
+  - **移除假人（Bot）系统**：删除假人相关功能，简化插件结构
   - **配置清理**：清理config.yml中相关的配置项
 - **🔧 性能与稳定性**：
   - **内存优化**：移除未使用的代码和依赖
   - **错误修复**：修复队列状态同步问题
   - **提示完善**：完善玩家操作反馈提示
+
+- **🌑 黑暗效果与疾跑并存系统**：
+  - **原生DARKNESS效果**：使用Minecraft原生的DARKNESS效果（1.19+）或BLINDNESS效果（旧版本）
+  - **疾跑功能修复**：通过属性修改器增加30%移动速度，抵消DARKNESS效果对疾跑的影响
+  - **智能检查机制**：每10 ticks检查玩家疾跑状态，自动恢复被阻止的疾跑
+  - **属性修改器系统**：为每个有黑暗效果的玩家添加移动速度加成
+  - **版本兼容性**：自动检测并适配不同Minecraft版本的效果类型
+  - **管理员友好**：管理员和创造模式玩家也会受到黑暗效果影响，但有明确提示
 
 - **🛡️ 神圣守护系统修复**：
   - **神圣守护触发修复**：修复神圣守护在某些情况下无法正确触发的问题
@@ -894,7 +911,6 @@ grep -i "gost" logs/latest.log
   - **道具发放逻辑优化**：优化随机道具发放算法，确保公平性
   - **道具使用反馈**：增强道具使用时的视觉和听觉反馈
 
-### v2.1.4（黑暗效果与疾跑并存系统）
 - **🌑 黑暗效果与疾跑并存系统**：
   - **原生DARKNESS效果**：使用Minecraft原生的DARKNESS效果（1.19+）或BLINDNESS效果（旧版本）
   - **疾跑功能修复**：通过属性修改器增加30%移动速度，抵消DARKNESS效果对疾跑的影响
@@ -902,11 +918,11 @@ grep -i "gost" logs/latest.log
   - **属性修改器系统**：为每个有黑暗效果的玩家添加移动速度加成
   - **版本兼容性**：自动检测并适配不同Minecraft版本的效果类型
   - **管理员友好**：管理员和创造模式玩家也会受到黑暗效果影响，但有明确提示
+
 - **⚙️ 配置系统升级**：
   - 配置版本升级到19
   - 黑暗效果描述更新为"不影响疾跑"
   - 黑暗效果默认启用状态改为true
-
 ### v2.1.3
 - **🔧 修复管理员游戏效果免疫问题**：
   - **管理员黑暗效果修复**：管理员现在会正常受到黑暗效果影响
@@ -1117,8 +1133,7 @@ grep -i "gost" logs/latest.log
   - [Frequently Asked Questions & Solutions](#frequently-asked-questions--solutions)
   - [📊 Log Diagnosis](#-log-diagnosis)
 - [📈 Version Update History](#-version-update-history)
-  - [v2.2.0 (Current Version)](#v220-current-version)
-  - [v2.1.4 (Dark Effect with Sprint Support System)](#v214-dark-effect-with-sprint-support-system)
+  - [v2.2.1 (Current Version)](#v221-current-version)
   - [v2.1.3](#v213)
   - [v2.0.2](#v202)
   - [v2.0.0](#v200)
@@ -1213,7 +1228,14 @@ grep -i "gost" logs/latest.log
 - `/gostadmin heartbeat <on/off/status>` - Control heartbeat sound
 - `/gostadmin dark <on/off/status>` - Control dark effect
 
-#### Divine Guardian Management Commands (v2.1.1 added):
+#### ⚠️ Historical Feature: Bot System Management Commands (Removed after v2.2.0):
+- `/gostadmin bot add <count>` - Add specified number of bots to queue (removed)
+- `/gostadmin bot remove <count>` - Remove specified number of bots from queue (removed)
+- `/gostadmin bot clear` - Clear all bots (removed)
+- `/gostadmin bot info` - View bot information (removed)
+- `/gostadmin bot count` - View bot count (removed)
+
+#### Divine Guardian Management Commands (v2.2.1 added):
 - `/divineguardian status` - View divine guardian status
 - `/divineguardian enable/disable` - Enable/disable function
 - `/divineguardian reload` - Reload divine guardian configuration
@@ -1324,7 +1346,7 @@ ghost-particle:
 - `gost.admin.delete` - Deletes regional permissions
 - `gost.admin.reload` - Overload configuration permissions
 - `gost.admin.manage` - Manage game permissions
-- `gost.admin.divineguardian` - Manage divine guardian permissions (v2.1.1 added)
+- `gost.admin.divineguardian` - Manage divine guardian permissions (v2.2.1 added)
 - `gost.admin.ghostparticle` - Manage ghost particle effect permissions (v2.1.2 added)
 
 ## ⚠️ Important Notes
@@ -1401,7 +1423,7 @@ grep -i "gost" logs/latest.log
 
 ## 📈 Version Update History
 
-### v2.2.1 (Current Version)
+### v2.2.1 (Current Version) {#v221-current-version}
 - **⚡ Divine Guardian Mode 2 - Redeemer System**:
   - **Redeemer**: When only one human player remains, they become the Redeemer
   - **Holy Redemption Item**: Redeemer receives exclusive item to convert ghost players back to human
@@ -1423,6 +1445,7 @@ grep -i "gost" logs/latest.log
   - **NPC System Removed**: All NPC-related code deleted to save space
   - **Currency System Removed**: Independent currency distribution system removed
   - **Spectator System Removed**: Spectator-related code deleted
+  - **Bot System Removed**: Bot-related functionality deleted, simplifying plugin structure
   - **Config Cleanup**: Related configuration items cleaned from config.yml
 - **🔧 Performance & Stability**:
   - **Memory Optimization**: Removed unused code and dependencies
@@ -1441,7 +1464,6 @@ grep -i "gost" logs/latest.log
   - **Item Distribution Logic Optimization**: Optimized random item distribution algorithm for fairness
   - **Item Usage Feedback**: Enhanced visual and auditory feedback when using items
 
-### v2.1.4 (Dark Effect with Sprint Support System)
 - **🌑 Dark Effect with Sprint Support System**:
   - **Native DARKNESS Effect**: Uses Minecraft's native DARKNESS effect (1.19+) or BLINDNESS effect (older versions)
   - **Sprint Function Fix**: Adds 30% movement speed via attribute modifiers to counteract DARKNESS effect's impact on sprinting
@@ -1449,11 +1471,11 @@ grep -i "gost" logs/latest.log
   - **Attribute Modifier System**: Adds movement speed bonus to each player with dark effect
   - **Version Compatibility**: Automatically detects and adapts to different Minecraft version effect types
   - **Admin Friendly**: Admins and creative mode players also receive dark effects with clear notifications
+
 - **⚙️ Configuration System Upgrade**:
   - Configuration version upgraded to 19
   - Dark effect description updated to "does not affect sprinting"
   - Dark effect default enabled state changed to true
-
 ### v2.1.3
 - **🔧 Fixed Admin Game Effect Immunity Issue**:
   - **Admin Dark Effect Fix**: Administrators now properly receive dark effects during gameplay

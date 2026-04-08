@@ -3,6 +3,7 @@ package io.Sriptirc_wp_1258.gost.listeners;
 import io.Sriptirc_wp_1258.gost.Gost;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -26,6 +27,7 @@ public class ItemListener implements Listener {
     
     private final Gost plugin;
     private final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
+    private final Map<UUID, Long> lastSoulDetectorUse = new HashMap<>(); // 防止快速连续点击
     
     public ItemListener(Gost plugin) {
         this.plugin = plugin;
@@ -330,10 +332,23 @@ public class ItemListener implements Listener {
     }
     
     private void handleSoulDetector(Player player, ItemStack item) {
+        // 防止快速连续点击（500毫秒内）
+        UUID playerId = player.getUniqueId();
+        long currentTime = System.currentTimeMillis();
+        if (lastSoulDetectorUse.containsKey(playerId)) {
+            long lastUse = lastSoulDetectorUse.get(playerId);
+            if (currentTime - lastUse < 500) {
+                plugin.getLogger().warning("玩家 " + player.getName() + " 快速连续点击灵魂探测器，已阻止");
+                return;
+            }
+        }
+        lastSoulDetectorUse.put(playerId, currentTime);
+        
         // 检查冷却时间
         if (isOnCooldown(player, "soul-detector")) {
             int remaining = getRemainingCooldown(player, "soul-detector");
             player.sendMessage(ChatColor.RED + "灵魂探测器冷却中，剩余 " + remaining + " 秒");
+            plugin.getLogger().warning("玩家 " + player.getName() + " 尝试在冷却期间使用灵魂探测器，剩余 " + remaining + " 秒");
             return;
         }
         
@@ -398,5 +413,26 @@ public class ItemListener implements Listener {
         Bukkit.broadcastMessage(ChatColor.YELLOW + player.getName() + " 使用了灵魂探测器，所有玩家发光25秒！");
         
         plugin.getLogger().info("玩家 " + player.getName() + " 使用了灵魂探测器，所有玩家发光25秒，共影响 " + allPlayers.size() + " 名玩家");
+        
+        // 记录玩家当前位置，用于检测是否发生传送
+        Location originalLocation = player.getLocation();
+        plugin.getLogger().info("玩家 " + player.getName() + " 使用灵魂探测器时的位置: " + 
+            "世界=" + originalLocation.getWorld().getName() + 
+            ", X=" + originalLocation.getX() + 
+            ", Y=" + originalLocation.getY() + 
+            ", Z=" + originalLocation.getZ());
+        
+        // 延迟检查玩家是否被传送（1 tick后）
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Location currentLocation = player.getLocation();
+            if (!currentLocation.getWorld().getName().equals(originalLocation.getWorld().getName()) ||
+                currentLocation.distance(originalLocation) > 1.0) {
+                // 玩家被传送了，传送回原位置
+                plugin.getLogger().warning("玩家 " + player.getName() + " 在使用灵魂探测器后被传送！从 " + 
+                    originalLocation + " 到 " + currentLocation + "，正在传送回原位置");
+                player.teleport(originalLocation);
+                player.sendMessage(ChatColor.RED + "错误：灵魂探测器不应导致传送！已恢复原位置。");
+            }
+        }, 1L);
     }
 }
