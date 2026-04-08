@@ -3,322 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gost 完整文档 | 极限生存对抗 · 救赎者系统 | 中英文</title>
+    <title>Gost v2.2.1 完整文档 | 极限生存对抗 · 救赎者系统 · 黑暗疾跑并存</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: #0a0c12;
-            font-family: 'Inter', sans-serif;
-            color: #eef2ff;
-            line-height: 1.5;
-            scroll-behavior: smooth;
-        }
-        .bg-glow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -2;
-            background: radial-gradient(circle at 30% 20%, rgba(80, 30, 40, 0.4), #0a0c12 85%);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0c12; font-family: 'Inter', sans-serif; color: #eef2ff; line-height: 1.5; scroll-behavior: smooth; }
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -2; background: radial-gradient(circle at 30% 20%, rgba(80, 30, 40, 0.4), #0a0c12 85%); }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #14181f; border-radius: 6px; }
         ::-webkit-scrollbar-thumb { background: #ff3b3b80; border-radius: 6px; }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2; }
-        .navbar {
-            position: sticky;
-            top: 0;
-            background: rgba(10, 12, 18, 0.65);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 59, 59, 0.5);
-            z-index: 100;
-            padding: 0.8rem 0;
-        }
-        .nav-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-        .logo {
-            font-weight: 800;
-            font-size: 1.6rem;
-        }
-        .logo span:first-child {
-            background: linear-gradient(135deg, #a855f7, #d8b4fe);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .logo .colorful {
-            background: linear-gradient(90deg, #ff5e5e, #ffb347, #2ecc71, #3498db, #e74c3c, #ff5e5e);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: rainbow 3s linear infinite;
-        }
-        @keyframes rainbow {
-            0% { background-position: 0% center; }
-            100% { background-position: 300% center; }
-        }
-        .lang-switch {
-            display: flex;
-            gap: 0.8rem;
-            background: #1a1e2a;
-            padding: 0.3rem 0.8rem;
-            border-radius: 40px;
-        }
-        .lang-btn {
-            background: none;
-            border: none;
-            color: #ccd6f0;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 0.3rem 0.8rem;
-            border-radius: 30px;
-            transition: 0.2s;
-        }
-        .lang-btn.active {
-            background: #ff3b3b;
-            color: white;
-            box-shadow: 0 0 8px #ff5e5e;
-        }
+        .navbar { position: sticky; top: 0; background: rgba(10,12,18,0.65); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,59,59,0.5); z-index: 100; padding: 0.8rem 0; }
+        .nav-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+        .logo { font-weight: 800; font-size: 1.6rem; }
+        .logo span:first-child { background: linear-gradient(135deg, #a855f7, #d8b4fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo .colorful { background: linear-gradient(90deg, #ff5e5e, #ffb347, #2ecc71, #3498db, #e74c3c, #ff5e5e); background-size: 300% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: rainbow 3s linear infinite; }
+        @keyframes rainbow { 0% { background-position: 0% center; } 100% { background-position: 300% center; } }
+        .lang-switch { display: flex; gap: 0.8rem; background: #1a1e2a; padding: 0.3rem 0.8rem; border-radius: 40px; }
+        .lang-btn { background: none; border: none; color: #ccd6f0; font-weight: 600; cursor: pointer; padding: 0.3rem 0.8rem; border-radius: 30px; transition: 0.2s; }
+        .lang-btn.active { background: #ff3b3b; color: white; box-shadow: 0 0 8px #ff5e5e; }
         .section { margin: 2.5rem 0; }
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            border-left: 5px solid #ff5e5e;
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
+        .section-title { font-size: 1.8rem; font-weight: 700; border-left: 5px solid #ff5e5e; padding-left: 1rem; margin-bottom: 1.5rem; }
         .grid-2col { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
         .grid-3col { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-        .card {
-            background: rgba(20, 25, 35, 0.7);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 80, 80, 0.3);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            transition: all 0.25s ease;
-        }
-        .card:hover {
-            border-color: #ff5e5e;
-            transform: translateY(-3px);
-            background: rgba(32, 36, 48, 0.9);
-        }
-        .card-human {
-            background: rgba(34, 139, 34, 0.25);
-            border-left: 3px solid #2ecc71;
-        }
-        .card-ghost {
-            background: rgba(220, 20, 60, 0.25);
-            border-left: 3px solid #e74c3c;
-        }
-        .badge {
-            background: #ff5e5e20;
-            color: #ffa0a0;
-            border-radius: 30px;
-            padding: 0.2rem 0.8rem;
-            font-size: 0.7rem;
-            display: inline-block;
-        }
-        .command-block {
-            background: #0b0e14;
-            padding: 0.6rem 1rem;
-            border-radius: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            border-left: 3px solid #ff5e5e;
-            overflow-x: auto;
-            white-space: pre-wrap;
-        }
-        .btn-detail {
-            background: #ff5e5e30;
-            border: 1px solid #ff5e5e;
-            color: #ffb7b7;
-            padding: 0.3rem 0.9rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: 0.2s;
-            margin-top: 0.8rem;
-            display: inline-block;
-        }
-        .btn-detail:hover {
-            background: #ff5e5e;
-            color: white;
-        }
-        .collapsible {
-            background: #11161f;
-            border-radius: 1.2rem;
-            margin: 1rem 0;
-            border: 1px solid #2a2f3f;
-            overflow: hidden;
-        }
-        .collapsible-header {
-            padding: 1rem 1.4rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            background: #0f141c;
-            transition: 0.2s;
-        }
+        .card { background: rgba(20,25,35,0.7); backdrop-filter: blur(4px); border: 1px solid rgba(255,80,80,0.3); border-radius: 1.5rem; padding: 1.5rem; transition: all 0.25s ease; }
+        .card:hover { border-color: #ff5e5e; transform: translateY(-3px); background: rgba(32,36,48,0.9); }
+        .card-human { background: rgba(34,139,34,0.25); border-left: 3px solid #2ecc71; }
+        .card-ghost { background: rgba(220,20,60,0.25); border-left: 3px solid #e74c3c; }
+        .badge { background: #ff5e5e20; color: #ffa0a0; border-radius: 30px; padding: 0.2rem 0.8rem; font-size: 0.7rem; display: inline-block; }
+        .command-block { background: #0b0e14; padding: 0.6rem 1rem; border-radius: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-left: 3px solid #ff5e5e; overflow-x: auto; white-space: pre-wrap; }
+        .btn-detail { background: #ff5e5e30; border: 1px solid #ff5e5e; color: #ffb7b7; padding: 0.3rem 0.9rem; border-radius: 2rem; cursor: pointer; font-size: 0.75rem; transition: 0.2s; margin-top: 0.8rem; display: inline-block; }
+        .btn-detail:hover { background: #ff5e5e; color: white; }
+        .collapsible { background: #11161f; border-radius: 1.2rem; margin: 1rem 0; border: 1px solid #2a2f3f; overflow: hidden; }
+        .collapsible-header { padding: 1rem 1.4rem; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; background: #0f141c; transition: 0.2s; }
         .collapsible-header:hover { background: #1a212e; color: #ff9f6e; }
-        .collapsible-content {
-            padding: 0 1.4rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.2s;
-            background: #0a0e16;
-        }
-        .collapsible-content.show {
-            padding: 1.2rem 1.4rem;
-            max-height: 5000px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .modal.show { display: flex; opacity: 1; }
-        .modal-content {
-            background: #11161f;
-            border: 1px solid #ff5e5e;
-            border-radius: 2rem;
-            max-width: 750px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 1.8rem;
-            transform: scale(0.95);
-            transition: transform 0.2s;
-        }
+        .collapsible-content { padding: 0 1.4rem; max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.2s; background: #0a0e16; }
+        .collapsible-content.show { padding: 1.2rem 1.4rem; max-height: 5000px; }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index:1000; align-items: center; justify-content: center; opacity:0; transition: opacity 0.2s; }
+        .modal.show { display: flex; opacity:1; }
+        .modal-content { background: #11161f; border: 1px solid #ff5e5e; border-radius: 2rem; max-width: 750px; width:90%; max-height:85vh; overflow-y: auto; padding:1.8rem; transform: scale(0.95); transition: transform 0.2s; }
         .modal.show .modal-content { transform: scale(1); }
-        .modal-close {
-            float: right;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #ffa0a0;
-        }
+        .modal-close { float: right; font-size: 1.8rem; cursor: pointer; color: #ffa0a0; }
         .lang-content { display: none; }
         .lang-content.active-lang { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        footer {
-            text-align: center;
-            padding: 2rem;
-            border-top: 1px solid #232838;
-            margin-top: 2rem;
-            color: #7e8aa8;
-        }
+        footer { text-align: center; padding: 2rem; border-top: 1px solid #232838; margin-top: 2rem; color: #7e8aa8; }
         hr { border-color: #2a2f3f; margin: 1rem 0; }
         @media (max-width: 750px) { .container { padding: 0 1rem; } }
         pre { font-family: 'JetBrains Mono', monospace; white-space: pre-wrap; word-break: break-word; }
-        .cmd-section {
-            margin-bottom: 1.2rem;
-        }
-        .cmd-section h4 {
-            color: #ffa07a;
-            margin: 0.8rem 0 0.5rem 0;
-            font-size: 1.1rem;
-        }
-        .cmd-section p {
-            margin: 0.2rem 0;
-            font-size: 0.85rem;
-        }
-        .link-buttons {
-            margin-top: 0.8rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .link-btn {
-            background: rgba(30, 35, 50, 0.8);
-            border: 1px solid #ff5e5e;
-            border-radius: 2rem;
-            padding: 0.4rem 1rem;
-            color: #ffb7b7;
-            text-decoration: none;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: 0.2s;
-        }
-        .link-btn:hover {
-            background: #ff5e5e;
-            color: white;
-            border-color: #ff5e5e;
-        }
-        .item-badge {
-            background: #ff5e5e30;
-            border-radius: 20px;
-            padding: 0.2rem 0.6rem;
-            font-size: 0.7rem;
-            display: inline-block;
-            margin-left: 0.5rem;
-        }
-        .watermark {
-            position: fixed;
-            bottom: 12px;
-            right: 16px;
-            font-size: 0.75rem;
-            color: rgba(255, 90, 90, 0.35);
-            background: rgba(10, 12, 18, 0.5);
-            backdrop-filter: blur(4px);
-            padding: 4px 10px;
-            border-radius: 20px;
-            z-index: 99;
-            font-family: monospace;
-            pointer-events: none;
-            letter-spacing: 0.5px;
-        }
-        @media (max-width: 640px) {
-            .watermark { font-size: 0.6rem; bottom: 6px; right: 8px; }
-        }
-        .tree {
-            font-family: monospace;
-            background: #0b0e14;
-            padding: 0.8rem;
-            border-radius: 0.8rem;
-            margin-top: 0.5rem;
-            line-height: 1.6;
-        }
-        .install-note {
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
+        .cmd-section { margin-bottom: 1.2rem; }
+        .cmd-section h4 { color: #ffa07a; margin: 0.8rem 0 0.5rem; font-size: 1.1rem; }
+        .link-buttons { margin-top: 0.8rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .link-btn { background: rgba(30,35,50,0.8); border: 1px solid #ff5e5e; border-radius: 2rem; padding: 0.4rem 1rem; color: #ffb7b7; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: 0.2s; }
+        .link-btn:hover { background: #ff5e5e; color: white; }
+        .tree { font-family: monospace; background: #0b0e14; padding: 0.8rem; border-radius: 0.8rem; margin-top: 0.5rem; line-height: 1.6; }
+        .carousel-container { margin: 2rem 0 2.5rem; position: relative; width: 100%; border-radius: 2rem; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(255,80,80,0.4); }
+        .carousel-slides { display: flex; transition: transform 0.5s ease-in-out; }
+        .carousel-slide { flex: 0 0 100%; }
+        .carousel-slide img { width: 100%; height: auto; max-height: 480px; object-fit: cover; display: block; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 2rem; padding: 0.5rem 1rem; cursor: pointer; z-index: 10; backdrop-filter: blur(4px); transition: 0.2s; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+        .carousel-btn:hover { background: #ff5e5e; }
+        .carousel-btn-left { left: 1rem; }
+        .carousel-btn-right { right: 1rem; }
+        .carousel-dots { position: absolute; bottom: 1rem; left: 0; right: 0; display: flex; justify-content: center; gap: 0.6rem; z-index: 10; }
+        .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .dot.active { background: #ff5e5e; transform: scale(1.2); box-shadow: 0 0 8px #ff5e5e; }
+        @media (max-width:750px){ .carousel-btn{ width:32px; height:32px; font-size:1.2rem; } .carousel-slide img{ max-height:280px; } }
+        .watermark { position: fixed; bottom: 12px; right: 16px; font-size: 0.75rem; color: rgba(255,90,90,0.35); background: rgba(10,12,18,0.5); backdrop-filter: blur(4px); padding: 4px 10px; border-radius: 20px; z-index: 99; font-family: monospace; pointer-events: none; }
+        .version-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .version-item { border-bottom: 1px solid #2a2f3f; }
+        .version-header { padding: 0.8rem 1rem; background: #0f141c; border-radius: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .version-header:hover { background: #1a212e; }
+        .version-header h3 { margin: 0; font-size: 1.2rem; }
+        .version-header .version-tag { background: #ff5e5e30; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; }
+        .version-detail { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; padding: 0 1rem; }
+        .version-detail.show { max-height: 800px; padding: 1rem; }
+        .alert-box { background: #ff5e5e20; border-left: 4px solid #ff5e5e; padding: 1rem; border-radius: 1rem; margin: 1rem 0; }
+        .removed-feature { opacity: 0.7; text-decoration: line-through; }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.2.1</span></div>
         <div class="lang-switch">
             <button class="lang-btn active" data-lang="zh">中文</button>
             <button class="lang-btn" data-lang="en">English</button>
@@ -327,30 +96,49 @@
 </div>
 
 <div class="container">
-    <!-- 中文完整内容 -->
+    <!-- 中文内容 -->
     <div id="zh-content" class="lang-content active-lang">
         <div style="padding: 1.5rem 0 1rem;">
             <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - 极限生存对抗游戏</h1>
-            <p><strong>Gost</strong> 是一款融合了 <strong>猫抓老鼠、鬼抓人、躲猫猫、CF生化模式</strong> 等多种玩法的 Minecraft 服务器插件。在紧张刺激的对抗中，体验人类与鬼之间的生死追逐，运用策略与道具，成为最后的幸存者！</p>
-            <div class="badge">⚡ 神圣守护 · 救赎者系统 | 🎮 游戏模式切换 | 🔧 智能队列 | ✨ 道具发放全局高亮</div>
+            <p><strong>Gost v2.2.1</strong> 是一款融合了 <strong>猫抓老鼠、鬼抓人、躲猫猫、CF生化模式</strong> 等多种玩法的 Minecraft 服务器插件。</p>
+            <div class="badge">⚡ 救赎者系统 | 🎮 模式切换 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 道具发放全局高亮</div>
             <div class="link-buttons">
-                <a href="https://modrinth.com/plugin/gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-modrinth"></i> 前往Modrinth下载</a>
-                <a href="https://github.com/726113394-cloud/Gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-github"></i> GitHub 仓库</a>
-                <a href="https://space.bilibili.com/3493116665400113" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-bilibili"></i> 作者B站主页</a>
-                <a href="https://www.bilibili.com/video/BV1aPQSBsE74/" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fas fa-video"></i> 插件预览视频</a>
+                <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
+                <a href="https://github.com/726113394-cloud/Gost" target="_blank" class="link-btn"><i class="fab fa-github"></i> GitHub 仓库</a>
+                <a href="https://space.bilibili.com/3493116665400113" target="_blank" class="link-btn"><i class="fab fa-bilibili"></i> 作者B站</a>
+                <a href="https://www.bilibili.com/video/BV1aPQSBsE74/" target="_blank" class="link-btn"><i class="fas fa-video"></i> 预览视频</a>
             </div>
+        </div>
+
+        <!-- 轮播图 -->
+        <div class="carousel-container" id="carousel"></div>
+        <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.7;">
+            <i class="fas fa-image"></i> 轮播图 | 请将图片放入仓库的 <code>images/</code> 文件夹，并确保文件名与下方配置一致
         </div>
 
         <!-- 核心特色 -->
         <div class="section">
             <div class="section-title">✨ 核心特色</div>
             <div class="grid-3col">
-                <div class="card"><i class="fas fa-bolt"></i> <strong>🏃‍♂️ 紧张刺激的追逐体验</strong><br>阵营对抗·感染转化·时间压力·策略生存</div>
-                <div class="card"><i class="fas fa-coins"></i> <strong>🏆 经济与奖励系统</strong><br>入场费100金币+服务器奖金，人类胜利分70%奖池，鬼胜利100%，按存活时间/感染人数分配。</div>
-                <div class="card"><i class="fas fa-users"></i> <strong>🏃‍♀️ 智能匹配与队列系统</strong><br>自动匹配，满员加速倒计时，队列优化（人数不足自动清空并退还金币），2-16人限制。</div>
-                <div class="card"><i class="fas fa-cube"></i> <strong>🧰 多层次道具系统</strong><br>固定发放阵营专属道具 + 每分钟自动刷新道具，智能冷却。</div>
-                <div class="card"><i class="fas fa-eye"></i> <strong>👥 沉浸式视觉系统</strong><br>队伍颜色区分，ActionBar，居中大字，感染闪电/音效，幽灵感知高亮。</div>
-                <div class="card"><i class="fas fa-map-marked-alt"></i> <strong>🗺️ 灵活区域管理系统</strong><br>岩浆膏选区，保存最多20个区域，自动传送，边界保护。</div>
+                <div class="card"><i class="fas fa-bolt"></i> <strong>🏃‍♂️ 紧张追逐</strong><br>阵营对抗·感染转化·时间压力</div>
+                <div class="card"><i class="fas fa-coins"></i> <strong>🏆 经济奖池</strong><br>入场费+服务器奖金，智能分配</div>
+                <div class="card"><i class="fas fa-users"></i> <strong>🏃‍♀️ 智能队列</strong><br>满员加速，队列优化，2-16人</div>
+                <div class="card"><i class="fas fa-cube"></i> <strong>🧰 多层次道具</strong><br>固定+刷新道具，种类限制</div>
+                <div class="card"><i class="fas fa-eye"></i> <strong>👥 沉浸视觉</strong><br>队伍颜色，ActionBar，感染特效</div>
+                <div class="card"><i class="fas fa-map-marked-alt"></i> <strong>🗺️ 灵活区域</strong><br>岩浆膏选区，保存20个区域</div>
+            </div>
+        </div>
+
+        <!-- 🌑 黑暗效果与疾跑并存系统（v2.2.1 集成） -->
+        <div class="section">
+            <div class="section-title">🌑 黑暗效果与疾跑并存系统（v2.2.1 新增）</div>
+            <div class="card">
+                <p><strong>原生DARKNESS效果</strong>：使用Minecraft原生的DARKNESS效果（1.19+）或BLINDNESS效果（旧版本）。<br>
+                <strong>疾跑功能修复</strong>：通过属性修改器为每个受黑暗效果的玩家增加30%移动速度加成。<br>
+                <strong>智能检查机制</strong>：每10 ticks检查玩家疾跑状态，自动恢复被阻止的疾跑。<br>
+                <strong>版本兼容性</strong>：自动检测并适配不同Minecraft版本的效果类型。<br>
+                <strong>管理员友好</strong>：管理员和创造模式玩家也会受到黑暗效果影响，但有明确提示。</p>
+                <p>配置项：<code>dark-effect.enabled: true</code>（默认启用），<code>duration: 999999</code>，<code>amplifier: 0</code>。</p>
             </div>
         </div>
 
@@ -363,8 +151,12 @@
         <!-- 感染机制 & 全局高亮 -->
         <div class="section">
             <div class="section-title">⚡ 感染机制 & 全局高亮效果</div>
-            <div class="card"><p><strong>感染方式</strong>：鬼玩家 <span style="color:#ffa07a;">左键/右键点击</span> 人类玩家进行感染。感染条件：双方必须在游戏区域内，且人类存活。被感染人类立即转为鬼阵营，播放闪电/音效。<br>✨ <strong>一次机会</strong>道具可被动抵挡一次感染。</p>
-            <hr><p><strong>🌟 道具发放全局高亮</strong>：每次发放道具（固定道具和刷新道具）时，所有存活玩家获得持续 <strong>5秒</strong> 的高亮（发光）效果。此机制固定，帮助玩家感知道具刷新，增加战术博弈。</p></div>
+            <div class="card">
+                <p><strong>感染方式</strong>：鬼玩家 <span style="color:#ffa07a;">左键/右键点击</span> 人类玩家进行感染。被感染人类立即转为鬼阵营，播放闪电/音效。<br>
+                ✨ <strong>一次机会</strong>道具可被动抵挡一次感染。</p>
+                <hr>
+                <p><strong>🌟 道具发放全局高亮</strong>：每次发放道具时，所有存活玩家获得持续 <strong>5秒</strong> 的高亮效果。</p>
+            </div>
         </div>
 
         <!-- 经济与奖励系统 -->
@@ -373,21 +165,12 @@
             <div class="collapsible">
                 <div class="collapsible-header">💰 奖池分配规则 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
-                    <p><strong>入场机制</strong>：100金币入场费（可配置），确保玩家投入</p>
-                    <p><strong>奖池系统</strong>：所有入场费 + 5000金币服务器奖金（可配置）</p>
-                    <p><strong>智能分配</strong>：</p>
-                    <ul>
-                        <li>人类胜利时：人类阵容获得奖池的70%，鬼阵容获得奖池的30%</li>
-                        <li>鬼胜利时：鬼阵容获得奖池的100%</li>
-                        <li>鬼奖金分配：70%按鬼存活时间，30%按感染人数比例分配</li>
-                    </ul>
-                    <p><strong>详细反馈</strong>：每个玩家收到详细的奖金分配说明，包括存活时间、感染人数、分配比例等</p>
-                    <p><strong>风险与回报</strong>：高风险高回报，鼓励积极参与和策略性游戏</p>
+                    <p>入场费100金币 + 服务器奖金5000金币。人类胜利时人类70%奖池，鬼30%；鬼胜利时鬼100%奖池。个人按存活时间/感染人数分配。</p>
                 </div>
             </div>
         </div>
 
-        <!-- 安装要求（添加插件下载链接） -->
+        <!-- 安装要求（完整恢复，包含链接） -->
         <div class="section">
             <div class="section-title">📦 安装要求</div>
             <div class="collapsible">
@@ -395,535 +178,177 @@
                 <div class="collapsible-content">
                     <p><strong>必需插件</strong><br>
                     Vault + 经济插件（如EssentialsX） - 经济系统支持<br>
-                    <span class="install-note">
+                    <span class="install-note" style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.5rem;">
                         <a href="https://www.spigotmc.org/resources/vault.34315/" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> Vault (Spigot)</a>
                         <a href="https://essentialsx.net/downloads" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> EssentialsX</a>
                     </span>
                     </p>
                     <p><strong>可选模组</strong><br>
                     Injured Effects - 实现2点生命值效果（增强游戏体验）
-                    <span class="install-note">
+                    <span class="install-note" style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.5rem;">
                         <a href="https://modrinth.com/mod/injured-effects" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fab fa-modrinth"></i> 下载 Injured Effects</a>
                     </span>
                     </p>
                     <p><strong>推荐环境</strong><br>
                     Minecraft版本：1.20.x（最佳兼容性）<br>
-                    服务器核心：Paper/Spigot/Bukkit/Mohist（推荐Paper以获得最佳性能）</p>
+                    服务器核心：Paper/Spigot（推荐Paper以获得最佳性能）</p>
+                    <div class="alert-box">
+                        <strong>⚠️ 重要提示：更新插件版本</strong><br>
+                        当您从旧版本更新到新版本（如 v2.2.1）时，请务必删除插件目录下的 <code>config.yml</code> 文件和 <code>langs</code> 文件夹，然后重启服务器，让插件重新生成默认配置文件。否则可能导致配置项不兼容或功能异常。
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 玩家基础命令 -->
+        <!-- 玩家命令 -->
         <div class="section">
             <div class="section-title">📝 玩家基础命令</div>
-            <div class="card">
-                <div class="command-block">
-                    /gost join      # 加入游戏队列<br>
-                    /gost leave     # 离开游戏或队列<br>
-                    /gost info      # 查看当前游戏信息<br>
-                    /gost help      # 显示帮助信息<br>
-                    别名: /join, /leave
-                </div>
-                <p>权限: <code>gost.player</code> (默认所有玩家拥有)</p>
-            </div>
+            <div class="card"><div class="command-block">/gost join /gost leave /gost info /gost help<br>别名: /join, /leave</div><p>权限: <code>gost.player</code></p></div>
         </div>
 
         <!-- 管理员命令大全 -->
         <div class="section">
             <div class="section-title">⚙️ 管理员命令大全</div>
             <div class="collapsible">
-                <div class="collapsible-header">📖 展开查看所有管理员命令及详细说明 <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-header">📖 展开查看所有管理员命令 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
-                    <div class="cmd-section">
-                        <h4>主管理员命令</h4>
-                        <p><code>/gostadmin</code>                 # 显示管理员帮助（需要 gost.admin 权限）</p>
-                        <p><code>/ga</code>                        # /gostadmin 的别名</p>
+                    <div class="cmd-section"><h4>区域管理</h4><p><code>/gostadmin tool</code>, <code>pos1</code>, <code>pos2</code>, <code>save &lt;名称&gt;</code>, <code>load &lt;名称&gt;</code>, <code>delete</code>, <code>list</code>, <code>info</code></p></div>
+                    <div class="cmd-section"><h4>游戏管理</h4><p><code>/gostadmin start &lt;区域&gt;</code>, <code>stop</code>, <code>reload</code>, <code>status</code>, <code>dark on/off</code>, <code>heartbeat on/off</code></p></div>
+                    <div class="cmd-section"><h4>假人系统管理命令 <span class="badge" style="background:#e74c3c80;">已移除 (v2.2.0+)</span></h4>
+                        <p class="removed-feature" style="opacity:0.8;"><code>/gostadmin bot add &lt;数量&gt;</code> - 添加指定数量的假人到队列（已移除）<br>
+                        <code>/gostadmin bot remove &lt;数量&gt;</code> - 从队列移除指定数量的假人（已移除）<br>
+                        <code>/gostadmin bot clear</code> - 清除所有假人（已移除）<br>
+                        <code>/gostadmin bot info</code> - 查看假人信息（已移除）<br>
+                        <code>/gostadmin bot count</code> - 查看假人数量（已移除）</p>
+                        <p><strong>说明</strong>：假人系统在 v2.2.0 版本后已被完全移除，此处仅作历史参考。</p>
                     </div>
-                    <div class="cmd-section">
-                        <h4>区域管理命令</h4>
-                        <p><code>/gostadmin tool</code>            # 获取区域选择工具（岩浆膏）</p>
-                        <p><code>/gostadmin pos1</code>            # 设置第一个点（工具左键点击）</p>
-                        <p><code>/gostadmin pos2</code>            # 设置第二个点（工具右键点击）</p>
-                        <p><code>/gostadmin save &lt;名称&gt;</code>     # 保存当前选区为指定名称</p>
-                        <p><code>/gostadmin list</code>            # 列出所有已保存的区域</p>
-                        <p><code>/gostadmin load &lt;名称&gt; [enable|disable]</code>  # 加载/启用/禁用区域</p>
-                        <p><code>/gostadmin delete &lt;名称&gt;</code>   # 删除指定的保存区域</p>
-                        <p><code>/gostadmin info &lt;名称&gt;</code>     # 查看指定区域的详细信息</p>
-                        <p><code>/gostadmin clear</code>           # 清除当前选区</p>
-                    </div>
-                    <div class="cmd-section">
-                        <h4>游戏管理命令</h4>
-                        <p><code>/gostadmin start &lt;区域名称&gt;</code>  # 使用指定区域强制开始游戏</p>
-                        <p><code>/gostadmin stop</code>             # 强制停止当前游戏</p>
-                        <p><code>/gostadmin reload</code>           # 重载配置文件</p>
-                        <p><code>/gostadmin status</code>           # 查看当前游戏状态</p>
-                        <p><code>/gostadmin dark &lt;on|off|status&gt;</code>  # 黑暗效果管理</p>
-                        <p><code>/gostadmin heartbeat &lt;on|off|status&gt;</code>  # 心跳声效果管理</p>
-                        <p><code>/gostadmin help</code>             # 显示管理员帮助</p>
-                    </div>
-                    <div class="cmd-section">
-                        <h4>假人系统管理命令</h4>
-                        <p><code>/gostadmin bot add &lt;数量&gt;</code>     # 添加指定数量的假人到队列</p>
-                        <p><code>/gostadmin bot remove &lt;数量&gt;</code>  # 从队列移除指定数量的假人</p>
-                        <p><code>/gostadmin bot clear</code>          # 清除所有假人</p>
-                        <p><code>/gostadmin bot info</code>           # 查看假人信息</p>
-                        <p><code>/gostadmin bot count</code>          # 查看假人数量</p>
-                    </div>
-                    <div class="cmd-section">
-                        <h4>神圣守护管理命令（v2.2.0更新）</h4>
-                        <p><code>/divineguardian</code>              # 显示神圣守护帮助（需要 gost.admin.divineguardian 权限）</p>
-                        <p><code>/dg</code>                          # /divineguardian 的别名</p>
-                        <p><strong>状态查看</strong><br>
-                        <code>/divineguardian status</code>       # 查看神圣守护状态<br>
-                        <code>/divineguardian info</code>         # 查看当前神圣守护信息</p>
-                        <p><strong>功能控制</strong><br>
-                        <code>/divineguardian enable</code>       # 启用神圣守护功能<br>
-                        <code>/divineguardian disable</code>      # 禁用神圣守护功能<br>
-                        <code>/divineguardian reload</code>       # 重新加载神圣守护配置<br>
-                        <code>/divineguardian clear</code>        # 清除神圣守护数据</p>
-                        <p><strong>配置管理</strong><br>
-                        <code>/divineguardian setcharges &lt;次数&gt;</code>    # 设置最大使用次数（1-10）<br>
-                        <code>/divineguardian setcooldown &lt;秒数&gt;</code>   # 设置冷却时间（1-60秒）<br>
-                        <code>/divineguardian broadcast &lt;on|off&gt;</code>   # 设置广播开关<br>
-                        <code>/divineguardian setmode &lt;1|2&gt;</code>        # 设置模式（1=神圣守护，2=救赎者）</p>
-                        <p><strong>高级管理</strong><br>
-                        <code>/divineguardian force &lt;玩家名&gt;</code>       # 强制为指定玩家激活神圣守护</p>
-                    </div>
-                    <div class="cmd-section">
-                        <h4>鬼玩家粒子效果管理命令（v2.1.2新增）</h4>
-                        <p><code>/ghostparticle</code>               # 显示粒子效果帮助（需要 gost.admin.ghostparticle 权限）</p>
-                        <p><code>/gp</code>                          # /ghostparticle 的别名</p>
-                        <p><strong>状态查看</strong><br>
-                        <code>/ghostparticle status</code>        # 查看粒子效果状态<br>
-                        <code>/ghostparticle listtypes</code>     # 列出可用粒子类型</p>
-                        <p><strong>功能控制</strong><br>
-                        <code>/ghostparticle enable</code>        # 启用粒子效果<br>
-                        <code>/ghostparticle disable</code>       # 禁用粒子效果<br>
-                        <code>/ghostparticle reload</code>        # 重新加载配置<br>
-                        <code>/ghostparticle test</code>          # 测试粒子效果</p>
-                        <p><strong>配置管理</strong><br>
-                        <code>/ghostparticle settype &lt;类型&gt;</code>        # 设置粒子类型<br>
-                        <code>/ghostparticle setcount &lt;数量&gt;</code>       # 设置粒子数量<br>
-                        <code>/ghostparticle setinterval &lt;间隔&gt;</code>    # 设置生成间隔（刻）<br>
-                        <code>/ghostparticle setmothercolor &lt;红,绿,蓝&gt;</code>  # 设置母体鬼颜色<br>
-                        <code>/ghostparticle setnormalcolor &lt;红,绿,蓝&gt;</code>  # 设置普通鬼颜色<br>
-                        <code>/ghostparticle setsize &lt;大小&gt;</code>        # 设置粒子大小<br>
-                        <code>/ghostparticle setpreparation &lt;on|off&gt;</code>  # 设置准备阶段显示</p>
-                    </div>
-                    <div class="cmd-section">
-                        <h4>详细命令说明</h4>
-                        <p><strong>区域管理命令</strong><br>
-                        <code>/gostadmin tool</code> - 功能：获取区域选择工具（默认岩浆膏），权限：<code>gost.admin</code><br>
-                        <code>/gostadmin pos1 / pos2</code> - 功能：设置选区点，权限：<code>gost.admin</code><br>
-                        <code>/gostadmin save &lt;名称&gt;</code> - 功能：保存当前选区，权限：<code>gost.admin.create</code><br>
-                        <code>/gostadmin load &lt;名称&gt; [enable|disable]</code> - 功能：加载/启用/禁用区域，权限：<code>gost.admin</code><br>
-                        <code>/gostadmin delete &lt;名称&gt;</code> - 功能：删除区域，权限：<code>gost.admin.delete</code></p>
-                        <p><strong>游戏管理命令</strong><br>
-                        <code>/gostadmin start &lt;区域名称&gt;</code> - 功能：强制开始游戏，权限：<code>gost.admin.manage</code><br>
-                        <code>/gostadmin stop</code> - 功能：强制停止游戏，权限：<code>gost.admin.manage</code><br>
-                        <code>/gostadmin reload</code> - 功能：重载配置文件，权限：<code>gost.admin.reload</code></p>
-                        <p><strong>假人系统命令</strong><br>
-                        <code>/gostadmin bot add &lt;数量&gt;</code> - 添加假人到队列，权限：<code>gost.admin</code><br>
-                        <code>/gostadmin bot remove &lt;数量&gt;</code> - 从队列移除假人，权限：<code>gost.admin</code></p>
-                        <p><strong>黑暗效果命令</strong><br>
-                        <code>/gostadmin dark on</code> - 启用黑暗效果（给予所有玩家失明效果）<br>
-                        <code>/gostadmin dark off</code> - 禁用黑暗效果</p>
-                        <p><strong>心跳声效果命令</strong><br>
-                        <code>/gostadmin heartbeat on</code> - 启用心跳声效果（人类玩家听到监守者心跳声）<br>
-                        <code>/gostadmin heartbeat off</code> - 禁用心跳声效果</p>
-                    </div>
+                    <div class="cmd-section"><h4>神圣守护</h4><p><code>/divineguardian</code> 或 <code>/dg</code> – status, enable, disable, setmode, force, setcharges, setcooldown, broadcast, clear</p></div>
+                    <div class="cmd-section"><h4>鬼粒子效果</h4><p><code>/ghostparticle</code> 或 <code>/gp</code> – enable, disable, settype, setcount, setinterval, setmothercolor, test</p></div>
                 </div>
             </div>
         </div>
 
-        <!-- 神圣守护系统 -->
+        <!-- 神圣守护 & 救赎者 -->
         <div class="section">
-            <div class="section-title">🛡️ 神圣守护系统 · 传统模式 & 救赎者模式</div>
-            <div class="collapsible">
-                <div class="collapsible-header">⚔️ 模式1：传统神圣守护（感染免疫+随机传送）<i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content"><p>当人类数量减少到1时，最后一名人类激活神圣守护：<br>• 获得3次感染免疫（可配置）<br>• 被攻击时随机传送至安全位置<br>• 获得速度I效果与发光效果<br>• 次数耗尽后获得10秒隐身效果<br>命令：<code>/divineguardian setmode 1</code></p></div>
-            </div>
-            <div class="collapsible">
-                <div class="collapsible-header">🔥 模式2：救赎者系统（转化鬼玩家）<i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content"><p><strong>救赎者</strong>：最后一名人类成为救赎者，获得「神之救赎」道具。<br>• 右键使用可将一名鬼玩家转化回人类（默认2次，可配置）<br>• 使用后救赎者随机传送至安全位置，并给予高亮+速度效果<br>• 救赎者全程高亮显示，拥有速度效果<br>• 次数用尽后变为普通人类<br>配置项：<code>redeemer.max-uses</code>，命令切换 <code>/divineguardian setmode 2</code>。</p></div>
-            </div>
+            <div class="section-title">🛡️ 神圣守护系统</div>
+            <div class="collapsible"><div class="collapsible-header">⚔️ 模式1：传统神圣守护 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p>最后人类获得3次感染免疫，被攻击时随机传送，速度I+发光，次数耗尽后隐身10秒。</p></div></div>
+            <div class="collapsible"><div class="collapsible-header">🔥 模式2：救赎者系统 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p>最后人类成为救赎者，获得「神之救赎」道具，可转化鬼玩家回人类（默认2次），使用后随机传送，高亮+速度效果。命令 <code>/divineguardian setmode 2</code>。</p></div></div>
         </div>
 
         <!-- 鬼转人类功能 -->
         <div class="section">
-            <div class="section-title">👻 鬼转人类功能（v2.1新增，默认关闭）</div>
-            <div class="card">
-                <h3 style="color:#ffa07a; margin-bottom:0.5rem;">功能概述</h3>
-                <p>在游戏最后阶段（默认剩余3分钟），随机将非母体的鬼玩家转换回人类阵容，增加游戏变数和策略性。</p>
-                
-                <h3 style="color:#ffa07a; margin:1rem 0 0.5rem;">触发条件</h3>
-                <ul style="margin-left:1.5rem;">
-                    <li><strong>时间条件</strong>：游戏剩余时间达到配置值（默认180秒/3分钟）</li>
-                    <li><strong>玩家条件</strong>：只转换非母体的鬼玩家</li>
-                    <li><strong>数量限制</strong>：每次转换指定数量的玩家（默认1名）</li>
-                </ul>
-                
-                <h3 style="color:#ffa07a; margin:1rem 0 0.5rem;">转换效果</h3>
-                <ul style="margin-left:1.5rem;">
-                    <li><strong>阵容转换</strong>：从鬼阵容移除，加入人类阵容</li>
-                    <li><strong>道具重置</strong>：清空所有原有道具</li>
-                    <li><strong>基础道具</strong>：给予肾上腺素道具（速度效果）</li>
-                    <li><strong>通知系统</strong>：个人消息、全服广播、屏幕字幕显示转换动画</li>
-                </ul>
-                
-                <h3 style="color:#ffa07a; margin:1rem 0 0.5rem;">配置说明</h3>
-                <pre style="background:#0b0e14; padding:0.8rem; border-radius:0.8rem; font-size:0.75rem; margin-top:0.5rem;">
-ghost-to-human:
-  enabled: false          # 是否启用功能（默认关闭）
-  remaining-time: 180     # 剩余多少秒时触发（默认3分钟）
-  count: 1                # 转换数量（默认1名）</pre>
-                <p style="margin-top:0.5rem; font-size:0.8rem; color:#aaa;">注：该功能默认关闭，需要手动启用。</p>
-            </div>
+            <div class="section-title">👻 鬼转人类功能</div>
+            <div class="card"><p>游戏最后阶段（默认剩余3分钟），随机将非母体的鬼玩家转换回人类阵容。配置项：<code>ghost-to-human.enabled: false</code>（默认关闭）。</p></div>
         </div>
 
         <!-- 完整游戏流程 -->
-        <div class="section"><div class="section-title">🎯 完整游戏流程</div>
-            <div class="collapsible"><div class="collapsible-header">1. 🗺️ 区域设置阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><code>/gostadmin tool</code> 选区 → <code>/gostadmin save 名称</code> → <code>/gostadmin load 名称 enable</code></div></div>
-            <div class="collapsible"><div class="collapsible-header">2. 👥 玩家准备阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">玩家 <code>/gost join</code>，队列满员后自动开始10秒倒计时，最后10秒居中大字。队列人数不足时自动清空并退还金币。</div></div>
-            <div class="collapsible"><div class="collapsible-header">3. 🚀 游戏进行阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">准备阶段20秒，游戏阶段7分钟，每分钟道具刷新，每次发放道具全体高亮5秒，母体鬼前20秒禁足。</div></div>
-            <div class="collapsible"><div class="collapsible-header">4. 🏆 游戏结束阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">鬼胜利：所有人类被感染；人类胜利：时间结束仍有幸存者。奖励按比例分配，详细反馈。</div></div>
+        <div class="section">
+            <div class="section-title">🎯 完整游戏流程</div>
+            <div class="collapsible"><div class="collapsible-header">1. 区域设置 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><code>/gostadmin tool</code> 选区 → save → load enable</div></div>
+            <div class="collapsible"><div class="collapsible-header">2. 玩家准备 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><code>/gost join</code>，队列满员10秒倒计时，人数不足自动清空并退还金币。</div></div>
+            <div class="collapsible"><div class="collapsible-header">3. 游戏进行 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">准备20秒，游戏7分钟，每分钟道具刷新（全体高亮5秒），母体鬼禁足20秒。</div></div>
+            <div class="collapsible"><div class="collapsible-header">4. 游戏结束 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">鬼胜利/人类胜利，奖励按比例分配，详细反馈。</div></div>
         </div>
 
-        <!-- 配置文件详解 -->
-        <div class="section"><div class="section-title">⚙️ 配置文件详解 (config.yml)</div>
-            <div class="collapsible"><div class="collapsible-header">📋 完整配置项 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><pre style="background:#0b0e14; padding:1rem; border-radius:1rem; overflow-x:auto; font-size:0.75rem;">
-# Gost 插件配置文件
-# 版本: 2.2.0
-# Minecraft: 1.20.x
-
-conversion:
-  enabled: false
-  activate-time: 120
-  cooldown: 30
-  cost: 15
-ScriptIrc-config-version: 16
-
-# 游戏设置
-game:
-  duration: 420
-  preparation-time: 20
-  queue-time: 60
-  min-players: 2
-  max-players: 16
-  max-games: 1
-  match-queue-time: 30
-
-economy:
-  entry-fee: 100.0
-  server-bonus: 5000.0
-
-items:
-  adrenaline:
-    duration: 10
-    speed-level: 2
-  frenzy:
-    duration: 10
-    speed-level: 2
-  ice-ball:
-    slow-duration: 4
-    slow-level: 4
-  soul-control:
-    freeze-duration: 6
-    cooldown: 18
-  teleport-pearl:
-    cooldown: 20
-  stinky-steak:
-    speed-duration: 14
-    speed-level: 1
-    glowing-duration: 10
-    cooldown: 30
-  soul-detector:
-    duration: 25
-    cooldown: 35
-  second-chance:
-    cooldown: 180
-    human-speed-duration: 10
-    human-speed-level: 2
-    human-glowing-duration: 10
-    ghost-slow-duration: 7
-    ghost-slow-level: 1
-
-effects:
-  mother-ghost-blindness-duration: 20
-  ghost-immobilize-duration: 20
-  ghost-sense-duration: 5
-  infection-lightning: true
-  infection-sound: true
-  minute-glowing:
-    enabled: true
-    duration: 5
-    interval: 60
-
-ghost-to-human:
-  enabled: false
-  remaining-time: 180
-  count: 1
-
-health:
-  max-health: 2.0
-
-dark-effect:
-  enabled: false
-  duration: 999999
-  amplifier: 0
-
-heartbeat:
-  enabled: true
-  interval: 10
-
-area:
-  selection-tool: MAGMA_CREAM
-  max-areas: 20
-  auto-teleport: true
-  ignore-y-axis: false
-
-item-spawn:
-  max-item-types-per-player: 6
-  enabled: true
-  interval: 60
-  max-per-refresh: 3
-  max-per-player: 1
-
-language:
-  default: zh_CN
-  auto-detect: true
-
-divine-guardian:
-  enabled: false
-  mode: '1'
-  max-charges: 3
-  cooldown: 5
-  broadcast: true
-  invisibility-duration: 10
-
-redeemer:
-  max-uses: 2
-  speed-level: 1
-  holy-redemption-cooldown: 10
-  conversion-invincibility-time: 5
-  broadcast: true
-
-ghost-particle:
-  enabled: true
-  type: REDSTONE
-  count: 5
-  interval: 15
-  mother-color: 255,0,0
-  normal-color: 0,255,0
-  size: 1.0
-  show-in-preparation: true
-            </pre><p>支持热重载 <code>/gostadmin reload</code></p></div></div>
+        <!-- 配置文件 -->
+        <div class="section">
+            <div class="section-title">⚙️ 配置文件 (config.yml)</div>
+            <div class="collapsible"><div class="collapsible-header">📋 主要配置项 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><pre>game.duration: 420\ndark-effect.enabled: true\ndivine-guardian.mode: "1"\nredeemer.max-uses: 2</pre></div></div>
         </div>
 
         <!-- 权限节点 -->
-        <div class="section"><div class="section-title">🔐 权限节点</div>
-            <div class="card"><strong>玩家权限（默认所有玩家拥有）</strong><br>
-            <code>gost.player</code> - 基础玩家权限<br>
-            <code>gost.join</code> - 允许加入游戏队列（默认 true）<br>
-            <code>gost.leave</code> - 允许离开游戏或队列（默认 true）<br><br>
-            <strong>管理员权限</strong><br>
-            <code>gost.admin</code> - 管理员基础权限（默认 op）<br>
-            <code>gost.admin.create</code> - 创建区域权限<br>
-            <code>gost.admin.delete</code> - 删除区域权限<br>
-            <code>gost.admin.manage</code> - 管理游戏权限<br>
-            <code>gost.admin.reload</code> - 重载配置权限<br>
-            <code>gost.admin.divineguardian</code> - 管理神圣守护权限<br>
-            <code>gost.admin.ghostparticle</code> - 管理鬼玩家粒子效果权限<br><br>
-            <strong>权限继承关系</strong><br>
-            <div class="tree">
-                gost.admin<br>
-                ├── gost.admin.create<br>
-                ├── gost.admin.delete<br>
-                ├── gost.admin.manage<br>
-                ├── gost.admin.reload<br>
-                ├── gost.admin.divineguardian<br>
-                └── gost.admin.ghostparticle
-            </div>
-            </div>
+        <div class="section">
+            <div class="section-title">🔐 权限节点</div>
+            <div class="card"><strong>玩家</strong> <code>gost.player</code><br><strong>管理员</strong> <code>gost.admin</code>, <code>gost.admin.create</code>, <code>gost.admin.delete</code>, <code>gost.admin.manage</code>, <code>gost.admin.reload</code>, <code>gost.admin.divineguardian</code>, <code>gost.admin.ghostparticle</code></div>
         </div>
 
         <!-- 版本更新记录 -->
-        <div class="section"><div class="section-title">📈 版本更新记录</div>
-            <div class="collapsible"><div class="collapsible-header">最新版本特性 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p><strong>救赎者系统</strong>：最后人类成为救赎者，转化鬼玩家，随机传送。<br><strong>游戏模式切换</strong>：神圣守护传统模式/救赎者模式。<br><strong>队列系统优化</strong>：智能清理、退出金币退还、Boss栏修复。<br><strong>代码精简</strong>：移除NPC/独立货币/观战系统。<br><strong>v2.1.3</strong>：修复管理员游戏效果免疫问题，创造模式自动切换生存。<br><strong>v2.1.2</strong>：新增鬼玩家粒子效果系统。<br><strong>v2.1.1</strong>：新增神圣守护系统。<br><strong>v2.1.0</strong>：奖金分配优化、心跳声系统、鬼转人类功能。</p></div></div>
+        <div class="section">
+            <div class="section-title">📈 版本更新记录</div>
+            <div class="version-list" id="version-list-zh"></div>
         </div>
-        <footer>🎉 开始你的生存对抗之旅！ 使用 <code>/gost join</code> 加入队列 | 感染方式：左键/右键点击 | 道具发放时全体高亮5秒</footer>
+
+        <footer>🎉 开始你的生存对抗之旅！ /gost join | 感染方式：左键/右键 | 道具发放全体高亮5秒 | 黑暗效果不阻止疾跑</footer>
     </div>
 
-    <!-- 英文版本（同步新增内容） -->
+    <!-- 英文内容（简化，保留核心） -->
     <div id="en-content" class="lang-content">
         <div style="padding:1.5rem 0 1rem;"><h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - Extreme Survival Confrontation</h1>
-        <p><strong>Gost</strong> combines cat-and-mouse, ghost chase, hide & seek, and CF生化 mode. Experience life-or-death chase between humans and ghosts.</p><div class="badge">⚡ Divine Guardian · Redeemer | 🎮 Mode Switch | 🔧 Queue Optimized | ✨ Global Glow on Item Spawn</div>
-        <div class="link-buttons">
-            <a href="https://modrinth.com/plugin/gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-modrinth"></i> Click to download</a>
-            <a href="https://github.com/726113394-cloud/Gost" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-github"></i> GitHub Repository</a>
-            <a href="https://space.bilibili.com/3493116665400113" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fab fa-bilibili"></i> Author's Bilibili</a>
-            <a href="https://www.bilibili.com/video/BV1aPQSBsE74/" target="_blank" rel="noopener noreferrer" class="link-btn"><i class="fas fa-video"></i> Plugin Preview</a>
-        </div>
-        </div>
-        
-        <div class="section"><div class="section-title">✨ Core Features</div><div class="grid-3col">
-            <div class="card"><i class="fas fa-bolt"></i> <strong>Intense Chase</strong><br>Faction vs, infection, time pressure</div>
-            <div class="card"><i class="fas fa-coins"></i> <strong>Economy & Prize Pool</strong><br>Entry fee 100g + 5000g bonus, smart distribution</div>
-            <div class="card"><i class="fas fa-users"></i> <strong>Smart Queue</strong><br>Auto-start when full, queue auto-clear & refund</div>
-            <div class="card"><i class="fas fa-cube"></i> <strong>Item System</strong><br>Fixed faction items + minute-refresh items</div>
-            <div class="card"><i class="fas fa-ghost"></i> <strong>Ghost Particles</strong><br>Mother red / normal green particles, RGB custom</div>
-            <div class="card"><i class="fas fa-map-marked-alt"></i> <strong>Area Management</strong><br>Wand selection, save up to 20 areas</div>
-        </div></div>
-
-        <div class="section"><div class="section-title">🧰 Complete Item Guide</div><div class="grid-3col" id="items-list-en"></div></div>
-
-        <div class="section"><div class="section-title">⚡ Infection & Global Highlight</div><div class="card"><p><strong>Infection method:</strong> Ghosts infect humans via <span style="color:#ffa07a;">LEFT/RIGHT CLICK</span>.<br>✨ "Second Chance" blocks infection once.</p><hr><p><strong>🌟 Global Highlight on Item Spawn</strong>: All alive players receive a <strong>5-second glowing effect</strong> when items are distributed.</p></div></div>
-
-        <!-- 经济与奖励系统（英文） -->
-        <div class="section">
-            <div class="section-title">🏆 Economy & Reward System</div>
-            <div class="collapsible">
-                <div class="collapsible-header">💰 Prize Pool Rules <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <p><strong>Entry Mechanism</strong>: 100 coin entry fee (configurable)</p>
-                    <p><strong>Prize Pool</strong>: All entry fees + 5000 coin server bonus (configurable)</p>
-                    <p><strong>Smart Distribution</strong>:</p>
-                    <ul>
-                        <li>Human victory: Humans get 70% of pool, Ghosts get 30%</li>
-                        <li>Ghost victory: Ghosts get 100% of pool</li>
-                        <li>Ghost bonus distribution: 70% by survival time, 30% by infection count</li>
-                    </ul>
-                    <p><strong>Detailed Feedback</strong>: Each player receives breakdown including survival time, infections, ratio</p>
-                    <p><strong>Risk & Reward</strong>: High risk, high reward – encourages active participation and strategy</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 安装要求（英文，带插件链接） -->
-        <div class="section">
-            <div class="section-title">📦 Installation Requirements</div>
-            <div class="collapsible">
-                <div class="collapsible-header">🔧 Required Plugins & Optional Mods <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <p><strong>Required Plugins</strong><br>
-                    Vault + Economy plugin (e.g., EssentialsX) - Economy support<br>
-                    <span class="install-note">
-                        <a href="https://www.spigotmc.org/resources/vault.34315/" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> Vault (Spigot)</a>
-                        <a href="https://essentialsx.net/downloads" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> EssentialsX</a>
-                    </span>
-                    </p>
-                    <p><strong>Optional Mods</strong><br>
-                    Injured Effects - Enables 2-heart health effect (enhances experience)
-                    <span class="install-note">
-                        <a href="https://modrinth.com/mod/injured-effects" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fab fa-modrinth"></i> Download Injured Effects</a>
-                    </span>
-                    </p>
-                    <p><strong>Recommended Environment</strong><br>
-                    Minecraft version: 1.20.x (best compatibility)<br>
-                    Server core: Paper/Spigot (Paper recommended for best performance)</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="section"><div class="section-title">📝 Player Commands</div><div class="card"><div class="command-block">/gost join<br>/gost leave<br>/gost info<br>/gost help</div><p>Permissions: <code>gost.player</code></p></div></div>
-
-        <div class="section"><div class="section-title">⚙️ Admin Commands</div>
-            <div class="collapsible"><div class="collapsible-header">📖 Expand to view all admin commands <i class="fas fa-chevron-down"></i></div>
-            <div class="collapsible-content"><div class="cmd-section"><h4>Main</h4><p><code>/gostadmin</code>, <code>/ga</code></p><h4>Area</h4><p><code>/gostadmin tool</code>, <code>pos1/pos2</code>, <code>save</code>, <code>load</code>, <code>delete</code>, <code>list</code>, <code>info</code>, <code>clear</code></p><h4>Game</h4><p><code>/gostadmin start</code>, <code>stop</code>, <code>reload</code>, <code>status</code>, <code>dark</code>, <code>heartbeat</code></p><h4>Bot</h4><p><code>/gostadmin bot add/remove/clear/info/count</code></p><h4>Divine Guardian</h4><p><code>/divineguardian</code> or <code>/dg</code> – status, enable, disable, setmode, force, etc.</p><h4>Ghost Particle</h4><p><code>/ghostparticle</code> or <code>/gp</code> – enable, disable, settype, setcolor, test, etc.</p></div></div></div>
-        </div>
-
-        <div class="section"><div class="section-title">🛡️ Divine Guardian & Redeemer</div>
-            <div class="collapsible"><div class="collapsible-header">Mode 1: Classic Divine Guardian <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p>Last human gains infection immunity, random teleport, speed I + glowing.</p></div></div>
-            <div class="collapsible"><div class="collapsible-header">Mode 2: Redeemer System <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p>Last human becomes Redeemer, can convert a ghost back to human (2 charges), random teleport, speed & highlight.</p></div></div>
-        </div>
-
-        <div class="section"><div class="section-title">👻 Ghost-to-Human (v2.1, disabled by default)</div>
-            <div class="card"><h3 style="color:#ffa07a;">Overview</h3><p>In the final stage (default 3 min remaining), randomly convert a non-parent ghost back to human.</p><h3>Trigger Conditions</h3><ul><li>Time remaining ≤ configured value (default 180s)</li><li>Only non-parent ghosts</li><li>Default 1 player per trigger</li></ul><h3>Conversion Effects</h3><ul><li>Faction switch, item reset, give Adrenaline, notifications</li></ul><h3>Configuration</h3><pre>ghost-to-human:
-  enabled: false
-  remaining-time: 180
-  count: 1</pre></div></div>
-
-        <div class="section"><div class="section-title">🎯 Game Flow</div>
-            <div class="collapsible"><div class="collapsible-header">Area Setup</div><div class="collapsible-content">/gostadmin tool → save → load enable</div></div>
-            <div class="collapsible"><div class="collapsible-header">Queue & Start</div><div class="collapsible-content">/gost join, auto-start when full, 10s countdown</div></div>
-            <div class="collapsible"><div class="collapsible-header">Game Phase</div><div class="collapsible-content">20s prep, 7min game, item spawn every minute (global glow 5s), mother ghost immobilized 20s</div></div>
-        </div>
-
-        <div class="section"><div class="section-title">⚙️ Configuration Sample</div>
-            <div class="collapsible"><div class="collapsible-header">📋 config.yml excerpt</div><div class="collapsible-content"><pre>game:
-  duration: 420
-  min-players: 2
-divine-guardian:
-  mode: "1"
-redeemer:
-  max-uses: 2
-ghost-particle:
-  enabled: true
-  type: REDSTONE</pre></div></div>
-        </div>
-
-        <div class="section"><div class="section-title">🔐 Permissions</div>
-            <div class="card"><strong>Player:</strong> <code>gost.player</code>, <code>gost.join</code>, <code>gost.leave</code><br><strong>Admin:</strong> <code>gost.admin</code>, <code>gost.admin.create</code>, <code>gost.admin.delete</code>, <code>gost.admin.manage</code>, <code>gost.admin.reload</code>, <code>gost.admin.divineguardian</code>, <code>gost.admin.ghostparticle</code><br><br>
-            <strong>Inheritance:</strong><br>
-            <div class="tree">
-                gost.admin<br>
-                ├── gost.admin.create<br>
-                ├── gost.admin.delete<br>
-                ├── gost.admin.manage<br>
-                ├── gost.admin.reload<br>
-                ├── gost.admin.divineguardian<br>
-                └── gost.admin.ghostparticle
-            </div>
-            </div>
-        </div>
-        <footer>🎉 Start your survival confrontation! /gost join | Infection: LEFT/RIGHT CLICK | Item spawn = 5s global glow</footer>
+        <p><strong>Gost v2.2.1</strong> combines cat-and-mouse, ghost chase, hide & seek, and CF生化 mode.</p><div class="badge">⚡ Redeemer | 🎮 Mode Switch | 🌑 Dark+Sprint | 🔧 Queue</div>
+        <div class="link-buttons"><a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth</a><a href="https://github.com/726113394-cloud/Gost" target="_blank" class="link-btn"><i class="fab fa-github"></i> GitHub</a></div></div>
+        <div class="carousel-container" id="carouselEn"></div>
+        <div class="section"><div class="section-title">🌑 Dark Effect + Sprint (v2.2.1)</div><div class="card"><p>Native DARKNESS + 30% speed attribute, smart check restores sprint.</p></div></div>
+        <div class="section"><div class="section-title">🧰 Items</div><div class="grid-3col" id="items-list-en"></div></div>
+        <div class="section"><div class="section-title">📝 Commands</div><div class="card"><div class="command-block">/gost join, leave, info, help</div></div></div>
+        <div class="section"><div class="section-title">📈 Version History</div><div class="version-list" id="version-list-en"></div></div>
+        <footer>🎉 /gost join | Infection: LEFT/RIGHT CLICK | 5s global glow on item spawn</footer>
     </div>
 </div>
 
-<div class="watermark">来自太空的小头脑 / LittleMind_fromSpace</div>
-
+<div class="watermark">Gost v2.2.1 | 来自太空的小头脑</div>
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
 
 <script>
-    // 道具详细数据（中文完整版）
+    // ==================== 轮播图配置 ====================
+    // 请将下面的图片链接替换为您在 GitHub 仓库中的实际图片路径（例如 "images/screenshot1.png"）
+    const carouselImages = [
+        "images/screenshot1.png",   // 示例图片1，请替换为您的图片链接
+        "images/screenshot2.png",   // 示例图片2
+        "images/screenshot3.png"    // 示例图片3
+    ];
+
+    function initCarousel(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        if (carouselImages.length === 0) { container.style.display = 'none'; return; }
+        container.innerHTML = `<div class="carousel-slides" id="slides-${containerId}"></div><button class="carousel-btn carousel-btn-left" id="prev-${containerId}"><i class="fas fa-chevron-left"></i></button><button class="carousel-btn carousel-btn-right" id="next-${containerId}"><i class="fas fa-chevron-right"></i></button><div class="carousel-dots" id="dots-${containerId}"></div>`;
+        const slidesDiv = document.getElementById(`slides-${containerId}`);
+        const dotsDiv = document.getElementById(`dots-${containerId}`);
+        carouselImages.forEach((src, idx) => {
+            const slide = document.createElement('div'); slide.className = 'carousel-slide';
+            const img = document.createElement('img'); img.src = src; img.alt = `Gost screenshot ${idx+1}`;
+            img.onerror = () => { console.warn(`图片加载失败: ${src}`); };
+            slide.appendChild(img); slidesDiv.appendChild(slide);
+            const dot = document.createElement('div'); dot.classList.add('dot'); dot.addEventListener('click', () => goToSlide(idx, containerId));
+            dotsDiv.appendChild(dot);
+        });
+        let current = 0, interval;
+        function update() {
+            slidesDiv.style.transform = `translateX(-${current * 100}%)`;
+            document.querySelectorAll(`#dots-${containerId} .dot`).forEach((d, i) => d.classList.toggle('active', i === current));
+        }
+        function next() { current = (current + 1) % carouselImages.length; update(); resetInterval(); }
+        function prev() { current = (current - 1 + carouselImages.length) % carouselImages.length; update(); resetInterval(); }
+        function goToSlide(idx, id) { if(id === containerId) { current = idx; update(); resetInterval(); } }
+        function resetInterval() { if(interval) clearInterval(interval); if(carouselImages.length>1) interval = setInterval(next, 5000); }
+        document.getElementById(`prev-${containerId}`).addEventListener('click', prev);
+        document.getElementById(`next-${containerId}`).addEventListener('click', next);
+        update(); resetInterval();
+        container.addEventListener('mouseenter', () => interval && clearInterval(interval));
+        container.addEventListener('mouseleave', () => { if(carouselImages.length>1) interval = setInterval(next, 5000); });
+    }
+
+    // 道具数据
     const itemsDetailZh = {
-        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属 - 速度药水", faction: "human",
-            detail: `物品图标：喷溅型速度药水<br>详细效果：立即获得速度II效果，大幅提升移动速度<br>持续时间：10秒（可在config.yml中配置）<br>使用方法：右键点击物品直接使用<br>使用反馈：<br>&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>&nbsp;&nbsp;- 获得速度粒子效果<br>&nbsp;&nbsp;- 聊天框提示：你使用了肾上腺素！速度提升！<br>战术价值：逃生、追击、快速转移位置<br>注意事项：仅限人类玩家使用，鬼玩家无法使用` },
-        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属 - 速度药水", faction: "ghost",
-            detail: `物品图标：喷溅型速度药水（红色）<br>详细效果：立即获得速度II效果，大幅提升移动速度<br>持续时间：10秒（可在config.yml中配置）<br>使用方法：右键点击物品直接使用<br>使用反馈：<br>&nbsp;&nbsp;- ActionBar显示：右键使用获得速度提升<br>&nbsp;&nbsp;- 获得速度粒子效果<br>&nbsp;&nbsp;- 聊天框提示：你使用了狂暴药水！速度提升！<br>战术价值：快速追击人类、快速移动感染<br>注意事项：仅限鬼玩家使用，人类玩家无法使用` },
-        iceBall: { name: "❄️ 凝冰球", desc: "投掷类道具 - 雪球", faction: "neutral",
-            detail: `物品图标：雪球<br>详细效果：命中鬼玩家后使其获得减速IV效果，大幅降低移动速度<br>持续时间：4秒（可在config.yml中配置）<br>使用方法：右键点击投掷雪球<br>使用反馈：<br>&nbsp;&nbsp;- 命中鬼玩家时显示减速粒子效果<br>&nbsp;&nbsp;- 被命中鬼玩家收到提示：你被凝冰球击中了！移动速度降低！<br>&nbsp;&nbsp;- 使用者收到提示：成功命中鬼玩家！<br>战术价值：阻止鬼玩家追击、为队友创造逃生机会<br>注意事项：需要准确投掷命中，对鬼玩家以外的目标无效` },
-        soulControl: { name: "👻 控魂术", desc: "人类战略道具 - 末影之眼", faction: "human",
-            detail: `物品图标：末影之眼<br>详细效果：使用后冻结区域内所有鬼玩家，使其完全无法移动<br>持续时间：6秒（可在config.yml中配置）<br>冷却时间：18秒（可在config.yml中配置）<br>使用方法：右键点击物品使用<br>使用反馈：<br>&nbsp;&nbsp;- ActionBar显示：右键使用冻结所有鬼<br>&nbsp;&nbsp;- 全服广播：[控魂术] 所有鬼玩家被冻结！<br>&nbsp;&nbsp;- 鬼玩家收到提示：你被控魂术影响了！无法移动！<br>战术价值：团队逃生、战略转移、关键时刻保命<br>注意事项：一次性使用道具，使用后消失，有冷却时间限制` },
-        stinkySteak: { name: "🍖 臭牛排", desc: "刷新道具 - 熟牛排", faction: "neutral",
-            detail: `物品图标：熟牛排<br>详细效果：无视当前饱食度立即食用，获得速度II效果和发光效果<br>持续时间：<br>&nbsp;&nbsp;- 速度效果：14秒（可配置）<br>&nbsp;&nbsp;- 发光效果：10秒（可配置）<br>冷却时间：30秒（可配置）<br>使用方法：右键点击直接食用<br>使用反馈：<br>&nbsp;&nbsp;- 立即恢复饱食度<br>&nbsp;&nbsp;- 获得速度粒子效果和发光效果<br>&nbsp;&nbsp;- 聊天框提示：你食用了臭牛排！获得速度II效果和发光效果！<br>特色功能：任何饱食度状态下均可立即食用，无需等待<br>战术价值：紧急情况下的快速速度提升和位置暴露（发光效果）` },
-        teleportPearl: { name: "💎 传送珍珠", desc: "战术道具 - 末影珍珠", faction: "neutral",
-            detail: `物品图标：末影珍珠<br>详细效果：右键投掷后传送到落点位置<br>冷却时间：20秒（可在config.yml中配置）<br>阵营限制：人类和鬼玩家均可使用<br>使用方法：右键点击投掷末影珍珠<br>使用反馈：<br>&nbsp;&nbsp;- 传送时显示末影粒子效果<br>&nbsp;&nbsp;- 冷却期间物品显示冷却状态<br>&nbsp;&nbsp;- 聊天框显示冷却剩余时间<br>战术价值：<br>&nbsp;&nbsp;- 人类：快速逃生、跨越障碍<br>&nbsp;&nbsp;- 鬼：快速接近目标、突袭<br>注意事项：冷却期间无法再次使用，注意传送落点安全` },
-        soulDetector: { name: "🧭 灵魂探测器", desc: "鬼专属道具 - 指南针", faction: "ghost",
-            detail: `物品图标：指南针<br>详细效果：使用后使所有玩家获得高亮效果，暴露位置<br>持续时间：25秒（可在config.yml中配置）<br>冷却时间：35秒（可在config.yml中配置）<br>阵营限制：仅限鬼玩家使用<br>使用方法：右键点击使用指南针<br>使用反馈：<br>&nbsp;&nbsp;- 所有玩家身体发光（高亮效果）<br>&nbsp;&nbsp;- 全服广播：灵魂探测器已激活！所有玩家位置暴露！<br>&nbsp;&nbsp;- 使用者收到提示：灵魂探测器已启动，持续25秒<br>战术价值：发现隐藏的人类、团队围剿、战略侦查<br>注意事项：一次性使用道具，使用后消失` },
-        secondChance: { name: "🛡️ 一次机会", desc: "人类专属道具 - 不死图腾", faction: "human",
-            detail: `物品图标：不死图腾<br>详细效果：被动触发，抵挡一次鬼玩家的感染攻击，并随机传送持有者<br>触发条件：当鬼玩家右键点击试图感染时自动触发<br>人类效果：<br>&nbsp;&nbsp;- 速度II效果，持续10秒（可配置）<br>&nbsp;&nbsp;- 高亮效果，持续10秒（可配置）<br>&nbsp;&nbsp;- 随机传送：被传送到游戏区域内的随机安全位置<br>鬼效果：<br>&nbsp;&nbsp;- 缓慢I效果，持续7秒（可配置）<br>冷却时间：180秒（可在config.yml中配置）<br>传送机制：在游戏区域内随机选择安全位置，确保不在液体中，有足够空间<br>使用方法：自动触发，无需手动使用<br>使用反馈：<br>&nbsp;&nbsp;- 屏幕居中字幕：✨ 一次机会触发！ / 成功抵挡感染！<br>&nbsp;&nbsp;- 对话框消息：详细显示效果信息<br>&nbsp;&nbsp;- 全服广播：XXX 使用了一次机会抵挡了 YYY 的感染！<br>&nbsp;&nbsp;- 个人提示：人类获得速度和高亮，鬼获得减速<br>战术价值：关键时刻保命、反击机会、削弱攻击者<br>特殊限制：每个玩家只能拥有一个，触发后道具消失，冷却期间无法再次获得效果<br>注意事项：仅抵挡感染，不抵挡其他伤害` }
+        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "右键使用获得速度II 10秒。" },
+        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "右键使用速度II 10秒。" },
+        iceBall: { name: "❄️ 凝冰球", desc: "投掷类", faction: "neutral", detail: "雪球投掷，命中鬼减速IV 4秒。" },
+        soulControl: { name: "👻 控魂术", desc: "人类战略", faction: "human", detail: "冻结所有鬼6秒，冷却18秒。" },
+        stinkySteak: { name: "🍖 臭牛排", desc: "刷新道具", faction: "neutral", detail: "速度II 14秒+发光10秒，冷却30秒。" },
+        teleportPearl: { name: "💎 传送珍珠", desc: "战术道具", faction: "neutral", detail: "右键投掷传送，冷却20秒。" },
+        soulDetector: { name: "🧭 灵魂探测器", desc: "鬼专属", faction: "ghost", detail: "所有玩家发光25秒，冷却35秒。" },
+        secondChance: { name: "🛡️ 一次机会", desc: "人类专属", faction: "human", detail: "被动抵挡感染+随机传送，冷却180秒。" }
     };
-
     const itemsDetailEn = {
-        adrenaline: { name: "🧪 Adrenaline", desc: "Human only - Speed Potion", faction: "human",
-            detail: `Item Icon: Splash Potion of Swiftness<br>Effect: Instantly grants Speed II, greatly increasing movement speed<br>Duration: 10 seconds (configurable)<br>Usage: Right-click<br>Feedback: ActionBar, speed particles, chat message<br>Tactical Value: Escape, chase, repositioning<br>Note: Human only` },
-        frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only - Speed Potion", faction: "ghost",
-            detail: `Item Icon: Splash Potion of Swiftness (red tint)<br>Effect: Instantly grants Speed II<br>Duration: 10 seconds (configurable)<br>Usage: Right-click<br>Feedback: ActionBar, speed particles, chat message<br>Tactical Value: Fast pursuit, quick infection<br>Note: Ghost only` },
-        iceBall: { name: "❄️ Ice Ball", desc: "Throwable - Snowball", faction: "neutral",
-            detail: `Item Icon: Snowball<br>Effect: Hitting a ghost applies Slow IV<br>Duration: 4 seconds (configurable)<br>Usage: Right-click to throw<br>Feedback: Slow particles, hit messages<br>Tactical Value: Stop ghost pursuit<br>Note: Accurate aiming required` },
-        soulControl: { name: "👻 Soul Control", desc: "Human strategic item - Eye of Ender", faction: "human",
-            detail: `Item Icon: Eye of Ender<br>Effect: Freezes all ghosts in area<br>Duration: 6s, Cooldown: 18s (configurable)<br>Usage: Right-click<br>Feedback: ActionBar, server broadcast, ghost message<br>Tactical Value: Team escape, lifesaver<br>Note: One-time use, has cooldown` },
-        stinkySteak: { name: "🍖 Stinky Steak", desc: "Refresh item - Steak", faction: "neutral",
-            detail: `Item Icon: Cooked Steak<br>Effect: Eat regardless of hunger, Speed II + Glowing<br>Duration: Speed 14s, Glowing 10s (configurable)<br>Cooldown: 30s<br>Usage: Right-click to eat<br>Feedback: Restores hunger, particles, chat message<br>Special: Can be eaten at any hunger level<br>Tactical Value: Emergency speed boost and reveal` },
-        teleportPearl: { name: "💎 Teleport Pearl", desc: "Tactical item - Ender Pearl", faction: "neutral",
-            detail: `Item Icon: Ender Pearl<br>Effect: Teleports to landing point<br>Cooldown: 20s (configurable)<br>Faction: Both<br>Usage: Right-click to throw<br>Feedback: Enderman particles, cooldown display<br>Tactical Value: Escape (human), approach (ghost)<br>Note: Cannot use during cooldown` },
-        soulDetector: { name: "🧭 Soul Detector", desc: "Ghost only - Compass", faction: "ghost",
-            detail: `Item Icon: Compass<br>Effect: Reveals all players with glowing<br>Duration: 25s, Cooldown: 35s (configurable)<br>Usage: Right-click<br>Feedback: All players glow, server broadcast<br>Tactical Value: Find hidden humans, reconnaissance<br>Note: One-time use` },
-        secondChance: { name: "🛡️ Second Chance", desc: "Human only - Totem of Undying", faction: "human",
-            detail: `Item Icon: Totem of Undying<br>Effect: Passively blocks infection and teleports holder<br>Trigger: When a ghost tries to infect<br>Human Effects: Speed II 10s, Glowing 10s, random teleport<br>Ghost Effect: Slowness I 7s<br>Cooldown: 180s<br>Usage: Automatic<br>Feedback: Center subtitle, dialog, server broadcast<br>Tactical Value: Critical lifesaver, counterattack<br>Limitations: One per player, disappears after trigger` }
+        adrenaline: { name: "🧪 Adrenaline", desc: "Human", faction: "human", detail: "Speed II 10s." },
+        frenzy: { name: "🔥 Frenzy", desc: "Ghost", faction: "ghost", detail: "Speed II 10s." },
+        iceBall: { name: "❄️ Ice Ball", desc: "Throwable", faction: "neutral", detail: "Slow IV 4s." },
+        soulControl: { name: "👻 Soul Control", desc: "Human", faction: "human", detail: "Freeze ghosts 6s." },
+        stinkySteak: { name: "🍖 Stinky Steak", desc: "Refresh", faction: "neutral", detail: "Speed II+Glow." },
+        teleportPearl: { name: "💎 Teleport Pearl", desc: "Tactical", faction: "neutral", detail: "Teleport cd20s." },
+        soulDetector: { name: "🧭 Soul Detector", desc: "Ghost", faction: "ghost", detail: "Reveal all 25s." },
+        secondChance: { name: "🛡️ Second Chance", desc: "Human", faction: "human", detail: "Block infection+teleport." }
     };
-
     function renderItems(lang) {
         const container = document.getElementById(`items-list-${lang}`);
         if (!container) return;
@@ -931,68 +356,110 @@ ghost-particle:
         container.innerHTML = '';
         for (let key in data) {
             const item = data[key];
-            let factionClass = '';
-            if (item.faction === 'human') factionClass = 'card-human';
-            else if (item.faction === 'ghost') factionClass = 'card-ghost';
-            const card = document.createElement('div');
-            card.className = `card ${factionClass}`;
-            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem;">${item.desc}</span><br>
-            <button class="btn-detail" data-item="${key}" data-lang="${lang}">📖 详情</button>`;
+            let factionClass = item.faction === 'human' ? 'card-human' : (item.faction === 'ghost' ? 'card-ghost' : '');
+            const card = document.createElement('div'); card.className = `card ${factionClass}`;
+            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem;">${item.desc}</span><br><button class="btn-detail" data-item="${key}" data-lang="${lang}">📖 详情</button>`;
             container.appendChild(card);
         }
     }
-
     function showItemDetail(lang, key) {
         const data = lang === 'zh' ? itemsDetailZh : itemsDetailEn;
-        const item = data[key];
-        document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><hr style="margin:0.5rem 0;"><div style="line-height:1.6;">${item.detail}</div>`;
+        document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${data[key].name}</div><hr><div>${data[key].detail}</div>`;
         showModal();
     }
-
     function showModal() { document.getElementById('modal').classList.add('show'); }
     function hideModal() { document.getElementById('modal').classList.remove('show'); }
-    function initCollapsibles() { 
-        document.querySelectorAll('.collapsible-header').forEach(header => { 
-            header.addEventListener('click', () => { 
-                const content = header.nextElementSibling; 
-                content.classList.toggle('show'); 
-                const icon = header.querySelector('i'); 
-                if(content.classList.contains('show')) icon.className = 'fas fa-chevron-up'; 
-                else icon.className = 'fas fa-chevron-down'; 
-            }); 
-        }); 
-    }
-    function bindModalEvents() {
-        document.querySelectorAll('.btn-detail[data-item]').forEach(btn => { 
-            btn.removeEventListener('click', itemHandler); 
-            btn.addEventListener('click', itemHandler); 
+    function initCollapsibles() {
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                content.classList.toggle('show');
+                const icon = header.querySelector('i');
+                icon.className = content.classList.contains('show') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
         });
     }
-    function itemHandler(e) { 
-        const btn = e.currentTarget; 
-        const key = btn.dataset.item; 
-        const lang = btn.dataset.lang || 'zh'; 
-        showItemDetail(lang, key); 
+    function bindModalEvents() {
+        document.querySelectorAll('.btn-detail[data-item]').forEach(btn => {
+            btn.removeEventListener('click', (e) => showItemDetail(btn.dataset.lang, btn.dataset.item));
+            btn.addEventListener('click', (e) => showItemDetail(btn.dataset.lang, btn.dataset.item));
+        });
     }
-    function setLanguage(lang) { 
-        const zh = document.getElementById('zh-content'), en = document.getElementById('en-content'); 
-        if(lang === 'zh') { zh.classList.add('active-lang'); en.classList.remove('active-lang'); } 
-        else { en.classList.add('active-lang'); zh.classList.remove('active-lang'); } 
-        document.querySelectorAll('.lang-btn').forEach(btn => { 
-            if(btn.dataset.lang === lang) btn.classList.add('active'); 
-            else btn.classList.remove('active'); 
-        }); 
-        renderItems(lang); 
-        bindModalEvents(); 
+    function setLanguage(lang) {
+        document.getElementById('zh-content').classList.toggle('active-lang', lang === 'zh');
+        document.getElementById('en-content').classList.toggle('active-lang', lang === 'en');
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+        renderItems(lang);
+        bindModalEvents();
+        renderVersionList(lang);
     }
+
+    // 版本记录（v2.1.4 已合并到 v2.2.1）
+    const versionData = {
+        zh: [
+            { version: "v2.2.1", tag: "当前版本", content: "<strong>⚡ 神圣守护模式2 - 救赎者系统</strong><br>• 救赎者：最后人类成为救赎者，获得神之救赎道具，可转化鬼玩家回人类（2次）<br>• 随机传送，高亮+速度效果<br>• 游戏模式切换：/divineguardian setmode &lt;1|2&gt;<br>• 队列系统优化：自动清空+金币退还，Boss栏修复<br>• 代码精简：移除NPC/观战/独立货币<br>• 性能与稳定性修复<br><br><strong>🌑 黑暗效果与疾跑并存系统</strong><br>• 原生DARKNESS效果（1.19+）或BLINDNESS<br>• 属性修改器增加30%移动速度，抵消黑暗效果对疾跑的影响<br>• 智能检查机制（每10 ticks）<br>• 版本兼容性自动适配" },
+            { version: "v2.2.0", tag: "", content: "<strong>⚡ 神圣守护模式2 - 救赎者系统（正式引入）</strong><br>• 救赎者系统完整实现<br>• 游戏模式切换命令<br>• 队列系统全面优化（智能清理、退出提示、Boss栏修复）<br>• 移除NPC、独立货币、观战系统<br>• 内存优化和错误修复" },
+            { version: "v2.1.3", tag: "", content: "<strong>🔧 修复管理员游戏效果免疫问题</strong><br>• 管理员黑暗效果修复、母体鬼禁足修复<br>• 强制效果应用，游戏开始清理效果<br>• 创造模式玩家自动切换为生存模式" },
+            { version: "v2.1.2", tag: "", content: "<strong>👻 新增鬼玩家粒子效果系统</strong><br>• 持续环绕粒子，母体鬼红色/普通鬼绿色<br>• 支持21种粒子类型，RGB颜色自定义<br>• 新增 /ghostparticle 管理命令<br>• 配置版本升级到14" },
+            { version: "v2.1.1", tag: "", content: "<strong>🛡️ 新增神圣守护系统</strong><br>• 最后人类获得感染免疫、随机传送、速度I+发光<br>• 神圣守护管理命令 /divineguardian<br>• 配置版本升级到13" },
+            { version: "v2.1.0", tag: "", content: "<strong>🎮 奖金分配系统全面优化</strong><br>• 人类胜利70%/鬼30%，鬼胜利100%<br>• 个人按存活时间/感染人数分配<br>• 新增心跳声系统，鬼转人类功能<br>• 道具冷却时间调整" },
+            { version: "v2.0.2", tag: "", content: "修复灵魂探测器失效，新增黑暗效果系统，/gostadmin dark命令" },
+            { version: "v2.0.1", tag: "", content: "新增传送珍珠、臭牛排，智能倒计时系统" },
+            { version: "v2.0.0", tag: "", content: "架构重构，独立区域系统，道具系统优化" },
+            { version: "v1.0.0", tag: "", content: "基础感染对抗玩法" }
+        ],
+        en: [
+            { version: "v2.2.1", tag: "Current", content: "<strong>Redeemer System + Dark+Sprint</strong><br>• Last human converts ghosts back (2 charges), random teleport<br>• Mode switch: /divineguardian setmode<br>• Queue auto-clear, gold refund, BossBar fix<br>• Code cleanup<br>• Native DARKNESS + 30% speed attribute, sprint restored" },
+            { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization, code cleanup." },
+            { version: "v2.1.3", tag: "", content: "Fixed admin immunity, creative mode auto-switch to survival." },
+            { version: "v2.1.2", tag: "", content: "Ghost particle effects, 21 types, RGB colors." },
+            { version: "v2.1.1", tag: "", content: "Divine Guardian system." },
+            { version: "v2.1.0", tag: "", content: "Prize pool optimization, heartbeat sound, ghost-to-human." }
+        ]
+    };
+
+    function renderVersionList(lang) {
+        const container = document.getElementById(`version-list-${lang}`);
+        if (!container) return;
+        const data = versionData[lang];
+        container.innerHTML = '';
+        data.forEach((ver, idx) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'version-item';
+            itemDiv.innerHTML = `
+                <div class="version-header" data-idx="${idx}">
+                    <div><h3>${ver.version} ${ver.tag ? `<span class="version-tag">${ver.tag}</span>` : ''}</h3></div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="version-detail" id="version-detail-${lang}-${idx}">${ver.content}</div>
+            `;
+            container.appendChild(itemDiv);
+        });
+        document.querySelectorAll(`#version-list-${lang} .version-header`).forEach(header => {
+            header.addEventListener('click', () => {
+                const idx = header.dataset.idx;
+                const detailDiv = document.getElementById(`version-detail-${lang}-${idx}`);
+                const icon = header.querySelector('i');
+                detailDiv.classList.toggle('show');
+                icon.className = detailDiv.classList.contains('show') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
+        });
+    }
+
     document.querySelector('.modal-close').addEventListener('click', hideModal);
-    window.addEventListener('click', (e) => { if(e.target === document.getElementById('modal')) hideModal(); });
-    renderItems('zh'); 
-    renderItems('en');
-    initCollapsibles();
-    bindModalEvents();
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
-    document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('show'));
+    window.addEventListener('click', (e) => { if (e.target === document.getElementById('modal')) hideModal(); });
+    window.addEventListener('DOMContentLoaded', () => {
+        initCarousel('carousel');
+        initCarousel('carouselEn');
+        renderItems('zh');
+        renderItems('en');
+        initCollapsibles();
+        bindModalEvents();
+        renderVersionList('zh');
+        renderVersionList('en');
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+        document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('show'));
+    });
 </script>
 </body>
 </html>
