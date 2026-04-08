@@ -105,14 +105,11 @@ public class ItemListener implements Listener {
             boolean isGhost = plugin.getPlayerManager().isGhost(target.getUniqueId());
             plugin.getLogger().info("凝冰球击中玩家: " + target.getName() + " (射击者: " + shooter.getName() + ", 是鬼: " + isGhost + ")");
             
-            if (isGhost) {
-                // 应用凝冰球效果
-                plugin.getItemManager().applyIceBallEffect(target);
-                shooter.sendMessage(ChatColor.AQUA + "你成功击中了 " + target.getName() + "！");
-                plugin.getLogger().info("凝冰球击中鬼玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")");
-            } else {
-                plugin.getLogger().info("凝冰球击中非鬼玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")，不应用效果");
-            }
+            // 凝冰球是通用道具，对所有玩家都应用减速效果
+            // 应用凝冰球效果
+            plugin.getItemManager().applyIceBallEffect(target);
+            shooter.sendMessage(ChatColor.AQUA + "你成功击中了 " + target.getName() + "！");
+            plugin.getLogger().info("凝冰球击中玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")，应用减速效果");
         }
     }
     
@@ -372,8 +369,8 @@ public class ItemListener implements Listener {
         plugin.getLogger().info("游戏中玩家数量: " + allPlayerIds.size());
         
         List<Player> allPlayers = new ArrayList<>();
-        for (UUID playerId : allPlayerIds) {
-            Player p = Bukkit.getPlayer(playerId);
+        for (UUID uuid : allPlayerIds) {
+            Player p = Bukkit.getPlayer(uuid);
             if (p != null && p.isOnline()) {
                 allPlayers.add(p);
                 plugin.getLogger().info("在线玩家: " + p.getName());

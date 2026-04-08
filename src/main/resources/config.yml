@@ -2,7 +2,7 @@
 # 版本: 2.2.1
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 19
+ScriptIrc-config-version: 20
 
 # 游戏设置
 game:
@@ -71,7 +71,7 @@ ghost-to-human:
 
 # 游戏血量设置
 health:
-  max-health: 2.0 # 游戏期间玩家的最大生命值（默认2颗心）
+  max-health: 10.0 # 游戏期间玩家的最大生命值（默认10颗心，即20点生命值）
   # 推荐添加Injured Effects模组并限制最大生命值为4.0以下，可以添加恐怖氛围
 
 # 黑暗效果设置

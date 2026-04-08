@@ -432,10 +432,11 @@ public class PlayerManager {
             player.setGameMode(GameMode.SURVIVAL);
         }
         
-        // 设置生命值（4点生命值）
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(4.0);
-        player.setHealth(4.0);
-        plugin.getLogger().info("设置玩家 " + player.getName() + " 生命值为4点");
+        // 设置生命值（使用配置文件中的值）
+        double maxHealth = plugin.getConfigManager().getMaxHealth();
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth);
+        player.setHealth(maxHealth);
+        plugin.getLogger().info("设置玩家 " + player.getName() + " 生命值为" + maxHealth + "点");
         
         // 清除所有药水效果
         for (PotionEffect effect : player.getActivePotionEffects()) {

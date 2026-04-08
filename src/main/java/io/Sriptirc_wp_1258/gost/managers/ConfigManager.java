@@ -27,7 +27,7 @@ public class ConfigManager {
         config = plugin.getConfig();
         
         // 设置默认值
-        config.addDefault("ScriptIrc-config-version", 9);
+        config.addDefault("ScriptIrc-config-version", 20);
         config.addDefault("game.duration", 420); // 7分钟，单位秒
         config.addDefault("game.preparation-time", 20); // 准备时间，单位秒
         config.addDefault("game.queue-time", 60); // 队列等待时间，单位秒
@@ -72,6 +72,9 @@ public class ConfigManager {
         config.addDefault("effects.minute-glowing.enabled", true); // 是否启用每分钟高亮效果
         config.addDefault("effects.minute-glowing.duration", 5); // 高亮持续时间，单位秒
         config.addDefault("effects.minute-glowing.interval", 60); // 触发间隔时间，单位秒
+        
+        // 游戏血量设置
+        config.addDefault("health.max-health", 10.0); // 游戏期间玩家的最大生命值（默认10颗心，即20点生命值）
         
         // 鬼转人类功能设置
         config.addDefault("ghost-to-human.enabled", false); // 是否启用鬼转人类功能
@@ -618,6 +621,17 @@ public class ConfigManager {
     
     public void setGhostParticleShowInPreparation(boolean show) {
         config.set("ghost-particle.show-in-preparation", show);
+        plugin.saveConfig();
+    }
+    
+    // 游戏血量配置
+    public double getMaxHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("health.max-health", 10.0);
+    }
+    
+    public void setMaxHealth(double maxHealth) {
+        config.set("health.max-health", maxHealth);
         plugin.saveConfig();
     }
 }
