@@ -13,7 +13,16 @@ public class ConfigManager {
         loadConfig();
     }
     
+    private void ensureConfigLoaded() {
+        if (config == null) {
+            loadConfig();
+        }
+    }
+    
     private void loadConfig() {
+        if (config != null) {
+            return; // 已经加载
+        }
         plugin.saveDefaultConfig();
         config = plugin.getConfig();
         
@@ -70,7 +79,7 @@ public class ConfigManager {
         config.addDefault("ghost-to-human.count", 1); // 转换数量
         
         // 黑暗效果设置
-        config.addDefault("dark-effect.enabled", false); // 是否启用黑暗效果
+        config.addDefault("dark-effect.enabled", true); // 是否启用黑暗效果（默认开启）
         config.addDefault("dark-effect.duration", 999999); // 黑暗效果持续时间（秒）
         config.addDefault("dark-effect.amplifier", 0); // 黑暗效果等级
         
@@ -144,6 +153,7 @@ public class ConfigManager {
     }
     
     public int getGameDuration() {
+        ensureConfigLoaded();
         return config.getInt("game.duration", 420);
     }
     
@@ -176,18 +186,22 @@ public class ConfigManager {
     }
     
     public int getAdrenalineDuration() {
+        ensureConfigLoaded();
         return config.getInt("items.adrenaline.duration", 10);
     }
     
     public int getAdrenalineSpeedLevel() {
+        ensureConfigLoaded();
         return config.getInt("items.adrenaline.speed-level", 2);
     }
     
     public int getFrenzyDuration() {
+        ensureConfigLoaded();
         return config.getInt("items.frenzy.duration", 10);
     }
     
     public int getFrenzySpeedLevel() {
+        ensureConfigLoaded();
         return config.getInt("items.frenzy.speed-level", 2);
     }
     
@@ -220,6 +234,7 @@ public class ConfigManager {
     }
     
     public boolean isInfectionSoundEnabled() {
+        ensureConfigLoaded();
         return config.getBoolean("effects.infection-sound", true);
     }
     
@@ -228,6 +243,7 @@ public class ConfigManager {
     }
     
     public String getSelectionTool() {
+        ensureConfigLoaded();
         return config.getString("area.selection-tool", "MAGMA_CREAM");
     }
     
@@ -258,6 +274,7 @@ public class ConfigManager {
     }
     
     public boolean isItemSpawnEnabled() {
+        ensureConfigLoaded();
         return config.getBoolean("item-spawn.enabled", true);
     }
     
@@ -275,33 +292,11 @@ public class ConfigManager {
     
 
     
-    public int getCurrencyDistributionAmount() {
-        return config.getInt("currency.distribution-amount", 1);
-    }
+
     
-    public boolean getCurrencyEnchanted() {
-        return config.getBoolean("currency.enchanted", true);
-    }
+
     
-    public boolean isSpectatorEnabled() {
-        return config.getBoolean("spectator.enabled", true);
-    }
-    
-    public boolean isSpectatorConfirmationRequired() {
-        return config.getBoolean("spectator.confirmation-required", true);
-    }
-    
-    public boolean isNpcEnabled() {
-        return config.getBoolean("npc.enabled", true);
-    }
-    
-    public String getNpcEntityType() {
-        return config.getString("npc.entity-type", "VILLAGER");
-    }
-    
-    public String getNpcName() {
-        return config.getString("npc.name", "&e&lGost商人");
-    }
+
     
     public int getMatchQueueTime() {
         return config.getInt("game.match-queue-time", 30);
@@ -336,26 +331,32 @@ public class ConfigManager {
     }
     
     public int getSecondChanceCooldown() {
+        ensureConfigLoaded();
         return config.getInt("items.second-chance.cooldown", 60);
     }
     
     public int getSecondChanceHumanSpeedDuration() {
+        ensureConfigLoaded();
         return config.getInt("items.second-chance.human-speed-duration", 10);
     }
     
     public int getSecondChanceHumanSpeedLevel() {
+        ensureConfigLoaded();
         return config.getInt("items.second-chance.human-speed-level", 2);
     }
     
     public int getSecondChanceHumanGlowingDuration() {
+        ensureConfigLoaded();
         return config.getInt("items.second-chance.human-glowing-duration", 10);
     }
     
     public int getSecondChanceGhostSlowDuration() {
+        ensureConfigLoaded();
         return config.getInt("items.second-chance.ghost-slow-duration", 7);
     }
     
     public int getSecondChanceGhostSlowLevel() {
+        ensureConfigLoaded();
         return config.getInt("items.second-chance.ghost-slow-level", 1);
     }
     
@@ -390,14 +391,17 @@ public class ConfigManager {
     
     // 黑暗效果配置
     public boolean isDarkEffectEnabled() {
-        return config.getBoolean("dark-effect.enabled", false);
+        ensureConfigLoaded();
+        return config.getBoolean("dark-effect.enabled", true);
     }
     
     public int getDarkEffectDuration() {
+        ensureConfigLoaded();
         return config.getInt("dark-effect.duration", 999999);
     }
     
     public int getDarkEffectAmplifier() {
+        ensureConfigLoaded();
         return config.getInt("dark-effect.amplifier", 0);
     }
     
@@ -443,22 +447,27 @@ public class ConfigManager {
     
     // 神圣守护配置
     public boolean isDivineGuardianEnabled() {
+        ensureConfigLoaded();
         return config.getBoolean("divine-guardian.enabled", false);
     }
     
     public int getDivineGuardianMaxCharges() {
+        ensureConfigLoaded();
         return config.getInt("divine-guardian.max-charges", 3);
     }
     
     public int getDivineGuardianCooldown() {
+        ensureConfigLoaded();
         return config.getInt("divine-guardian.cooldown", 5);
     }
     
     public boolean isDivineGuardianBroadcastEnabled() {
+        ensureConfigLoaded();
         return config.getBoolean("divine-guardian.broadcast", true);
     }
     
     public int getDivineGuardianInvisibilityDuration() {
+        ensureConfigLoaded();
         return config.getInt("divine-guardian.invisibility-duration", 10);
     }
     
@@ -483,6 +492,7 @@ public class ConfigManager {
     }
     
     public String getDivineGuardianMode() {
+        ensureConfigLoaded();
         return config.getString("divine-guardian.mode", "1");
     }
     
@@ -493,6 +503,7 @@ public class ConfigManager {
     
     // 救赎者配置（模式2）
     public int getRedeemerMaxUses() {
+        ensureConfigLoaded();
         return config.getInt("redeemer.max-uses", 2);
     }
     

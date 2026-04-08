@@ -27,13 +27,17 @@ public class SelectionManager {
     
     public SelectionManager(Gost plugin) {
         this.plugin = plugin;
-        initializeSelectionTool();
+        // 延迟初始化选区工具，避免在插件完全加载前访问配置
     }
     
     /**
      * 初始化选区工具
      */
     private void initializeSelectionTool() {
+        if (selectionTool != null) {
+            return; // 已经初始化
+        }
+        
         String toolMaterialName = plugin.getConfigManager().getSelectionTool();
         Material toolMaterial;
         
@@ -61,6 +65,7 @@ public class SelectionManager {
      * 获取选区工具物品
      */
     public ItemStack getSelectionTool() {
+        initializeSelectionTool();
         return selectionTool.clone();
     }
     

@@ -713,6 +713,7 @@ public class GameManager {
         // 清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
         plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
+        plugin.getDarkEffectManager().cleanup(); // 清理黑暗效果数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;
@@ -776,6 +777,7 @@ public class GameManager {
         // 清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
         plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
+        plugin.getDarkEffectManager().cleanup(); // 清理黑暗效果数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;
@@ -844,6 +846,7 @@ public class GameManager {
         // 然后清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();
         plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
+        plugin.getDarkEffectManager().cleanup(); // 清理黑暗效果数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;

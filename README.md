@@ -1,8 +1,8 @@
 # 🎮 Gost - 极限生存对抗游戏
 
-**Gost v2.2.0** 是一款融合了 **猫抓老鼠、鬼抓人、躲猫猫、CF生化模式** 等多种玩法的 Minecraft 服务器插件。在紧张刺激的对抗中，体验人类与鬼之间的生死追逐，运用策略与道具，成为最后的幸存者！
+**Gost v2.2.1** 是一款融合了 **猫抓老鼠、鬼抓人、躲猫猫、CF生化模式** 等多种玩法的 Minecraft 服务器插件。在紧张刺激的对抗中，体验人类与鬼之间的生死追逐，运用策略与道具，成为最后的幸存者！
 
-## 🆕 v2.2.0 更新亮点
+## 🆕 v2.2.1 更新亮点
 
 ### ⚡ 神圣守护模式2 - 救赎者系统
 - **救赎者**：当人类数量减少到1时，最后一名人类成为救赎者
@@ -29,6 +29,14 @@
 - **配置清理**：清理config.yml中相关配置项，简化配置管理
 - **内存优化**：移除未使用的代码和依赖，提升插件性能
 - **错误修复**：修复队列状态同步问题，提升稳定性
+
+### 🌑 黑暗效果与疾跑并存系统（重大改进）
+- **原生DARKNESS效果**：使用Minecraft原生的DARKNESS效果（1.19+）或BLINDNESS效果（旧版本）
+- **疾跑功能修复**：通过属性修改器增加移动速度，抵消DARKNESS效果对疾跑的影响
+- **智能检查机制**：定时检查玩家疾跑状态，自动恢复被阻止的疾跑
+- **属性修改器系统**：为每个有黑暗效果的玩家添加30%移动速度加成
+- **版本兼容性**：自动检测并适配不同Minecraft版本的效果类型
+- **管理员友好**：管理员和创造模式玩家也会受到黑暗效果影响，但有明确提示
 
 ## 📋 目录
 
@@ -64,6 +72,7 @@
   - [📊 日志诊断](#-日志诊断)
 - [📈 版本更新记录](#-版本更新记录)
   - [v2.2.0（当前版本）](#v220当前版本)
+  - [v2.1.4（黑暗效果与疾跑并存系统）](#v214黑暗效果与疾跑并存系统)
   - [v2.1.3](#v213)
   - [v2.0.2](#v202)
   - [v2.0.0](#v200)
@@ -357,14 +366,7 @@
 /gostadmin help             # 显示管理员帮助
 ```
 
-#### 假人系统管理命令
-```bash
-/gostadmin bot add <数量>     # 添加指定数量的假人到队列
-/gostadmin bot remove <数量>  # 从队列移除指定数量的假人
-/gostadmin bot clear          # 清除所有假人
-/gostadmin bot info           # 查看假人信息
-/gostadmin bot count          # 查看假人数量
-```
+
 
 #### 神圣守护管理命令（v2.2.0更新）
 ```bash
@@ -460,16 +462,7 @@
    - 权限：`gost.admin.reload`
    - 效果：重新加载 config.yml 配置
 
-##### 假人系统命令
-1. **/gostadmin bot add <数量>**
-   - 功能：添加假人到队列
-   - 权限：`gost.admin`
-   - 参数：假人数量（1-16）
 
-2. **/gostadmin bot remove <数量>**
-   - 功能：从队列移除假人
-   - 权限：`gost.admin`
-   - 参数：移除数量
 
 ##### 黑暗效果命令
 1. **/gostadmin dark on**
@@ -652,9 +645,9 @@ health:
   max-health: 2.0                # 游戏期间玩家的最大生命值（默认2颗心）
   # 推荐添加Injured Effects模组并限制最大生命值为4.0以下，可以添加恐怖氛围
 
-# 🌑 黑暗效果设置
+# 🌑 黑暗效果设置（支持疾跑）
 dark-effect:
-  enabled: false                 # 是否启用黑暗效果（给予所有玩家黑暗药水效果）
+  enabled: true                  # 是否启用黑暗效果（给予所有玩家黑暗视觉效果，不影响疾跑）
   duration: 999999               # 黑暗效果持续时间（秒），设置为极大值以持续整个游戏
   amplifier: 0                   # 黑暗效果等级（0为默认）
 
@@ -829,6 +822,26 @@ permissions:
 2. **检查游戏阶段**：道具只在游戏进行阶段刷新
 3. **检查玩家状态**：确认玩家在游戏中且存活
 4. **灵魂探测器问题**：v2.0.1版本中灵魂探测器可能失效，请升级到v2.0.2版本
+5. **"一次机会"道具问题**：
+   - 确认玩家是人类阵营（仅人类可使用）
+   - 检查道具是否已触发过（每个玩家只能使用一次）
+   - 确认冷却时间是否已结束（默认180秒）
+   - v2.2.1版本已修复触发问题，请确保使用最新版本
+
+#### ❌ 神圣守护系统问题
+1. **神圣守护无法触发**：
+   - 确认神圣守护功能已启用（`divine-guardian.enabled: true`）
+   - 检查是否只剩下最后一名人类玩家
+   - 确认游戏正在进行中（非准备阶段）
+   - v2.2.1版本已修复触发问题，请确保使用最新版本
+2. **救赎者模式问题**：
+   - 确认模式设置为2（`divine-guardian.mode: "2"`）
+   - 检查救赎者道具是否正确发放
+   - 确认转化次数未超过限制（默认2次）
+3. **模式切换问题**：
+   - 使用 `/divineguardian setmode <1|2>` 命令切换模式
+   - 切换后可能需要重新加载配置或重启游戏
+   - v2.2.1版本增强了模式切换的稳定性
 
 ### 📊 日志诊断
 遇到问题时，请查看服务器日志：
@@ -842,7 +855,7 @@ grep -i "gost" logs/latest.log
 
 ## 📈 版本更新记录
 
-### v2.2.0（当前版本）
+### v2.2.1（当前版本）
 - **⚡ 神圣守护模式2 - 救赎者系统**：
   - **救赎者**：当人类数量减少到1时，最后一名人类成为救赎者
   - **神之救赎道具**：救赎者获得专属道具，可转化鬼玩家回人类
@@ -868,6 +881,31 @@ grep -i "gost" logs/latest.log
   - **内存优化**：移除未使用的代码和依赖
   - **错误修复**：修复队列状态同步问题
   - **提示完善**：完善玩家操作反馈提示
+
+- **🛡️ 神圣守护系统修复**：
+  - **神圣守护触发修复**：修复神圣守护在某些情况下无法正确触发的问题
+  - **救赎者模式优化**：优化救赎者道具的发放和使用逻辑
+  - **模式切换稳定性**：增强游戏进行中模式切换的稳定性
+  - **冷却时间修复**：修复神圣守护冷却时间计算问题
+
+- **🎯 道具系统修复**：
+  - **"一次机会"道具修复**：修复"一次机会"道具在某些情况下无法正确触发的问题
+  - **道具冷却时间同步**：修复道具冷却时间显示不同步的问题
+  - **道具发放逻辑优化**：优化随机道具发放算法，确保公平性
+  - **道具使用反馈**：增强道具使用时的视觉和听觉反馈
+
+### v2.1.4（黑暗效果与疾跑并存系统）
+- **🌑 黑暗效果与疾跑并存系统**：
+  - **原生DARKNESS效果**：使用Minecraft原生的DARKNESS效果（1.19+）或BLINDNESS效果（旧版本）
+  - **疾跑功能修复**：通过属性修改器增加30%移动速度，抵消DARKNESS效果对疾跑的影响
+  - **智能检查机制**：每10 ticks检查玩家疾跑状态，自动恢复被阻止的疾跑
+  - **属性修改器系统**：为每个有黑暗效果的玩家添加移动速度加成
+  - **版本兼容性**：自动检测并适配不同Minecraft版本的效果类型
+  - **管理员友好**：管理员和创造模式玩家也会受到黑暗效果影响，但有明确提示
+- **⚙️ 配置系统升级**：
+  - 配置版本升级到19
+  - 黑暗效果描述更新为"不影响疾跑"
+  - 黑暗效果默认启用状态改为true
 
 ### v2.1.3
 - **🔧 修复管理员游戏效果免疫问题**：
@@ -1080,6 +1118,7 @@ grep -i "gost" logs/latest.log
   - [📊 Log Diagnosis](#-log-diagnosis)
 - [📈 Version Update History](#-version-update-history)
   - [v2.2.0 (Current Version)](#v220-current-version)
+  - [v2.1.4 (Dark Effect with Sprint Support System)](#v214-dark-effect-with-sprint-support-system)
   - [v2.1.3](#v213)
   - [v2.0.2](#v202)
   - [v2.0.0](#v200)
@@ -1330,6 +1369,26 @@ ghost-particle:
 - **Check the game stage**: Items only refresh during the game stage
 - **Check player status**: Confirm that the player is in the game and alive
 - **Soul detector issue**: The soul detector may not be invalid in v2.0.1, please upgrade to v2.0.2
+- **"One Chance" item issues**:
+  - Confirm player is human faction (humans only)
+  - Check if item has already been triggered (each player can use only once)
+  - Confirm cooldown has ended (default 180 seconds)
+  - v2.2.1 version fixed trigger issues, ensure using latest version
+
+#### ❌ Divine Guardian system issues
+1. **Divine Guardian not triggering**:
+   - Confirm Divine Guardian is enabled (`divine-guardian.enabled: true`)
+   - Check if only one human player remains
+   - Confirm game is in progress (not preparation stage)
+   - v2.2.1 version fixed trigger issues, ensure using latest version
+2. **Redeemer mode issues**:
+   - Confirm mode is set to 2 (`divine-guardian.mode: "2"`)
+   - Check if Redeemer item is correctly distributed
+   - Confirm conversion count not exceeded limit (default 2 times)
+3. **Mode switching issues**:
+   - Use `/divineguardian setmode <1|2>` command to switch modes
+   - May need to reload config or restart game after switching
+   - v2.2.1 version enhanced mode switching stability
 
 ### 📊 Log Diagnosis:
 ```bash
@@ -1342,7 +1401,7 @@ grep -i "gost" logs/latest.log
 
 ## 📈 Version Update History
 
-### v2.2.0 (Current Version)
+### v2.2.1 (Current Version)
 - **⚡ Divine Guardian Mode 2 - Redeemer System**:
   - **Redeemer**: When only one human player remains, they become the Redeemer
   - **Holy Redemption Item**: Redeemer receives exclusive item to convert ghost players back to human
@@ -1369,6 +1428,31 @@ grep -i "gost" logs/latest.log
   - **Memory Optimization**: Removed unused code and dependencies
   - **Bug Fixes**: Fixed queue status synchronization issues
   - **Notification Improvements**: Enhanced player feedback for operations
+
+- **🛡️ Divine Guardian System Fixes**:
+  - **Divine Guardian Trigger Fix**: Fixed issue where Divine Guardian sometimes failed to trigger correctly
+  - **Redeemer Mode Optimization**: Optimized Redeemer item distribution and usage logic
+  - **Mode Switching Stability**: Enhanced stability when switching modes during gameplay
+  - **Cooldown Fix**: Fixed Divine Guardian cooldown calculation issues
+
+- **🎯 Item System Fixes**:
+  - **"One Chance" Item Fix**: Fixed issue where "One Chance" item sometimes failed to trigger correctly
+  - **Item Cooldown Synchronization**: Fixed item cooldown display synchronization issues
+  - **Item Distribution Logic Optimization**: Optimized random item distribution algorithm for fairness
+  - **Item Usage Feedback**: Enhanced visual and auditory feedback when using items
+
+### v2.1.4 (Dark Effect with Sprint Support System)
+- **🌑 Dark Effect with Sprint Support System**:
+  - **Native DARKNESS Effect**: Uses Minecraft's native DARKNESS effect (1.19+) or BLINDNESS effect (older versions)
+  - **Sprint Function Fix**: Adds 30% movement speed via attribute modifiers to counteract DARKNESS effect's impact on sprinting
+  - **Smart Check Mechanism**: Checks player sprint status every 10 ticks, automatically restores blocked sprinting
+  - **Attribute Modifier System**: Adds movement speed bonus to each player with dark effect
+  - **Version Compatibility**: Automatically detects and adapts to different Minecraft version effect types
+  - **Admin Friendly**: Admins and creative mode players also receive dark effects with clear notifications
+- **⚙️ Configuration System Upgrade**:
+  - Configuration version upgraded to 19
+  - Dark effect description updated to "does not affect sprinting"
+  - Dark effect default enabled state changed to true
 
 ### v2.1.3
 - **🔧 Fixed Admin Game Effect Immunity Issue**:

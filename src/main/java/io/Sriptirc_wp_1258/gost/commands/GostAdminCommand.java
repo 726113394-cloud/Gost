@@ -64,8 +64,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 return handleReload(sender);
             case "status":
                 return handleStatus(sender);
-            case "bot":
-                return handleBot(sender, args);
+
             case "dark":
                 return handleDark(sender, args);
             case "heartbeat":
@@ -402,81 +401,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         return true;
     }
     
-    private boolean handleBot(CommandSender sender, String[] args) {
-        if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin bot <add|remove|clear|info|count> [数量]");
-            sender.sendMessage(ChatColor.YELLOW + "  add <数量> - 添加指定数量的假人到队列");
-            sender.sendMessage(ChatColor.YELLOW + "  remove <数量> - 从队列移除指定数量的假人");
-            sender.sendMessage(ChatColor.YELLOW + "  clear - 清除所有假人");
-            sender.sendMessage(ChatColor.YELLOW + "  info - 查看假人信息");
-            sender.sendMessage(ChatColor.YELLOW + "  count - 查看假人数量");
-            return true;
-        }
-        
-        String action = args[1].toLowerCase();
-        
-        switch (action) {
-            case "add":
-                if (args.length < 3) {
-                    sender.sendMessage(ChatColor.RED + "用法: /gostadmin bot add <数量>");
-                    return true;
-                }
-                try {
-                    int count = Integer.parseInt(args[2]);
-                    if (count <= 0) {
-                        sender.sendMessage(ChatColor.RED + "数量必须大于0！");
-                        return true;
-                    }
-                    int added = plugin.getBotManager().addBotsToQueue(count);
-                    sender.sendMessage(ChatColor.GREEN + "已添加 " + added + " 个假人到队列");
-                } catch (NumberFormatException e) {
-                    sender.sendMessage(ChatColor.RED + "无效的数量！");
-                }
-                break;
-                
-            case "remove":
-                if (args.length < 3) {
-                    sender.sendMessage(ChatColor.RED + "用法: /gostadmin bot remove <数量>");
-                    return true;
-                }
-                try {
-                    int count = Integer.parseInt(args[2]);
-                    if (count <= 0) {
-                        sender.sendMessage(ChatColor.RED + "数量必须大于0！");
-                        return true;
-                    }
-                    int removed = plugin.getBotManager().removeBotsFromQueue(count);
-                    sender.sendMessage(ChatColor.GREEN + "已从队列移除 " + removed + " 个假人");
-                } catch (NumberFormatException e) {
-                    sender.sendMessage(ChatColor.RED + "无效的数量！");
-                }
-                break;
-                
-            case "clear":
-                plugin.getBotManager().clearAllBots();
-                sender.sendMessage(ChatColor.GREEN + "已清除所有假人");
-                break;
-                
-            case "info":
-                sender.sendMessage(plugin.getBotManager().getBotInfo());
-                break;
-                
-            case "count":
-                int total = plugin.getBotManager().getActiveBotCount();
-                int queued = plugin.getBotManager().getQueuedBotCount();
-                sender.sendMessage(ChatColor.YELLOW + "假人统计:");
-                sender.sendMessage(ChatColor.GRAY + "总假人数: " + ChatColor.WHITE + total);
-                sender.sendMessage(ChatColor.GRAY + "队列中: " + ChatColor.WHITE + queued);
-                sender.sendMessage(ChatColor.GRAY + "游戏中: " + ChatColor.WHITE + (total - queued));
-                break;
-                
-            default:
-                sender.sendMessage(ChatColor.RED + "未知操作！使用 /gostadmin bot 查看帮助");
-                break;
-        }
-        
-        return true;
-    }
+
     
     private boolean handleDark(CommandSender sender, String[] args) {
         if (args.length < 2) {
@@ -566,7 +491,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin clear - 清除当前选区");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin reload - 重新加载配置");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin status - 查看游戏状态");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin bot <add|remove|clear|info|count> - 假人系统管理");
+
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin dark <on|off|status> - 黑暗效果管理");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin heartbeat <on|off|status> - 心跳声效果管理");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin help - 显示此帮助");
@@ -587,7 +512,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "bot", "dark", "heartbeat", "help"};
+            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "help"};
             for (String subCommand : subCommands) {
                 if (subCommand.startsWith(args[0].toLowerCase())) {
                     completions.add(subCommand);
@@ -604,14 +529,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                         completions.add(areaName);
                     }
                 }
-            } else if (subCommand.equals("bot")) {
-                // bot子命令自动补全
-                String[] botSubCommands = {"add", "remove", "clear", "info", "count"};
-                for (String botSubCommand : botSubCommands) {
-                    if (botSubCommand.startsWith(args[1].toLowerCase())) {
-                        completions.add(botSubCommand);
-                    }
-                }
+
             } else if (subCommand.equals("dark")) {
                 // dark子命令自动补全
                 String[] darkSubCommands = {"on", "off", "status"};

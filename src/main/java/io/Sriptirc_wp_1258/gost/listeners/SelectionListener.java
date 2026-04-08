@@ -63,7 +63,13 @@ public class SelectionListener implements Listener {
         }
         
         // 获取配置的选区工具物品
-        Material configMaterial = plugin.getSelectionManager().getSelectionTool().getType();
+        Material configMaterial;
+        try {
+            configMaterial = plugin.getSelectionManager().getSelectionTool().getType();
+        } catch (Exception e) {
+            // 如果选区管理器未完全初始化，使用默认值
+            configMaterial = Material.MAGMA_CREAM;
+        }
         
         // 检查物品类型
         if (item.getType() != configMaterial) {

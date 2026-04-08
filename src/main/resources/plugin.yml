@@ -16,7 +16,7 @@ commands:
     aliases: [join, leave]
   gostadmin:
     description: 管理员命令 - 管理游戏和区域
-    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|bot|dark|heartbeat|help]
+    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|dark|heartbeat|help]
     aliases: [ga]
   divineguardian:
     description: 神圣守护管理命令

@@ -133,8 +133,9 @@ public class AreaManager {
             Location min = getMinPoint();
             Location max = getMaxPoint();
             
-            // 取消Y轴限制，只检查X和Z轴
+            // 检查X、Y、Z三个轴
             return location.getX() >= min.getX() && location.getX() <= max.getX() &&
+                   location.getY() >= min.getY() && location.getY() <= max.getY() &&
                    location.getZ() >= min.getZ() && location.getZ() <= max.getZ();
         }
         

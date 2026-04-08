@@ -29,6 +29,7 @@ public class SecondChanceListener implements Listener {
         this.plugin = plugin;
     }
     
+    /*
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         // 检查是否是人类玩家被鬼玩家攻击
@@ -80,6 +81,7 @@ public class SecondChanceListener implements Listener {
         // 发送屏幕居中字幕
         sendTitleMessages(humanPlayer, ghostPlayer);
     }
+    */
     
     private ItemStack findSecondChanceItem(Player player) {
         for (ItemStack item : player.getInventory().getContents()) {
@@ -169,6 +171,48 @@ public class SecondChanceListener implements Listener {
     // 清理冷却时间
     public void clearCooldowns() {
         cooldowns.clear();
+    }
+    
+    /**
+     * 检查并触发一次机会道具
+     * @param humanPlayer 人类玩家
+     * @param ghostPlayer 鬼玩家
+     * @param event 伤害事件
+     * @return 是否触发了一次机会
+     */
+    public boolean checkAndTriggerSecondChance(Player humanPlayer, Player ghostPlayer, org.bukkit.event.entity.EntityDamageByEntityEvent event) {
+        // 检查人类玩家是否拥有"一次机会"道具
+        ItemStack secondChanceItem = findSecondChanceItem(humanPlayer);
+        if (secondChanceItem == null) {
+            return false;
+        }
+        
+        // 检查冷却时间
+        UUID humanId = humanPlayer.getUniqueId();
+        long currentTime = System.currentTimeMillis();
+        long cooldownTime = plugin.getConfigManager().getSecondChanceCooldown() * 1000L;
+        
+        if (cooldowns.containsKey(humanId)) {
+            long lastUseTime = cooldowns.get(humanId);
+            long timeLeft = (lastUseTime + cooldownTime) - currentTime;
+            
+            if (timeLeft > 0) {
+                // 还在冷却中
+                humanPlayer.sendMessage(ChatColor.RED + "一次机会还在冷却中！剩余时间: " + (timeLeft / 1000) + "秒");
+                return false;
+            }
+        }
+        
+        // 触发一次机会效果
+        triggerSecondChance(humanPlayer, ghostPlayer, secondChanceItem);
+        
+        // 设置冷却时间
+        cooldowns.put(humanId, currentTime);
+        
+        // 发送屏幕居中字幕
+        sendTitleMessages(humanPlayer, ghostPlayer);
+        
+        return true;
     }
     
     // 获取剩余冷却时间

@@ -2,7 +2,7 @@
 # 版本: 2.2.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 16
+ScriptIrc-config-version: 19
 
 # 游戏设置
 game:
@@ -76,7 +76,7 @@ health:
 
 # 黑暗效果设置
 dark-effect:
-  enabled: false # 是否启用黑暗效果（给予所有玩家黑暗药水效果）
+  enabled: true # 是否启用黑暗效果（给予所有玩家黑暗视觉效果，不降低移动速度）
   duration: 999999 # 黑暗效果持续时间（秒），设置为极大值以持续整个游戏
   amplifier: 0 # 黑暗效果等级（0为默认）
 

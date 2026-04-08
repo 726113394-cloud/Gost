@@ -47,6 +47,13 @@ public class InfectionListener implements Listener {
             return;
         }
         
+        // 检查一次机会道具
+        if (plugin.getSecondChanceListener().checkAndTriggerSecondChance(victim, attacker, event)) {
+            // 一次机会触发，取消感染
+            event.setCancelled(true);
+            return;
+        }
+        
         // 执行感染
         plugin.getPlayerManager().infectPlayer(victim.getUniqueId(), attacker.getUniqueId());
         
@@ -86,6 +93,12 @@ public class InfectionListener implements Listener {
         // 检查神圣守护
         if (plugin.getDivineGuardianManager().handleDivineGuardianTrigger(victim, attacker)) {
             // 神圣守护触发，取消感染
+            return;
+        }
+        
+        // 检查一次机会道具
+        if (plugin.getSecondChanceListener().checkAndTriggerSecondChance(victim, attacker, null)) {
+            // 一次机会触发，取消感染
             return;
         }
         
