@@ -253,7 +253,147 @@
         <!-- 配置文件 -->
         <div class="section">
             <div class="section-title">⚙️ 配置文件 (config.yml)</div>
-            <div class="collapsible"><div class="collapsible-header">📋 主要配置项 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><pre>game.duration: 420\ndark-effect.enabled: true\ndivine-guardian.mode: "1"\nredeemer.max-uses: 2</pre></div></div>
+            <div class="collapsible"><div class="collapsible-header">📋 主要配置项 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><pre># Gost 插件配置文件
+# 版本: 2.2.1
+# Minecraft: 1.20.x
+
+conversion:
+  enabled: false
+  activate-time: 120
+  cooldown: 30
+  cost: 15
+ScriptIrc-config-version: 20
+
+# 游戏设置
+game:
+  duration: 420 # 游戏时长（秒），默认7分钟
+  preparation-time: 20 # 准备时间（秒）
+  queue-time: 60 # 队列等待时间（秒）
+  min-players: 2 # 最小玩家数
+  max-players: 16 # 最大玩家数
+  max-games: 1 # 最大同时游戏数（0=禁止新游戏）
+  match-queue-time: 30 # 匹配队列时间（秒），队列满员后等待多久开始游戏
+
+# 经济设置
+economy:
+  entry-fee: 100.0 # 入场费
+  server-bonus: 5000.0 # 服务器奖金
+
+# 道具设置
+items:
+  adrenaline:
+    duration: 10 # 肾上腺素持续时间（秒）
+    speed-level: 2 # 肾上腺素速度等级
+  frenzy:
+    duration: 10 # 狂暴持续时间（秒）
+    speed-level: 2 # 狂暴速度等级
+  ice-ball:
+    slow-duration: 4 # 凝冰球减速持续时间（秒）
+    slow-level: 4 # 凝冰球减速等级
+  soul-control:
+    freeze-duration: 6 # 控魂术冻结持续时间（秒）
+    cooldown: 18 # 控魂术冷却时间（秒）
+  teleport-pearl:
+    cooldown: 20 # 传送珍珠冷却时间（秒）
+  stinky-steak:
+    speed-duration: 14 # 臭牛排速度效果持续时间（秒）
+    speed-level: 1 # 臭牛排速度效果等级（1=速度II）
+    glowing-duration: 10 # 臭牛排发光效果持续时间（秒）
+    cooldown: 30 # 臭牛排冷却时间（秒）
+  soul-detector:
+    duration: 25 # 灵魂探测器暴露持续时间（秒）
+    cooldown: 35 # 灵魂探测器冷却时间（秒）
+  second-chance:
+    cooldown: 180 # 一次机会冷却时间（秒）
+    human-speed-duration: 10 # 人类玩家速度效果持续时间（秒）
+    human-speed-level: 2 # 人类玩家速度效果等级
+    human-glowing-duration: 10 # 人类玩家高亮效果持续时间（秒）
+    ghost-slow-duration: 7 # 鬼玩家缓慢效果持续时间（秒）
+    ghost-slow-level: 1 # 鬼玩家缓慢效果等级
+
+# 效果设置
+effects:
+  mother-ghost-blindness-duration: 20 # 母体失明持续时间（秒）
+  ghost-immobilize-duration: 20 # 母体鬼固定时间（秒）
+  ghost-sense-duration: 5 # 幽灵感知高亮持续时间（秒）
+  infection-lightning: true # 感染时是否显示闪电
+  infection-sound: true # 感染时是否播放音效
+  minute-glowing:
+    enabled: true # 是否启用每分钟高亮效果
+    duration: 5 # 高亮持续时间（秒）
+    interval: 60 # 触发间隔时间（秒）
+
+# 鬼转人类功能设置
+ghost-to-human:
+  enabled: false # 是否启用鬼转人类功能
+  remaining-time: 180 # 剩余多少秒时触发（默认3分钟）
+  count: 1 # 转换数量
+
+# 游戏血量设置
+health:
+  max-health: 10.0 # 游戏期间玩家的最大生命值（默认10颗心，即20点生命值）
+# 推荐添加Injured Effects模组并限制最大生命值为4.0以下，可以添加恐怖氛围
+
+# 黑暗效果设置
+dark-effect:
+  enabled: true # 是否启用黑暗效果（给予所有玩家黑暗视觉效果，不降低移动速度）
+  duration: 999999 # 黑暗效果持续时间（秒），设置为极大值以持续整个游戏
+  amplifier: 0 # 黑暗效果等级（0为默认）
+
+# 心跳声设置
+heartbeat:
+  enabled: true # 是否启用心跳声效果（游戏过程中人类玩家听到监守者心跳声）
+  interval: 10 # 心跳声播放间隔（秒）
+
+# 区域选择设置
+area:
+  selection-tool: MAGMA_CREAM # 选区工具物品（默认为岩浆膏）
+  max-areas: 20 # 最大存档区域数量
+  auto-teleport: true # 是否自动传送到区域
+  ignore-y-axis: false # 是否忽略Y轴检查（设为true时，区域检查只考虑X和Z坐标）
+
+# 道具刷新设置
+item-spawn:
+  max-item-types-per-player: 6
+  enabled: true # 是否启用道具刷新
+  interval: 60 # 刷新间隔（秒）
+  max-per-refresh: 3 # 每次刷新数量上限
+  max-per-player: 1 # 每位玩家最多获得数量
+
+# 语言设置
+language:
+  default: zh_CN # 默认语言: zh_CN (中文), en_US (英文)
+  auto-detect: true # 是否自动检测玩家语言（基于客户端语言）
+  max-item-types-per-player: 6 # 玩家最多拥有的道具种类数量
+
+# 神圣守护设置
+divine-guardian:
+  enabled: false # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
+  mode: '1' # 模式：1=神圣守护（感染免疫+随机传送），2=救赎者（转化鬼玩家）
+  max-charges: 3 # 最大使用次数（免疫感染的次数）
+  cooldown: 5 # 每次使用冷却时间（秒）
+  broadcast: true # 是否广播神圣守护触发消息
+  invisibility-duration: 10 # 神圣守护失效后隐身持续时间（秒）
+
+# 救赎者设置（神圣守护模式2）
+redeemer:
+  max-uses: 2 # 神之救赎最大使用次数
+  speed-level: 1 # 救赎者速度效果等级（1=速度I）
+  holy-redemption-cooldown: 10 # 神之救赎冷却时间（秒）
+  conversion-invincibility-time: 5 # 转化后无敌时间（秒）
+  broadcast: true # 是否广播救赎者消息
+
+# 鬼玩家粒子效果设置
+ghost-particle:
+  enabled: true # 是否启用鬼玩家粒子效果
+  type: REDSTONE # 粒子类型：REDSTONE, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANTMENT_TABLE, CRIT_MAGIC, FIREWORKS_SPARK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM_OF_UNDYING, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
+  count: 5 # 每次生成粒子数量
+  interval: 15 # 粒子生成间隔（刻，20刻=1秒）
+  mother-color: 255,0,0 # 母体鬼粒子颜色（RGB格式：红,绿,蓝）
+  normal-color: 0,255,0 # 普通鬼粒子颜色（RGB格式：红,绿,蓝）
+  size: 1.0 # 粒子大小
+  show-in-preparation: true # 准备阶段是否显示粒子
+</pre></div></div>
         </div>
 
         <!-- 权限节点 -->
