@@ -45,7 +45,16 @@ public class Gost extends JavaPlugin {
             playerManager = new PlayerManager(this);
             gameManager = new GameManager(this);
             actionBarManager = new ActionBarManager(this);
-            languageManager = new LanguageManager(this);
+            
+            // 尝试初始化 LanguageManager，如果失败则继续
+            try {
+                languageManager = new LanguageManager(this);
+            } catch (NoClassDefFoundError | Exception e) {
+                getLogger().warning("无法初始化 LanguageManager: " + e.getMessage());
+                getLogger().warning("语言功能将不可用，但插件会继续运行");
+                languageManager = null;
+            }
+            
             itemSpawnManager = new ItemSpawnManager(this);
             secondChanceListener = new SecondChanceListener(this);
             darkEffectManager = new DarkEffectManager(this);
@@ -62,7 +71,9 @@ public class Gost extends JavaPlugin {
         
         try {
             // 加载语言
-            languageManager.loadLanguage();
+            if (languageManager != null) {
+                languageManager.reload();
+            }
             
             // 加载神圣守护配置
             divineGuardianManager.loadConfig();
@@ -171,6 +182,10 @@ public class Gost extends JavaPlugin {
 
     
     public LanguageManager getLanguageManager() {
+        if (languageManager == null) {
+            // 直接创建LanguageManager，它已经内置了默认消息和友好回退
+            languageManager = new LanguageManager(this);
+        }
         return languageManager;
     }
     
