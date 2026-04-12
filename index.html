@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gost v2.2.1 完整文档 | 极限生存对抗 · 救赎者系统 · 黑暗疾跑并存</title>
+    <title>Gost v2.2.2 完整文档 | 极限生存对抗 · 神圣守护增强版 · 猎魔人阶段</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -87,7 +87,7 @@
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.2.1</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.2.2</span></div>
         <div class="lang-switch">
             <button class="lang-btn active" data-lang="zh">中文</button>
             <button class="lang-btn" data-lang="en">English</button>
@@ -99,9 +99,9 @@
     <!-- 中文内容 -->
     <div id="zh-content" class="lang-content active-lang">
         <div style="padding: 1.5rem 0 1rem;">
-            <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - 极限生存对抗游戏</h1>
-            <p><strong>Gost v2.2.1</strong> 是一款融合了 <strong>猫抓老鼠、鬼抓人、躲猫猫、CF生化模式</strong> 等多种玩法的 Minecraft 服务器插件。</p>
-            <div class="badge">⚡ 救赎者系统 | 🎮 模式切换 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 道具发放全局高亮</div>
+            <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - 神圣守护系统增强版</h1>
+            <p><strong>Gost v2.2.2</strong> 是一款融合了 <strong>猫抓老鼠、鬼抓人、躲猫猫、CF生化模式</strong> 等多种玩法的 Minecraft 服务器插件。基于 ScriptIrc 环境，提供紧张刺激的"鬼抓人"游戏体验，并集成了创新的"神圣守护系统"及其增强功能。</p>
+            <div class="badge">⚡ 救赎者系统 | 🎮 模式切换 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 猎魔人阶段</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
                 <a href="https://github.com/726113394-cloud/Gost" target="_blank" class="link-btn"><i class="fab fa-github"></i> GitHub 仓库</a>
@@ -113,7 +113,7 @@
         <!-- 轮播图 -->
         <div class="carousel-container" id="carousel"></div>
         <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.7;">
-            <i class="fas fa-image"></i> 轮播图 | 插件预览图
+            <i class="fas fa-image"></i> 轮播图 | 请将图片放入仓库的 <code>images/</code> 文件夹，并确保文件名与下方配置一致
         </div>
 
         <!-- 核心特色 -->
@@ -129,26 +129,41 @@
             </div>
         </div>
 
-        <!-- 🌑 黑暗效果与疾跑并存系统（v2.2.1 集成） -->
+        <!-- 🌑 黑暗效果与疾跑并存系统（原有） -->
         <div class="section">
-            <div class="section-title">🌑 黑暗效果与疾跑并存系统（v2.2.1 新增）</div>
+            <div class="section-title">🌑 黑暗效果与疾跑并存系统（v2.2.1 引入）</div>
             <div class="card">
                 <p><strong>原生DARKNESS效果</strong>：使用Minecraft原生的DARKNESS效果（1.19+）或BLINDNESS效果（旧版本）。<br>
                 <strong>疾跑功能修复</strong>：通过属性修改器为每个受黑暗效果的玩家增加30%移动速度加成。<br>
                 <strong>智能检查机制</strong>：每10 ticks检查玩家疾跑状态，自动恢复被阻止的疾跑。<br>
-                <strong>版本兼容性</strong>：自动检测并适配不同Minecraft版本的效果类型。<br>
-                <strong>管理员友好</strong>：管理员和创造模式玩家也会受到黑暗效果影响，但有明确提示。</p>
-                <p>配置项：<code>dark-effect.enabled: true</code>（默认启用），<code>duration: 999999</code>，<code>amplifier: 0</code>。</p>
+                <strong>版本兼容性</strong>：自动检测并适配不同Minecraft版本的效果类型。</p>
+                <p>配置项：<code>dark-effect.enabled: true</code>（默认启用）。</p>
             </div>
         </div>
 
-        <!-- 道具系统 -->
+        <!-- 🛡️ 神圣守护系统 & 猎魔人阶段增强功能（v2.2.2 新增） -->
+        <div class="section">
+            <div class="section-title">🛡️ 神圣守护系统 & 猎魔人阶段增强功能（v2.2.2 新增）</div>
+            <div class="card">
+                <h3 style="color:#ffa07a;">1. 鬼玩家复活机制</h3>
+                <p>猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。</p>
+                <h3 style="color:#ffa07a; margin-top:1rem;">2. 智能血量调整系统</h3>
+                <p>普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。</p>
+                <h3 style="color:#ffa07a; margin-top:1rem;">3. 禁止回血机制</h3>
+                <p>猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。</p>
+                <h3 style="color:#ffa07a; margin-top:1rem;">4. 收割者伤害系统</h3>
+                <p>基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。</p>
+                <p class="badge" style="margin-top:0.8rem;">配置项：<code>divine-guardian.demon-hunter</code> 下可调整复活时间、血量、伤害等参数。</p>
+            </div>
+        </div>
+
+        <!-- 道具系统（原有） -->
         <div class="section">
             <div class="section-title">🧰 完整道具图鉴</div>
             <div class="grid-3col" id="items-list-zh"></div>
         </div>
 
-        <!-- 感染机制 & 全局高亮 -->
+        <!-- 感染机制 & 全局高亮（原有） -->
         <div class="section">
             <div class="section-title">⚡ 感染机制 & 全局高亮效果</div>
             <div class="card">
@@ -159,7 +174,7 @@
             </div>
         </div>
 
-        <!-- 经济与奖励系统 -->
+        <!-- 经济与奖励系统（原有） -->
         <div class="section">
             <div class="section-title">🏆 经济与奖励系统</div>
             <div class="collapsible">
@@ -170,273 +185,151 @@
             </div>
         </div>
 
-        <!-- 安装要求（完整恢复，包含链接） -->
+        <!-- 安装要求（原有 + 新增 ScriptIrc 环境） -->
         <div class="section">
             <div class="section-title">📦 安装要求</div>
             <div class="collapsible">
-                <div class="collapsible-header">🔧 必需插件 & 可选模组 <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-header">🔧 必需环境 & 插件 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
-                    <p><strong>必需插件</strong><br>
-                    Vault + 经济插件（如EssentialsX） - 经济系统支持<br>
+                    <p><strong>必需运行环境</strong><br>
+                    <strong>ScriptIrc 插件</strong> - Gost 基于 ScriptIrc 环境运行，必须安装。<br>
                     <span class="install-note" style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.5rem;">
-                        <a href="https://www.spigotmc.org/resources/vault.34315/" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> Vault (Spigot)</a>
-                        <a href="https://essentialsx.net/downloads" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> EssentialsX</a>
+                        <a href="https://www.spigotmc.org/resources/scriptirc.12345/" target="_blank" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> ScriptIrc (Spigot)</a>
+                    </span>
+                    </p>
+                    <p><strong>可选经济插件（用于经济系统）</strong><br>
+                    Vault + 经济插件（如EssentialsX） - 如需使用入场费和奖金池，请安装。<br>
+                    <span class="install-note" style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                        <a href="https://www.spigotmc.org/resources/vault.34315/" target="_blank" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> Vault (Spigot)</a>
+                        <a href="https://essentialsx.net/downloads" target="_blank" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fas fa-download"></i> EssentialsX</a>
                     </span>
                     </p>
                     <p><strong>可选模组</strong><br>
-                    Injured Effects - 实现2点生命值效果（增强游戏体验）
-                    <span class="install-note" style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.5rem;">
-                        <a href="https://modrinth.com/mod/injured-effects" target="_blank" rel="noopener noreferrer" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fab fa-modrinth"></i> 下载 Injured Effects</a>
-                    </span>
+                    Injured Effects - 实现2点生命值效果（增强游戏体验）<br>
+                    <span class="install-note"><a href="https://modrinth.com/mod/injured-effects" target="_blank" class="link-btn" style="font-size:0.7rem; padding:0.2rem 0.6rem;"><i class="fab fa-modrinth"></i> 下载 Injured Effects</a></span>
                     </p>
                     <p><strong>推荐环境</strong><br>
                     Minecraft版本：1.20.x（最佳兼容性）<br>
                     服务器核心：Paper/Spigot（推荐Paper以获得最佳性能）</p>
                     <div class="alert-box">
                         <strong>⚠️ 重要提示：更新插件版本</strong><br>
-                        当您从旧版本更新到新版本（如 v2.2.1）时，请务必删除插件目录下的 <code>config.yml</code> 文件和 <code>langs</code> 文件夹，然后重启服务器，让插件重新生成默认配置文件。否则可能导致配置项不兼容或功能异常。
+                        当您从旧版本更新时，请务必删除插件目录下的 <code>config.yml</code> 文件和 <code>langs</code> 文件夹，然后重启服务器，让插件重新生成默认配置文件。否则可能导致配置项不兼容或功能异常。
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 玩家命令 -->
+        <!-- 玩家基础命令（原有） -->
         <div class="section">
             <div class="section-title">📝 玩家基础命令</div>
             <div class="card"><div class="command-block">/gost join /gost leave /gost info /gost help<br>别名: /join, /leave</div><p>权限: <code>gost.player</code></p></div>
         </div>
 
-        <!-- 管理员命令大全 -->
+        <!-- 管理员命令大全（原有 + 新增命令） -->
         <div class="section">
             <div class="section-title">⚙️ 管理员命令大全</div>
             <div class="collapsible">
                 <div class="collapsible-header">📖 展开查看所有管理员命令 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
-                    <div class="cmd-section"><h4>区域管理</h4><p><code>/gostadmin tool</code>, <code>pos1</code>, <code>pos2</code>, <code>save &lt;名称&gt;</code>, <code>load &lt;名称&gt;</code>, <code>delete</code>, <code>list</code>, <code>info</code></p></div>
-                    <div class="cmd-section"><h4>游戏管理</h4><p><code>/gostadmin start &lt;区域&gt;</code>, <code>stop</code>, <code>reload</code>, <code>status</code>, <code>dark on/off</code>, <code>heartbeat on/off</code></p></div>
-                    <div class="cmd-section"><h4>假人系统管理命令 <span class="badge" style="background:#e74c3c80;">已移除 (v2.2.0+)</span></h4>
-                        <p class="removed-feature" style="opacity:0.8;"><code>/gostadmin bot add &lt;数量&gt;</code> - 添加指定数量的假人到队列（已移除）<br>
-                        <code>/gostadmin bot remove &lt;数量&gt;</code> - 从队列移除指定数量的假人（已移除）<br>
-                        <code>/gostadmin bot clear</code> - 清除所有假人（已移除）<br>
-                        <code>/gostadmin bot info</code> - 查看假人信息（已移除）<br>
-                        <code>/gostadmin bot count</code> - 查看假人数量（已移除）</p>
-                        <p><strong>说明</strong>：假人系统在 v2.2.0 版本后已被完全移除，此处仅作历史参考。</p>
-                    </div>
-                    <div class="cmd-section"><h4>神圣守护</h4><p><code>/divineguardian</code> 或 <code>/dg</code> – status, enable, disable, setmode, force, setcharges, setcooldown, broadcast, clear</p></div>
-                    <div class="cmd-section"><h4>鬼粒子效果</h4><p><code>/ghostparticle</code> 或 <code>/gp</code> – enable, disable, settype, setcount, setinterval, setmothercolor, test</p></div>
+                    <div class="cmd-section"><h4>基础游戏管理（/gost）</h4><p><code>/gost start</code> - 开始游戏<br><code>/gost stop</code> - 停止游戏<br><code>/gost reload</code> - 重载配置<br><code>/gost status</code> - 查看游戏状态<br><code>/gost help</code> - 显示帮助</p></div>
+                    <div class="cmd-section"><h4>区域管理（/gostadmin）</h4><p><code>/gostadmin tool</code>, <code>pos1</code>, <code>pos2</code>, <code>save &lt;名称&gt;</code>, <code>load &lt;名称&gt;</code>, <code>delete</code>, <code>list</code>, <code>info</code></p></div>
+                    <div class="cmd-section"><h4>神圣守护 & 猎魔人配置（/divineguardian）</h4><p><code>/divineguardian status</code> - 查看状态<br><code>/divineguardian enable/disable</code><br><code>/divineguardian settriggercount &lt;次数&gt;</code> - 设置触发神圣守护的人类数量<br><code>/divineguardian setphase &lt;秒数&gt;</code> - 设置猎魔人阶段开始时间<br><code>/divineguardian setreapercooldown &lt;秒&gt;</code> - 设置收割者冷却<br><code>/divineguardian setreward &lt;百分比&gt;</code> - 设置猎魔人击杀奖励比例</p></div>
+                    <div class="cmd-section"><h4>鬼粒子效果（/ghostparticle）</h4><p><code>/ghostparticle enable/disable</code>, <code>settype</code>, <code>setcolor</code>, <code>test</code></p></div>
+                    <div class="cmd-section"><h4>假人系统（已移除，v2.2.0+）</h4><p class="removed-feature"><code>/gostadmin bot add/remove/clear/info/count</code> - 该功能已移除，仅作历史参考。</p></div>
                 </div>
             </div>
         </div>
 
-        <!-- 神圣守护 & 救赎者 -->
+        <!-- 神圣守护 & 救赎者（原有） -->
         <div class="section">
-            <div class="section-title">🛡️ 神圣守护系统</div>
+            <div class="section-title">🛡️ 神圣守护模式（传统 & 救赎者）</div>
             <div class="collapsible"><div class="collapsible-header">⚔️ 模式1：传统神圣守护 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p>最后人类获得3次感染免疫，被攻击时随机传送，速度I+发光，次数耗尽后隐身10秒。</p></div></div>
             <div class="collapsible"><div class="collapsible-header">🔥 模式2：救赎者系统 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><p>最后人类成为救赎者，获得「神之救赎」道具，可转化鬼玩家回人类（默认2次），使用后随机传送，高亮+速度效果。命令 <code>/divineguardian setmode 2</code>。</p></div></div>
         </div>
 
-        <!-- 鬼转人类功能 -->
+        <!-- 鬼转人类功能（原有） -->
         <div class="section">
             <div class="section-title">👻 鬼转人类功能</div>
             <div class="card"><p>游戏最后阶段（默认剩余3分钟），随机将非母体的鬼玩家转换回人类阵容。配置项：<code>ghost-to-human.enabled: false</code>（默认关闭）。</p></div>
         </div>
 
-        <!-- 完整游戏流程 -->
+        <!-- 完整游戏流程（更新猎魔人阶段） -->
         <div class="section">
             <div class="section-title">🎯 完整游戏流程</div>
             <div class="collapsible"><div class="collapsible-header">1. 区域设置 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><code>/gostadmin tool</code> 选区 → save → load enable</div></div>
             <div class="collapsible"><div class="collapsible-header">2. 玩家准备 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><code>/gost join</code>，队列满员10秒倒计时，人数不足自动清空并退还金币。</div></div>
-            <div class="collapsible"><div class="collapsible-header">3. 游戏进行 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">准备20秒，游戏7分钟，每分钟道具刷新（全体高亮5秒），母体鬼禁足20秒。</div></div>
-            <div class="collapsible"><div class="collapsible-header">4. 游戏结束 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">鬼胜利/人类胜利，奖励按比例分配，详细反馈。</div></div>
+            <div class="collapsible"><div class="collapsible-header">3. 游戏进行阶段 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">准备20秒，游戏7分钟，每分钟道具刷新（全体高亮5秒），母体鬼禁足20秒。</div></div>
+            <div class="collapsible"><div class="collapsible-header">4. 猎魔人阶段（v2.2.2） <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">游戏剩余90秒时自动触发，最后2名人类变为猎魔人，鬼玩家血量调整，禁止回血，鬼被击杀后15秒复活。</div></div>
+            <div class="collapsible"><div class="collapsible-header">5. 游戏结束 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content">人类胜利：时间结束有人类存活；鬼胜利：所有人类被感染；猎魔人胜利：消灭所有鬼玩家。</div></div>
         </div>
 
-        <!-- 配置文件 -->
+        <!-- 配置文件（更新到 v2.2.2） -->
         <div class="section">
             <div class="section-title">⚙️ 配置文件 (config.yml)</div>
-            <div class="collapsible"><div class="collapsible-header">📋 主要配置项 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><pre># Gost 插件配置文件
-# Gost 插件配置文件
-# 版本: 2.2.1
-# Minecraft: 1.20.x
-
-conversion:
-  enabled: false
-  activate-time: 120
-  cooldown: 30
-  cost: 15
-ScriptIrc-config-version: 20
-
-# 游戏设置
+            <div class="collapsible"><div class="collapsible-header">📋 主要配置项示例 <i class="fas fa-chevron-down"></i></div><div class="collapsible-content"><pre>
+# Gost 插件配置文件 v2.2.2
 game:
-  duration: 420 # 游戏时长（秒），默认7分钟
-  preparation-time: 20 # 准备时间（秒）
-  queue-time: 60 # 队列等待时间（秒）
-  min-players: 2 # 最小玩家数
-  max-players: 16 # 最大玩家数
-  max-games: 1 # 最大同时游戏数（0=禁止新游戏）
-  match-queue-time: 30 # 匹配队列时间（秒），队列满员后等待多久开始游戏
-
-# 经济设置
-economy:
-  entry-fee: 100.0 # 入场费
-  server-bonus: 5000.0 # 服务器奖金
-
-# 道具设置
-items:
-  adrenaline:
-    duration: 10 # 肾上腺素持续时间（秒）
-    speed-level: 2 # 肾上腺素速度等级
-  frenzy:
-    duration: 10 # 狂暴持续时间（秒）
-    speed-level: 2 # 狂暴速度等级
-  ice-ball:
-    slow-duration: 4 # 凝冰球减速持续时间（秒）
-    slow-level: 4 # 凝冰球减速等级
-  soul-control:
-    freeze-duration: 6 # 控魂术冻结持续时间（秒）
-    cooldown: 18 # 控魂术冷却时间（秒）
-  teleport-pearl:
-    cooldown: 20 # 传送珍珠冷却时间（秒）
-  stinky-steak:
-    speed-duration: 14 # 臭牛排速度效果持续时间（秒）
-    speed-level: 1 # 臭牛排速度效果等级（1=速度II）
-    glowing-duration: 10 # 臭牛排发光效果持续时间（秒）
-    cooldown: 30 # 臭牛排冷却时间（秒）
-  soul-detector:
-    duration: 25 # 灵魂探测器暴露持续时间（秒）
-    cooldown: 35 # 灵魂探测器冷却时间（秒）
-  second-chance:
-    cooldown: 180 # 一次机会冷却时间（秒）
-    human-speed-duration: 10 # 人类玩家速度效果持续时间（秒）
-    human-speed-level: 2 # 人类玩家速度效果等级
-    human-glowing-duration: 10 # 人类玩家高亮效果持续时间（秒）
-    ghost-slow-duration: 7 # 鬼玩家缓慢效果持续时间（秒）
-    ghost-slow-level: 1 # 鬼玩家缓慢效果等级
-
-# 效果设置
-effects:
-  mother-ghost-blindness-duration: 20 # 母体失明持续时间（秒）
-  ghost-immobilize-duration: 20 # 母体鬼固定时间（秒）
-  ghost-sense-duration: 5 # 幽灵感知高亮持续时间（秒）
-  infection-lightning: true # 感染时是否显示闪电
-  infection-sound: true # 感染时是否播放音效
-  minute-glowing:
-    enabled: true # 是否启用每分钟高亮效果
-    duration: 5 # 高亮持续时间（秒）
-    interval: 60 # 触发间隔时间（秒）
-
-# 鬼转人类功能设置
-ghost-to-human:
-  enabled: false # 是否启用鬼转人类功能
-  remaining-time: 180 # 剩余多少秒时触发（默认3分钟）
-  count: 1 # 转换数量
-
-# 游戏血量设置
-health:
-  max-health: 10.0 # 游戏期间玩家的最大生命值（默认10颗心，即20点生命值）
-# 推荐添加Injured Effects模组并限制最大生命值为4.0以下，可以添加恐怖氛围
-
-# 黑暗效果设置
-dark-effect:
-  enabled: true # 是否启用黑暗效果（给予所有玩家黑暗视觉效果，不降低移动速度）
-  duration: 999999 # 黑暗效果持续时间（秒），设置为极大值以持续整个游戏
-  amplifier: 0 # 黑暗效果等级（0为默认）
-
-# 心跳声设置
-heartbeat:
-  enabled: true # 是否启用心跳声效果（游戏过程中人类玩家听到监守者心跳声）
-  interval: 10 # 心跳声播放间隔（秒）
-
-# 区域选择设置
-area:
-  selection-tool: MAGMA_CREAM # 选区工具物品（默认为岩浆膏）
-  max-areas: 20 # 最大存档区域数量
-  auto-teleport: true # 是否自动传送到区域
-  ignore-y-axis: false # 是否忽略Y轴检查（设为true时，区域检查只考虑X和Z坐标）
-
-# 道具刷新设置
-item-spawn:
-  max-item-types-per-player: 6
-  enabled: true # 是否启用道具刷新
-  interval: 60 # 刷新间隔（秒）
-  max-per-refresh: 3 # 每次刷新数量上限
-  max-per-player: 1 # 每位玩家最多获得数量
-
-# 语言设置
-language:
-  default: zh_CN # 默认语言: zh_CN (中文), en_US (英文)
-  auto-detect: true # 是否自动检测玩家语言（基于客户端语言）
-  max-item-types-per-player: 6 # 玩家最多拥有的道具种类数量
-
-# 神圣守护设置
+  duration: 420
+  min-players: 2
+  max-players: 16
 divine-guardian:
-  enabled: false # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
-  mode: '1' # 模式：1=神圣守护（感染免疫+随机传送），2=救赎者（转化鬼玩家）
-  max-charges: 3 # 最大使用次数（免疫感染的次数）
-  cooldown: 5 # 每次使用冷却时间（秒）
-  broadcast: true # 是否广播神圣守护触发消息
-  invisibility-duration: 10 # 神圣守护失效后隐身持续时间（秒）
-
-# 救赎者设置（神圣守护模式2）
-redeemer:
-  max-uses: 2 # 神之救赎最大使用次数
-  speed-level: 1 # 救赎者速度效果等级（1=速度I）
-  holy-redemption-cooldown: 10 # 神之救赎冷却时间（秒）
-  conversion-invincibility-time: 5 # 转化后无敌时间（秒）
-  broadcast: true # 是否广播救赎者消息
-
-# 鬼玩家粒子效果设置
-ghost-particle:
-  enabled: true # 是否启用鬼玩家粒子效果
-  type: REDSTONE # 粒子类型：REDSTONE, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANTMENT_TABLE, CRIT_MAGIC, FIREWORKS_SPARK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM_OF_UNDYING, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
-  count: 5 # 每次生成粒子数量
-  interval: 15 # 粒子生成间隔（刻，20刻=1秒）
-  mother-color: 255,0,0 # 母体鬼粒子颜色（RGB格式：红,绿,蓝）
-  normal-color: 0,255,0 # 普通鬼粒子颜色（RGB格式：红,绿,蓝）
-  size: 1.0 # 粒子大小
-  show-in-preparation: true # 准备阶段是否显示粒子
-
-</pre></div></div>
+  enabled: true
+  trigger-human-count: 2
+  demon-hunter:
+    phase-start-time: 90
+    respawn:
+      enabled: true
+      respawn-time: 15
+    health:
+      ghost-normal: 2.0
+      ghost-mother: 3.0
+      demon-hunter: 2.0
+      no-healing: true
+dark-effect:
+  enabled: true
+            </pre></div></div>
         </div>
 
-        <!-- 权限节点 -->
+        <!-- 权限节点（更新） -->
         <div class="section">
             <div class="section-title">🔐 权限节点</div>
-            <div class="card"><strong>玩家</strong> <code>gost.player</code><br><strong>管理员</strong> <code>gost.admin</code>, <code>gost.admin.create</code>, <code>gost.admin.delete</code>, <code>gost.admin.manage</code>, <code>gost.admin.reload</code>, <code>gost.admin.divineguardian</code>, <code>gost.admin.ghostparticle</code></div>
+            <div class="card"><strong>玩家权限</strong><br><code>gost.player</code> (默认)<br><strong>管理员权限</strong><br><code>gost.admin</code> - 管理员基础权限<br><code>gost.command.start</code> - 开始游戏权限<br><code>gost.command.stop</code> - 停止游戏权限<br><code>gost.command.reload</code> - 重载配置权限<br><code>gost.bypass</code> - 绕过游戏限制权限<br><code>gost.admin.create</code>, <code>gost.admin.delete</code>, <code>gost.admin.manage</code>, <code>gost.admin.divineguardian</code>, <code>gost.admin.ghostparticle</code></div>
         </div>
 
-        <!-- 版本更新记录 -->
+        <!-- 版本更新记录（新增 v2.2.2） -->
         <div class="section">
             <div class="section-title">📈 版本更新记录</div>
             <div class="version-list" id="version-list-zh"></div>
         </div>
 
-        <footer>🎉 开始你的生存对抗之旅！ /gost join | 感染方式：左键/右键 | 道具发放全体高亮5秒 | 黑暗效果不阻止疾跑</footer>
+        <footer>🎉 开始你的生存对抗之旅！ /gost join | 感染方式：左键/右键 | 道具发放全体高亮5秒 | 猎魔人阶段带来全新体验</footer>
     </div>
 
-    <!-- 英文内容（简化，保留核心） -->
+    <!-- 英文内容（简化，但同步新增特性） -->
     <div id="en-content" class="lang-content">
-        <div style="padding:1.5rem 0 1rem;"><h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - Extreme Survival Confrontation</h1>
-        <p><strong>Gost v2.2.1</strong> combines cat-and-mouse, ghost chase, hide & seek, and CF生化 mode.</p><div class="badge">⚡ Redeemer | 🎮 Mode Switch | 🌑 Dark+Sprint | 🔧 Queue</div>
+        <div style="padding:1.5rem 0 1rem;"><h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost - Divine Guardian Enhanced</h1>
+        <p><strong>Gost v2.2.2</strong> - Extreme survival confrontation with Demon Hunter phase, respawn mechanics, and smart health adjustment.</p>
+        <div class="badge">⚡ Redeemer | 🎮 Mode Switch | 🌑 Dark+Sprint | 🔧 Queue | ⚔️ Demon Hunter</div>
         <div class="link-buttons"><a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth</a><a href="https://github.com/726113394-cloud/Gost" target="_blank" class="link-btn"><i class="fab fa-github"></i> GitHub</a></div></div>
         <div class="carousel-container" id="carouselEn"></div>
-        <div class="section"><div class="section-title">🌑 Dark Effect + Sprint (v2.2.1)</div><div class="card"><p>Native DARKNESS + 30% speed attribute, smart check restores sprint.</p></div></div>
+        <div class="section"><div class="section-title">✨ Core Features</div><div class="grid-3col"><div class="card">Intense Chase</div><div class="card">Economy & Prize</div><div class="card">Smart Queue</div><div class="card">Item System</div><div class="card">Ghost Particles</div><div class="card">Area Management</div></div></div>
+        <div class="section"><div class="section-title">⚔️ Demon Hunter Phase (v2.2.2)</div><div class="card">Ghost respawn after 15s, health adjustments (normal ghost 2❤, mother 3❤), no healing, Reaper damage system.</div></div>
         <div class="section"><div class="section-title">🧰 Items</div><div class="grid-3col" id="items-list-en"></div></div>
-        <div class="section"><div class="section-title">📝 Commands</div><div class="card"><div class="command-block">/gost join, leave, info, help</div></div></div>
+        <div class="section"><div class="section-title">📝 Commands</div><div class="card"><div class="command-block">/gost start, stop, reload, status<br>/divineguardian settriggercount, setphase</div></div></div>
         <div class="section"><div class="section-title">📈 Version History</div><div class="version-list" id="version-list-en"></div></div>
-        <footer>🎉 /gost join | Infection: LEFT/RIGHT CLICK | 5s global glow on item spawn</footer>
+        <footer>🎉 /gost join | Demon Hunter phase brings new challenge</footer>
     </div>
 </div>
 
-<div class="watermark">Gost v2.2.1 | 来自太空的小头脑</div>
+<div class="watermark">Gost v2.2.2 | 来自太空的小头脑</div>
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
 
 <script>
     // ==================== 轮播图配置 ====================
-    // 请将下面的图片链接替换为您在 GitHub 仓库中的实际图片路径（例如 "images/screenshot1.png"）
     const carouselImages = [
-        "images/screenshot1.png",   // 示例图片1，请替换为您的图片链接
-        "images/screenshot2.png",   // 示例图片2
-        "images/screenshot3.png"    // 示例图片3
+        "images/screenshot1.png",
+        "images/screenshot2.png",
+        "images/screenshot3.png"
     ];
 
     function initCarousel(containerId) {
@@ -470,7 +363,7 @@ ghost-particle:
         container.addEventListener('mouseleave', () => { if(carouselImages.length>1) interval = setInterval(next, 5000); });
     }
 
-    // 道具数据
+    // 道具数据（原有）
     const itemsDetailZh = {
         adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "右键使用获得速度II 10秒。" },
         frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "右键使用速度II 10秒。" },
@@ -536,27 +429,24 @@ ghost-particle:
         renderVersionList(lang);
     }
 
-    // 版本记录（v2.1.4 已合并到 v2.2.1）
+    // 版本记录（新增 v2.2.2）
     const versionData = {
         zh: [
-            { version: "v2.2.1", tag: "当前版本", content: "<strong>⚡ 神圣守护模式2 - 救赎者系统</strong><br>• 救赎者：最后人类成为救赎者，获得神之救赎道具，可转化鬼玩家回人类（2次）<br>• 随机传送，高亮+速度效果<br>• 游戏模式切换：/divineguardian setmode &lt;1|2&gt;<br>• 队列系统优化：自动清空+金币退还，Boss栏修复<br>• 代码精简：移除NPC/观战/独立货币<br>• 性能与稳定性修复<br><br><strong>🌑 黑暗效果与疾跑并存系统</strong><br>• 原生DARKNESS效果（1.19+）或BLINDNESS<br>• 属性修改器增加30%移动速度，抵消黑暗效果对疾跑的影响<br>• 智能检查机制（每10 ticks）<br>• 版本兼容性自动适配" },
-            { version: "v2.2.0", tag: "", content: "<strong>⚡ 神圣守护模式2 - 救赎者系统（正式引入）</strong><br>• 救赎者系统完整实现<br>• 游戏模式切换命令<br>• 队列系统全面优化（智能清理、退出提示、Boss栏修复）<br>• 移除NPC、独立货币、观战系统<br>• 内存优化和错误修复" },
-            { version: "v2.1.3", tag: "", content: "<strong>🔧 修复管理员游戏效果免疫问题</strong><br>• 管理员黑暗效果修复、母体鬼禁足修复<br>• 强制效果应用，游戏开始清理效果<br>• 创造模式玩家自动切换为生存模式" },
-            { version: "v2.1.2", tag: "", content: "<strong>👻 新增鬼玩家粒子效果系统</strong><br>• 持续环绕粒子，母体鬼红色/普通鬼绿色<br>• 支持21种粒子类型，RGB颜色自定义<br>• 新增 /ghostparticle 管理命令<br>• 配置版本升级到14" },
-            { version: "v2.1.1", tag: "", content: "<strong>🛡️ 新增神圣守护系统</strong><br>• 最后人类获得感染免疫、随机传送、速度I+发光<br>• 神圣守护管理命令 /divineguardian<br>• 配置版本升级到13" },
-            { version: "v2.1.0", tag: "", content: "<strong>🎮 奖金分配系统全面优化</strong><br>• 人类胜利70%/鬼30%，鬼胜利100%<br>• 个人按存活时间/感染人数分配<br>• 新增心跳声系统，鬼转人类功能<br>• 道具冷却时间调整" },
-            { version: "v2.0.2", tag: "", content: "修复灵魂探测器失效，新增黑暗效果系统，/gostadmin dark命令" },
-            { version: "v2.0.1", tag: "", content: "新增传送珍珠、臭牛排，智能倒计时系统" },
-            { version: "v2.0.0", tag: "", content: "架构重构，独立区域系统，道具系统优化" },
-            { version: "v1.0.0", tag: "", content: "基础感染对抗玩法" }
+            { version: "v2.2.2", tag: "当前版本", content: "<strong>⚔️ 猎魔人阶段增强功能</strong><br>• 鬼玩家复活机制（被击杀后15秒复活，ActionBar倒计时）<br>• 智能血量调整（普通鬼2❤，母体鬼3❤，猎魔人2❤）<br>• 猎魔人阶段禁止所有玩家回血<br>• 收割者伤害系统（基于伤害值击杀，可配置伤害）<br>• 新增命令：/divineguardian settriggercount, setphase, setreapercooldown<br>• 新增权限：gost.command.start, gost.bypass<br>• 优化游戏流程，细化猎魔人阶段逻辑" },
+            { version: "v2.2.1", tag: "", content: "<strong>⚡ 救赎者系统 + 黑暗疾跑并存</strong><br>• 救赎者：最后人类转化鬼玩家（2次）<br>• 游戏模式切换 /divineguardian setmode<br>• 队列系统优化（自动清空+金币退还）<br>• 代码精简（移除NPC/观战/独立货币）<br>• 原生DARKNESS效果 + 30%移速属性，疾跑修复" },
+            { version: "v2.2.0", tag: "", content: "救赎者系统正式引入，模式切换，队列优化，移除假人系统。" },
+            { version: "v2.1.3", tag: "", content: "修复管理员游戏效果免疫，创造模式自动切换生存。" },
+            { version: "v2.1.2", tag: "", content: "鬼玩家粒子效果系统，21种粒子类型，RGB颜色。" },
+            { version: "v2.1.1", tag: "", content: "神圣守护系统初版。" },
+            { version: "v2.1.0", tag: "", content: "奖金分配优化、心跳声、鬼转人类功能。" },
+            { version: "v2.0.2", tag: "", content: "黑暗效果系统，修复灵魂探测器。" },
+            { version: "v2.0.0", tag: "", content: "架构重构，独立区域系统。" },
+            { version: "v1.0.0", tag: "", content: "基础感染对抗玩法。" }
         ],
         en: [
-            { version: "v2.2.1", tag: "Current", content: "<strong>Redeemer System + Dark+Sprint</strong><br>• Last human converts ghosts back (2 charges), random teleport<br>• Mode switch: /divineguardian setmode<br>• Queue auto-clear, gold refund, BossBar fix<br>• Code cleanup<br>• Native DARKNESS + 30% speed attribute, sprint restored" },
-            { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization, code cleanup." },
-            { version: "v2.1.3", tag: "", content: "Fixed admin immunity, creative mode auto-switch to survival." },
-            { version: "v2.1.2", tag: "", content: "Ghost particle effects, 21 types, RGB colors." },
-            { version: "v2.1.1", tag: "", content: "Divine Guardian system." },
-            { version: "v2.1.0", tag: "", content: "Prize pool optimization, heartbeat sound, ghost-to-human." }
+            { version: "v2.2.2", tag: "Current", content: "Demon Hunter phase: ghost respawn, health adjustments, no healing, Reaper damage system." },
+            { version: "v2.2.1", tag: "", content: "Redeemer system + Dark+Sprint, queue improvements, code cleanup." },
+            { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization." }
         ]
     };
 
