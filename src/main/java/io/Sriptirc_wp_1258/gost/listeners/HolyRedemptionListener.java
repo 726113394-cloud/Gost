@@ -75,6 +75,7 @@ public class HolyRedemptionListener implements Listener {
         }
         
         String displayName = meta.getDisplayName();
-        return displayName.equals(ChatColor.GOLD + "神之救赎");
+        // 检查两种可能的显示名称格式（§6§l神之救赎 或 §6神之救赎）
+        return displayName.equals("§6§l神之救赎") || displayName.equals(ChatColor.GOLD + "神之救赎");
     }
 }

@@ -17,23 +17,23 @@ import java.util.*;
 public class GameManager {
     
     public enum GameState {
-        WAITING,     // 等待玩家加入
-        STARTING,    // 倒计时中
-        RUNNING,     // 游戏进行中
-        ENDING,      // 游戏结束中
-        STOPPED      // 游戏已停止
+        WAITING,
+        STARTING,
+        RUNNING,
+        ENDING,
+        STOPPED
     }
     
     private final Gost plugin;
     
-    // 游戏状态
+
     private GameState gameState = GameState.STOPPED;
     private UUID currentGameId;
     
-    // 玩家队列
+
     private Set<UUID> waitingPlayers = new HashSet<>();
     
-    // 游戏时间
+
     private long gameStartTime;
     private int gameDuration;
     private int preparationTime;
@@ -41,11 +41,11 @@ public class GameManager {
     private int remainingGameTime;
     private boolean preparationPhase = false;
     
-    // Boss栏
+
     private BossBar queueBossBar;
     private BossBar gameBossBar;
     
-    // 任务
+
     private BukkitTask queueTask;
     private BukkitTask preparationTask;
     private BukkitTask gameTask;
@@ -589,11 +589,12 @@ public class GameManager {
                     return;
                 }
                 
-                // 最后2分钟：随机将一名鬼变回人类（如果转化功能启用）
                 if (plugin.getConfigManager().isConversionEnabled() && timeLeft == plugin.getConfigManager().getConversionActivateTime()) {
-                    // 发送转化提示
                     Bukkit.broadcastMessage(ChatColor.YELLOW + "剩余2分钟，转化功能已激活！");
-                    // 这里可以添加转化逻辑，比如给予玩家转化物品
+                }
+                
+                if (plugin.getConfigManager().isDivineGuardianSystemEnabled()) {
+                    plugin.getDivineGuardianManager().checkAndEnterDemonHunterPhase(timeLeft);
                 }
                 
                 timeLeft--;

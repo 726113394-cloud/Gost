@@ -13,7 +13,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -38,7 +40,7 @@ public class DarkEffectManager {
     /**
      * 给所有游戏中的玩家应用黑暗效果
      */
-    public void applyDarkEffectToAllPlayers() {
+    public synchronized void applyDarkEffectToAllPlayers() {
         if (!plugin.getConfigManager().isDarkEffectEnabled()) {
             return;
         }
@@ -93,7 +95,7 @@ public class DarkEffectManager {
     /**
      * 应用黑暗效果并修复疾跑问题
      */
-    private void applyDarkEffectWithSprintFix(Player player, int duration, int amplifier, boolean force) {
+    private synchronized void applyDarkEffectWithSprintFix(Player player, int duration, int amplifier, boolean force) {
         // 首先清除可能存在的黑暗效果
         if (force) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
@@ -142,7 +144,7 @@ public class DarkEffectManager {
      * 为玩家应用疾跑修复
      * 通过修改移动速度属性来抵消DARKNESS效果对疾跑的影响
      */
-    private void applySprintFix(Player player) {
+    private synchronized void applySprintFix(Player player) {
         UUID playerId = player.getUniqueId();
         
         // 移除现有的疾跑修复（如果有）
@@ -173,7 +175,7 @@ public class DarkEffectManager {
     /**
      * 移除玩家的疾跑修复
      */
-    private void removeSprintFix(Player player) {
+    private synchronized void removeSprintFix(Player player) {
         UUID playerId = player.getUniqueId();
         
         if (sprintModifiers.containsKey(playerId)) {
@@ -195,7 +197,7 @@ public class DarkEffectManager {
      * 启动疾跑检查任务
      * 定期检查玩家是否在尝试疾跑，确保他们可以正常疾跑
      */
-    private void startSprintCheckTask() {
+    private synchronized void startSprintCheckTask() {
         if (sprintCheckTask != null && !sprintCheckTask.isCancelled()) {
             sprintCheckTask.cancel();
         }
@@ -227,7 +229,7 @@ public class DarkEffectManager {
     /**
      * 检查并修复玩家的疾跑状态
      */
-    private void checkAndFixSprint(Player player) {
+    private synchronized void checkAndFixSprint(Player player) {
         UUID playerId = player.getUniqueId();
         
         // 检查玩家是否有黑暗效果
@@ -278,7 +280,7 @@ public class DarkEffectManager {
      * 给指定玩家应用黑暗效果
      * @param player 玩家
      */
-    public void applyDarkEffect(Player player) {
+    public synchronized void applyDarkEffect(Player player) {
         if (!plugin.getConfigManager().isDarkEffectEnabled()) {
             return;
         }
@@ -324,7 +326,7 @@ public class DarkEffectManager {
     /**
      * 移除所有玩家的黑暗效果
      */
-    public void removeDarkEffectFromAllPlayers() {
+    public synchronized void removeDarkEffectFromAllPlayers() {
         for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
@@ -347,7 +349,7 @@ public class DarkEffectManager {
      * 移除指定玩家的黑暗效果
      * @param player 玩家
      */
-    public void removeDarkEffect(Player player) {
+    public synchronized void removeDarkEffect(Player player) {
         player.removePotionEffect(PotionEffectType.BLINDNESS);
         
         // 尝试移除DARKNESS效果（如果存在）
@@ -368,7 +370,7 @@ public class DarkEffectManager {
      * 切换黑暗效果开关
      * @param enabled 是否启用
      */
-    public void toggleDarkEffect(boolean enabled) {
+    public synchronized void toggleDarkEffect(boolean enabled) {
         plugin.getConfigManager().setDarkEffectEnabled(enabled);
         
         if (enabled) {
@@ -385,9 +387,11 @@ public class DarkEffectManager {
     /**
      * 清理所有数据
      */
-    public void cleanup() {
+    public synchronized void cleanup() {
         // 移除所有玩家的疾跑修复
-        for (UUID playerId : sprintModifiers.keySet()) {
+        // 使用副本遍历，避免ConcurrentModificationException
+        List<UUID> playerIds = new ArrayList<>(sprintModifiers.keySet());
+        for (UUID playerId : playerIds) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
                 removeSprintFix(player);

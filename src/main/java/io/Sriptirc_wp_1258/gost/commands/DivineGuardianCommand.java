@@ -51,20 +51,20 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                 handleReload(sender);
                 break;
                 
-            case "setcharges":
+            case "settriggercount":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setcharges <次数>");
+                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian settriggercount <次数>");
                     return true;
                 }
-                handleSetCharges(sender, args[1]);
+                handleSetTriggerCount(sender, args[1]);
                 break;
                 
-            case "setcooldown":
+            case "setreapercooldown":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setcooldown <秒数>");
+                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setreapercooldown <秒数>");
                     return true;
                 }
-                handleSetCooldown(sender, args[1]);
+                handleSetReaperCooldown(sender, args[1]);
                 break;
                 
             case "broadcast":
@@ -91,14 +91,28 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
                 handleClear(sender);
                 break;
                 
-            case "setmode":
+            case "setphase":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setmode <1|2>");
-                    sender.sendMessage(ChatColor.GRAY + "模式1: 神圣守护（感染免疫+随机传送）");
-                    sender.sendMessage(ChatColor.GRAY + "模式2: 救赎者（转化鬼玩家回人类）");
+                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setphase <秒数>");
                     return true;
                 }
-                handleSetMode(sender, args[1]);
+                handleSetPhase(sender, args[1]);
+                break;
+                
+            case "setreward":
+                if (args.length < 2) {
+                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setreward <百分比>");
+                    return true;
+                }
+                handleSetReward(sender, args[1]);
+                break;
+                
+            case "setmotherthreshold":
+                if (args.length < 2) {
+                    sender.sendMessage(ChatColor.RED + "用法: /divineguardian setmotherthreshold <人数>");
+                    return true;
+                }
+                handleSetMotherThreshold(sender, args[1]);
                 break;
                 
             default:
@@ -114,20 +128,24 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
      */
     private void sendUsage(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护管理 ✨");
+        sender.sendMessage(ChatColor.GOLD + "        ✨ 神圣守护管理 v2.2.2 ✨");
         sender.sendMessage("");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian status" + ChatColor.GRAY + " - 查看神圣守护状态");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian enable" + ChatColor.GRAY + " - 启用神圣守护");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian disable" + ChatColor.GRAY + " - 禁用神圣守护");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian enable" + ChatColor.GRAY + " - 启用神圣守护系统");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian disable" + ChatColor.GRAY + " - 禁用神圣守护系统");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian reload" + ChatColor.GRAY + " - 重新加载配置");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian info" + ChatColor.GRAY + " - 查看当前神圣守护信息");
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setcharges <次数>" + ChatColor.GRAY + " - 设置最大使用次数");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setcooldown <秒数>" + ChatColor.GRAY + " - 设置冷却时间");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian broadcast <on|off>" + ChatColor.GRAY + " - 设置广播开关");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setmode <1|2>" + ChatColor.GRAY + " - 设置模式（1=神圣守护，2=救赎者）");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian settriggercount <人数>" + ChatColor.GRAY + " - 设置触发人数（最后N位人类）");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setphase <秒数>" + ChatColor.GRAY + " - 设置猎魔人阶段开始时间");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setbroadcast <on|off>" + ChatColor.GRAY + " - 设置广播开关");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian sethitstokill <次数>" + ChatColor.GRAY + " - 设置收割者击杀所需攻击次数");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setcooldown <秒数>" + ChatColor.GRAY + " - 设置收割者攻击冷却时间");
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "/divineguardian force <玩家名>" + ChatColor.GRAY + " - 强制激活神圣守护");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setreward <猎魔人比例> <母体比例>" + ChatColor.GRAY + " - 设置击杀奖励比例");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian setmotherthreshold <人数>" + ChatColor.GRAY + " - 设置新增母体玩家阈值");
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.YELLOW + "/divineguardian force <玩家名>" + ChatColor.GRAY + " - 强制为玩家激活神圣守护");
         sender.sendMessage(ChatColor.YELLOW + "/divineguardian clear" + ChatColor.GRAY + " - 清除神圣守护数据");
         sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
     }
@@ -136,57 +154,81 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
      * 处理状态命令
      */
     private void handleStatus(CommandSender sender) {
-        boolean enabled = plugin.getConfigManager().isDivineGuardianEnabled();
-        String mode = plugin.getConfigManager().getDivineGuardianMode();
-        String modeDisplay = mode.equals("1") ? "神圣守护" : "救赎者";
-        int maxCharges = plugin.getConfigManager().getDivineGuardianMaxCharges();
-        int cooldown = plugin.getConfigManager().getDivineGuardianCooldown();
+        boolean enabled = plugin.getConfigManager().isDivineGuardianSystemEnabled();
+        int triggerHumanCount = plugin.getConfigManager().getDivineGuardianTriggerHumanCount();
         boolean broadcast = plugin.getConfigManager().isDivineGuardianBroadcastEnabled();
-        int invisibilityDuration = plugin.getConfigManager().getDivineGuardianInvisibilityDuration();
         
-        // 救赎者配置
-        int redeemerMaxUses = plugin.getConfigManager().getRedeemerMaxUses();
-        int redeemerSpeedLevel = plugin.getConfigManager().getRedeemerSpeedLevel();
-        int holyRedemptionCooldown = plugin.getConfigManager().getHolyRedemptionCooldown();
-        int conversionInvincibilityTime = plugin.getConfigManager().getConversionInvincibilityTime();
-        boolean redeemerBroadcast = plugin.getConfigManager().isRedeemerBroadcastEnabled();
+        // 神圣守护效果配置
+        boolean teleportAttacker = plugin.getConfigManager().isHolyGuardianTeleportAttackerEnabled();
+        double teleportRadius = plugin.getConfigManager().getHolyGuardianTeleportRadius();
+        int effectDuration = plugin.getConfigManager().getHolyGuardianEffectDuration();
         
-        UUID divineGuardian = plugin.getDivineGuardianManager().getDivineGuardianPlayer();
-        String guardianName = divineGuardian != null ? Bukkit.getOfflinePlayer(divineGuardian).getName() : "无";
-        int remainingCharges = divineGuardian != null ? 
-            plugin.getDivineGuardianManager().getRemainingCharges(divineGuardian) : 0;
+        // 猎魔人阶段配置
+        int demonHunterPhaseStartTime = plugin.getConfigManager().getDemonHunterPhaseStartTime();
+        int demonHunterMaxUses = plugin.getConfigManager().getDemonHunterMaxUses();
+        int holyRedemptionCooldown = plugin.getConfigManager().getDemonHunterHolyRedemptionCooldown();
+        
+        // 收割者道具配置
+        int reaperDamagePerHit = plugin.getConfigManager().getReaperWeaponDamagePerHit();
+        int reaperHitsToKill = plugin.getConfigManager().getReaperWeaponHitsToKill();
+        double reaperAttackCooldown = plugin.getConfigManager().getReaperWeaponAttackCooldown();
+        boolean reaperEnchantGlow = plugin.getConfigManager().isReaperWeaponEnchantGlowEnabled();
+        
+        // 击杀奖励配置
+        double demonHunterKillReward = plugin.getConfigManager().getDemonHunterKillRewardRatio();
+        double motherKillDemonHunterReward = plugin.getConfigManager().getMotherKillDemonHunterRewardRatio();
+        
+        // 母体新增配置
+        boolean additionalMotherEnabled = plugin.getConfigManager().isAdditionalMotherEnabled();
+        int additionalMotherThreshold = plugin.getConfigManager().getAdditionalMotherPlayerThreshold();
+        boolean additionalMotherOnlyInPhase = plugin.getConfigManager().isAdditionalMotherOnlyInDemonHunterPhase();
+        
+        // 当前状态
+        boolean isDemonHunterPhase = plugin.getDivineGuardianManager().isInDemonHunterPhase();
+        int holyGuardianCount = 0; // 需要从管理器获取，暂时为0
+        int demonHunterCount = 0;  // 需要从管理器获取，暂时为0
         
         sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        sender.sendMessage(ChatColor.GOLD + "              ✨ 神圣守护状态 ✨");
+        sender.sendMessage(ChatColor.GOLD + "        ✨ 神圣守护状态 v2.2.2 ✨");
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "状态: " + (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
-        sender.sendMessage(ChatColor.YELLOW + "模式: " + ChatColor.GREEN + modeDisplay);
-        sender.sendMessage(ChatColor.YELLOW + "当前神圣守护玩家: " + ChatColor.GREEN + guardianName);
-        
-        if (modeDisplay.equals("神圣守护")) {
-            sender.sendMessage(ChatColor.YELLOW + "剩余使用次数: " + ChatColor.GREEN + remainingCharges);
-        } else if (modeDisplay.equals("救赎者") && divineGuardian != null) {
-            int remainingUses = plugin.getDivineGuardianManager().getRedeemerRemainingUses(divineGuardian);
-            sender.sendMessage(ChatColor.YELLOW + "神之救赎剩余次数: " + ChatColor.GREEN + remainingUses);
-        }
+        sender.sendMessage(ChatColor.YELLOW + "系统状态: " + (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
+        sender.sendMessage(ChatColor.YELLOW + "猎魔人阶段: " + (isDemonHunterPhase ? ChatColor.GREEN + "进行中" : ChatColor.RED + "未开始"));
+        sender.sendMessage(ChatColor.YELLOW + "神圣守护玩家数: " + ChatColor.GREEN + holyGuardianCount);
+        sender.sendMessage(ChatColor.YELLOW + "猎魔人玩家数: " + ChatColor.GREEN + demonHunterCount);
         
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW + "配置信息:");
-        sender.sendMessage(ChatColor.GRAY + "  • 模式: " + ChatColor.GREEN + modeDisplay + " (" + mode + ")");
-        sender.sendMessage(ChatColor.GRAY + "  • 最大使用次数: " + ChatColor.GREEN + maxCharges);
-        sender.sendMessage(ChatColor.GRAY + "  • 冷却时间: " + ChatColor.GREEN + cooldown + "秒");
+        sender.sendMessage(ChatColor.YELLOW + "基础配置:");
+        sender.sendMessage(ChatColor.GRAY + "  • 触发人数: " + ChatColor.GREEN + triggerHumanCount + " 位最后人类");
         sender.sendMessage(ChatColor.GRAY + "  • 广播消息: " + (broadcast ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
-        sender.sendMessage(ChatColor.GRAY + "  • 失效隐身时间: " + ChatColor.GREEN + invisibilityDuration + "秒");
         
-        if (modeDisplay.equals("救赎者")) {
-            sender.sendMessage("");
-            sender.sendMessage(ChatColor.YELLOW + "救赎者配置:");
-            sender.sendMessage(ChatColor.GRAY + "  • 神之救赎最大次数: " + ChatColor.GREEN + redeemerMaxUses);
-            sender.sendMessage(ChatColor.GRAY + "  • 救赎者速度等级: " + ChatColor.GREEN + redeemerSpeedLevel);
-            sender.sendMessage(ChatColor.GRAY + "  • 神之救赎冷却: " + ChatColor.GREEN + holyRedemptionCooldown + "秒");
-            sender.sendMessage(ChatColor.GRAY + "  • 转化后无敌时间: " + ChatColor.GREEN + conversionInvincibilityTime + "秒");
-            sender.sendMessage(ChatColor.GRAY + "  • 救赎者广播: " + (redeemerBroadcast ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
-        }
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.YELLOW + "神圣守护效果:");
+        sender.sendMessage(ChatColor.GRAY + "  • 传送攻击者: " + (teleportAttacker ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
+        sender.sendMessage(ChatColor.GRAY + "  • 传送半径: " + ChatColor.GREEN + teleportRadius + " 方块");
+        sender.sendMessage(ChatColor.GRAY + "  • 效果持续时间: " + ChatColor.GREEN + effectDuration + " 秒");
+        
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.YELLOW + "猎魔人阶段:");
+        sender.sendMessage(ChatColor.GRAY + "  • 开始时间: " + ChatColor.GREEN + "游戏剩余 " + demonHunterPhaseStartTime + " 秒");
+        sender.sendMessage(ChatColor.GRAY + "  • 神之救赎最大次数: " + ChatColor.GREEN + demonHunterMaxUses);
+        sender.sendMessage(ChatColor.GRAY + "  • 神之救赎冷却: " + ChatColor.GREEN + holyRedemptionCooldown + " 秒");
+        
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.YELLOW + "收割者道具:");
+        sender.sendMessage(ChatColor.GRAY + "  • 击杀所需攻击: " + ChatColor.GREEN + reaperHitsToKill + " 次");
+        sender.sendMessage(ChatColor.GRAY + "  • 攻击冷却: " + ChatColor.GREEN + reaperAttackCooldown + " 秒");
+        sender.sendMessage(ChatColor.GRAY + "  • 附魔光效: " + (reaperEnchantGlow ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
+        
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.YELLOW + "击杀奖励:");
+        sender.sendMessage(ChatColor.GRAY + "  • 猎魔人击杀鬼: " + ChatColor.GREEN + (demonHunterKillReward * 100) + "% 人类奖池");
+        sender.sendMessage(ChatColor.GRAY + "  • 母体击杀猎魔人: " + ChatColor.GREEN + (motherKillDemonHunterReward * 100) + "% 总奖池");
+        
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.YELLOW + "母体新增:");
+        sender.sendMessage(ChatColor.GRAY + "  • 功能状态: " + (additionalMotherEnabled ? ChatColor.GREEN + "开启" : ChatColor.RED + "关闭"));
+        sender.sendMessage(ChatColor.GRAY + "  • 玩家阈值: " + ChatColor.GREEN + additionalMotherThreshold + " 人");
+        sender.sendMessage(ChatColor.GRAY + "  • 仅猎魔人阶段: " + (additionalMotherOnlyInPhase ? ChatColor.GREEN + "是" : ChatColor.RED + "否"));
         
         sender.sendMessage(ChatColor.GOLD + "════════════════════════════════");
     }
@@ -387,6 +429,102 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.GREEN + "✅ 神圣守护数据已清除！");
     }
     
+    private void handleSetPhase(CommandSender sender, String secondsStr) {
+        try {
+            int seconds = Integer.parseInt(secondsStr);
+            
+            if (seconds < 30 || seconds > 300) {
+                sender.sendMessage(ChatColor.RED + "❌ 猎魔人阶段时间必须在30-300秒之间！");
+                return;
+            }
+            
+            plugin.getConfigManager().setDemonHunterPhaseActivateTime(seconds);
+            
+            sender.sendMessage(ChatColor.GREEN + "✅ 猎魔人阶段开始时间已设置为: " + seconds + "秒");
+            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+        }
+    }
+    
+    private void handleSetReward(CommandSender sender, String percentageStr) {
+        try {
+            double percentage = Double.parseDouble(percentageStr);
+            
+            if (percentage < 1 || percentage > 100) {
+                sender.sendMessage(ChatColor.RED + "❌ 奖励百分比必须在1-100之间！");
+                return;
+            }
+            
+            double ratio = percentage / 100.0;
+            plugin.getConfigManager().setDemonHunterKillReward(ratio);
+            
+            sender.sendMessage(ChatColor.GREEN + "✅ 猎魔人击杀奖励比例已设置为: " + percentage + "%");
+            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+        }
+    }
+    
+    private void handleSetMotherThreshold(CommandSender sender, String thresholdStr) {
+        try {
+            int threshold = Integer.parseInt(thresholdStr);
+            
+            if (threshold < 1 || threshold > 20) {
+                sender.sendMessage(ChatColor.RED + "❌ 母体新增阈值必须在1-20之间！");
+                return;
+            }
+            
+            plugin.getConfigManager().setAdditionalMotherThreshold(threshold);
+            
+            sender.sendMessage(ChatColor.GREEN + "✅ 母体新增玩家阈值已设置为: " + threshold + "人");
+            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+        }
+    }
+    
+    private void handleSetTriggerCount(CommandSender sender, String countStr) {
+        try {
+            int count = Integer.parseInt(countStr);
+            
+            if (count < 1 || count > 10) {
+                sender.sendMessage(ChatColor.RED + "❌ 触发神圣守护的人类玩家数量必须在1-10之间！");
+                return;
+            }
+            
+            plugin.getConfigManager().setDivineGuardianTriggerHumanCount(count);
+            
+            sender.sendMessage(ChatColor.GREEN + "✅ 触发神圣守护的人类玩家数量已设置为: " + count + "人");
+            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+        }
+    }
+    
+    private void handleSetReaperCooldown(CommandSender sender, String cooldownStr) {
+        try {
+            double cooldown = Double.parseDouble(cooldownStr);
+            
+            if (cooldown < 0.5 || cooldown > 30) {
+                sender.sendMessage(ChatColor.RED + "❌ 收割者攻击冷却时间必须在0.5-30秒之间！");
+                return;
+            }
+            
+            plugin.getConfigManager().setReaperWeaponAttackCooldown(cooldown);
+            
+            sender.sendMessage(ChatColor.GREEN + "✅ 收割者攻击冷却时间已设置为: " + cooldown + "秒");
+            sender.sendMessage(ChatColor.YELLOW + "注意：需要重新加载配置或重启游戏才能生效");
+            
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "❌ 请输入有效的数字！");
+        }
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> completions = new ArrayList<>();
@@ -395,27 +533,35 @@ public class DivineGuardianCommand implements CommandExecutor, TabCompleter {
             // 主命令补全
             completions.addAll(Arrays.asList(
                 "status", "enable", "disable", "reload", 
-                "setcharges", "setcooldown", "broadcast", 
-                "setmode", "info", "force", "clear"
+                "settriggercount", "setreapercooldown", "broadcast", 
+                "info", "force", "clear", "setphase", "setreward", "setmotherthreshold"
             ));
         } else if (args.length == 2) {
             String subCommand = args[0].toLowerCase();
             
             switch (subCommand) {
-                case "setcharges":
+                case "settriggercount":
                     completions.addAll(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
                     break;
                     
-                case "setcooldown":
-                    completions.addAll(Arrays.asList("1", "3", "5", "10", "15", "20", "30", "60"));
+                case "setreapercooldown":
+                    completions.addAll(Arrays.asList("1", "2", "3", "5", "10", "15", "20", "30"));
+                    break;
+                    
+                case "setphase":
+                    completions.addAll(Arrays.asList("30", "60", "90", "120", "150", "180", "210", "240", "270", "300"));
+                    break;
+                    
+                case "setreward":
+                    completions.addAll(Arrays.asList("10", "20", "30", "40", "50", "60", "70", "80", "90", "100"));
+                    break;
+                    
+                case "setmotherthreshold":
+                    completions.addAll(Arrays.asList("4", "6", "8", "10", "12", "14", "16", "18", "20"));
                     break;
                     
                 case "broadcast":
                     completions.addAll(Arrays.asList("on", "off", "true", "false"));
-                    break;
-                    
-                case "setmode":
-                    completions.addAll(Arrays.asList("1", "2", "mode1", "mode2"));
                     break;
                     
                 case "force":

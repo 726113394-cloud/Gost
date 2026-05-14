@@ -32,6 +32,7 @@ public class PlayerManager {
     private final Map<UUID, Long> survivalTimes = new HashMap<>();
     private final Map<UUID, Long> roleStartTimes = new HashMap<>();
     private final Map<UUID, Long> ghostAccumulatedTimes = new HashMap<>(); // 累计鬼时间（毫秒）
+    private final Set<UUID> convertedByRedemption = new HashSet<>(); // 被神之救赎转化的玩家
     
     public PlayerManager(Gost plugin) {
         this.plugin = plugin;
@@ -182,6 +183,9 @@ public class PlayerManager {
         // 设置玩家角色为人类
         setPlayerRole(playerId, PlayerRole.HUMAN);
         
+        // 标记为被神之救赎转化
+        convertedByRedemption.add(playerId);
+        
         // 应用人类效果
         applyRoleEffects(player, PlayerRole.HUMAN);
         
@@ -296,7 +300,7 @@ public class PlayerManager {
         List<UUID> humanPlayers = getHumanPlayers();
         
         // 检查神圣守护
-        plugin.getDivineGuardianManager().checkAndActivateDivineGuardian(humanPlayers);
+        plugin.getDivineGuardianManager().checkAndActivateHolyGuardian(humanPlayers);
     }
     
     // 显示感染效果
@@ -577,6 +581,9 @@ public class PlayerManager {
             player.removePotionEffect(effect.getType());
         }
         
+        // 移除黑暗效果和疾跑修复
+        plugin.getDarkEffectManager().removeDarkEffect(player);
+        
         // 恢复最大血量
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20.0);
         player.setHealth(20.0);
@@ -612,6 +619,11 @@ public class PlayerManager {
         return ghosts;
     }
     
+    // 检查玩家是否被神之救赎转化
+    public boolean isConvertedByRedemption(UUID playerId) {
+        return convertedByRedemption.contains(playerId);
+    }
+    
     // 清理所有玩家数据
     public void cleanup() {
         // 首先恢复所有在线玩家的状态
@@ -630,6 +642,7 @@ public class PlayerManager {
         survivalTimes.clear();
         roleStartTimes.clear();
         ghostAccumulatedTimes.clear();
+        convertedByRedemption.clear();
         
         // 清理玩家数据完成
         plugin.getLogger().info("清理玩家数据完成");

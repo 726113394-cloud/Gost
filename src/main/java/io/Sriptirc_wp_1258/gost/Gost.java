@@ -103,6 +103,7 @@ public class Gost extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new SelectionListener(this), this);
             getServer().getPluginManager().registerEvents(secondChanceListener, this);
             getServer().getPluginManager().registerEvents(new HolyRedemptionListener(this), this);
+            getServer().getPluginManager().registerEvents(new DemonHunterPhaseListener(this), this);
             
             getLogger().info("==========================================");
             getLogger().info("作者: 来自太空的小头脑");

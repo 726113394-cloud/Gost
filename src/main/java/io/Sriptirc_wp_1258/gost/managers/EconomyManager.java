@@ -5,6 +5,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -134,7 +135,11 @@ public class EconomyManager {
             distributeRewardsGhostWin(rewards);
         }
         
-        // 分发奖金
+        // 分发奖金并发送突出显示消息
+        Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "💰💰💰 最终奖金结算 💰💰💰");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
+        
         for (Map.Entry<UUID, Double> entry : rewards.entrySet()) {
             Player player = Bukkit.getPlayer(entry.getKey());
             if (player != null && player.isOnline()) {
@@ -142,13 +147,26 @@ public class EconomyManager {
                 if (reward > 0) {
                     EconomyResponse response = economy.depositPlayer(player, reward);
                     if (response.transactionSuccess()) {
-                        player.sendMessage(ChatColor.GREEN + "💰 你获得了 " + String.format("%.2f", reward) + " 金币奖励！");
+                        // 发送突出显示的个人奖金消息
+                        player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+                        player.sendMessage(ChatColor.YELLOW + "🎉 奖金已到账！");
+                        player.sendMessage(ChatColor.GREEN + "💰 最终获得: " + String.format("%.2f", reward) + " 金币");
+                        player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+                        
+                        // 额外提示音效
+                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
                     } else {
-                        player.sendMessage(ChatColor.RED + "发放奖励失败: " + response.errorMessage);
+                        player.sendMessage(ChatColor.RED + "❌ 发放奖励失败: " + response.errorMessage);
                     }
                 }
             }
         }
+        
+        // 广播奖金分发完成
+        Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
+        Bukkit.broadcastMessage(ChatColor.YELLOW + "✅ 所有奖金已发放完毕！");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
         
         // 重置奖池
         prizePool = 0.0;
@@ -399,8 +417,24 @@ public class EconomyManager {
         return prizePool;
     }
     
-    // 获取玩家贡献
     public double getPlayerContribution(UUID playerId) {
         return playerContributions.getOrDefault(playerId, 0.0);
+    }
+    
+    public boolean giveMoney(Player player, double amount) {
+        if (!isEconomyEnabled() || player == null || amount <= 0) {
+            return false;
+        }
+        
+        EconomyResponse response = economy.depositPlayer(player, amount);
+        return response.transactionSuccess();
+    }
+    
+    public double getHumanPrizePool() {
+        return prizePool * 0.7;
+    }
+    
+    public double getTotalPrizePool() {
+        return prizePool;
     }
 }

@@ -1,8 +1,8 @@
 # Gost 插件配置文件
-# 版本: 2.2.1
+# 版本: 2.2.2
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 20
+ScriptIrc-config-version: 25
 
 # 游戏设置
 game:
@@ -106,21 +106,55 @@ language:
   max-item-types-per-player: 6 # 玩家最多拥有的道具种类数量
 
 # 神圣守护设置
+# 神圣守护系统设置（v2.2.2重构）
 divine-guardian:
-  enabled: false             # 是否启用神圣守护（最后一位人类玩家获得特殊能力）
-  mode: "1"                  # 模式：1=神圣守护（感染免疫+随机传送），2=救赎者（转化鬼玩家）
-  max-charges: 3             # 最大使用次数（免疫感染的次数）
-  cooldown: 5                # 每次使用冷却时间（秒）
+  enabled: true              # 是否启用神圣守护系统
+  trigger-human-count: 2     # 触发神圣守护的人类玩家数量（最后N位人类）
   broadcast: true            # 是否广播神圣守护触发消息
-  invisibility-duration: 10  # 神圣守护失效后隐身持续时间（秒）
-
-# 救赎者设置（神圣守护模式2）
-redeemer:
-  max-uses: 2                # 神之救赎最大使用次数
-  speed-level: 1             # 救赎者速度效果等级（1=速度I）
-  holy-redemption-cooldown: 10 # 神之救赎冷却时间（秒）
-  conversion-invincibility-time: 5 # 转化后无敌时间（秒）
-  broadcast: true            # 是否广播救赎者消息
+  
+  # 神圣守护效果设置
+  holy-guardian:
+    teleport-attacker: true  # 随机传送尝试感染的鬼
+    teleport-radius: 10.0    # 随机传送半径（方块）
+    effect-duration: 30      # 神圣守护效果持续时间（秒），0表示永久直到猎魔人阶段
+    defense-charges: 3       # 神圣守护可抵挡的攻击次数
+    
+  # 猎魔人阶段设置
+  demon-hunter:
+    phase-start-time: 90     # 猎魔人阶段开始时间（游戏剩余秒数）
+    max-uses: 2              # 神之救赎道具最大使用次数（保持不变）
+    holy-redemption-cooldown: 10 # 神之救赎冷却时间（秒）
+    
+    # 收割者道具设置
+    reaper-weapon:
+      damage-per-hit: 1      # 每次攻击伤害
+      hits-to-kill: 2        # 击杀所需攻击次数
+      attack-cooldown: 2.0   # 攻击冷却时间（秒）
+      enchant-glow: true     # 是否显示附魔光效
+    
+    # 击杀奖励设置
+    kill-rewards:
+      demon-hunter-kill-reward: 0.3  # 猎魔人击杀鬼获得的奖金比例（从人类奖池分配）
+      mother-kill-demon-hunter-reward: 0.5  # 母体击杀猎魔人获得的奖金比例（高于感染奖励）
+    
+    # 复活机制设置
+    respawn:
+      enabled: true          # 是否启用鬼玩家复活机制
+      respawn-time: 15       # 复活时间（秒）
+    
+    # 血量设置（猎魔人阶段）
+    health:
+      ghost-normal: 2.0      # 普通鬼血量（猎魔人阶段）
+      ghost-mother: 3.0      # 母体鬼血量（猎魔人阶段）
+      demon-hunter: 2.0      # 猎魔人血量（猎魔人阶段）
+      mother-attack-damage: 1.0  # 母体攻击猎魔人造成的伤害
+      no-healing: true       # 猎魔人阶段禁止回血
+    
+    # 母体新增设置
+    additional-mother:
+      enabled: true          # 是否在猎魔人阶段新增母体
+      player-threshold: 8    # 触发新增母体的玩家总数阈值
+      only-in-demon-hunter-phase: true  # 是否只在猎魔人阶段新增
 
 # 鬼玩家粒子效果设置
 ghost-particle:

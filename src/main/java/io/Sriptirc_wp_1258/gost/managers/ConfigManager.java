@@ -116,20 +116,46 @@ public class ConfigManager {
         config.addDefault("language.default", "zh_CN"); // 默认语言
         config.addDefault("language.auto-detect", true); // 是否自动检测玩家语言
         
-        // 神圣守护设置
-        config.addDefault("divine-guardian.enabled", false); // 是否启用神圣守护
-        config.addDefault("divine-guardian.mode", "1"); // 模式：1=神圣守护，2=救赎者
-        config.addDefault("divine-guardian.max-charges", 3); // 最大使用次数
-        config.addDefault("divine-guardian.cooldown", 5); // 冷却时间（秒）
-        config.addDefault("divine-guardian.broadcast", true); // 是否广播消息
-        config.addDefault("divine-guardian.invisibility-duration", 10); // 失效隐身持续时间（秒）
+        // 神圣守护系统设置（v2.2.2重构）
+        config.addDefault("divine-guardian.enabled", true); // 是否启用神圣守护系统
+        config.addDefault("divine-guardian.trigger-human-count", 2); // 触发神圣守护的人类玩家数量（最后N位人类）
+        config.addDefault("divine-guardian.broadcast", true); // 是否广播神圣守护触发消息
         
-        // 救赎者设置（模式2）
-        config.addDefault("redeemer.max-uses", 2); // 神之救赎最大使用次数
-        config.addDefault("redeemer.speed-level", 1); // 救赎者速度效果等级（1=速度I）
-        config.addDefault("redeemer.holy-redemption-cooldown", 10); // 神之救赎冷却时间（秒）
-        config.addDefault("redeemer.conversion-invincibility-time", 5); // 转化后无敌时间（秒）
-        config.addDefault("redeemer.broadcast", true); // 是否广播救赎者消息
+        // 神圣守护效果设置
+        config.addDefault("divine-guardian.holy-guardian.teleport-attacker", true); // 随机传送尝试感染的鬼
+        config.addDefault("divine-guardian.holy-guardian.teleport-radius", 10.0); // 随机传送半径（方块）
+        config.addDefault("divine-guardian.holy-guardian.effect-duration", 30); // 神圣守护效果持续时间（秒），0表示永久直到猎魔人阶段
+        config.addDefault("divine-guardian.holy-guardian.defense-charges", 3); // 神圣守护可抵挡的攻击次数
+        
+        // 猎魔人阶段设置
+        config.addDefault("divine-guardian.demon-hunter.phase-start-time", 90); // 猎魔人阶段开始时间（游戏剩余秒数）
+        config.addDefault("divine-guardian.demon-hunter.max-uses", 2); // 神之救赎道具最大使用次数（保持不变）
+        config.addDefault("divine-guardian.demon-hunter.holy-redemption-cooldown", 10); // 神之救赎冷却时间（秒）
+        
+        // 收割者道具设置
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.damage-per-hit", 1); // 每次攻击伤害
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.hits-to-kill", 2); // 击杀所需攻击次数
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.attack-cooldown", 2.0); // 攻击冷却时间（秒）
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.enchant-glow", true); // 是否显示附魔光效
+        
+        // 击杀奖励设置
+        config.addDefault("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", 0.3); // 猎魔人击杀鬼获得的奖金比例（从人类奖池分配）
+        config.addDefault("divine-guardian.demon-hunter.kill-rewards.mother-kill-demon-hunter-reward", 0.5); // 母体击杀猎魔人获得的奖金比例（高于感染奖励）
+        
+        // 复活机制设置
+        config.addDefault("divine-guardian.demon-hunter.respawn.enabled", true); // 是否启用鬼玩家复活机制
+        config.addDefault("divine-guardian.demon-hunter.respawn.respawn-time", 15); // 复活时间（秒）
+        
+        // 血量设置（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.ghost-normal", 2.0); // 普通鬼血量（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.ghost-mother", 3.0); // 母体鬼血量（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.demon-hunter", 2.0); // 猎魔人血量（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.no-healing", true); // 猎魔人阶段禁止回血
+        
+        // 母体新增设置
+        config.addDefault("divine-guardian.demon-hunter.additional-mother.enabled", true); // 是否在猎魔人阶段新增母体
+        config.addDefault("divine-guardian.demon-hunter.additional-mother.player-threshold", 8); // 触发新增母体的玩家总数阈值
+        config.addDefault("divine-guardian.demon-hunter.additional-mother.only-in-demon-hunter-phase", true); // 是否只在猎魔人阶段新增
         
         // 鬼玩家粒子效果设置
         config.addDefault("ghost-particle.enabled", true); // 是否启用鬼玩家粒子效果
@@ -181,11 +207,25 @@ public class ConfigManager {
     }
     
     public double getEntryFee() {
+        ensureConfigLoaded();
         return config.getDouble("economy.entry-fee", 100.0);
     }
     
+    public void setEntryFee(double entryFee) {
+        ensureConfigLoaded();
+        config.set("economy.entry-fee", entryFee);
+        plugin.saveConfig();
+    }
+    
     public double getServerBonus() {
+        ensureConfigLoaded();
         return config.getDouble("economy.server-bonus", 5000.0);
+    }
+    
+    public void setServerBonus(double serverBonus) {
+        ensureConfigLoaded();
+        config.set("economy.server-bonus", serverBonus);
+        plugin.saveConfig();
     }
     
     public int getAdrenalineDuration() {
@@ -464,11 +504,6 @@ public class ConfigManager {
         return config.getInt("divine-guardian.cooldown", 5);
     }
     
-    public boolean isDivineGuardianBroadcastEnabled() {
-        ensureConfigLoaded();
-        return config.getBoolean("divine-guardian.broadcast", true);
-    }
-    
     public int getDivineGuardianInvisibilityDuration() {
         ensureConfigLoaded();
         return config.getInt("divine-guardian.invisibility-duration", 10);
@@ -633,5 +668,271 @@ public class ConfigManager {
     public void setMaxHealth(double maxHealth) {
         config.set("health.max-health", maxHealth);
         plugin.saveConfig();
+    }
+    
+    // ==============================================
+    // 神圣守护系统 v2.2.2 新配置方法
+    // ==============================================
+    
+    // 基础设置
+    public boolean isDivineGuardianSystemEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.enabled", true);
+    }
+    
+    public int getDivineGuardianTriggerHumanCount() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.trigger-human-count", 2);
+    }
+    
+    public boolean isDivineGuardianBroadcastEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.broadcast", true);
+    }
+    
+    // 神圣守护效果设置
+    public boolean isHolyGuardianTeleportAttackerEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.holy-guardian.teleport-attacker", true);
+    }
+    
+    public double getHolyGuardianTeleportRadius() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.holy-guardian.teleport-radius", 10.0);
+    }
+    
+    public int getHolyGuardianEffectDuration() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.holy-guardian.effect-duration", 30);
+    }
+    
+    public int getHolyGuardianDefenseCharges() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.holy-guardian.defense-charges", 3);
+    }
+    
+    // 猎魔人阶段设置
+    public int getDemonHunterPhaseStartTime() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.phase-start-time", 90);
+    }
+    
+    public int getDemonHunterMaxUses() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.max-uses", 2);
+    }
+    
+    public int getDemonHunterHolyRedemptionCooldown() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.holy-redemption-cooldown", 10);
+    }
+    
+    // 收割者道具设置
+    public int getReaperWeaponDamagePerHit() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.reaper-weapon.damage-per-hit", 1);
+    }
+    
+    public int getReaperWeaponHitsToKill() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.reaper-weapon.hits-to-kill", 2);
+    }
+    
+    public double getReaperWeaponAttackCooldown() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.reaper-weapon.attack-cooldown", 2.0);
+    }
+    
+    public boolean isReaperWeaponEnchantGlowEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.reaper-weapon.enchant-glow", true);
+    }
+    
+    // 击杀奖励设置
+    public double getDemonHunterKillRewardRatio() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", 0.3);
+    }
+    
+    public double getMotherKillDemonHunterRewardRatio() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.kill-rewards.mother-kill-demon-hunter-reward", 0.5);
+    }
+    
+    // 母体新增设置
+    public boolean isAdditionalMotherEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.additional-mother.enabled", true);
+    }
+    
+    public int getAdditionalMotherPlayerThreshold() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.additional-mother.player-threshold", 8);
+    }
+    
+    public boolean isAdditionalMotherOnlyInDemonHunterPhase() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.additional-mother.only-in-demon-hunter-phase", true);
+    }
+    
+    // 设置方法
+    public void setDivineGuardianSystemEnabled(boolean enabled) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianTriggerHumanCount(int count) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.trigger-human-count", count);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterPhaseStartTime(int seconds) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.phase-start-time", seconds);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterMaxUses(int uses) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.max-uses", uses);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterHolyRedemptionCooldown(int cooldown) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.holy-redemption-cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setReaperWeaponHitsToKill(int hits) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.reaper-weapon.hits-to-kill", hits);
+        plugin.saveConfig();
+    }
+    
+    public void setReaperWeaponAttackCooldown(double cooldown) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.reaper-weapon.attack-cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterKillRewardRatio(double ratio) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", ratio);
+        plugin.saveConfig();
+    }
+    
+    public void setMotherKillDemonHunterRewardRatio(double ratio) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.kill-rewards.mother-kill-demon-hunter-reward", ratio);
+        plugin.saveConfig();
+    }
+    
+    public void setAdditionalMotherPlayerThreshold(int threshold) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.additional-mother.player-threshold", threshold);
+        plugin.saveConfig();
+    }
+    
+    // 复活机制相关方法
+    public boolean isRespawnEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.respawn.enabled", true);
+    }
+    
+    public int getRespawnTime() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.respawn.respawn-time", 15);
+    }
+    
+    // 血量设置相关方法
+    public double getGhostNormalHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.ghost-normal", 2.0);
+    }
+    
+    public double getGhostMotherHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.ghost-mother", 3.0);
+    }
+    
+    public double getDemonHunterHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.demon-hunter", 2.0);
+    }
+    
+    public double getMotherAttackDamage() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.mother-attack-damage", 1.0);
+    }
+    
+    public boolean isNoHealingInDemonHunterPhase() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.health.no-healing", true);
+    }
+    
+    public void setRespawnEnabled(boolean enabled) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.respawn.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setRespawnTime(int seconds) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.respawn.respawn-time", seconds);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostNormalHealth(double health) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.ghost-normal", health);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostMotherHealth(double health) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.ghost-mother", health);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterHealth(double health) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.demon-hunter", health);
+        plugin.saveConfig();
+    }
+    
+    public void setNoHealingInDemonHunterPhase(boolean noHealing) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.no-healing", noHealing);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterPhaseActivateTime(int seconds) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.phase-start-time", seconds);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterKillReward(double ratio) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", ratio);
+        plugin.saveConfig();
+    }
+    
+    public void setAdditionalMotherThreshold(int threshold) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.additional-mother.player-threshold", threshold);
+        plugin.saveConfig();
+    }
+    
+    /**
+     * 检查Vault经济系统是否启用
+     */
+    public boolean isVaultEnabled() {
+        ensureConfigLoaded();
+        // 默认返回true，假设经济系统可用
+        return true;
     }
 }

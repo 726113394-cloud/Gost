@@ -2,7 +2,9 @@ package io.Sriptirc_wp_1258.gost.listeners;
 
 import io.Sriptirc_wp_1258.gost.Gost;
 import io.Sriptirc_wp_1258.gost.managers.PlayerManager;
+import java.util.UUID;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,9 +40,18 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
+        
+        // 检查玩家是否是旁观者
+        if (plugin.getDivineGuardianManager().isSpectator(playerId)) {
+            // 保持旁观模式
+            player.setGameMode(GameMode.SPECTATOR);
+            player.sendMessage("§c§l[游戏结束] §c你已被淘汰，处于旁观模式");
+            return;
+        }
         
         // 如果玩家在游戏中，传送到游戏区域
-        if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
+        if (plugin.getPlayerManager().getAllPlayers().contains(playerId)) {
             if (plugin.getConfigManager().isAutoTeleportEnabled()) {
                 io.Sriptirc_wp_1258.gost.managers.AreaManager.GameArea selectedArea = plugin.getAreaManager().getSelectedArea();
                 if (selectedArea != null) {

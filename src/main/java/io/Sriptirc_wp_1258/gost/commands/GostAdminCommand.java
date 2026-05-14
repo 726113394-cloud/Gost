@@ -69,6 +69,8 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 return handleDark(sender, args);
             case "heartbeat":
                 return handleHeartbeat(sender, args);
+            case "economy":
+                return handleEconomy(sender, args);
             case "help":
                 sendHelp(sender);
                 return true;
@@ -476,6 +478,88 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         return true;
     }
     
+    private boolean handleEconomy(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "用法: /gostadmin economy <set|status>");
+            sender.sendMessage(ChatColor.YELLOW + "  set entryfee <金额> - 设置入场费金额");
+            sender.sendMessage(ChatColor.YELLOW + "  set serverbonus <金额> - 设置服务器奖金金额");
+            sender.sendMessage(ChatColor.YELLOW + "  status - 查看当前经济设置");
+            return true;
+        }
+        
+        String action = args[1].toLowerCase();
+        
+        switch (action) {
+            case "set":
+                return handleEconomySet(sender, args);
+                
+            case "status":
+                double entryFee = plugin.getConfigManager().getEntryFee();
+                double serverBonus = plugin.getConfigManager().getServerBonus();
+                
+                sender.sendMessage(ChatColor.GOLD + "=== 经济设置状态 ===");
+                sender.sendMessage(ChatColor.YELLOW + "入场费: " + ChatColor.GREEN + entryFee + " 金币");
+                sender.sendMessage(ChatColor.YELLOW + "服务器奖金: " + ChatColor.GREEN + serverBonus + " 金币");
+                sender.sendMessage(ChatColor.GRAY + "总奖池 = 入场费 × 玩家数 + 服务器奖金");
+                break;
+                
+            default:
+                sender.sendMessage(ChatColor.RED + "未知操作！使用 /gostadmin economy 查看帮助");
+                break;
+        }
+        
+        return true;
+    }
+    
+    private boolean handleEconomySet(CommandSender sender, String[] args) {
+        if (args.length < 4) {
+            sender.sendMessage(ChatColor.RED + "用法: /gostadmin economy set <entryfee|serverbonus> <金额>");
+            sender.sendMessage(ChatColor.YELLOW + "示例: /gostadmin economy set entryfee 150");
+            sender.sendMessage(ChatColor.YELLOW + "示例: /gostadmin economy set serverbonus 10000");
+            return true;
+        }
+        
+        String setting = args[2].toLowerCase();
+        String valueStr = args[3];
+        
+        try {
+            double value = Double.parseDouble(valueStr);
+            
+            if (value < 0) {
+                sender.sendMessage(ChatColor.RED + "金额不能为负数！");
+                return true;
+            }
+            
+            switch (setting) {
+                case "entryfee":
+                case "entry-fee":
+                case "entry_fee":
+                    plugin.getConfigManager().setEntryFee(value);
+                    sender.sendMessage(ChatColor.GREEN + "入场费已设置为: " + ChatColor.YELLOW + value + " 金币");
+                    sender.sendMessage(ChatColor.GRAY + "玩家加入游戏队列时需要支付此金额作为入场费");
+                    break;
+                    
+                case "serverbonus":
+                case "server-bonus":
+                case "server_bonus":
+                    plugin.getConfigManager().setServerBonus(value);
+                    sender.sendMessage(ChatColor.GREEN + "服务器奖金已设置为: " + ChatColor.YELLOW + value + " 金币");
+                    sender.sendMessage(ChatColor.GRAY + "此金额将添加到每场游戏的总奖池中");
+                    break;
+                    
+                default:
+                    sender.sendMessage(ChatColor.RED + "未知设置！可用设置: entryfee, serverbonus");
+                    return true;
+            }
+            
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "无效的金额格式！请输入有效的数字");
+            return true;
+        }
+        
+        return true;
+    }
+    
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "========== Gost 管理员命令 ==========");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin start <区域> - 使用指定区域开始游戏");
@@ -494,6 +578,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin dark <on|off|status> - 黑暗效果管理");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin heartbeat <on|off|status> - 心跳声效果管理");
+        sender.sendMessage(ChatColor.YELLOW + "/gostadmin economy <set|status> - 经济设置管理");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin help - 显示此帮助");
         sender.sendMessage(ChatColor.GOLD + "==================================");
     }
@@ -512,7 +597,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "help"};
+            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "economy", "help"};
             for (String subCommand : subCommands) {
                 if (subCommand.startsWith(args[0].toLowerCase())) {
                     completions.add(subCommand);
@@ -546,6 +631,14 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                         completions.add(heartbeatSubCommand);
                     }
                 }
+            } else if (subCommand.equals("economy")) {
+                // economy子命令自动补全
+                String[] economySubCommands = {"set", "status"};
+                for (String economySubCommand : economySubCommands) {
+                    if (economySubCommand.startsWith(args[1].toLowerCase())) {
+                        completions.add(economySubCommand);
+                    }
+                }
             }
         } else if (args.length == 3) {
             String subCommand = args[0].toLowerCase();
@@ -556,6 +649,14 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 for (String action : actions) {
                     if (action.startsWith(args[2].toLowerCase())) {
                         completions.add(action);
+                    }
+                }
+            } else if (subCommand.equals("economy") && args.length >= 2 && args[1].equalsIgnoreCase("set")) {
+                // economy set命令的第三个参数补全：entryfee, serverbonus
+                String[] settings = {"entryfee", "serverbonus"};
+                for (String setting : settings) {
+                    if (setting.startsWith(args[2].toLowerCase())) {
+                        completions.add(setting);
                     }
                 }
             }

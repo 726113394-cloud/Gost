@@ -42,8 +42,12 @@ public class ItemListener implements Listener {
             return;
         }
         
-        // 检查是否是右键操作
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+        // 检查是否是左键或右键操作（支持左右键使用道具）
+        Action action = event.getAction();
+        boolean isRightClick = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
+        boolean isLeftClick = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
+        
+        if (!isRightClick && !isLeftClick) {
             return;
         }
         

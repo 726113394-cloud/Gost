@@ -25,24 +25,27 @@ public class InfectionListener implements Listener {
         Player attacker = (Player) event.getDamager();
         Player victim = (Player) event.getEntity();
         
-        // 检查游戏是否在进行中
         if (!plugin.getGameManager().isGameRunning()) {
             return;
         }
         
-        // 检查攻击者是否是鬼
+        if (plugin.getDivineGuardianManager().isDemonHunter(attacker.getUniqueId()) && 
+            plugin.getPlayerManager().isGhost(victim.getUniqueId())) {
+            if (plugin.getDivineGuardianManager().handleDemonHunterAttack(attacker, victim)) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+        
         if (!plugin.getPlayerManager().isGhost(attacker.getUniqueId())) {
             return;
         }
         
-        // 检查受害者是否是人类
         if (!plugin.getPlayerManager().isHuman(victim.getUniqueId())) {
             return;
         }
         
-        // 检查神圣守护
-        if (plugin.getDivineGuardianManager().handleDivineGuardianTrigger(victim, attacker)) {
-            // 神圣守护触发，取消感染
+        if (plugin.getDivineGuardianManager().handleGhostAttack(attacker, victim)) {
             event.setCancelled(true);
             return;
         }
@@ -75,35 +78,44 @@ public class InfectionListener implements Listener {
         Player attacker = event.getPlayer();
         Player victim = (Player) event.getRightClicked();
         
-        // 检查游戏是否在进行中
         if (!plugin.getGameManager().isGameRunning()) {
             return;
         }
         
-        // 检查攻击者是否是鬼
+        if (plugin.getDivineGuardianManager().isDemonHunter(attacker.getUniqueId()) && 
+            plugin.getPlayerManager().isGhost(victim.getUniqueId())) {
+            // 猎魔人右键攻击鬼玩家
+            if (plugin.getDivineGuardianManager().handleDemonHunterAttack(attacker, victim)) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+        
         if (!plugin.getPlayerManager().isGhost(attacker.getUniqueId())) {
             return;
         }
         
-        // 检查受害者是否是人类
         if (!plugin.getPlayerManager().isHuman(victim.getUniqueId())) {
             return;
         }
         
-        // 检查神圣守护
-        if (plugin.getDivineGuardianManager().handleDivineGuardianTrigger(victim, attacker)) {
-            // 神圣守护触发，取消感染
+        if (plugin.getDivineGuardianManager().handleGhostAttack(attacker, victim)) {
+            event.setCancelled(true);
             return;
         }
         
         // 检查一次机会道具
         if (plugin.getSecondChanceListener().checkAndTriggerSecondChance(victim, attacker, null)) {
             // 一次机会触发，取消感染
+            event.setCancelled(true);
             return;
         }
         
         // 执行感染
         plugin.getPlayerManager().infectPlayer(victim.getUniqueId(), attacker.getUniqueId());
+        
+        // 取消事件（防止其他插件处理）
+        event.setCancelled(true);
         
         // 发送消息
         attacker.sendMessage("§a你成功感染了 " + victim.getName() + "！");
