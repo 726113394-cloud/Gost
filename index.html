@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gost v2.2.2 完整文档 | 鬼抓人 · 救赎者 · 猎魔人 多阶段对抗插件</title>
+    <title>Gost v2.2.3 完整文档 | 鬼抓人 · 救赎者 · 猎魔人 多阶段对抗插件</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 样式代码与之前完全相同，为避免重复且节省篇幅，此处省略样式代码（原样保留） */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #0a0c12; font-family: 'Inter', sans-serif; color: #eef2ff; line-height: 1.5; scroll-behavior: smooth; }
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -2; background: radial-gradient(circle at 30% 20%, rgba(80, 30, 40, 0.4), #0a0c12 85%); }
@@ -87,7 +86,7 @@
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.2.2</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.2.3</span></div>
         <div class="lang-switch">
             <button class="lang-btn active" data-lang="zh">中文</button>
             <button class="lang-btn" data-lang="en">English</button>
@@ -100,8 +99,8 @@
     <div id="zh-content" class="lang-content active-lang">
         <div style="padding: 1.5rem 0 1rem;">
             <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段对抗插件</h1>
-            <p><strong>Gost v2.2.2</strong> — 一款基于 Bukkit/Spigot 1.20.x 的多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
-            <div class="badge">⚡ 救赎者系统 | 🎮 模式切换 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 猎魔人阶段</div>
+            <p><strong>Gost v2.2.3</strong> — 一款基于 Bukkit/Spigot 1.20.x 的多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
+            <div class="badge">⚡ 救赎者系统 | 🎮 模式切换 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 猎魔人阶段 | 🔊 音效系统全面更新</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
                 <a href="https://github.com/726113394-cloud/Gost" target="_blank" class="link-btn"><i class="fab fa-github"></i> GitHub 仓库</a>
@@ -201,7 +200,7 @@
             </div>
         </div>
 
-        <!-- 道具系统（卡片网格保留，描述折叠） -->
+        <!-- 道具系统（卡片网格 + 模态框详情，已包含音效和详细说明） -->
         <div class="section">
             <div class="section-title">🧰 道具系统</div>
             <div class="collapsible">
@@ -213,6 +212,35 @@
                 </div>
             </div>
             <div class="grid-3col" id="items-list-zh"></div>
+        </div>
+
+        <!-- 发放道具音效 & 阵容切换音效（新增） -->
+        <div class="section">
+            <div class="section-title">🔊 音效系统</div>
+            <div class="collapsible">
+                <div class="collapsible-header">📖 展开查看音效详情 <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <h3>发放道具音效</h3>
+                        <ul>
+                            <li>每个玩家获得道具时播放：<code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）</li>
+                            <li>发放完毕全局提示：<code>BLOCK_NOTE_BLOCK_PLING</code></li>
+                        </ul>
+                        <h3>阵容切换音效</h3>
+                        <ul>
+                            <li>👤 人类 → 👻 鬼：<code>ENTITY_VEX_AMBIENT</code>（阴森低鸣）</li>
+                            <li>👻 鬼 → 👤 人类：<code>ENTITY_PLAYER_LEVELUP</code>（升级音效）</li>
+                        </ul>
+                        <h3>阶段音效</h3>
+                        <ul>
+                            <li>准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）</li>
+                            <li>游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）</li>
+                            <li>人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code></li>
+                            <li>鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- 鬼转人类功能（折叠） -->
@@ -252,7 +280,7 @@
                         </div>
                         <h3>个人奖金计算</h3>
                         <div class="table-wrapper">
-                            </table>
+                            <table>
                                 <tr><th>阵营</th><th>分配方式</th></tr>
                                 <tr><td>👤 人类</td><td>100% 按 <strong>存活时间比例</strong> 分配</td></tr>
                                 <tr><td>👻 鬼</td><td>70% 按 <strong>鬼存活时间</strong> + 30% 按 <strong>感染人数比例</strong> 分配</td></tr>
@@ -399,7 +427,7 @@ ghost-particle:
             </div>
         </div>
 
-        <!-- 版本历史（本身折叠） -->
+        <!-- 版本历史（包含 v2.2.3） -->
         <div class="section">
             <div class="section-title">📈 版本历史</div>
             <div class="version-list" id="version-list-zh"></div>
@@ -412,8 +440,8 @@ ghost-particle:
     <div id="en-content" class="lang-content">
         <div style="padding:1.5rem 0 1rem;">
             <h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — Ghost Chase · Redeemer · Demon Hunter Multi-Stage Confrontation Plugin</h1>
-            <p><strong>Gost v2.2.2</strong> — A multiplayer mini-game plugin for Bukkit/Spigot 1.20.x.<br>Inspired by <strong>Dead Realm</strong> — honoring the deceased masterpiece that brought countless joys, and attempting to recreate the tension and fun of chase and confrontation in Minecraft.</p>
-            <div class="badge">⚡ Redeemer System | 🎮 Mode Switching | 🌑 Dark Effect + Sprint | 🔧 Queue Optimization | ✨ Demon Hunter Phase</div>
+            <p><strong>Gost v2.2.3</strong> — A multiplayer mini-game plugin for Bukkit/Spigot 1.20.x.<br>Inspired by <strong>Dead Realm</strong> — honoring the deceased masterpiece that brought countless joys, and attempting to recreate the tension and fun of chase and confrontation in Minecraft.</p>
+            <div class="badge">⚡ Redeemer System | 🎮 Mode Switching | 🌑 Dark Effect + Sprint | 🔧 Queue Optimization | ✨ Demon Hunter Phase | 🔊 Sound System Overhaul</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Download on Modrinth</a>
                 <a href="https://github.com/726113394-cloud/Gost" target="_blank" class="link-btn"><i class="fab fa-github"></i> GitHub Repository</a>
@@ -452,7 +480,7 @@ ghost-particle:
                         </div>
                         <h3>Special Roles</h3>
                         <div class="table-wrapper">
-                            <table>
+                            </table>
                                 <tr><th>Role</th><th>Description</th></tr>
                                 <tr><td>🛡️ Divine Guardian</td><td>Activates when few humans remain, blocks <strong>3</strong> attacks, teleports attacker on each hit.</td></tr>
                                 <tr><td>🎯 Demon Hunter</td><td>Transformed from Divine Guardian during Demon Hunter phase, holds <strong>Reaper</strong> to kill ghosts.</td></tr>
@@ -513,7 +541,7 @@ ghost-particle:
             </div>
         </div>
 
-        <!-- Item System (Cards + Collapsible description) -->
+        <!-- Item System (Cards + Modal) -->
         <div class="section">
             <div class="section-title">🧰 Item System</div>
             <div class="collapsible">
@@ -525,6 +553,35 @@ ghost-particle:
                 </div>
             </div>
             <div class="grid-3col" id="items-list-en"></div>
+        </div>
+
+        <!-- Sound System Details (新增) -->
+        <div class="section">
+            <div class="section-title">🔊 Sound System</div>
+            <div class="collapsible">
+                <div class="collapsible-header">📖 Expand Sound Details <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <h3>Item Distribution Sounds</h3>
+                        <ul>
+                            <li>Each player receives an item: <code>ENTITY_ITEM_PICKUP</code> (different pitch per item)</li>
+                            <li>Global distribution complete: <code>BLOCK_NOTE_BLOCK_PLING</code></li>
+                        </ul>
+                        <h3>Faction Switch Sounds</h3>
+                        <ul>
+                            <li>👤 Human → 👻 Ghost: <code>ENTITY_VEX_AMBIENT</code> (eerie hum)</li>
+                            <li>👻 Ghost → 👤 Human: <code>ENTITY_PLAYER_LEVELUP</code> (level up sound)</li>
+                        </ul>
+                        <h3>Phase Sounds</h3>
+                        <ul>
+                            <li>Last 3 seconds of preparation countdown: <code>BLOCK_NOTE_BLOCK_HAT</code> (once per second)</li>
+                            <li>Game start: <code>ENTITY_ENDER_DRAGON_GROWL</code> (global)</li>
+                            <li>Human victory: Humans hear <code>UI_TOAST_CHALLENGE_COMPLETE</code>, Ghosts hear <code>ENTITY_WITHER_DEATH</code></li>
+                            <li>Ghost victory: Ghosts hear <code>UI_TOAST_CHALLENGE_COMPLETE</code>, Humans hear <code>ENTITY_WITHER_DEATH</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Ghost-to-Human Feature (Collapsible) -->
@@ -711,7 +768,7 @@ ghost-particle:
             </div>
         </div>
 
-        <!-- Version History (Collapsible) -->
+        <!-- Version History (包含 v2.2.3) -->
         <div class="section">
             <div class="section-title">📈 Version History</div>
             <div class="version-list" id="version-list-en"></div>
@@ -721,7 +778,7 @@ ghost-particle:
     </div>
 </div>
 
-<div class="watermark">Gost v2.2.2 | 来自太空的小头脑</div>
+<div class="watermark">Gost v2.2.3 | 来自太空的小头脑</div>
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
 
 <script>
@@ -763,32 +820,32 @@ ghost-particle:
         container.addEventListener('mouseleave', () => { if(carouselImages.length>1) interval = setInterval(next, 5000); });
     }
 
-    // ========== Chinese item details ==========
+    // ========== 中文道具详细数据（完整版，包含音效） ==========
     const itemsDetailZh = {
-        reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器", faction: "human", detail: "效果：攻击鬼玩家两次击杀<br>冷却时间：2秒<br>说明：猎魔人阶段自动获得，可对鬼造成伤害，基于伤害值而非攻击次数击杀。" },
-        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：将已感染的鬼变回人类<br>使用次数：2次（可配置）<br>冷却时间：10秒<br>说明：救赎者模式下最后人类获得，使用后随机传送至安全位置。" },
-        secondChance: { name: "❤️ 第二次机会", desc: "被动触发", faction: "human", detail: "效果：被感染后自动触发，给予一次额外生存机会<br>冷却时间：180秒<br>说明：抵挡一次感染并随机传送，触发后给攻击者缓慢效果。" },
-        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：对所有玩家生效的冰冻控制<br>持续时间：减速IV 4秒<br>说明：投掷命中后大幅降低目标移动速度。" },
-        stinkySteak: { name: "🥩 臭牛排", desc: "速度道具", faction: "neutral", detail: "效果：无视饱食度直接食用<br>速度效果：速度II 14秒<br>发光效果：10秒<br>冷却时间：30秒" },
-        soulControl: { name: "🔮 控魂术", desc: "控制类道具", faction: "human", detail: "效果：冻结所有鬼玩家<br>持续时间：6秒<br>冷却时间：18秒" },
-        soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：所有玩家高亮显示<br>持续时间：25秒<br>冷却时间：35秒<br>说明：仅鬼玩家可使用。" },
-        teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：右键投掷后传送到落点位置<br>冷却时间：20秒<br>说明：人类和鬼玩家均可使用。" },
-        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：右键使用获得速度II效果<br>持续时间：10秒<br>说明：大幅提升移动速度，用于逃生或追击。" },
-        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：右键使用获得速度II效果<br>持续时间：10秒<br>说明：鬼玩家快速追击人类。" }
+        reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器", faction: "human", detail: "效果：猎魔人阶段自动获得，攻击鬼玩家造成配置的伤害值，显示伤害量和剩余血量，鬼血量归零后进入旁观模式并触发复活倒计时。<br>冷却时间：2秒<br>使用音效：无（近战攻击）" },
+        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容，有使用次数限制（默认2次），使用后救赎者被随机传送到安全位置。<br>冷却时间：10秒<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
+        secondChance: { name: "❤️ 第二次机会", desc: "被动触发", faction: "human", detail: "效果：人类玩家被鬼感染时自动触发，免疫本次感染并保留人类身份，触发后进入冷却（180秒），冷却期间被感染则正常变为鬼。<br>冷却时间：180秒<br>使用音效：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code>" },
+        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：投掷后对命中的玩家施加 <strong>缓慢 III（3秒）</strong> 效果，对所有玩家（人类/鬼）均生效，可用于逃跑或追击。<br>使用音效：投掷 <code>ENTITY_SNOWBALL_THROW</code>" },
+        stinkySteak: { name: "🥩 臭牛排", desc: "速度道具", faction: "neutral", detail: "效果：使用后无视饱食度直接获得 <strong>速度 III（5秒）</strong> 效果，附带发光效果标记使用者位置。<br>使用音效：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
+        soulControl: { name: "🔮 控魂术", desc: "控制类道具", faction: "human", detail: "效果：对人类玩家使用可短暂控制附近的鬼玩家，使其无法移动或攻击。<br>冷却时间：18秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
+        soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：使用后在小地图或方位指示器上显示附近鬼玩家的位置。<br>冷却时间：35秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
+        teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
+        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
+        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" }
     };
 
-    // ========== English item details (fully translated) ==========
+    // 英文道具详细数据（同步更新）
     const itemsDetailEn = {
-        reaper: { name: "🗡️ Reaper", desc: "Demon Hunter exclusive weapon", faction: "human", detail: "Effect: Kills a ghost in 2 hits.<br>Cooldown: 2 seconds<br>Note: Automatically obtained during Demon Hunter phase, deals damage based on configured damage value (not number of attacks)." },
-        holyRedemption: { name: "💊 Holy Redemption", desc: "Redeemer exclusive item", faction: "human", detail: "Effect: Converts an infected ghost back to a human.<br>Uses: 2 times (configurable)<br>Cooldown: 10 seconds<br>Note: Obtained by the last human in Redeemer mode, teleports user to a safe location after use." },
-        secondChance: { name: "❤️ Second Chance", desc: "Passive trigger", faction: "human", detail: "Effect: Automatically triggers upon infection, grants an extra survival chance.<br>Cooldown: 180 seconds<br>Note: Blocks infection once and teleports the user; applies slowness to the attacker." },
-        iceBall: { name: "🧊 Ice Ball", desc: "Throwable control item", faction: "neutral", detail: "Effect: Freezes control that affects all players.<br>Duration: Slow IV for 4 seconds<br>Note: Drastically reduces target movement speed on hit." },
-        stinkySteak: { name: "🥩 Stinky Steak", desc: "Speed item", faction: "neutral", detail: "Effect: Eat regardless of hunger.<br>Speed effect: Speed II for 14 seconds<br>Glowing effect: 10 seconds<br>Cooldown: 30 seconds" },
-        soulControl: { name: "🔮 Soul Control", desc: "Control item", faction: "human", detail: "Effect: Freezes all ghosts.<br>Duration: 6 seconds<br>Cooldown: 18 seconds" },
-        soulDetector: { name: "👁️ Soul Detector", desc: "Detection item", faction: "ghost", detail: "Effect: Highlights all players.<br>Duration: 25 seconds<br>Cooldown: 35 seconds<br>Note: Ghost-only." },
-        teleportPearl: { name: "🪄 Teleport Pearl", desc: "Tactical teleport item", faction: "neutral", detail: "Effect: Right-click to throw and teleport to landing point.<br>Cooldown: 20 seconds<br>Note: Usable by both humans and ghosts." },
-        adrenaline: { name: "🧪 Adrenaline", desc: "Human only", faction: "human", detail: "Effect: Right-click to gain Speed II.<br>Duration: 10 seconds<br>Note: Greatly increases movement speed for escape or pursuit." },
-        frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only", faction: "ghost", detail: "Effect: Right-click to gain Speed II.<br>Duration: 10 seconds<br>Note: Allows ghosts to chase humans quickly." }
+        reaper: { name: "🗡️ Reaper", desc: "Demon Hunter exclusive weapon", faction: "human", detail: "Effect: Deals configured damage per hit, displays damage and remaining health. Ghosts enter spectator mode when health reaches zero and trigger respawn timer.<br>Cooldown: 2 seconds<br>Sound: None (melee)" },
+        holyRedemption: { name: "💊 Holy Redemption", desc: "Redeemer exclusive item", faction: "human", detail: "Effect: Converts a ghost back to human. Limited uses (default 2). Teleports Redeemer to safe location after use.<br>Cooldown: 10 seconds<br>Sound: <code>ITEM_TOTEM_USE</code>" },
+        secondChance: { name: "❤️ Second Chance", desc: "Passive trigger", faction: "human", detail: "Effect: Triggers when a human is infected, blocks infection and keeps human identity. Cooldown 180s.<br>Sound: User <code>ITEM_TOTEM_USE</code>, attacker ghost <code>ENTITY_ELDER_GUARDIAN_CURSE</code>, others <code>ENTITY_PLAYER_LEVELUP</code>" },
+        iceBall: { name: "🧊 Ice Ball", desc: "Throwable control item", faction: "neutral", detail: "Effect: Applies <strong>Slowness III (3s)</strong> to hit player. Affects both humans and ghosts.<br>Sound: <code>ENTITY_SNOWBALL_THROW</code>" },
+        stinkySteak: { name: "🥩 Stinky Steak", desc: "Speed item", faction: "neutral", detail: "Effect: Grants <strong>Speed III (5s)</strong> regardless of hunger. Also applies glowing effect.<br>Sound: <code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
+        soulControl: { name: "🔮 Soul Control", desc: "Control item", faction: "human", detail: "Effect: Briefly controls nearby ghosts, preventing movement and attack.<br>Cooldown: 18 seconds<br>Sound: User <code>ENTITY_ILLUSIONER_CAST_SPELL</code>, affected ghost <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
+        soulDetector: { name: "👁️ Soul Detector", desc: "Detection item", faction: "ghost", detail: "Effect: Reveals nearby ghost positions on minimap or direction indicator.<br>Cooldown: 35 seconds<br>Sound: User <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>, global <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
+        teleportPearl: { name: "🪄 Teleport Pearl", desc: "Tactical teleport item", faction: "neutral", detail: "Effect: Teleports player to pearl landing point. Usable by both factions.<br>Cooldown: 20 seconds<br>Sound: <code>ENTITY_ENDER_PEARL_THROW</code>" },
+        adrenaline: { name: "🧪 Adrenaline", desc: "Human only", faction: "human", detail: "Effect: Grants speed boost.<br>Sound: <code>ENTITY_PLAYER_SPLASH</code>" },
+        frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only", faction: "ghost", detail: "Effect: Grants speed boost.<br>Sound: <code>ENTITY_WITHER_SHOOT</code>" }
     };
 
     function renderItems(lang) {
@@ -844,10 +901,11 @@ ghost-particle:
         renderVersionList(lang);
     }
 
-    // ========== Version History (Chinese, complete) ==========
+    // 版本数据（包含 v2.2.3 详细更新）
     const versionData = {
         zh: [
-            { version: "v2.2.2", tag: "当前版本", content: "<strong>1. 鬼玩家复活机制</strong>：猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。<br><strong>2. 智能血量调整系统</strong>：普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。<br><strong>3. 禁止回血机制</strong>：猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。<br><strong>4. 收割者伤害系统</strong>：基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。<br><strong>5. 神圣守护3次抵挡机制</strong>：母体需攻击3次才能破除猎魔人守护，普通鬼猎魔人阶段无法感染只能躲避猎杀。<br><strong>6. 猎魔人阶段自动激活所有人类神圣守护</strong>，无猎魔人时广播提示。<br>配置项：divine-guardian.demon-hunter 下可调整复活时间、血量、伤害等参数。" },
+            { version: "v2.2.3", tag: "当前版本", content: "🔊 新增音效系统：<br><br><strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br><br><strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br><br><strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br><br><strong>阵容切换音效：</strong><br>• 人类→鬼：<code>ENTITY_VEX_AMBIENT</code>（阴森低鸣）<br>• 鬼→人类：<code>ENTITY_PLAYER_LEVELUP</code>（升级音效）<br><br>⚙️ 配置自动迁移：检测到配置版本不一致时，自动读取旧配置中的所有值，生成新配置后将旧值写回（仅迁移新配置中存在的键，废弃项自动过滤），新增项使用默认值，旧配置备份为 config_old_v{版本号}.yml。服主更新插件后无需手动编辑配置。<br><br>配置版本升级到26。" },
+            { version: "v2.2.2", tag: "", content: "<strong>1. 鬼玩家复活机制</strong>：猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。<br><strong>2. 智能血量调整系统</strong>：普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。<br><strong>3. 禁止回血机制</strong>：猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。<br><strong>4. 收割者伤害系统</strong>：基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。<br><strong>5. 神圣守护3次抵挡机制</strong>：母体需攻击3次才能破除猎魔人守护，普通鬼猎魔人阶段无法感染只能躲避猎杀。<br><strong>6. 猎魔人阶段自动激活所有人类神圣守护</strong>，无猎魔人时广播提示。<br>配置项：divine-guardian.demon-hunter 下可调整复活时间、血量、伤害等参数。" },
             { version: "v2.2.1_Cover", tag: "语言系统全面优化", content: "🎯 语言系统全面优化（Cover version核心改进）：大幅扩充默认消息库，90+条默认中文消息，智能消息回退机制，错误隔离保护，插件启动保护。<br>🛠️ 游戏平衡性调整：凝冰球修复（对所有玩家生效），默认血量调整为10颗心，道具系统优化，配置版本更新（v19→v20）。<br>🌑 黑暗效果与疾跑并存系统：原生DARKNESS效果，属性修改器增加30%移动速度，智能检查机制，版本兼容性。<br>🛡️ 神圣守护系统修复：触发修复，救赎者模式优化，模式切换稳定性，冷却时间修复。<br>🎯 道具系统修复：\"一次机会\"道具修复，冷却时间同步，发放逻辑优化，使用反馈增强。<br>⚙️ 配置系统升级：配置版本升级到20，黑暗效果描述更新为\"不影响疾跑\"，黑暗效果默认启用。" },
             { version: "v2.2.0", tag: "", content: "⚡ 神圣守护模式2 - 救赎者系统：最后一名人类成为救赎者，神之救赎道具转化鬼玩家，随机传送，2次使用限制，高亮显示+速度效果。<br>🎮 游戏模式切换：模式1传统神圣守护，模式2救赎者模式，/divineguardian setmode <1|2>，游戏进行中切换立即生效。<br>🔧 队列系统全面优化：智能队列清理，退出队列提示，加入队列引导，Boss栏同步修复，队列状态透明。<br>🗑️ 代码精简与性能提升：移除冗余系统（NPC、独立货币发放、观战系统），配置清理，内存优化，错误修复。" },
             { version: "v2.1.3", tag: "", content: "🔧 修复管理员游戏效果免疫问题：管理员黑暗效果修复，母体鬼禁足修复，强制效果应用，游戏开始清理效果，管理员提示。<br>🎮 创造模式玩家自动切换：自动模式切换，强制效果应用，公平性保障。" },
@@ -860,13 +918,10 @@ ghost-particle:
             { version: "v1.0.0", tag: "已作废", content: "⚠️ 此版本已作废（因机制与作者想要的不一致）。基础感染对抗玩法。" }
         ],
         en: [
-            { version: "v2.2.2", tag: "Current", content: "<strong>1. Ghost Respawn Mechanic</strong>: During Demon Hunter phase, killed ghosts enter spectator mode with configurable respawn timer (default 15s). Countdown displayed in ActionBar, visual and sound effects on respawn.<br><strong>2. Smart Health Adjustment</strong>: Normal ghost health lowered to 2❤, Mother ghost to 3❤, Demon Hunter fixed at 2❤ (all configurable). Automatically adapts to phase changes.<br><strong>3. No Healing Mechanic</strong>: Healing disabled for all players during Demon Hunter phase (natural regen, saturation, potion effects), with clear game messages.<br><strong>4. Reaper Damage System</strong>: Kill logic based on damage value rather than number of attacks. Configurable damage per hit, displays damage and remaining health.<br><strong>5. Divine Guardian 3-Hit Protection</strong>: Mother needs to attack 3 times to break a Demon Hunter's Divine Guardian; normal ghosts cannot infect and can only hide.<br><strong>6. Demon Hunter Phase automatically activates Divine Guardian for all remaining humans</strong>. Broadcasts when no Demon Hunter is present.<br>Configuration under <code>divine-guardian.demon-hunter</code> for respawn time, health, damage, etc." },
-            { version: "v2.2.1_Cover", tag: "Language Overhaul", content: "🎯 Comprehensive language system overhaul (Cover version core improvement): Greatly expanded default message library (90+ Chinese messages), smart fallback mechanism, error isolation protection, plugin startup protection.<br>🛠️ Game balance adjustments: Ice Ball fix (affects all players), default health set to 10 hearts, item system optimization, config version update (v19→v20).<br>🌑 Dark effect + sprint coexistence: Native DARKNESS effect, 30% speed attribute modifier, smart check, version compatibility.<br>🛡️ Divine Guardian fixes: Trigger fix, Redeemer mode optimization, mode switching stability, cooldown fix.<br>🎯 Item system fixes: \"Second Chance\" item fix, cooldown sync, distribution logic optimization, feedback enhancement.<br>⚙️ Config system upgrade: Version 20, dark effect description updated to \"does not affect sprint\", dark effect enabled by default." },
-            { version: "v2.2.0", tag: "", content: "⚡ Divine Guardian Mode 2 - Redeemer System: Last human becomes Redeemer, Holy Redemption item converts ghosts back, random teleport, 2 uses limit, highlight + speed.<br>🎮 Game mode switching: Mode1 classic, Mode2 Redeemer, /divineguardian setmode <1|2>, takes effect immediately even during game.<br>🔧 Queue system optimizations: Smart clearing, exit gold refund, join guidance, BossBar fix, transparent status.<br>🗑️ Code cleanup: Removed NPC, independent currency, spectator systems. Config cleanup, memory optimization, bug fixes." },
-            { version: "v2.1.3", tag: "", content: "🔧 Fixed admin immunity: Admin dark effect fixed, mother ghost immobilization fixed, forced effect application, game start cleanup, admin notifications.<br>🎮 Creative mode auto-switch: Creative players auto-switch to survival mode when joining game." },
-            { version: "v2.1.2", tag: "", content: "👻 Ghost particle effect system: Continuous orbiting particles, color differentiation (Mother red / Normal green), 21 particle types, RGB colors, preparation phase toggle.<br>🎮 /ghostparticle management commands.<br>⚙️ Config version 14, full RGB color configuration.<br>🔐 New permission: gost.admin.ghostparticle." },
-            { version: "v2.1.1", tag: "", content: "🛡️ Divine Guardian system: Last human gets 3 infection immunities, random teleport on attack, Speed I + glow, invisibility after charges exhausted. Full admin management.<br>🎮 /divineguardian commands.<br>⚙️ Config version 13." },
-            { version: "v2.1.0", tag: "", content: "🎮 Prize pool optimization: Human victory gives 70% to humans/30% to ghosts; Ghost victory gives 100% to ghosts. Personal bonus proportional to survival time/infections.<br>👻 Converted player bonus: Cumulative ghost time, 20% extra compensation, ghost inheritance.<br>Heartbeat sound system, ghost-to-human feature (disabled by default)." }
+            { version: "v2.2.3", tag: "Current", content: "🔊 New sound system added:<br>• Phase sounds: preparation countdown, game start, victory sounds<br>• Item distribution sounds: <code>ENTITY_ITEM_PICKUP</code> and <code>BLOCK_NOTE_BLOCK_PLING</code><br>• Item usage sounds for all items (see item details)<br>• Faction switch sounds<br>⚙️ Automatic config migration: old config values are preserved, deprecated keys removed, new keys use defaults. Old config backed up as config_old_v{version}.yml.<br>Config version upgraded to 26." },
+            { version: "v2.2.2", tag: "", content: "Ghost respawn (15s), health adjustments, no healing, Reaper damage system, Divine Guardian 3-hit protection." },
+            { version: "v2.2.1_Cover", tag: "Language Overhaul", content: "Language system overhaul (90+ messages), Dark+Sprint, bug fixes." },
+            { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization." }
         ]
     };
 
