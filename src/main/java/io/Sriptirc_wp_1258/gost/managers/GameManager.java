@@ -403,8 +403,8 @@ public class GameManager {
             if (player != null && player.isOnline()) {
                 // 清除所有可能影响游戏平衡的效果
                 player.removePotionEffect(PotionEffectType.BLINDNESS);
-                player.removePotionEffect(PotionEffectType.SLOW);
-                player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+                player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
                 player.removePotionEffect(PotionEffectType.SPEED);
                 player.removePotionEffect(PotionEffectType.INVISIBILITY);
                 player.removePotionEffect(PotionEffectType.GLOWING);

@@ -450,7 +450,7 @@ public class PlayerManager {
         
         // 设置生命值（使用配置文件中的值）
         double maxHealth = plugin.getConfigManager().getMaxHealth();
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth);
+        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
         player.setHealth(maxHealth);
         plugin.getLogger().info("设置玩家 " + player.getName() + " 生命值为" + maxHealth + "点");
         
@@ -490,8 +490,8 @@ public class PlayerManager {
                 
                 // 首先清除可能存在的免疫效果
                 player.removePotionEffect(PotionEffectType.BLINDNESS);
-                player.removePotionEffect(PotionEffectType.SLOW);
-                player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+                player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
                 
                 // 母体鬼失明效果 - 强制应用
                 int blindnessDuration = plugin.getConfigManager().getMotherGhostBlindnessDuration() * 20;
@@ -509,7 +509,7 @@ public class PlayerManager {
                 // 母体鬼20秒无法移动效果（神鬼药水效果） - 强制应用
                 int immobilizeDuration = plugin.getConfigManager().getGhostImmobilizeDuration() * 20;
                 PotionEffect slowEffect = new PotionEffect(
-                    PotionEffectType.SLOW,
+                    PotionEffectType.SLOWNESS,
                     immobilizeDuration,
                     255, // 最大等级，几乎无法移动
                     true,
@@ -520,7 +520,7 @@ public class PlayerManager {
                 
                 // 同时添加挖掘疲劳效果，确保完全无法移动 - 强制应用
                 PotionEffect miningEffect = new PotionEffect(
-                    PotionEffectType.SLOW_DIGGING,
+                    PotionEffectType.MINING_FATIGUE,
                     immobilizeDuration,
                     255,
                     true,
@@ -597,7 +597,7 @@ public class PlayerManager {
         plugin.getDarkEffectManager().removeDarkEffect(player);
         
         // 恢复最大血量
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20.0);
+        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20.0);
         player.setHealth(20.0);
         
         // 从队伍中移除

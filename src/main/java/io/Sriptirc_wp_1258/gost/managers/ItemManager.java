@@ -204,7 +204,7 @@ public class ItemManager {
         plugin.getLogger().info("开始应用凝冰球效果给玩家: " + target.getName() + " (减速等级: " + level + ", 持续时间: " + duration + " ticks)");
         
         boolean success = target.addPotionEffect(new PotionEffect(
-            PotionEffectType.SLOW,
+            PotionEffectType.SLOWNESS,
             duration,
             level,
             true,
@@ -220,7 +220,7 @@ public class ItemManager {
         
         for (Player ghost : ghostPlayers) {
             ghost.addPotionEffect(new PotionEffect(
-                PotionEffectType.SLOW,
+                PotionEffectType.SLOWNESS,
                 duration,
                 255, // 最大减速效果
                 true,
@@ -433,7 +433,7 @@ public class ItemManager {
         int ghostSlowLevel = plugin.getConfigManager().getSecondChanceGhostSlowLevel() - 1;
         
         ghostPlayer.addPotionEffect(new PotionEffect(
-            PotionEffectType.SLOW,
+            PotionEffectType.SLOWNESS,
             ghostSlowDuration,
             ghostSlowLevel,
             true,

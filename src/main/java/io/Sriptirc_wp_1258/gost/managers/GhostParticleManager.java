@@ -172,7 +172,7 @@ public class GhostParticleManager {
         } catch (IllegalArgumentException e) {
             // 如果粒子类型无效，使用默认的REDSTONE
             plugin.getLogger().warning("无效的粒子类型: " + particleType + "，使用默认REDSTONE");
-            generateOrbitingParticles(world, location, Particle.REDSTONE, color, particleCount, particleSize, role);
+            generateOrbitingParticles(world, location, Particle.DUST, color, particleCount, particleSize, role);
         }
     }
     
@@ -236,7 +236,7 @@ public class GhostParticleManager {
             Location particleLoc = center.clone().add(x, height, z);
             
             // 根据粒子类型生成不同的效果
-            if (particle == Particle.REDSTONE) {
+            if (particle == Particle.DUST) {
                 // 红色/绿色粒子
                 world.spawnParticle(
                     particle,
@@ -271,7 +271,7 @@ public class GhostParticleManager {
         // 为母体鬼添加额外的头顶粒子
         if (role == PlayerRole.GHOST_MOTHER) {
             Location headLoc = center.clone().add(0, 2.2, 0);
-            if (particle == Particle.REDSTONE || particle == Particle.DUST_COLOR_TRANSITION) {
+            if (particle == Particle.DUST || particle == Particle.DUST_COLOR_TRANSITION) {
                 world.spawnParticle(
                     particle,
                     headLoc,

@@ -159,7 +159,7 @@ public class DarkEffectManager {
         );
         
         // 获取玩家的移动速度属性
-        AttributeInstance movementSpeed = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        AttributeInstance movementSpeed = player.getAttribute(Attribute.MOVEMENT_SPEED);
         if (movementSpeed != null) {
             // 添加修改器
             movementSpeed.addModifier(sprintModifier);
@@ -180,7 +180,7 @@ public class DarkEffectManager {
         
         if (sprintModifiers.containsKey(playerId)) {
             AttributeModifier modifier = sprintModifiers.get(playerId);
-            AttributeInstance movementSpeed = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+            AttributeInstance movementSpeed = player.getAttribute(Attribute.MOVEMENT_SPEED);
             
             if (movementSpeed != null) {
                 movementSpeed.removeModifier(modifier);

@@ -164,7 +164,7 @@ public class DivineGuardianManager {
                 
                 // 白色附魔台粒子（主要效果）
                 player.getWorld().spawnParticle(
-                    Particle.ENCHANTMENT_TABLE, 
+                    Particle.ENCHANT, 
                     loc.clone().add(0, 2.2, 0), 
                     12, 
                     0.5, 0.3, 0.5, 
@@ -218,7 +218,7 @@ public class DivineGuardianManager {
                 // 激活时的白色爆发效果
                 for (int i = 0; i < 2; i++) {
                     player.getWorld().spawnParticle(
-                        Particle.FIREWORKS_SPARK, 
+                        Particle.FIREWORK, 
                         loc.clone().add(0, 1, 0), 
                         25, 
                         1.0, 0.5, 1.0, 
@@ -439,7 +439,7 @@ public class DivineGuardianManager {
         
         // 视觉效果
         Location loc = player.getLocation();
-        loc.getWorld().spawnParticle(Particle.CRIT_MAGIC, loc, 30, 0.5, 0.5, 0.5, 0.5);
+        loc.getWorld().spawnParticle(Particle.ENCHANTED_HIT, loc, 30, 0.5, 0.5, 0.5, 0.5);
         loc.getWorld().playSound(loc, Sound.ENTITY_IRON_GOLEM_DAMAGE, 1.0f, 0.5f);
         
         return true;
@@ -618,7 +618,7 @@ public class DivineGuardianManager {
             
             // 附魔光效
             if (plugin.getConfigManager().isReaperWeaponEnchantGlowEnabled()) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addEnchant(Enchantment.UNBREAKING, 1, true);
             }
             
             // 设置不可破坏
@@ -672,7 +672,7 @@ public class DivineGuardianManager {
                 
                 // 金色火花粒子
                 player.getWorld().spawnParticle(
-                    Particle.FIREWORKS_SPARK, 
+                    Particle.FIREWORK, 
                     loc.clone().add(0, 2.0, 0), 
                     10, 
                     0.8, 0.3, 0.8, 
@@ -681,7 +681,7 @@ public class DivineGuardianManager {
                 
                 // 金色附魔粒子
                 player.getWorld().spawnParticle(
-                    Particle.ENCHANTMENT_TABLE, 
+                    Particle.ENCHANT, 
                     loc.clone().add(0, 2.5, 0), 
                     8, 
                     0.4, 0.2, 0.4, 
@@ -721,7 +721,7 @@ public class DivineGuardianManager {
                 // 金色爆炸效果
                 for (int i = 0; i < 3; i++) {
                     player.getWorld().spawnParticle(
-                        Particle.EXPLOSION_LARGE, 
+                        Particle.EXPLOSION, 
                         loc.clone().add(0, 1.5 + i * 0.5, 0), 
                         8, 
                         1.2, 0.3, 1.2, 
@@ -843,7 +843,7 @@ public class DivineGuardianManager {
         
         // 视觉效果
         Location loc = ghost.getLocation();
-        loc.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, loc, 1);
+        loc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, loc, 1);
         loc.getWorld().playSound(loc, Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f);
         
         demonHunter.sendMessage("§6§l[猎魔人] §a你击杀了一名鬼玩家！");
@@ -1317,7 +1317,7 @@ public class DivineGuardianManager {
         
         // 视觉效果
         Location loc = player.getLocation();
-        loc.getWorld().spawnParticle(Particle.TOTEM, loc, 30, 0.5, 0.5, 0.5, 0.5);
+        loc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, loc, 30, 0.5, 0.5, 0.5, 0.5);
         loc.getWorld().playSound(loc, Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
     }
     
@@ -1574,7 +1574,7 @@ public class DivineGuardianManager {
         
         // 视觉效果
         Location loc = target.getLocation();
-        loc.getWorld().spawnParticle(Particle.TOTEM, loc, 30, 0.5, 0.5, 0.5, 0.5);
+        loc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, loc, 30, 0.5, 0.5, 0.5, 0.5);
         loc.getWorld().playSound(loc, Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
         
         // 随机传送救赎者（防止被报复）
