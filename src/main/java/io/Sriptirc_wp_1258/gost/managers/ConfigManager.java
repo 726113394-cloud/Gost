@@ -8,6 +8,13 @@ public class ConfigManager {
     private final Gost plugin;
     private FileConfiguration config;
     
+    private static final int CURRENT_CONFIG_VERSION = 26;
+    
+    // 记录迁移数据，用于服务器启动后打印详情
+    private boolean configMigrated = false;
+    private int oldConfigVersion = 0;
+    private java.util.Map<String, Object> migratedValues = new java.util.LinkedHashMap<>();
+    
     public ConfigManager(Gost plugin) {
         this.plugin = plugin;
         loadConfig();
@@ -26,8 +33,71 @@ public class ConfigManager {
         plugin.saveDefaultConfig();
         config = plugin.getConfig();
         
+        // 检查配置版本，如果不一致则自动迁移旧配置数据
+        int savedVersion = config.getInt("ScriptIrc-config-version", 0);
+        if (savedVersion != CURRENT_CONFIG_VERSION) {
+            plugin.getLogger().info("检测到配置版本不匹配 (当前: " + savedVersion + ", 期望: " + CURRENT_CONFIG_VERSION + ")，正在自动迁移配置...");
+            
+            // 保存旧配置的所有值
+            java.util.Map<String, Object> oldValues = new java.util.LinkedHashMap<>();
+            if (savedVersion > 0) {
+                for (String key : config.getKeys(true)) {
+                    // 跳过版本号本身
+                    if (key.equals("ScriptIrc-config-version")) continue;
+                    Object value = config.get(key);
+                    if (value != null) {
+                        oldValues.put(key, value);
+                    }
+                }
+                plugin.getLogger().info("已读取旧配置中的 " + oldValues.size() + " 个配置项");
+            }
+            
+            // 备份旧配置文件
+            java.io.File configFile = new java.io.File(plugin.getDataFolder(), "config.yml");
+            if (configFile.exists()) {
+                java.io.File backupFile = new java.io.File(plugin.getDataFolder(), "config_old_v" + savedVersion + ".yml");
+                try {
+                    java.nio.file.Files.copy(configFile.toPath(), backupFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    plugin.getLogger().info("旧配置文件已备份为: config_old_v" + savedVersion + ".yml");
+                } catch (java.io.IOException e) {
+                    plugin.getLogger().warning("备份旧配置文件失败: " + e.getMessage());
+                }
+            }
+            
+            // 重新生成新配置
+            plugin.getDataFolder().mkdirs();
+            plugin.saveResource("config.yml", true);
+            plugin.reloadConfig();
+            config = plugin.getConfig();
+            
+            // 将旧配置中存在的值写回新配置
+            int migratedCount = 0;
+            migratedValues.clear();
+            for (java.util.Map.Entry<String, Object> entry : oldValues.entrySet()) {
+                String key = entry.getKey();
+                // 只迁移新配置中也存在的键（避免旧配置的废弃项污染新配置）
+                if (config.contains(key)) {
+                    config.set(key, entry.getValue());
+                    migratedValues.put(key, entry.getValue());
+                    migratedCount++;
+                }
+            }
+            
+            // 确保版本号正确
+            config.set("ScriptIrc-config-version", CURRENT_CONFIG_VERSION);
+            plugin.saveConfig();
+            
+            // 记录迁移状态，等服务器完全启动后再打印详情
+            configMigrated = true;
+            oldConfigVersion = savedVersion;
+            
+            plugin.getLogger().info("配置迁移完成！已迁移 " + migratedCount + " 个配置项到新配置");
+            plugin.getLogger().info("旧配置已备份为 config_old_v" + savedVersion + ".yml，如有问题可参照恢复");
+            plugin.getLogger().info("服务器完全启动后将打印详细的迁移数据报告");
+        }
+        
         // 设置默认值
-        config.addDefault("ScriptIrc-config-version", 20);
+        config.addDefault("ScriptIrc-config-version", CURRENT_CONFIG_VERSION);
         config.addDefault("game.duration", 420); // 7分钟，单位秒
         config.addDefault("game.preparation-time", 20); // 准备时间，单位秒
         config.addDefault("game.queue-time", 60); // 队列等待时间，单位秒
@@ -174,6 +244,46 @@ public class ConfigManager {
     public void reloadConfig() {
         plugin.reloadConfig();
         config = plugin.getConfig();
+    }
+    
+    /**
+     * 服务器完全启动后调用，在控制台打印配置迁移详情
+     */
+    public void printMigrationReport() {
+        if (!configMigrated || migratedValues.isEmpty()) {
+            return;
+        }
+        
+        plugin.getLogger().info("§e§l══════════════════════════════════════════");
+        plugin.getLogger().info("§e§l     配置自动迁移报告");
+        plugin.getLogger().info("§e§l══════════════════════════════════════════");
+        plugin.getLogger().info("§7旧配置版本: §cv" + oldConfigVersion);
+        plugin.getLogger().info("§7新配置版本: §av" + CURRENT_CONFIG_VERSION);
+        plugin.getLogger().info("§7已迁移配置项: §e" + migratedValues.size() + " 项");
+        plugin.getLogger().info("");
+        plugin.getLogger().info("§6§l以下为已迁移的配置项详情:");
+        plugin.getLogger().info("");
+        
+        int index = 1;
+        for (java.util.Map.Entry<String, Object> entry : migratedValues.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            String valueStr = (value != null) ? value.toString() : "null";
+            // 截断过长的值
+            if (valueStr.length() > 60) {
+                valueStr = valueStr.substring(0, 57) + "...";
+            }
+            plugin.getLogger().info("§7  " + index + ". §b" + key + " §7= §f" + valueStr);
+            index++;
+        }
+        
+        plugin.getLogger().info("");
+        plugin.getLogger().info("§e旧配置文件已备份为: §fconfig_old_v" + oldConfigVersion + ".yml");
+        plugin.getLogger().info("§a如需恢复旧配置，请将备份文件重命名为 config.yml 并重启服务器");
+        plugin.getLogger().info("§e§l══════════════════════════════════════════");
+        
+        // 标记已打印，避免重复
+        configMigrated = false;
     }
     
     // 获取配置值的方法

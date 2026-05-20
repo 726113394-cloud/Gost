@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -125,6 +126,17 @@ public class PlayerManager {
             String roleName = plugin.getTeamManager().getTeamName(role);
             ChatColor color = plugin.getTeamManager().getTeamColor(role);
             player.sendMessage(color + "你的角色已变更为: " + roleName);
+            
+            // 阵容切换音效
+            if (oldRole != null && oldRole != role) {
+                if (role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL) {
+                    // 变为鬼 - 阴森音效
+                    player.playSound(player.getLocation(), Sound.ENTITY_VEX_AMBIENT, 0.8f, 0.7f);
+                } else if (role == PlayerRole.HUMAN) {
+                    // 变回人类 - 正面音效
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.5f);
+                }
+            }
             
             // 更新鬼玩家粒子效果数据
             updateGhostParticleData(playerId, role);

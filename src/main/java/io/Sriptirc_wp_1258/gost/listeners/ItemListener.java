@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -130,6 +131,9 @@ public class ItemListener implements Listener {
         // 应用肾上腺素效果
         plugin.getItemManager().applyAdrenalineEffect(player);
         
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_SPLASH, 1.0f, 1.5f);
+        
         // 消耗物品
         consumeItem(player, item);
     }
@@ -147,6 +151,9 @@ public class ItemListener implements Listener {
         // 应用狂暴药水效果
         plugin.getItemManager().applyFrenzyEffect(player);
         
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1.0f, 1.2f);
+        
         // 消耗物品
         consumeItem(player, item);
     }
@@ -154,6 +161,9 @@ public class ItemListener implements Listener {
     private void handleIceBall(Player player, PlayerInteractEvent event) {
         // 发送ActionBar提示
         plugin.getActionBarManager().sendIceBallHint(player);
+        
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1.0f, 1.0f);
         
         // 允许投掷雪球（不消耗物品，由事件处理）
         // 这里不消耗物品，让雪球正常投掷
@@ -192,6 +202,12 @@ public class ItemListener implements Listener {
         
         // 应用控魂术效果
         plugin.getItemManager().applySoulControlEffect(ghostPlayers);
+        
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.0f, 1.0f);
+        for (Player ghost : ghostPlayers) {
+            ghost.playSound(ghost.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.0f, 0.8f);
+        }
         
         // 设置冷却时间
         int cooldown = plugin.getConfigManager().getSoulControlCooldown();
@@ -296,6 +312,10 @@ public class ItemListener implements Listener {
         // 应用发光效果
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, glowingDuration * 20, 0));
         
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1.0f, 0.8f);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, 1.0f, 1.0f);
+        
         // 设置冷却时间
         setCooldown(player, "stinky-steak", cooldown);
         
@@ -320,6 +340,9 @@ public class ItemListener implements Listener {
         
         // 发送ActionBar提示
         plugin.getActionBarManager().sendTeleportPearlHint(player);
+        
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, 1.0f, 1.0f);
         
         // 允许使用末影珍珠（不取消事件）
         event.setCancelled(false);
@@ -404,6 +427,12 @@ public class ItemListener implements Listener {
         
         // 消耗物品
         consumeItem(player, item);
+        
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_PREPARE_MIRROR, 1.0f, 1.0f);
+        Bukkit.getOnlinePlayers().forEach(p -> 
+            p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.3f, 1.5f)
+        );
         
         // 设置冷却时间
         int cooldown = plugin.getConfigManager().getSoulDetectorCooldown();

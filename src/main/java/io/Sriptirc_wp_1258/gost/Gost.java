@@ -6,6 +6,7 @@ import io.Sriptirc_wp_1258.gost.commands.DivineGuardianCommand;
 import io.Sriptirc_wp_1258.gost.commands.GhostParticleCommand;
 import io.Sriptirc_wp_1258.gost.listeners.*;
 import io.Sriptirc_wp_1258.gost.managers.*;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Gost extends JavaPlugin {
@@ -109,6 +110,11 @@ public class Gost extends JavaPlugin {
             getLogger().info("作者: 来自太空的小头脑");
             getLogger().info("主页: https://space.bilibili.com/3493116665400113");
             getLogger().info("==========================================");
+            
+            // 延迟1秒打印配置迁移报告（确保服务器完全启动）
+            Bukkit.getScheduler().runTaskLater(this, () -> {
+                configManager.printMigrationReport();
+            }, 20L); // 20 ticks = 1秒
         } catch (Exception e) {
             getLogger().severe("注册命令和监听器时发生错误: " + e.getMessage());
             e.printStackTrace();

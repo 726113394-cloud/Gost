@@ -4,6 +4,7 @@ import io.Sriptirc_wp_1258.gost.Gost;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -370,9 +371,16 @@ public class GameManager {
                     sendPreparationTitle(timeLeft);
                 }
                 
-                // 最后3秒每1秒发送标题
+                // 最后3秒每1秒发送标题和音效
                 if (timeLeft <= 3) {
                     sendPreparationTitle(timeLeft);
+                    // 倒计时音效
+                    for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
+                        Player player = Bukkit.getPlayer(playerId);
+                        if (player != null && player.isOnline()) {
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1.0f, 1.0f);
+                        }
+                    }
                 }
                 
                 timeLeft--;
@@ -533,6 +541,14 @@ public class GameManager {
         
         // 发送游戏开始标题
         sendGameStartTitles();
+        
+        // 游戏开始音效
+        for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
+            }
+        }
     }
     
     // 开始游戏倒计时
@@ -700,6 +716,28 @@ public class GameManager {
             Bukkit.broadcastMessage(ChatColor.GREEN + "游戏结束！人类胜利！");
         } else {
             Bukkit.broadcastMessage(ChatColor.RED + "游戏结束！鬼胜利！");
+        }
+        
+        // 游戏结束音效
+        for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                if (humanWin) {
+                    boolean isHuman = plugin.getPlayerManager().isHuman(playerId);
+                    if (isHuman) {
+                        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+                    } else {
+                        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 0.8f);
+                    }
+                } else {
+                    boolean isGhost = plugin.getPlayerManager().isGhost(playerId);
+                    if (isGhost) {
+                        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 0.8f);
+                    } else {
+                        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 0.8f);
+                    }
+                }
+            }
         }
         
         // 发送游戏结束标题

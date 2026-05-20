@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -99,6 +100,15 @@ public class SecondChanceListener implements Listener {
     private void triggerSecondChance(Player humanPlayer, Player ghostPlayer, ItemStack secondChanceItem) {
         // 应用效果
         plugin.getItemManager().applySecondChanceEffect(humanPlayer, ghostPlayer);
+        
+        // 音效
+        humanPlayer.playSound(humanPlayer.getLocation(), Sound.ITEM_TOTEM_USE, 1.0f, 1.2f);
+        ghostPlayer.playSound(ghostPlayer.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.0f, 0.6f);
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (p != humanPlayer && p != ghostPlayer) {
+                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.8f);
+            }
+        });
         
         // 随机传送持有者
         teleportPlayerRandomly(humanPlayer);

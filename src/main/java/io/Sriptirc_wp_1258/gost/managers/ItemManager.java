@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -264,6 +265,7 @@ public class ItemManager {
             if (player != null && player.isOnline()) {
                 player.getInventory().addItem(getAdrenaline());
                 player.sendMessage(ChatColor.GREEN + "你获得了肾上腺素！");
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.2f);
             }
         }
         
@@ -273,6 +275,7 @@ public class ItemManager {
             if (player != null && player.isOnline()) {
                 player.getInventory().addItem(getFrenzyPotion());
                 player.sendMessage(ChatColor.RED + "你获得了狂暴药水！");
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.8f);
             }
         }
         
@@ -283,6 +286,7 @@ public class ItemManager {
             if (player != null && player.isOnline()) {
                 player.getInventory().addItem(getIceBall());
                 player.sendMessage(ChatColor.AQUA + "你获得了凝冰球！");
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.5f);
             }
         }
         
@@ -297,6 +301,7 @@ public class ItemManager {
                 if (player != null && player.isOnline()) {
                     player.getInventory().addItem(getSoulControl());
                     player.sendMessage(ChatColor.DARK_PURPLE + "你获得了控魂术！");
+                    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.9f);
                 }
             }
         }
@@ -310,7 +315,16 @@ public class ItemManager {
                 ItemStack teleportPearl = plugin.getItemSpawnManager().createTeleportPearl();
                 player.getInventory().addItem(teleportPearl);
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "你获得了传送珍珠！");
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.1f);
                 plugin.getLogger().info("给予玩家 " + player.getName() + " 传送珍珠");
+            }
+        }
+        
+        // 发放道具全局音效
+        for (UUID playerId : allPlayers) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f, 1.8f);
             }
         }
         
