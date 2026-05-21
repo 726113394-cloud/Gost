@@ -280,7 +280,7 @@
                         </div>
                         <h3>个人奖金计算</h3>
                         <div class="table-wrapper">
-                            <table>
+                            </table>
                                 <tr><th>阵营</th><th>分配方式</th></tr>
                                 <tr><td>👤 人类</td><td>100% 按 <strong>存活时间比例</strong> 分配</td></tr>
                                 <tr><td>👻 鬼</td><td>70% 按 <strong>鬼存活时间</strong> + 30% 按 <strong>感染人数比例</strong> 分配</td></tr>
@@ -472,7 +472,7 @@ ghost-particle:
                         </ol>
                         <h3>Two Factions</h3>
                         <div class="table-wrapper">
-                            <table>
+                            <tr>
                                 <tr><th>Faction</th><th>Description</th></tr>
                                 <tr><td>👤 Human</td><td>Initial identity, becomes ghost after infection.</td></tr>
                                 <tr><td>👻 Ghost</td><td>Infects humans to join ghost faction; Mother is the leader.</td></tr>
@@ -480,7 +480,7 @@ ghost-particle:
                         </div>
                         <h3>Special Roles</h3>
                         <div class="table-wrapper">
-                            </table>
+                            <table>
                                 <tr><th>Role</th><th>Description</th></tr>
                                 <tr><td>🛡️ Divine Guardian</td><td>Activates when few humans remain, blocks <strong>3</strong> attacks, teleports attacker on each hit.</td></tr>
                                 <tr><td>🎯 Demon Hunter</td><td>Transformed from Divine Guardian during Demon Hunter phase, holds <strong>Reaper</strong> to kill ghosts.</td></tr>
@@ -613,7 +613,7 @@ ghost-particle:
                         <p>Players pay an <strong>entry fee</strong> (default 100 coins) which goes into the <strong>Human Prize Pool</strong>. Server can add <strong>bonus</strong> (default 5000 coins) to increase total pool.</p>
                         <h3>Victory Bonus Distribution</h3>
                         <div class="table-wrapper">
-                            <table>
+                            </table>
                                 <tr><th>Winner</th><th>Distribution</th></tr>
                                 <tr><td>👤 Human Victory</td><td>Human faction gets <strong>70%</strong> of pool, Ghost faction gets <strong>30%</strong></td></tr>
                                 <tr><td>👻 Ghost Victory</td><td>Ghost faction gets <strong>100%</strong> of pool</td></tr>
@@ -783,11 +783,12 @@ ghost-particle:
 
 <script>
     // ==================== Carousel configuration ====================
+    // 修复：添加逗号分隔图片路径
     const carouselImages = [
         "images/screenshot1.png",
         "images/screenshot2.png",
-        "images/screenshot3.png"
-        "images/screenshot4.png"
+        "images/screenshot3.png",
+        "images/screenshot4.png",
         "images/screenshot5.png"
     ];
 
@@ -822,7 +823,7 @@ ghost-particle:
         container.addEventListener('mouseleave', () => { if(carouselImages.length>1) interval = setInterval(next, 5000); });
     }
 
-    // ========== 中文道具详细数据（完整版，包含音效） ==========
+    // ========== 道具数据（已完整，保持不变） ==========
     const itemsDetailZh = {
         reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器", faction: "human", detail: "效果：猎魔人阶段自动获得，攻击鬼玩家造成配置的伤害值，显示伤害量和剩余血量，鬼血量归零后进入旁观模式并触发复活倒计时。<br>冷却时间：2秒<br>使用音效：无（近战攻击）" },
         holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容，有使用次数限制（默认2次），使用后救赎者被随机传送到安全位置。<br>冷却时间：10秒<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
@@ -836,7 +837,6 @@ ghost-particle:
         frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" }
     };
 
-    // 英文道具详细数据（同步更新）
     const itemsDetailEn = {
         reaper: { name: "🗡️ Reaper", desc: "Demon Hunter exclusive weapon", faction: "human", detail: "Effect: Deals configured damage per hit, displays damage and remaining health. Ghosts enter spectator mode when health reaches zero and trigger respawn timer.<br>Cooldown: 2 seconds<br>Sound: None (melee)" },
         holyRedemption: { name: "💊 Holy Redemption", desc: "Redeemer exclusive item", faction: "human", detail: "Effect: Converts a ghost back to human. Limited uses (default 2). Teleports Redeemer to safe location after use.<br>Cooldown: 10 seconds<br>Sound: <code>ITEM_TOTEM_USE</code>" },
@@ -903,7 +903,7 @@ ghost-particle:
         renderVersionList(lang);
     }
 
-    // 版本数据（包含 v2.2.3 详细更新）
+    // 版本数据
     const versionData = {
         zh: [
             { version: "v2.2.3", tag: "当前版本", content: "🔊 新增音效系统：<br><br><strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br><br><strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br><br><strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br><br><strong>阵容切换音效：</strong><br>• 人类→鬼：<code>ENTITY_VEX_AMBIENT</code>（阴森低鸣）<br>• 鬼→人类：<code>ENTITY_PLAYER_LEVELUP</code>（升级音效）<br><br>⚙️ 配置自动迁移：检测到配置版本不一致时，自动读取旧配置中的所有值，生成新配置后将旧值写回（仅迁移新配置中存在的键，废弃项自动过滤），新增项使用默认值，旧配置备份为 config_old_v{版本号}.yml。服主更新插件后无需手动编辑配置。<br><br>配置版本升级到26。" },
