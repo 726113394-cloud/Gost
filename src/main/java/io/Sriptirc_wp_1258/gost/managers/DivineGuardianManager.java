@@ -1566,6 +1566,10 @@ public class DivineGuardianManager {
         
         target.sendMessage("§6§l[神之救赎] §a你被 §e" + redeemer.getName() + " §a使用神之救赎转化回人类！");
         
+        // 居中字幕提示
+        redeemer.sendTitle("§6✝ 神之救赎成功! ✝", "§a" + target.getName() + " 已转化回人类!", 10, 40, 10);
+        target.sendTitle("§6✝ 你被救赎了! ✝", "§a" + redeemer.getName() + " 将你转化回人类!", 10, 40, 10);
+        
         // 广播消息
         if (plugin.getConfigManager().isDivineGuardianBroadcastEnabled()) {
             Bukkit.broadcastMessage(String.format("§6§l[神之救赎] §e救赎者 §a%s §e使用神之救赎将 §a%s §e转化回人类！", 

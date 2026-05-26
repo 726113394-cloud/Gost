@@ -114,6 +114,10 @@ public class ItemListener implements Listener {
             // 应用凝冰球效果
             plugin.getItemManager().applyIceBallEffect(target);
             shooter.sendMessage(ChatColor.AQUA + "你成功击中了 " + target.getName() + "！");
+            
+            // 被击中者居中字幕提示
+            target.sendTitle("§b❄ §c被冻伤! §b❄", "§7移动速度降低!", 10, 30, 10);
+            
             plugin.getLogger().info("凝冰球击中玩家: " + target.getName() + " (射击者: " + shooter.getName() + ")，应用减速效果");
         }
     }
@@ -130,6 +134,9 @@ public class ItemListener implements Listener {
         
         // 应用肾上腺素效果
         plugin.getItemManager().applyAdrenalineEffect(player);
+        
+        // 使用者居中字幕提示
+        player.sendTitle("§a⚡ 肾上腺素! ⚡", "§7移动速度大幅提升!", 10, 30, 10);
         
         // 音效
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_SPLASH, 1.0f, 1.5f);
@@ -150,6 +157,9 @@ public class ItemListener implements Listener {
         
         // 应用狂暴药水效果
         plugin.getItemManager().applyFrenzyEffect(player);
+        
+        // 使用者居中字幕提示
+        player.sendTitle("§c💢 狂暴药水! 💢", "§7攻击力与速度提升!", 10, 30, 10);
         
         // 音效
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1.0f, 1.2f);
@@ -207,6 +217,8 @@ public class ItemListener implements Listener {
         player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.0f, 1.0f);
         for (Player ghost : ghostPlayers) {
             ghost.playSound(ghost.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.0f, 0.8f);
+            // 被控鬼居中字幕提示
+            ghost.sendTitle("§d✧ §c你被控魂! §d✧", "§7无法移动!", 10, 30, 10);
         }
         
         // 设置冷却时间
@@ -311,6 +323,9 @@ public class ItemListener implements Listener {
         
         // 应用发光效果
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, glowingDuration * 20, 0));
+        
+        // 使用者居中字幕提示
+        player.sendTitle("§6🥩 好臭! §6", "§7速度提升，但位置已暴露!", 10, 30, 10);
         
         // 音效
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1.0f, 0.8f);
@@ -423,6 +438,11 @@ public class ItemListener implements Listener {
                 true
             ));
             plugin.getLogger().info("给玩家 " + target.getName() + " 应用发光效果: " + (success ? "成功" : "失败"));
+            
+            // 被揭露位置居中字幕提示（排除使用者自己）
+            if (!target.getUniqueId().equals(player.getUniqueId())) {
+                target.sendTitle("§c⚠ §4你的位置被揭露! §c⚠", "§7所有玩家都能看到你!", 10, 30, 10);
+            }
         }
         
         // 消耗物品
