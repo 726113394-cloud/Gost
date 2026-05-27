@@ -80,6 +80,61 @@
         table { width: 100%; border-collapse: collapse; background: #0f121b; border-radius: 1rem; margin: 1rem 0; }
         th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #2a2f3f; }
         th { background: #1e2434; color: #ffb7b7; }
+		.tool-card {
+    background: linear-gradient(135deg, #0f172a, #0a0c12);
+    border: 1px solid #3b82f6;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    transition: all 0.2s ease;
+}
+.tool-card:hover {
+    border-color: #60a5fa;
+    box-shadow: 0 0 12px rgba(59,130,246,0.3);
+}
+.tool-card .message {
+    flex: 1;
+}
+.tool-card .message p {
+    margin: 0 0 0.3rem 0;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+.tool-card .builtin-badge {
+    background: #2ecc71;
+    color: #0a0c12;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-weight: bold;
+    display: inline-block;
+}
+.migration-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.7rem 1.5rem;
+    color: white !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+}
+.migration-tool-btn:hover {
+    background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59,130,246,0.6);
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -465,8 +520,7 @@ ghost-particle:
         <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.7;">
             <i class="fas fa-image"></i> Carousel
         </div>
-        <!-- 推广卡片（英文版可保留中文或翻译） -->
-<div class="tool-card">
+        <div class="tool-card">
     <div class="message">
         <p><i class="fas fa-sync-alt" style="color:#3b82f6;"></i> <strong>Upgraded plugin but don't want to rewrite config?</strong> Try my auto‑migration tool — smart merge, auto backup.</p>
         <div class="builtin-badge">✨ Built-in in v2.2.3</div>
@@ -926,21 +980,31 @@ ghost-particle:
     // 版本数据
     const versionData = {
         zh: [
-            { version: "v2.2.3", tag: "当前版本", content: "<strong>2.2.3Better Version前往查看:<brhttps://modrinth.com/plugin/gost/changelog<br>🔊 新增音效系统：<br><br><strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br><br><strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br><br><strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br><br><strong>阵容切换音效：</strong><br>• 人类→鬼：<code>ENTITY_VEX_AMBIENT</code>（阴森低鸣）<br>• 鬼→人类：<code>ENTITY_PLAYER_LEVELUP</code>（升级音效）<br><br>⚙️ 配置自动迁移：检测到配置版本不一致时，自动读取旧配置中的所有值，生成新配置后将旧值写回（仅迁移新配置中存在的键，废弃项自动过滤），新增项使用默认值，旧配置备份为 config_old_v{版本号}.yml。服主更新插件后无需手动编辑配置。<br><br>配置版本升级到26。" },
-            { version: "v2.2.2", tag: "", content: "<strong>1. 鬼玩家复活机制</strong>：猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。<br><strong>2. 智能血量调整系统</strong>：普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。<br><strong>3. 禁止回血机制</strong>：猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。<br><strong>4. 收割者伤害系统</strong>：基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。<br><strong>5. 神圣守护3次抵挡机制</strong>：母体需攻击3次才能破除猎魔人守护，普通鬼猎魔人阶段无法感染只能躲避猎杀。<br><strong>6. 猎魔人阶段自动激活所有人类神圣守护</strong>，无猎魔人时广播提示。<br>配置项：divine-guardian.demon-hunter 下可调整复活时间、血量、伤害等参数。" },
-            { version: "v2.2.1_Cover", tag: "语言系统全面优化", content: "🎯 语言系统全面优化（Cover version核心改进）：大幅扩充默认消息库，90+条默认中文消息，智能消息回退机制，错误隔离保护，插件启动保护。<br>🛠️ 游戏平衡性调整：凝冰球修复（对所有玩家生效），默认血量调整为10颗心，道具系统优化，配置版本更新（v19→v20）。<br>🌑 黑暗效果与疾跑并存系统：原生DARKNESS效果，属性修改器增加30%移动速度，智能检查机制，版本兼容性。<br>🛡️ 神圣守护系统修复：触发修复，救赎者模式优化，模式切换稳定性，冷却时间修复。<br>🎯 道具系统修复：\"一次机会\"道具修复，冷却时间同步，发放逻辑优化，使用反馈增强。<br>⚙️ 配置系统升级：配置版本升级到20，黑暗效果描述更新为\"不影响疾跑\"，黑暗效果默认启用。" },
-            { version: "v2.2.0", tag: "", content: "⚡ 神圣守护模式2 - 救赎者系统：最后一名人类成为救赎者，神之救赎道具转化鬼玩家，随机传送，2次使用限制，高亮显示+速度效果。<br>🎮 游戏模式切换：模式1传统神圣守护，模式2救赎者模式，/divineguardian setmode <1|2>，游戏进行中切换立即生效。<br>🔧 队列系统全面优化：智能队列清理，退出队列提示，加入队列引导，Boss栏同步修复，队列状态透明。<br>🗑️ 代码精简与性能提升：移除冗余系统（NPC、独立货币发放、观战系统），配置清理，内存优化，错误修复。" },
-            { version: "v2.1.3", tag: "", content: "🔧 修复管理员游戏效果免疫问题：管理员黑暗效果修复，母体鬼禁足修复，强制效果应用，游戏开始清理效果，管理员提示。<br>🎮 创造模式玩家自动切换：自动模式切换，强制效果应用，公平性保障。" },
-            { version: "v2.1.2", tag: "", content: "👻 新增鬼玩家粒子效果系统：持续环绕粒子，颜色区分（母体红/普通绿），智能生成，支持21种粒子类型，RGB颜色系统，准备阶段控制。<br>🎮 鬼玩家粒子效果管理命令：/ghostparticle全套管理命令。<br>⚙️ 配置系统升级：添加鬼玩家粒子效果相关配置项，配置版本升级到14，支持21种粒子类型选择，完整的RGB颜色配置。<br>🔐 权限系统完善：新增 gost.admin.ghostparticle 权限节点。" },
-            { version: "v2.1.1", tag: "", content: "🛡️ 新增神圣守护系统：最后一位人类自动激活神圣守护，3次免疫感染机会（可配置），被攻击时随机传送，获得速度I+发光效果，使用次数耗尽后获得隐身10秒效果，完整管理员管理。<br>✨ 神圣守护视觉效果：发光效果，激活/触发/传送/失效时粒子效果，音效，屏幕标题提示。<br>🎮 神圣守护管理命令：/divineguardian全套命令。<br>⚙️ 配置系统升级：添加神圣守护相关配置项，配置版本升级到13。" },
-            { version: "v2.1.0", tag: "", content: "🎮 奖金分配系统全面优化：人类胜利时人类70%/鬼30%，鬼胜利时鬼100%，人类奖金100%按存活时间比例，鬼奖金70%按存活时间+30%按感染人数比例。<br>👻 转换玩家奖金优化：累计鬼时间记录，被转换回人类的玩家获得20%额外奖金补偿，鬼奖金继承。<br>新增心跳声系统：/gostadmin heartbeat控制。<br>道具系统升级：臭牛排新增发光效果和冷却时间，道具冷却时间调整。<br>新增鬼转人类功能（默认关闭）。" },
-            { version: "v2.0.2", tag: "", content: "修复编译错误，修复灵魂探测器失效，新增黑暗效果系统，/gostadmin dark命令。" },
-            { version: "v2.0.1", tag: "", content: "新增传送珍珠、臭牛排，智能倒计时系统。" },
-            { version: "v2.0.0", tag: "", content: "架构重构，独立区域系统，道具系统优化。" },
+            { version: "v2.2.3", tag: "当前版本|视觉、听觉沉浸&支持英文", content: `<p>🔊 新增音效系统：<br>
+<strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br>
+<strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br>
+<strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br>
+<strong>🎬 新增道具居中字幕提示：</strong><br>• 肾上腺素使用者：⚡ 肾上腺素! → 移动速度大幅提升!<br>• 狂暴药水使用者：💢 狂暴药水! → 攻击力与速度提升!<br>• 凝冰球被击中者：❄ 被冻伤! → 移动速度降低!<br>• 控魂术被控者：✧ 你被控魂! → 无法移动!<br>• 臭牛排使用者：🥩 好臭! → 速度提升，但位置已暴露!<br>• 灵魂探测器被揭露者：⚠ 你的位置被揭露! → 所有玩家都能看到你!<br>• 神之救赎双方：救赎者 ✝ 神之救赎成功! / 被救者 ✝ 你被救赎了!<br>
+<strong>🌐 新增英文语言支持：</strong> 在 config.yml 中设置 language.default: en_US 即可切换为英文。<br>
+<strong>⚙️ 配置自动迁移：</strong> 检测到配置版本不一致时自动迁移，旧配置备份为 config_old_v{版本号}.yml。<br>
+<strong>🔧 修复1.20.x API兼容性。</strong><br>配置版本升级到26。</p>
+<div style="margin-top: 1rem; text-align: right;">
+    <a href="https://modrinth.com/plugin/gost/changelog" target="_blank" class="link-btn" style="background: #ff5e5e30; border: 1px solid #ff5e5e; border-radius: 2rem; padding: 0.4rem 1.2rem; color: #ffb7b7; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;" onmouseover="this.style.background='#ff5e5e'; this.style.color='white';" onmouseout="this.style.background='#ff5e5e30'; this.style.color='#ffb7b7';">📜 在 Modrinth 查看完整更新日志 <i class="fas fa-external-link-alt"></i></a>
+</div>` },
+            { version: "v2.2.2", tag: "猎魔人登场(大改)", content: "<strong>1. 鬼玩家复活机制</strong>：猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。<br><strong>2. 智能血量调整系统</strong>：普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。<br><strong>3. 禁止回血机制</strong>：猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。<br><strong>4. 收割者伤害系统</strong>：基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。<br><strong>5. 神圣守护3次抵挡机制</strong>：母体需攻击3次才能破除猎魔人守护，普通鬼猎魔人阶段无法感染只能躲避猎杀。<br><strong>6. 猎魔人阶段自动激活所有人类神圣守护</strong>，无猎魔人时广播提示。<br>配置项：divine-guardian.demon-hunter 下可调整复活时间、血量、伤害等参数。" },
+            { version: "v2.2.1_Cover", tag: "第二稳定版本|修复神圣守护2&凝冰球问题", content: "🎯 语言系统全面优化（Cover version核心改进）：大幅扩充默认消息库，90+条默认中文消息，智能消息回退机制，错误隔离保护，插件启动保护。<br>🛠️ 游戏平衡性调整：凝冰球修复（对所有玩家生效），默认血量调整为10颗心，道具系统优化，配置版本更新（v19→v20）。<br>🌑 黑暗效果与疾跑并存系统：原生DARKNESS效果，属性修改器增加30%移动速度，智能检查机制，版本兼容性。<br>🛡️ 神圣守护系统修复：触发修复，救赎者模式优化，模式切换稳定性，冷却时间修复。<br>🎯 道具系统修复：\"一次机会\"道具修复，冷却时间同步，发放逻辑优化，使用反馈增强。<br>⚙️ 配置系统升级：配置版本升级到20，黑暗效果描述更新为\"不影响疾跑\"，黑暗效果默认启用。" },
+            { version: "v2.2.0", tag: "新增神圣守护模式2(新玩意)", content: "⚡ 神圣守护模式2 - 救赎者系统：最后一名人类成为救赎者，神之救赎道具转化鬼玩家，随机传送，2次使用限制，高亮显示+速度效果。<br>🎮 游戏模式切换：模式1传统神圣守护，模式2救赎者模式，/divineguardian setmode <1|2>，游戏进行中切换立即生效。<br>🔧 队列系统全面优化：智能队列清理，退出队列提示，加入队列引导，Boss栏同步修复，队列状态透明。<br>🗑️ 代码精简与性能提升：移除冗余系统（NPC、独立货币发放、观战系统），配置清理，内存优化，错误修复。" },
+            { version: "v2.1.3", tag: "首个稳定版本|管理员可参与", content: "🔧 修复管理员游戏效果免疫问题：管理员黑暗效果修复，母体鬼禁足修复，强制效果应用，游戏开始清理效果，管理员提示。<br>🎮 创造模式玩家自动切换：自动模式切换，强制效果应用，公平性保障。" },
+            { version: "v2.1.2", tag: "新增粒子效果", content: "👻 新增鬼玩家粒子效果系统：持续环绕粒子，颜色区分（母体红/普通绿），智能生成，支持21种粒子类型，RGB颜色系统，准备阶段控制。<br>🎮 鬼玩家粒子效果管理命令：/ghostparticle全套管理命令。<br>⚙️ 配置系统升级：添加鬼玩家粒子效果相关配置项，配置版本升级到14，支持21种粒子类型选择，完整的RGB颜色配置。<br>🔐 权限系统完善：新增 gost.admin.ghostparticle 权限节点。" },
+            { version: "v2.1.1", tag: "神圣守护(大改)", content: "🛡️ 新增神圣守护系统：最后一位人类自动激活神圣守护，3次免疫感染机会（可配置），被攻击时随机传送，获得速度I+发光效果，使用次数耗尽后获得隐身10秒效果，完整管理员管理。<br>✨ 神圣守护视觉效果：发光效果，激活/触发/传送/失效时粒子效果，音效，屏幕标题提示。<br>🎮 神圣守护管理命令：/divineguardian全套命令。<br>⚙️ 配置系统升级：添加神圣守护相关配置项，配置版本升级到13。" },
+            { version: "v2.1.0", tag: "奖金分配优化", content: "🎮 奖金分配系统全面优化：人类胜利时人类70%/鬼30%，鬼胜利时鬼100%，人类奖金100%按存活时间比例，鬼奖金70%按存活时间+30%按感染人数比例。<br>👻 转换玩家奖金优化：累计鬼时间记录，被转换回人类的玩家获得20%额外奖金补偿，鬼奖金继承。<br>新增心跳声系统：/gostadmin heartbeat控制。<br>道具系统升级：臭牛排新增发光效果和冷却时间，道具冷却时间调整。<br>新增鬼转人类功能（默认关闭）。" },
+            { version: "v2.0.2", tag: "修复问题、黑暗沉浸", content: "修复编译错误，修复灵魂探测器失效，新增黑暗效果系统，/gostadmin dark命令。" },
+            { version: "v2.0.1", tag: "新增传送珍珠&臭牛排", content: "新增传送珍珠、臭牛排，智能倒计时系统。" },
+            { version: "v2.0.0", tag: "最初版本", content: "架构重构，独立区域系统，道具系统优化。" },
             { version: "v1.0.0", tag: "已作废", content: "⚠️ 此版本已作废（因机制与作者想要的不一致）。基础感染对抗玩法。" }
         ],
         en: [
-            { version: "v2.2.3", tag: "Current", content: "<strong>>2.2.3Better Version chack in:<brhttps://modrinth.com/plugin/gost/changelog<br>🔊 New sound system added:<br>• Phase sounds: preparation countdown, game start, victory sounds<br>• Item distribution sounds: <code>ENTITY_ITEM_PICKUP</code> and <code>BLOCK_NOTE_BLOCK_PLING</code><br>• Item usage sounds for all items (see item details)<br>• Faction switch sounds<br>⚙️ Automatic config migration: old config values are preserved, deprecated keys removed, new keys use defaults. Old config backed up as config_old_v{version}.yml.<br>Config version upgraded to 26." },
+            { version: "v2.2.3", tag: "Current", content: "🔊 New sound system added:<br>• Phase sounds: preparation countdown, game start, victory sounds<br>• Item distribution sounds: <code>ENTITY_ITEM_PICKUP</code> and <code>BLOCK_NOTE_BLOCK_PLING</code><br>• Item usage sounds for all items (see item details)<br>• Faction switch sounds<br>⚙️ Automatic config migration: old config values are preserved, deprecated keys removed, new keys use defaults. Old config backed up as config_old_v{version}.yml.<br>Config version upgraded to 26." },
             { version: "v2.2.2", tag: "", content: "Ghost respawn (15s), health adjustments, no healing, Reaper damage system, Divine Guardian 3-hit protection." },
             { version: "v2.2.1_Cover", tag: "Language Overhaul", content: "Language system overhaul (90+ messages), Dark+Sprint, bug fixes." },
             { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization." }
