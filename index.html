@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gost v2.2.3 文档 | 鬼抓人</title>
+    <title>Gost 文档 | 鬼抓人</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -141,7 +141,7 @@
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.2.3</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.3</span></div>
         <div class="lang-switch">
             <button class="lang-btn active" data-lang="zh">中文</button>
             <button class="lang-btn" data-lang="en">English</button>
@@ -154,7 +154,7 @@
     <div id="zh-content" class="lang-content active-lang">
         <div style="padding: 1.5rem 0 1rem;">
             <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — 人鬼追逐 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
-            <p><strong>Gost v2.2.3</strong> — 一款基于 Bukkit/Spigot 1.20.x 的多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
+            <p><strong>Gost </strong> — 一款基于 Bukkit/Spigot 的我的世界多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
             <div class="badge">⚡ 救赎者系统 | 🎮 模式切换 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 猎魔人阶段 | 🔊 音效系统全面更新</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
@@ -173,7 +173,7 @@
 <div class="tool-card">
     <div class="message">
         <p><i class="fas fa-sync-alt" style="color:#3b82f6;"></i> <strong>你换了一个插件版本，但是不想再写一遍配置？</strong> 试试我的新插件 —— 全自动配置迁移工具，智能合并，自动备份。</p>
-        <div class="builtin-badge">✨ 已内置在 v2.2.3 中</div>
+        <div class="builtin-badge">✨ 已内置在 v2.2.3 及更新的版本中</div>
     </div>
     <a href="https://726113394-cloud.github.io/ReloadConfig/" target="_blank" class="migration-tool-btn">
         <i class="fas fa-rocket"></i> ReloadConfig 自动迁移工具
@@ -386,6 +386,7 @@
                         <div class="card"><h3>❤️ 心跳声系统</h3>
                             <p>游戏过程中人类方循环播放监守者出现时的心跳声。<br>
                             管理员可通过 <code>/gostadmin heartbeat</code> 控制开关。</p>
+							
                         </div>
                     </div>
                 </div>
@@ -403,11 +404,13 @@
                             <tr><th>命令</th><th>说明</th><th>权限</th></tr>
                             <tr><td><code>/gost join</code></td><td>加入游戏队列</td><td>gost.use</td></tr>
                             <tr><td><code>/gost leave</code></td><td>离开游戏队列</td><td>gost.use</td></tr>
-                            <tr><td><code>/gost start</code></td><td>管理员强制开始游戏</td><td>gost.admin</td></tr>
                             <tr><td><code>/gost stop</code></td><td>管理员强制结束游戏</td><td>gost.admin</td></tr>
                             <tr><td><code>/gost reload</code></td><td>重载配置文件</td><td>gost.admin</td></tr>
                             <tr><td><code>/gostadmin dark &lt;on/off/status&gt;</code></td><td>控制黑暗效果开关</td><td>gost.admin</td></tr>
                             <tr><td><code>/gostadmin heartbeat &lt;on/off/status&gt;</code></td><td>控制心跳声开关</td><td>gost.admin</td></tr>
+							<tr><td><code>/gost start</code></td><td>管理员强制开始游戏（跳过人数限制）</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin testmode</code></td><td>管理员单人测试模式（对局不因人数不足结束）</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin giveitem &lt;道具名&gt;</code></td><td>直接获得指定道具（支持模糊匹配）</td><td>gost.admin</td></tr>
                             <tr><td><code>/divineguardian status</code></td><td>查看神圣守护状态</td><td>gost.admin</td></tr>
                             <tr><td><code>/divineguardian setmode &lt;1/2&gt;</code></td><td>切换神圣守护模式</td><td>gost.admin</td></tr>
                             <tr><td><code>/divineguardian setcharges &lt;次数&gt;</code></td><td>设置最大使用次数</td><td>gost.admin</td></tr>
@@ -492,7 +495,7 @@ ghost-particle:
             </div>
         </div>
 
-        <!-- 版本历史（包含 v2.2.3） -->
+        <!-- 版本历史（包含 v2.3） -->
         <div class="section">
             <div class="section-title">📈 版本历史</div>
             <div class="version-list" id="version-list-zh"></div>
@@ -505,7 +508,7 @@ ghost-particle:
     <div id="en-content" class="lang-content">
         <div style="padding:1.5rem 0 1rem;">
             <h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — Ghost Chase · Redeemer · Demon Hunter Multi-Stage Confrontation Plugin</h1>
-            <p><strong>Gost v2.2.3</strong> — A multiplayer mini-game plugin for Bukkit/Spigot 1.20.x.<br>Inspired by <strong>Dead Realm</strong> — honoring the deceased masterpiece that brought countless joys, and attempting to recreate the tension and fun of chase and confrontation in Minecraft.</p>
+            <p><strong>Gost</strong> — A multiplayer mini-game plugin for Minecraft Bukkit/Spigot <br>Inspired by <strong>Dead Realm</strong> — honoring the deceased masterpiece that brought countless joys, and attempting to recreate the tension and fun of chase and confrontation in Minecraft.</p>
             <div class="badge">⚡ Redeemer System | 🎮 Mode Switching | 🌑 Dark Effect + Sprint | 🔧 Queue Optimization | ✨ Demon Hunter Phase | 🔊 Sound System Overhaul</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Download on Modrinth</a>
@@ -523,7 +526,7 @@ ghost-particle:
         <div class="tool-card">
     <div class="message">
         <p><i class="fas fa-sync-alt" style="color:#3b82f6;"></i> <strong>Upgraded plugin but don't want to rewrite config?</strong> Try my auto‑migration tool — smart merge, auto backup.</p>
-        <div class="builtin-badge">✨ Built-in in v2.2.3</div>
+        <div class="builtin-badge">✨ Built-in in v2.2.3 +</div>
     </div>
     <a href="https://726113394-cloud.github.io/ReloadConfig/" target="_blank" class="migration-tool-btn">
         <i class="fas fa-rocket"></i> ReloadConfig Tool
@@ -753,11 +756,13 @@ ghost-particle:
                             <tr><th>Command</th><th>Description</th><th>Permission</th></tr>
                             <tr><td><code>/gost join</code></td><td>Join game queue</td><td>gost.use</td></tr>
                             <tr><td><code>/gost leave</code></td><td>Leave game queue</td><td>gost.use</td></tr>
-                            <tr><td><code>/gost start</code></td><td>Force start game (admin)</td><td>gost.admin</td></tr>
                             <tr><td><code>/gost stop</code></td><td>Force stop game (admin)</td><td>gost.admin</td></tr>
                             <tr><td><code>/gost reload</code></td><td>Reload config</td><td>gost.admin</td></tr>
                             <tr><td><code>/gostadmin dark &lt;on/off/status&gt;</code></td><td>Toggle dark effect</td><td>gost.admin</td></tr>
                             <tr><td><code>/gostadmin heartbeat &lt;on/off/status&gt;</code></td><td>Toggle heartbeat sound</td><td>gost.admin</td></tr>
+							<tr><td><code>/gost start</code></td><td>Force start game (bypass player limit)</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin testmode</code></td><td>Admin solo test mode (game won't end due to low players)</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin giveitem &lt;item name&gt;</code></td><td>Get any item directly (fuzzy match supported)</td><td>gost.admin</td></tr>
                             <tr><td><code>/divineguardian status</code></td><td>View Divine Guardian status</td><td>gost.admin</td></tr>
                             <tr><td><code>/divineguardian setmode &lt;1/2&gt;</code></td><td>Switch Divine Guardian mode</td><td>gost.admin</td></tr>
                             <tr><td><code>/divineguardian setcharges &lt;count&gt;</code></td><td>Set max defense charges</td><td>gost.admin</td></tr>
@@ -842,7 +847,7 @@ ghost-particle:
             </div>
         </div>
 
-        <!-- Version History (包含 v2.2.3) -->
+        <!-- Version History -->
         <div class="section">
             <div class="section-title">📈 Version History</div>
             <div class="version-list" id="version-list-en"></div>
@@ -852,7 +857,7 @@ ghost-particle:
     </div>
 </div>
 
-<div class="watermark">Gost v2.2.3 | 来自太空的小头脑</div>
+<div class="watermark">Gost v2.3 | 来自太空的小头脑</div>
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
 
 <script>
@@ -908,8 +913,15 @@ ghost-particle:
         soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：使用后在小地图或方位指示器上显示附近鬼玩家的位置。<br>冷却时间：35秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
         teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
         adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
-        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" }
-    };
+        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" },
+		spearRush: { name: "🗡️ 冲刺矛", desc: "左键冲刺，消耗品", faction: "neutral", detail: "效果：左键使用进行一次原版矛的冲刺效果，使用后即刻消失。<br>服务器版本要求：<strong>1.21.4 及以上</strong>，插件启动时自动检测版本。<br>使用音效：矛冲刺音效（由游戏内置）" },
+        levitationPotion: { 
+            name: "🧪 漂浮药水", 
+            desc: "右键获得漂浮效果", 
+            faction: "neutral", 
+            detail: "效果：右键使用获得 <strong>漂浮</strong> 效果，持续 4.5 秒。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" 
+        }
+    };  // 这是 itemsDetailZh 的结束
 
     const itemsDetailEn = {
         reaper: { name: "🗡️ Reaper", desc: "Demon Hunter exclusive weapon", faction: "human", detail: "Effect: Deals configured damage per hit, displays damage and remaining health. Ghosts enter spectator mode when health reaches zero and trigger respawn timer.<br>Cooldown: 2 seconds<br>Sound: None (melee)" },
@@ -921,9 +933,16 @@ ghost-particle:
         soulDetector: { name: "👁️ Soul Detector", desc: "Detection item", faction: "ghost", detail: "Effect: Reveals nearby ghost positions on minimap or direction indicator.<br>Cooldown: 35 seconds<br>Sound: User <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>, global <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
         teleportPearl: { name: "🪄 Teleport Pearl", desc: "Tactical teleport item", faction: "neutral", detail: "Effect: Teleports player to pearl landing point. Usable by both factions.<br>Cooldown: 20 seconds<br>Sound: <code>ENTITY_ENDER_PEARL_THROW</code>" },
         adrenaline: { name: "🧪 Adrenaline", desc: "Human only", faction: "human", detail: "Effect: Grants speed boost.<br>Sound: <code>ENTITY_PLAYER_SPLASH</code>" },
-        frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only", faction: "ghost", detail: "Effect: Grants speed boost.<br>Sound: <code>ENTITY_WITHER_SHOOT</code>" }
-    };
-
+        frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only", faction: "ghost", detail: "Effect: Grants speed boost.<br>Sound: <code>ENTITY_WITHER_SHOOT</code>" },
+		        spearRush: { name: "🗡️ Spear Rush", desc: "Left-click dash, consumed", faction: "neutral", detail: "Effect: Left-click to perform a spear rush‑like dash, consumed immediately after use.<br>Server version requirement: <strong>≥ 1.21.4</strong>, auto‑detected on startup.<br>Sound: Built‑in spear rush sound" },
+        levitationPotion: { 
+            name: "🧪 Levitation Potion", 
+            desc: "Right-click for levitation", 
+            faction: "neutral", 
+            detail: "Effect: Right-click to gain <strong>Levitation</strong> for 4.5 seconds.<br>Sound: <code>ENTITY_PLAYER_SPLASH</code>" 
+        }
+    };  // 这是 itemsDetailEn 的结束
+	
     function renderItems(lang) {
         const container = document.getElementById(`items-list-${lang}`);
         if (!container) return;
@@ -980,7 +999,8 @@ ghost-particle:
     // 版本数据
     const versionData = {
         zh: [
-            { version: "v2.2.3", tag: "当前版本|视觉、听觉沉浸&支持英文", content: `<p>🔊 新增音效系统：<br>
+		    { version: "v2.3.0", tag: "当前版本|新道具 & 管理员工具", content: `<strong>🎯 新增道具：</strong><br>• <strong>冲刺矛</strong>（<code>GOLDEN_SPEAR</code>）：左键冲刺，使用后消失（仅 1.21.4+ 可用）<br>• <strong>漂浮药水</strong>（<code>LINGERING_POTION</code>）：右键获得漂浮 4.5 秒<br><br><strong>🛠️ 新增管理员命令：</strong><br>• <code>/gost start</code> — 强制开局（跳过人数限制）<br>• <code>/gostadmin testmode</code> — 单人测试模式<br>• <code>/gostadmin giveitem &lt;道具名&gt;</code> — 直接获得道具（支持模糊匹配）<br><br><strong>⚙️ 配置版本升级到 27</strong><br>插件版本升级到 2.3.0` },
+            { version: "v2.2.3", tag: "视觉、听觉沉浸&重新支持英文", content: `<p>🔊 新增音效系统：<br>
 <strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br>
 <strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br>
 <strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br>
@@ -1004,10 +1024,19 @@ ghost-particle:
             { version: "v1.0.0", tag: "已作废", content: "⚠️ 此版本已作废（因机制与作者想要的不一致）。基础感染对抗玩法。" }
         ],
         en: [
-            { version: "v2.2.3", tag: "Current", content: "🔊 New sound system added:<br>• Phase sounds: preparation countdown, game start, victory sounds<br>• Item distribution sounds: <code>ENTITY_ITEM_PICKUP</code> and <code>BLOCK_NOTE_BLOCK_PLING</code><br>• Item usage sounds for all items (see item details)<br>• Faction switch sounds<br>⚙️ Automatic config migration: old config values are preserved, deprecated keys removed, new keys use defaults. Old config backed up as config_old_v{version}.yml.<br>Config version upgraded to 26." },
+		    { version: "v2.3.0", tag: "Current|New Items & Admin Tools", content: `<strong>🎯 New Items:</strong><br>• <strong>Spear Rush</strong> (<code>GOLDEN_SPEAR</code>): Left-click to dash, consumed on use (≥1.21.4 only)<br>• <strong>Levitation Potion</strong> (<code>LINGERING_POTION</code>): Right-click for Levitation 4.5s<br><br><strong>🛠️ New Admin Commands:</strong><br>• <code>/gost start</code> — Force start (bypass player limit)<br>• <code>/gostadmin testmode</code> — Solo test mode<br>• <code>/gostadmin giveitem &lt;name&gt;</code> — Get any item (fuzzy match)<br><br><strong>⚙️ Config version upgraded to 27</strong><br>Plugin version upgraded to 2.3.0` },
+            { version: "v2.2.3", tag: "More immersive|Support English again", content: "🔊 New sound system added:<br>• Phase sounds: preparation countdown, game start, victory sounds<br>• Item distribution sounds: <code>ENTITY_ITEM_PICKUP</code> and <code>BLOCK_NOTE_BLOCK_PLING</code><br>• Item usage sounds for all items (see item details)<br>• Faction switch sounds<br>⚙️ Automatic config migration: old config values are preserved, deprecated keys removed, new keys use defaults. Old config backed up as config_old_v{version}.yml.<br>Config version upgraded to 26." },
             { version: "v2.2.2", tag: "", content: "Ghost respawn (15s), health adjustments, no healing, Reaper damage system, Divine Guardian 3-hit protection." },
             { version: "v2.2.1_Cover", tag: "Language Overhaul", content: "Language system overhaul (90+ messages), Dark+Sprint, bug fixes." },
-            { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization." }
+            { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization." },
+			{ version: "v2.1.3", tag: "", content: "Fixed admin immunity, creative mode auto-switch to survival." },
+			{ version: "v2.1.2", tag: "", content: "Ghost particle effects, 21 types, RGB colors, /ghostparticle commands." },
+			{ version: "v2.1.1", tag: "", content: "Divine Guardian system, visual effects, management commands." },
+			{ version: "v2.1.0", tag: "", content: "Prize pool optimization, heartbeat sound, ghost-to-human feature." },
+			{ version: "v2.0.2", tag: "", content: "Dark effect system, fixed soul detector." },
+			{ version: "v2.0.1", tag: "", content: "Teleport pearl, stinky steak, smart countdown." },
+			{ version: "v2.0.0", tag: "", content: "Architecture refactor, area system, item system optimization." },
+			{ version: "v1.0.0", tag: "Deprecated", content: "Deprecated – basic infection gameplay." }
         ]
     };
 
