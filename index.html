@@ -230,7 +230,7 @@
                             <strong>传送效果</strong>：每次被攻击，进攻者会被随机传送到附近区域<br>
                             <strong>猎魔人阶段</strong>：所有剩余人类自动获得神圣守护，并转化为猎魔人</p>
                         </div>
-                        <div class="card"><h3>模式2：救赎者模式（转化鬼玩家|2.2版本后已停用）</h3>
+                        <div class="card"><h3>模式2：救赎者模式（转化鬼玩家|2.2.2版本后已停用）</h3>
                             <p><strong>激活条件</strong>：人类数量减少到 <strong>1 人</strong> 时，最后一名人类成为 <strong>救赎者</strong><br>
                             <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
                             <strong>随机传送</strong>：使用道具后救赎者会被随机传送到安全位置<br>
@@ -999,7 +999,7 @@ ghost-particle:
     // 版本数据
     const versionData = {
         zh: [
-		    { version: "v2.3.0", tag: "当前版本|新道具 & 管理员工具", content: `<strong>🎯 新增道具：</strong><br>• <strong>冲刺矛</strong>（<code>GOLDEN_SPEAR</code>）：左键冲刺，使用后消失（仅 1.21.4+ 可用）<br>• <strong>漂浮药水</strong>（<code>LINGERING_POTION</code>）：右键获得漂浮 4.5 秒<br><br><strong>🛠️ 新增管理员命令：</strong><br>• <code>/gost start</code> — 强制开局（跳过人数限制）<br>• <code>/gostadmin testmode</code> — 单人测试模式<br>• <code>/gostadmin giveitem &lt;道具名&gt;</code> — 直接获得道具（支持模糊匹配）<br><br><strong>⚙️ 配置版本升级到 27</strong><br>插件版本升级到 2.3.0<br><br><strong>新增游戏结束奖金排行榜：游戏结算时按奖金从高到低排序显示所有参与玩家的奖励排行，前三名分别显示金银铜奖牌（🥇🥈🥉），方便玩家查看最终收益。` },
+		    { version: "v2.3.0", tag: "当前版本|新道具 & 管理员工具", content: `<strong>🎯 新增道具：</strong><br>• <strong>冲刺矛</strong>（<code>GOLDEN_SPEAR</code>）：左键冲刺，使用后消失（仅 1.21.4+ 可用）<br>• <strong>漂浮药水</strong>（<code>LINGERING_POTION</code>）：右键获得漂浮 4.5 秒<br><br><strong>🛠️ 新增管理员命令：</strong><br>• <code>/gost start</code> — 强制开局（跳过人数限制）<br>• <code>/gostadmin testmode</code> — 单人测试模式<br>• <code>/gostadmin giveitem &lt;道具名&gt;</code> — 直接获得道具（支持模糊匹配）<br><br><strong>⚙️ 配置版本升级到 27</strong><br>插件版本升级到 2.3.0<br><br><strong>+ 新增游戏结束奖金排行榜：游戏结算时按奖金从高到低排序显示所有参与玩家的奖励排行，前三名分别显示金银铜奖牌（🥇🥈🥉），方便玩家查看最终收益。` },
             { version: "v2.2.3", tag: "视觉、听觉沉浸&重新支持英文", content: `<p>🔊 新增音效系统：<br>
 <strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br>
 <strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br>
