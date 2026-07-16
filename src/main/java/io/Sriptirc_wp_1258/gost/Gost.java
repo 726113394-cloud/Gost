@@ -13,7 +13,8 @@ public class Gost extends JavaPlugin {
     
     private static Gost instance;
     
-    // 管理器
+    private boolean spearRushEnabled = false;
+    
     private ConfigManager configManager;
     private GameManager gameManager;
     private PlayerManager playerManager;
@@ -35,8 +36,9 @@ public class Gost extends JavaPlugin {
     public void onEnable() {
         instance = this;
         
+        checkSpearRushSupport();
+        
         try {
-            // 初始化管理器
             configManager = new ConfigManager(this);
             economyManager = new EconomyManager(this);
             areaManager = new AreaManager(this);
@@ -47,7 +49,6 @@ public class Gost extends JavaPlugin {
             gameManager = new GameManager(this);
             actionBarManager = new ActionBarManager(this);
             
-            // 尝试初始化 LanguageManager，如果失败则继续
             try {
                 languageManager = new LanguageManager(this);
             } catch (NoClassDefFoundError | Exception e) {
@@ -65,30 +66,21 @@ public class Gost extends JavaPlugin {
         } catch (Exception e) {
             getLogger().severe("初始化管理器时发生错误: " + e.getMessage());
             e.printStackTrace();
-            // 设置游戏管理器为null，避免onDisable时出现NPE
             gameManager = null;
             return;
         }
         
         try {
-            // 加载语言
             if (languageManager != null) {
                 languageManager.reload();
             }
             
-            // 加载神圣守护配置
             divineGuardianManager.loadConfig();
-            
-            // 加载鬼玩家粒子效果配置
             ghostParticleManager.loadConfig();
-            
-            // 加载黑暗效果配置
             darkEffectManager.loadConfig();
             
-            // 插件加载完成提示
             getLogger().info("==========================================");
             
-            // 注册命令
             getCommand("gost").setExecutor(new GostCommand(this));
             getCommand("gostadmin").setExecutor(new GostAdminCommand(this));
             getCommand("divineguardian").setExecutor(new DivineGuardianCommand(this));
@@ -96,7 +88,6 @@ public class Gost extends JavaPlugin {
             getCommand("ghostparticle").setExecutor(new GhostParticleCommand(this));
             getCommand("ghostparticle").setTabCompleter(new GhostParticleCommand(this));
             
-            // 注册监听器
             getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
             getServer().getPluginManager().registerEvents(new GameListener(this), this);
             getServer().getPluginManager().registerEvents(new InfectionListener(this), this);
@@ -105,16 +96,16 @@ public class Gost extends JavaPlugin {
             getServer().getPluginManager().registerEvents(secondChanceListener, this);
             getServer().getPluginManager().registerEvents(new HolyRedemptionListener(this), this);
             getServer().getPluginManager().registerEvents(new DemonHunterPhaseListener(this), this);
+            getServer().getPluginManager().registerEvents(gameManager, this);
             
             getLogger().info("==========================================");
             getLogger().info("作者: 来自太空的小头脑");
             getLogger().info("主页: https://space.bilibili.com/3493116665400113");
             getLogger().info("==========================================");
             
-            // 延迟1秒打印配置迁移报告（确保服务器完全启动）
             Bukkit.getScheduler().runTaskLater(this, () -> {
                 configManager.printMigrationReport();
-            }, 20L); // 20 ticks = 1秒
+            }, 20L);
         } catch (Exception e) {
             getLogger().severe("注册命令和监听器时发生错误: " + e.getMessage());
             e.printStackTrace();
@@ -126,105 +117,67 @@ public class Gost extends JavaPlugin {
         if (gameManager != null && gameManager.isGameRunning()) {
             gameManager.forceStopGame();
         }
-        
-        // 清理队伍
         if (teamManager != null) {
             teamManager.cleanup();
         }
-        
-        // 清理神圣守护数据
         if (divineGuardianManager != null) {
             divineGuardianManager.cleanup();
         }
-        
-        // 清理鬼玩家粒子效果数据
         if (ghostParticleManager != null) {
             ghostParticleManager.cleanup();
         }
-        
         getLogger().info("Gost 插件已禁用");
     }
     
-    // 获取管理器实例
     public static Gost getInstance() {
         return instance;
     }
     
-    public ConfigManager getConfigManager() {
-        return configManager;
-    }
-    
-    public GameManager getGameManager() {
-        return gameManager;
-    }
-    
-    public PlayerManager getPlayerManager() {
-        return playerManager;
-    }
-    
-    public ItemManager getItemManager() {
-        return itemManager;
-    }
-    
-    public TeamManager getTeamManager() {
-        return teamManager;
-    }
-    
-    public AreaManager getAreaManager() {
-        return areaManager;
-    }
-    
-    public SelectionManager getSelectionManager() {
-        return selectionManager;
-    }
-    
-    public EconomyManager getEconomyManager() {
-        return economyManager;
-    }
-    
-    public ActionBarManager getActionBarManager() {
-        return actionBarManager;
-    }
-    
-
-    
+    public ConfigManager getConfigManager() { return configManager; }
+    public GameManager getGameManager() { return gameManager; }
+    public PlayerManager getPlayerManager() { return playerManager; }
+    public ItemManager getItemManager() { return itemManager; }
+    public TeamManager getTeamManager() { return teamManager; }
+    public AreaManager getAreaManager() { return areaManager; }
+    public SelectionManager getSelectionManager() { return selectionManager; }
+    public EconomyManager getEconomyManager() { return economyManager; }
+    public ActionBarManager getActionBarManager() { return actionBarManager; }
     public LanguageManager getLanguageManager() {
         if (languageManager == null) {
-            // 直接创建LanguageManager，它已经内置了默认消息和友好回退
             languageManager = new LanguageManager(this);
         }
         return languageManager;
     }
+    public ItemSpawnManager getItemSpawnManager() { return itemSpawnManager; }
+    public SecondChanceListener getSecondChanceListener() { return secondChanceListener; }
+    public DarkEffectManager getDarkEffectManager() { return darkEffectManager; }
+    public HeartbeatManager getHeartbeatManager() { return heartbeatManager; }
+    public DivineGuardianManager getDivineGuardianManager() { return divineGuardianManager; }
+    public GhostParticleManager getGhostParticleManager() { return ghostParticleManager; }
     
-    public ItemSpawnManager getItemSpawnManager() {
-        return itemSpawnManager;
+    public boolean isSpearRushEnabled() {
+        return spearRushEnabled;
     }
     
-    public SecondChanceListener getSecondChanceListener() {
-        return secondChanceListener;
+    private void checkSpearRushSupport() {
+        String version = Bukkit.getBukkitVersion();
+        getLogger().info("检测到服务器版本: " + version);
+        try {
+            String verNum = version.split("-")[0];
+            String[] parts = verNum.split("\\.");
+            int major = Integer.parseInt(parts[0]);
+            int minor = Integer.parseInt(parts[1]);
+            int patch = (parts.length > 2) ? Integer.parseInt(parts[2]) : 0;
+            if (major > 1 || (major == 1 && minor > 21) || (major == 1 && minor == 21 && patch >= 4)) {
+                spearRushEnabled = true;
+                getLogger().info("✓ 冲刺矛功能已启用（服务器版本 ≥ 1.21.4）");
+            } else {
+                spearRushEnabled = false;
+                getLogger().info("✗ 冲刺矛功能已禁用（服务器版本 < 1.21.4）");
+            }
+        } catch (Exception e) {
+            spearRushEnabled = false;
+            getLogger().warning("无法解析服务器版本，冲刺矛功能已禁用: " + e.getMessage());
+        }
     }
-    
-    public DarkEffectManager getDarkEffectManager() {
-        return darkEffectManager;
-    }
-    
-    public HeartbeatManager getHeartbeatManager() {
-        return heartbeatManager;
-    }
-    
-
-    
-    public DivineGuardianManager getDivineGuardianManager() {
-        return divineGuardianManager;
-    }
-    
-    public GhostParticleManager getGhostParticleManager() {
-        return ghostParticleManager;
-    }
-    
-
-    
-
-    
-
 }

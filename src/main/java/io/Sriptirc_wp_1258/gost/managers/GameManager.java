@@ -4,18 +4,26 @@ import io.Sriptirc_wp_1258.gost.Gost;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
-public class GameManager {
+public class GameManager implements Listener {
     
     public enum GameState {
         WAITING,
@@ -41,6 +49,7 @@ public class GameManager {
     private int queueTime;
     private int remainingGameTime;
     private boolean preparationPhase = false;
+    private boolean adminTestMode = false; // 管理员单人测试模式
     
 
     private BossBar queueBossBar;
@@ -275,9 +284,21 @@ public class GameManager {
     
     // 开始游戏
     public boolean startGame() {
+        return startGame(false);
+    }
+    
+    // 开始游戏（支持管理员强制开局）
+    public boolean startGame(boolean isAdminForced) {
+        return startGame(isAdminForced, false);
+    }
+    
+    // 开始游戏（支持管理员强制开局和单人测试模式）
+    public boolean startGame(boolean isAdminForced, boolean isTestMode) {
         if (gameState != GameState.STOPPED && gameState != GameState.WAITING) {
             return false;
         }
+        
+        adminTestMode = isTestMode;
         
         // 检查游戏区域 - 自动选择启用的区域
         AreaManager.GameArea selectedArea = plugin.getAreaManager().getSelectedArea();
@@ -295,6 +316,12 @@ public class GameManager {
                 Bukkit.broadcastMessage(ChatColor.RED + "选中的区域未启用！请管理员先启用该区域。");
                 return false;
             }
+        }
+        
+        // 检查玩家数量（管理员强制开局可跳过）
+        if (!isAdminForced && waitingPlayers.size() < plugin.getConfigManager().getMinPlayers()) {
+            Bukkit.broadcastMessage(ChatColor.RED + "玩家数量不足，无法开始游戏！");
+            return false;
         }
         
         // 生成游戏ID
@@ -539,6 +566,9 @@ public class GameManager {
         // 开始鬼转人类功能（如果启用）
         startGhostToHumanTask();
         
+        // 清除游戏区域内的生物
+        clearAreaEntities();
+        
         // 发送游戏开始标题
         sendGameStartTitles();
         
@@ -590,15 +620,15 @@ public class GameManager {
                     return;
                 }
                 
-                // 检查是否所有人类都被感染
-                if (humanCount == 0) {
+                // 检查是否所有人类都被感染（单人测试模式跳过此检查）
+                if (!adminTestMode && humanCount == 0) {
                     endGame(false); // 鬼胜利
                     this.cancel();
                     return;
                 }
                 
-                // 检查鬼数量是否为0
-                if (ghostCount == 0) {
+                // 检查鬼数量是否为0（单人测试模式跳过此检查）
+                if (!adminTestMode && ghostCount == 0) {
                     // 鬼数量为0，人类自动胜利，但不发放奖金，退还入场金
                     endGameWithNoGhosts();
                     this.cancel();
@@ -758,6 +788,7 @@ public class GameManager {
         gameState = GameState.STOPPED;
         currentGameId = null;
         preparationPhase = false;
+        adminTestMode = false;
         
         Bukkit.broadcastMessage(ChatColor.YELLOW + "游戏已结束，可以开始新的游戏！");
     }
@@ -918,6 +949,11 @@ public class GameManager {
     // 获取队列大小（别名方法）
     public int getQueueSize() {
         return waitingPlayers.size();
+    }
+    
+    // 检查玩家是否在队列中
+    public boolean isInQueue(UUID playerId) {
+        return waitingPlayers.contains(playerId);
     }
     
     // 获取游戏ID
@@ -1220,5 +1256,89 @@ public class GameManager {
         );
         
         plugin.getLogger().info("成功转换鬼玩家 " + playerName + " 为人类");
+    }
+    
+    /**
+     * 清除游戏区域内的所有生物（怪物/动物）
+     */
+    private void clearAreaEntities() {
+        if (!plugin.getConfigManager().isClearEntitiesEnabled()) {
+            return;
+        }
+        
+        AreaManager.GameArea selectedArea = plugin.getAreaManager().getSelectedArea();
+        if (selectedArea == null) {
+            return;
+        }
+        
+        Location pos1 = selectedArea.getPos1();
+        Location pos2 = selectedArea.getPos2();
+        if (pos1 == null || pos2 == null || pos1.getWorld() == null) {
+            return;
+        }
+        
+        World world = pos1.getWorld();
+        
+        // 计算区域边界
+        int minX = Math.min(pos1.getBlockX(), pos2.getBlockX());
+        int minY = Math.min(pos1.getBlockY(), pos2.getBlockY());
+        int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
+        int maxX = Math.max(pos1.getBlockX(), pos2.getBlockX());
+        int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
+        int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
+        
+        int removed = 0;
+        for (Entity entity : world.getEntities()) {
+            if (entity instanceof Player) continue; // 跳过玩家
+            if (entity instanceof Monster || entity instanceof Animals) {
+                Location loc = entity.getLocation();
+                if (loc.getBlockX() >= minX && loc.getBlockX() <= maxX &&
+                    loc.getBlockY() >= minY && loc.getBlockY() <= maxY &&
+                    loc.getBlockZ() >= minZ && loc.getBlockZ() <= maxZ) {
+                    entity.remove();
+                    removed++;
+                }
+            }
+        }
+        
+        if (removed > 0) {
+            plugin.getLogger().info("已清除游戏区域内 " + removed + " 个生物");
+        }
+    }
+    
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (!plugin.getConfigManager().isPreventEntitySpawnEnabled()) {
+            return;
+        }
+        
+        if (gameState != GameState.RUNNING && !preparationPhase) {
+            return;
+        }
+        
+        Location loc = event.getLocation();
+        AreaManager.GameArea selectedArea = plugin.getAreaManager().getSelectedArea();
+        if (selectedArea == null) {
+            return;
+        }
+        
+        Location pos1 = selectedArea.getPos1();
+        Location pos2 = selectedArea.getPos2();
+        if (pos1 == null || pos2 == null) {
+            return;
+        }
+        
+        int minX = Math.min(pos1.getBlockX(), pos2.getBlockX());
+        int minY = Math.min(pos1.getBlockY(), pos2.getBlockY());
+        int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
+        int maxX = Math.max(pos1.getBlockX(), pos2.getBlockX());
+        int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
+        int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
+        
+        if (loc.getBlockX() >= minX && loc.getBlockX() <= maxX &&
+            loc.getBlockY() >= minY && loc.getBlockY() <= maxY &&
+            loc.getBlockZ() >= minZ && loc.getBlockZ() <= maxZ) {
+            event.setCancelled(true);
+        }
     }
 }

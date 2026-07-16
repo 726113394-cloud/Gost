@@ -5,6 +5,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -56,16 +57,17 @@ public class EconomyManager {
         }
         
         double entryFee = plugin.getConfigManager().getEntryFee();
+        if (entryFee <= 0) {
+            return true; // 免费入场
+        }
         
-        // 检查玩家余额
-        if (!economy.has(player, entryFee)) {
+        // 兼容多种Vault版本：先尝试 OfflinePlayer，失败则回退到 Player
+        if (!checkBalance(player, entryFee)) {
             return false;
         }
         
         // 扣除金币
-        EconomyResponse response = economy.withdrawPlayer(player, entryFee);
-        if (!response.transactionSuccess()) {
-            plugin.getLogger().warning("扣除玩家 " + player.getName() + " 入场费失败: " + response.errorMessage);
+        if (!withdraw(player, entryFee)) {
             return false;
         }
         
@@ -77,6 +79,53 @@ public class EconomyManager {
         
         player.sendMessage(ChatColor.GREEN + "已支付入场费: " + entryFee + " 金币");
         return true;
+    }
+    
+    // 兼容性：检查余额
+    private boolean checkBalance(Player player, double amount) {
+        try {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
+            return economy.has(offlinePlayer, amount);
+        } catch (AbstractMethodError | NoSuchMethodError | Exception e1) {
+            try {
+                // 回退：使用 Player 参数
+                return economy.has(player, amount);
+            } catch (AbstractMethodError | NoSuchMethodError | Exception e2) {
+                // 回退：使用玩家名字符串
+                return economy.has(player.getName(), amount);
+            }
+        }
+    }
+    
+    // 兼容性：扣款
+    private boolean withdraw(Player player, double amount) {
+        try {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
+            EconomyResponse response = economy.withdrawPlayer(offlinePlayer, amount);
+            return response != null && response.transactionSuccess();
+        } catch (AbstractMethodError | NoSuchMethodError | Exception e1) {
+            try {
+                EconomyResponse response = economy.withdrawPlayer(player, amount);
+                return response != null && response.transactionSuccess();
+            } catch (AbstractMethodError | NoSuchMethodError | Exception e2) {
+                EconomyResponse response = economy.withdrawPlayer(player.getName(), amount);
+                return response != null && response.transactionSuccess();
+            }
+        }
+    }
+    
+    // 兼容性：存款
+    private void deposit(Player player, double amount) {
+        try {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
+            economy.depositPlayer(offlinePlayer, amount);
+        } catch (AbstractMethodError | NoSuchMethodError | Exception e1) {
+            try {
+                economy.depositPlayer(player, amount);
+            } catch (AbstractMethodError | NoSuchMethodError | Exception e2) {
+                economy.depositPlayer(player.getName(), amount);
+            }
+        }
     }
     
     // 退还入场费
@@ -91,11 +140,7 @@ public class EconomyManager {
         }
         
         // 退还金币
-        EconomyResponse response = economy.depositPlayer(player, contribution);
-        if (!response.transactionSuccess()) {
-            plugin.getLogger().warning("退还玩家 " + player.getName() + " 入场费失败: " + response.errorMessage);
-            return;
-        }
+        deposit(player, contribution);
         
         // 从奖池中扣除
         prizePool -= contribution;
@@ -145,20 +190,16 @@ public class EconomyManager {
             if (player != null && player.isOnline()) {
                 double reward = entry.getValue();
                 if (reward > 0) {
-                    EconomyResponse response = economy.depositPlayer(player, reward);
-                    if (response.transactionSuccess()) {
-                        // 发送突出显示的个人奖金消息
-                        player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-                        player.sendMessage(ChatColor.YELLOW + "🎉 奖金已到账！");
-                        player.sendMessage(ChatColor.GREEN + "💰 最终获得: " + String.format("%.2f", reward) + " 金币");
-                        player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-                        
-                        // 额外提示音效
-                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
-                    } else {
-                        player.sendMessage(ChatColor.RED + "❌ 发放奖励失败: " + response.errorMessage);
-                    }
+                    deposit(player, reward);
+                    // 发送突出显示的个人奖金消息
+                    player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+                    player.sendMessage(ChatColor.YELLOW + "🎉 奖金已到账！");
+                    player.sendMessage(ChatColor.GREEN + "💰 最终获得: " + String.format("%.2f", reward) + " 金币");
+                    player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
+                    
+                    // 额外提示音效
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
                 }
             }
         }
@@ -168,9 +209,39 @@ public class EconomyManager {
         Bukkit.broadcastMessage(ChatColor.YELLOW + "✅ 所有奖金已发放完毕！");
         Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
         
+        // 显示奖金排行榜
+        showRewardsLeaderboard(rewards);
+        
         // 重置奖池
         prizePool = 0.0;
         playerContributions.clear();
+    }
+    
+    private void showRewardsLeaderboard(Map<UUID, Double> rewards) {
+        if (rewards.isEmpty()) return;
+        List<Map.Entry<UUID, Double>> sorted = new ArrayList<>(rewards.entrySet());
+        sorted.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+        Bukkit.broadcastMessage("");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "═══════ 奖金排行榜 ═══════");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "🏆 奖励排行 🏆");
+        Bukkit.broadcastMessage("");
+        int rank = 1;
+        for (Map.Entry<UUID, Double> entry : sorted) {
+            Player player = Bukkit.getPlayer(entry.getKey());
+            String playerName = (player != null) ? player.getName() : "未知玩家";
+            double reward = entry.getValue();
+            String medal;
+            switch (rank) {
+                case 1: medal = "§6🥇"; break;
+                case 2: medal = "§7🥈"; break;
+                case 3: medal = "§e🥉"; break;
+                default: medal = "§f" + rank + "."; break;
+            }
+            Bukkit.broadcastMessage(medal + " §e" + playerName + " §7- §a" + String.format("%.2f", reward) + " 金币");
+            rank++;
+        }
+        Bukkit.broadcastMessage(ChatColor.GOLD + "═══════════════════════");
+        Bukkit.broadcastMessage("");
     }
     
     // 人类胜利时的奖金分配

@@ -3,6 +3,7 @@ package io.Sriptirc_wp_1258.gost.commands;
 import io.Sriptirc_wp_1258.gost.Gost;
 import io.Sriptirc_wp_1258.gost.managers.AreaManager;
 import io.Sriptirc_wp_1258.gost.managers.SelectionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -71,6 +72,10 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 return handleHeartbeat(sender, args);
             case "economy":
                 return handleEconomy(sender, args);
+            case "testmode":
+                return handleTestMode(sender);
+            case "giveitem":
+                return handleGiveItem(sender, args);
             case "help":
                 sendHelp(sender);
                 return true;
@@ -564,6 +569,8 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.GOLD + "========== Gost 管理员命令 ==========");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin start <区域> - 使用指定区域开始游戏");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin stop - 停止游戏");
+        sender.sendMessage(ChatColor.YELLOW + "/gostadmin testmode - 管理员单人测试模式（不会因人数不足结束）");
+        sender.sendMessage(ChatColor.YELLOW + "/gostadmin giveitem <道具名> - 直接获得指定道具");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin tool - 获取选区工具");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin pos1 - 设置第一个点（使用工具左键）");
         sender.sendMessage(ChatColor.YELLOW + "/gostadmin pos2 - 设置第二个点（使用工具右键）");
@@ -597,7 +604,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subCommands = {"start", "stop", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "economy", "help"};
+            String[] subCommands = {"start", "stop", "testmode", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "economy", "help"};
             for (String subCommand : subCommands) {
                 if (subCommand.startsWith(args[0].toLowerCase())) {
                     completions.add(subCommand);
@@ -663,5 +670,87 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         }
         
         return completions;
+    }
+    
+    private boolean handleTestMode(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            return true;
+        }
+        
+        Player player = (Player) sender;
+        
+        if (plugin.getGameManager().isAnyGameRunning()) {
+            player.sendMessage(ChatColor.RED + "当前有游戏正在进行！请先使用 /gostadmin stop 停止游戏。");
+            return true;
+        }
+        
+        if (!plugin.getGameManager().isInQueue(player.getUniqueId())) {
+            plugin.getGameManager().joinQueue(player);
+            player.sendMessage(ChatColor.GREEN + "你已加入游戏队列！");
+        }
+        
+        boolean started = plugin.getGameManager().startGame(true, true);
+        if (started) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "管理员 " + player.getName() + " 启动了单人测试模式！");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "对局不会因人数不足而结束，道具正常发放。");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "使用 /gostadmin stop 结束测试。");
+        } else {
+            player.sendMessage(ChatColor.RED + "启动测试模式失败，请检查区域设置！");
+        }
+        
+        return true;
+    }
+    
+    private boolean handleGiveItem(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            return true;
+        }
+        
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "用法: /gostadmin giveitem <道具名称>");
+            sender.sendMessage(ChatColor.YELLOW + "可用道具: 肾上腺素, 狂暴药水, 凝冰球, 控魂术, 臭牛排, 传送珍珠, 灵魂探测器, 一次机会, 冲刺矛");
+            return true;
+        }
+        
+        Player player = (Player) sender;
+        String itemName = args[1];
+        org.bukkit.inventory.ItemStack item = null;
+        
+        if (itemName.contains("肾上腺素")) {
+            item = plugin.getItemManager().getAdrenaline();
+        } else if (itemName.contains("狂暴药水")) {
+            item = plugin.getItemManager().getFrenzyPotion();
+        } else if (itemName.contains("凝冰球")) {
+            item = plugin.getItemManager().getIceBall();
+        } else if (itemName.contains("控魂术")) {
+            item = plugin.getItemManager().getSoulControl();
+        } else if (itemName.contains("臭牛排")) {
+            item = plugin.getItemSpawnManager().createStinkySteak();
+        } else if (itemName.contains("传送珍珠")) {
+            item = plugin.getItemSpawnManager().createTeleportPearl();
+        } else if (itemName.contains("灵魂探测器")) {
+            item = plugin.getItemSpawnManager().createSoulDetector();
+        } else if (itemName.contains("一次机会")) {
+            item = plugin.getItemManager().getSecondChance();
+        } else if (itemName.contains("冲刺矛") && plugin.isSpearRushEnabled()) {
+            item = plugin.getItemManager().getSpearRush();
+        } else if (itemName.contains("漂浮药水")) {
+            item = plugin.getItemManager().getLevitationPotion();
+        }
+        
+        if (item == null || item.getType() == org.bukkit.Material.AIR) {
+            if (itemName.contains("冲刺矛")) {
+                player.sendMessage(ChatColor.RED + "冲刺矛在当前服务器版本不可用！");
+            } else {
+                player.sendMessage(ChatColor.RED + "未知道具！可用道具: 肾上腺素, 狂暴药水, 凝冰球, 控魂术, 臭牛排, 传送珍珠, 灵魂探测器, 一次机会, 漂浮药水" + (plugin.isSpearRushEnabled() ? ", 冲刺矛" : ""));
+            }
+            return true;
+        }
+        
+        player.getInventory().addItem(item);
+        player.sendMessage(ChatColor.GREEN + "你获得了 " + itemName + "！");
+        return true;
     }
 }

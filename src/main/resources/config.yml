@@ -1,8 +1,8 @@
 # Gost 插件配置文件
-# 版本: 2.2.3
+# 版本: 2.3.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 26
+ScriptIrc-config-version: 27
 
 # 游戏设置
 game:

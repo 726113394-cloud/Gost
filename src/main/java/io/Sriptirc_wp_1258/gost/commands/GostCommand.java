@@ -1,6 +1,7 @@
 package io.Sriptirc_wp_1258.gost.commands;
 
 import io.Sriptirc_wp_1258.gost.Gost;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -58,6 +59,13 @@ public class GostCommand implements CommandExecutor, TabCompleter {
             case "help":
             default:
                 sendHelp(player);
+                break;
+            case "start":
+                if (!player.hasPermission("gost.admin")) {
+                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                    return true;
+                }
+                handleAdminStart(player);
                 break;
         }
         
@@ -159,7 +167,31 @@ public class GostCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(ChatColor.YELLOW + "/gost help" + ChatColor.GRAY + " - 显示此帮助");
         
         if (player.hasPermission("gost.admin")) {
-            player.sendMessage(ChatColor.RED + "管理员命令: /gostadmin");
+            player.sendMessage(ChatColor.RED + "管理员命令:");
+            player.sendMessage(ChatColor.RED + "/gost start" + ChatColor.GRAY + " - 管理员强制开局（单人也可）");
+            player.sendMessage(ChatColor.RED + "/gostadmin" + ChatColor.GRAY + " - 更多管理员命令");
+        }
+    }
+    
+    private void handleAdminStart(Player player) {
+        // 检查是否有游戏正在进行
+        if (plugin.getGameManager().isAnyGameRunning()) {
+            player.sendMessage(ChatColor.RED + "当前有游戏正在进行！");
+            return;
+        }
+        
+        // 如果管理员不在队列中，自动加入队列
+        if (!plugin.getGameManager().isInQueue(player.getUniqueId())) {
+            plugin.getGameManager().joinQueue(player);
+            player.sendMessage(ChatColor.GREEN + "你已加入游戏队列！");
+        }
+        
+        // 管理员强制开局
+        boolean started = plugin.getGameManager().startGame(true);
+        if (started) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "管理员 " + player.getName() + " 强制开始了游戏！");
+        } else {
+            player.sendMessage(ChatColor.RED + "强制开局失败，请检查区域设置！");
         }
     }
     
@@ -172,6 +204,9 @@ public class GostCommand implements CommandExecutor, TabCompleter {
             completions.add("leave");
             completions.add("info");
             completions.add("help");
+            if (sender.hasPermission("gost.admin")) {
+                completions.add("start");
+            }
         }
         
         return completions;

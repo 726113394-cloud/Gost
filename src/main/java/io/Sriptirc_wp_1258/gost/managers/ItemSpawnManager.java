@@ -352,6 +352,44 @@ public class ItemSpawnManager {
     }
     
     /**
+     * 创建臭牛排（公开方法）
+     */
+    public ItemStack createStinkySteak() {
+        for (RandomItemConfig config : randomItems) {
+            if (config.id.equals("stinky-steak")) {
+                return createRandomItem(config);
+            }
+        }
+        ItemStack steak = new ItemStack(Material.COOKED_BEEF);
+        ItemMeta meta = steak.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GREEN + "臭牛排");
+            meta.setLore(Arrays.asList(ChatColor.GRAY + "食用后获得速度II效果和发光效果"));
+            steak.setItemMeta(meta);
+        }
+        return steak;
+    }
+    
+    /**
+     * 创建灵魂探测器（公开方法）
+     */
+    public ItemStack createSoulDetector() {
+        for (RandomItemConfig config : randomItems) {
+            if (config.id.equals("soul-detector")) {
+                return createRandomItem(config);
+            }
+        }
+        ItemStack detector = new ItemStack(Material.COMPASS);
+        ItemMeta meta = detector.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "灵魂探测器");
+            meta.setLore(Arrays.asList(ChatColor.GRAY + "使用后所有玩家发光25秒"));
+            detector.setItemMeta(meta);
+        }
+        return detector;
+    }
+    
+    /**
      * 停止道具刷新
      */
     public void stopSpawning() {

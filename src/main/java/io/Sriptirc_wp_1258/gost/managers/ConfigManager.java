@@ -8,7 +8,7 @@ public class ConfigManager {
     private final Gost plugin;
     private FileConfiguration config;
     
-    private static final int CURRENT_CONFIG_VERSION = 26;
+    private static final int CURRENT_CONFIG_VERSION = 27;
     
     // 记录迁移数据，用于服务器启动后打印详情
     private boolean configMigrated = false;
@@ -236,6 +236,10 @@ public class ConfigManager {
         config.addDefault("ghost-particle.normal-color", "0,255,0"); // 普通鬼粒子颜色（RGB格式：红,绿,蓝）
         config.addDefault("ghost-particle.size", 1.0); // 粒子大小
         config.addDefault("ghost-particle.show-in-preparation", true); // 准备阶段是否显示粒子
+        
+        // 生物清理设置
+        config.addDefault("entity-clear.enabled", true); // 游戏开始时是否清除区域内的生物
+        config.addDefault("entity-clear.prevent-spawn", true); // 是否禁止游戏区域内生成任何生物
         
         config.options().copyDefaults(true);
         plugin.saveConfig();
@@ -767,6 +771,17 @@ public class ConfigManager {
     public void setGhostParticleShowInPreparation(boolean show) {
         config.set("ghost-particle.show-in-preparation", show);
         plugin.saveConfig();
+    }
+    
+    // 生物清理设置
+    public boolean isClearEntitiesEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("entity-clear.enabled", true);
+    }
+    
+    public boolean isPreventEntitySpawnEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("entity-clear.prevent-spawn", true);
     }
     
     // 游戏血量配置

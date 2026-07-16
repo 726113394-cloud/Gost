@@ -33,7 +33,13 @@ public class ItemManager {
         createIceBall();
         createSoulControl();
         createSecondChance();
+        createLevitationPotion();
         // createBlinkPearl(); // 已废弃，使用传送珍珠
+        
+        // 根据服务器版本决定是否创建冲刺矛
+        if (plugin.isSpearRushEnabled()) {
+            createSpearRush();
+        }
         
         plugin.getLogger().info("ItemManager初始化完成，创建了 " + customItems.size() + " 个自定义物品");
     }
@@ -166,7 +172,16 @@ public class ItemManager {
         return new ItemStack(Material.AIR);
     }
     
-    // 应用物品效果
+    public ItemStack getSpearRush() {
+        ItemStack item = customItems.get("spear_rush");
+        return item != null ? item.clone() : null;
+    }
+    
+    public ItemStack getLevitationPotion() {
+        return customItems.get("levitation_potion").clone();
+    }
+    
+    // 创建冲刺矛
     public void applyAdrenalineEffect(Player player) {
         int duration = plugin.getConfigManager().getAdrenalineDuration() * 20;
         int level = plugin.getConfigManager().getAdrenalineSpeedLevel() - 1;
@@ -320,6 +335,33 @@ public class ItemManager {
             }
         }
         
+        // 6. 如果冲刺矛可用，随机3位玩家获得冲刺矛
+        if (plugin.isSpearRushEnabled()) {
+            List<UUID> spearRecipients = getRandomPlayers(allPlayers, Math.min(3, allPlayers.size()));
+            for (UUID playerId : spearRecipients) {
+                Player player = Bukkit.getPlayer(playerId);
+                if (player != null && player.isOnline()) {
+                    ItemStack spear = getSpearRush();
+                    if (spear != null) {
+                        player.getInventory().addItem(spear);
+                        player.sendMessage(ChatColor.GOLD + "你获得了冲刺矛！");
+                        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.3f);
+                    }
+                }
+            }
+        }
+        
+        // 7. 随机3位玩家获得漂浮药水
+        List<UUID> levitationRecipients = getRandomPlayers(allPlayers, Math.min(3, allPlayers.size()));
+        for (UUID playerId : levitationRecipients) {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null && player.isOnline()) {
+                player.getInventory().addItem(getLevitationPotion());
+                player.sendMessage(ChatColor.LIGHT_PURPLE + "你获得了漂浮药水！");
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.7f);
+            }
+        }
+        
         // 发放道具全局音效
         for (UUID playerId : allPlayers) {
             Player player = Bukkit.getPlayer(playerId);
@@ -398,6 +440,59 @@ public class ItemManager {
         plugin.getLogger().info("已创建一次机会道具");
     }
     
+    // 创建漂浮药水
+    private void createLevitationPotion() {
+        ItemStack potion = new ItemStack(Material.LINGERING_POTION);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "漂浮药水");
+            meta.setLore(Arrays.asList(
+                ChatColor.GRAY + "右键使用获得漂浮效果",
+                ChatColor.GRAY + "持续时间: 4.5秒",
+                "",
+                ChatColor.DARK_GRAY + "[消耗品]"
+            ));
+            
+            // 设置药水颜色为紫色
+            meta.setColor(Color.fromRGB(180, 0, 255));
+            
+            // 添加发光效果
+            meta.addEnchant(Enchantment.LURE, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            potion.setItemMeta(meta);
+        }
+        
+        customItems.put("levitation_potion", potion);
+        plugin.getLogger().info("已创建漂浮药水道具");
+    }
+    
+    // 创建冲刺矛
+    private void createSpearRush() {
+        ItemStack spear = new ItemStack(Material.GOLDEN_SPEAR);
+        ItemMeta meta = spear.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GOLD + "冲刺矛");
+            meta.setLore(Arrays.asList(
+                ChatColor.GRAY + "左键使用进行一次冲刺攻击",
+                ChatColor.GRAY + "使用后即刻消失",
+                "",
+                ChatColor.DARK_GRAY + "[一次性道具]"
+            ));
+            
+            // 添加附魔光效
+            meta.addEnchant(Enchantment.LURE, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            spear.setItemMeta(meta);
+        }
+        
+        customItems.put("spear_rush", spear);
+        plugin.getLogger().info("已创建冲刺矛道具");
+    }
+    
     // 获取一次机会道具
     public ItemStack getSecondChance() {
         return customItems.get("second_chance").clone();
@@ -449,5 +544,40 @@ public class ItemManager {
         Bukkit.broadcastMessage(ChatColor.YELLOW + humanPlayer.getName() + " 使用了一次机会抵挡了 " + ghostPlayer.getName() + " 的感染！");
         
         plugin.getLogger().info("一次机会效果应用完成");
+    }
+    
+    // 应用冲刺矛效果
+    public void applySpearRushEffect(Player player) {
+        // 获取玩家面向方向
+        org.bukkit.util.Vector direction = player.getLocation().getDirection();
+        
+        // 冲刺力度：水平方向强力冲刺
+        double power = 3.0;
+        direction.setY(0); // 取消上升位移
+        direction.normalize().multiply(power);
+        
+        // 应用冲刺速度
+        player.setVelocity(direction);
+        
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 0.8f);
+        
+        // 居中字幕提示
+        player.sendTitle("§6⚡ 冲刺! ⚡", "§7长矛冲刺!", 5, 20, 5);
+        
+        plugin.getLogger().info("玩家 " + player.getName() + " 使用了冲刺矛");
+    }
+    
+    // 应用漂浮药水效果
+    public void applyLevitationEffect(Player player) {
+        int duration = (int)(4.5 * 20); // 4.5秒 = 90 ticks
+        player.addPotionEffect(new PotionEffect(
+            PotionEffectType.LEVITATION,
+            duration,
+            0,
+            true,
+            true
+        ));
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "你使用了漂浮药水！获得漂浮效果！");
     }
 }

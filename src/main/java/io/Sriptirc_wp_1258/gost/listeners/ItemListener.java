@@ -80,6 +80,10 @@ public class ItemListener implements Listener {
             handleTeleportPearl(player, item, event);
         } else if (displayName.contains("灵魂探测器")) {
             handleSoulDetector(player, item);
+        } else if (displayName.contains("冲刺矛")) {
+            handleSpearRush(player, item);
+        } else if (displayName.contains("漂浮药水")) {
+            handleLevitationPotion(player, item);
         }
     }
     
@@ -484,5 +488,33 @@ public class ItemListener implements Listener {
                 player.sendMessage(ChatColor.RED + "错误：灵魂探测器不应导致传送！已恢复原位置。");
             }
         }, 1L);
+    }
+    
+    private void handleSpearRush(Player player, ItemStack item) {
+        // 检查冲刺矛功能是否可用
+        if (!plugin.isSpearRushEnabled()) {
+            player.sendMessage(ChatColor.RED + "冲刺矛在当前服务器版本不可用！");
+            return;
+        }
+        
+        // 应用冲刺效果
+        plugin.getItemManager().applySpearRushEffect(player);
+        
+        // 消耗物品（使用后即刻消失）
+        consumeItem(player, item);
+    }
+    
+    private void handleLevitationPotion(Player player, ItemStack item) {
+        // 应用漂浮效果
+        plugin.getItemManager().applyLevitationEffect(player);
+        
+        // 使用者居中字幕提示
+        player.sendTitle("§d🪄 漂浮药水! §d", "§7获得漂浮效果 4.5秒!", 10, 30, 10);
+        
+        // 音效
+        player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.0f, 1.2f);
+        
+        // 消耗物品
+        consumeItem(player, item);
     }
 }
