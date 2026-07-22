@@ -631,7 +631,10 @@ ghost-particle:
   count: 5
   mother-color: "255,0,0"
   normal-color: "0,255,0"
-  
+
+
+```
+
   # 📈 Version History (English)
 
 ## v2.3.0 Current | New Items & Admin Tools
