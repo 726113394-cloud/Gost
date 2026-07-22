@@ -192,24 +192,24 @@
                             <li><strong>准备阶段</strong> — 玩家进入匹配队列，满员后开始游戏</li>
                             <li><strong>感染阶段</strong> — 鬼玩家追逐并感染人类，人类可拾取道具自保</li>
                             <li><strong>神圣守护阶段</strong> — 剩余人类数量 ≤ 触发人数时，自动激活神圣守护</li>
-                            <li><strong>猎魔人阶段</strong> — 游戏剩余 90 秒时进入，所有剩余人类变为猎魔人</li>
+                            <li><strong>猎魔人阶段</strong> — 该阶段需要至少3名玩家，当游戏剩余 90 秒时进入，拥有神圣守护的人类变为猎魔人，普通鬼失去感染能力</li>
                         </ol>
                         <h3>两大阵营</h3>
                         <div class="table-wrapper">
                             <table>
                                 <tr><th>阵营</th><th>说明</th></tr>
                                 <tr><td>👤 人类</td><td>初始身份，被鬼感染后变为鬼</td></tr>
-                                <tr><td>👻 鬼</td><td>感染人类使其加入鬼阵营，母体为鬼阵营领袖</td></tr>
+                                <tr><td>👻 鬼</td><td>感染人类使其加入鬼阵营，普通鬼在猎魔人阶段会失去感染能力，其母体为鬼阵营领袖</td></tr>
                             </table>
                         </div>
                         <h3>特殊角色</h3>
                         <div class="table-wrapper">
                             <table>
                                 <tr><th>角色</th><th>说明</th></tr>
-                                <tr><td>🛡️ 神圣守护</td><td>剩余人类较少时自动激活，可抵挡 <strong>3 次</strong> 鬼的攻击，每次攻击会将进攻者随机传送</td></tr>
-                                <tr><td>🎯 猎魔人</td><td>猎魔人阶段由神圣守护玩家转化，持有 <strong>收割者</strong> 道具，可击杀鬼玩家</td></tr>
-                                <tr><td>👑 母体</td><td>鬼阵营领袖，可攻击猎魔人，猎魔人阶段可感染普通人类</td></tr>
-                                <tr><td>✨ 救赎者</td><td>模式2专属，最后一名人类成为救赎者，持有 <strong>神之救赎</strong> 道具转化鬼玩家回人类</td></tr>
+                                <tr><td>🛡️ 神圣守护</td><td>剩余人类较少时自动激活，可抵挡 <strong>3 次</strong> 鬼的攻击，每次攻击会将进攻者随机传送。</td></tr>
+                                <tr><td>🎯 猎魔人</td><td>猎魔人阶段由拥有</strong> 神圣守护</strong> 的玩家转化，持有 <strong>收割者</strong> 道具，可击杀鬼玩家。玩家成为猎魔人后神圣守护会刷新。猎魔人被感染后成为普通鬼</td></tr>
+                                <tr><td>👑 母体</td><td>鬼阵营领袖，每局游戏会产出一位，在猎魔人阶段可攻击猎魔人，猎魔人阶段可感染普通人类。</td></tr>
+                                <tr><td>✨ 救赎者</td><td>模式2专属，最后一名人类成为救赎者(2.2.2及之后版本改为随机)，持有 <strong>神之救赎</strong> 道具，可转化鬼玩家回人类。救赎者无法获得</strong> 神圣守护</strong> </td></tr>
                             </table>
                         </div>
                     </div>
@@ -226,17 +226,25 @@
                     <div class="grid-2col">
                         <div class="card"><h3>模式1：传统神圣守护（感染免疫 + 随机传送）</h3>
                             <p><strong>激活条件</strong>：剩余人类数量 ≤ 配置的触发人数（默认 2 人）<br>
-                            <strong>防御次数</strong>：可抵挡 <strong>3 次</strong> 攻击（无论攻击者是母体还是普通鬼）<br>
-                            <strong>传送效果</strong>：每次被攻击，进攻者会被随机传送到附近区域<br>
-                            <strong>猎魔人阶段</strong>：所有剩余人类自动获得神圣守护，并转化为猎魔人</p>
+                            <strong>防御次数</strong>：可抵挡 <strong>3 次(2.2.2版本之前是2次)</strong> 攻击（无论攻击者是母体还是普通鬼）<br>
+                            <strong>2.2.2前|传送效果</strong>：神圣守护持有者被攻击时，会被随机传送到附近区域<br>
+                            <strong>2.2.2起|传送效果</strong>：每次被攻击，进攻者会被随机传送到附近区域并得到减速效果<br>
+                            <strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
                         </div>
-                        <div class="card"><h3>模式2：救赎者模式（转化鬼玩家|2.2.2版本后已停用）</h3>
+                        <div class="card"><h3>模式2：救赎者模式（转化鬼玩家|2.2.2版本前）</h3>
                             <p><strong>激活条件</strong>：人类数量减少到 <strong>1 人</strong> 时，最后一名人类成为 <strong>救赎者</strong><br>
                             <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
                             <strong>随机传送</strong>：使用道具后救赎者会被随机传送到安全位置<br>
                             <strong>次数限制</strong>：道具可使用 <strong>2 次</strong>（可配置），使用完后回归普通人类<br>
                             <strong>视觉效果</strong>：救赎者全程高亮显示，拥有速度效果</p>
                         </div>
+                        <div class="card"><h3>模式2：救赎者模式（转化鬼玩家|2.2.2版本-最新版本）</h3>
+                            <p><strong>激活条件</strong>：被发放道具[神圣救赎]的人类成为 <strong>救赎者</strong>，无法再获得神圣守护，不可取消<br>
+                            <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
+                            <strong>随机传送</strong>：使用道具后救赎者会被随机传送到安全位置<br>
+                            <strong>次数限制</strong>：道具可使用 <strong>1 次</strong>，使用完后依旧保留<strong>救赎者</strong>身份<br>
+                            <strong>视觉效果</strong>：救赎者全程有云雾围绕效果</p>
+							</div>
                     </div>
                     <p class="card" style="margin-top:1rem;"><strong>模式切换命令</strong>：<code>/divineguardian setmode &lt;1|2&gt;</code>，游戏进行中切换模式会 <strong>立即生效</strong>。</p>
                 </div>
@@ -272,7 +280,7 @@
                 <div class="collapsible-header">📖 查看道具说明 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
                     <div class="card">
-                        <p>道具会在游戏过程中 <strong>定时发放</strong> 给人类玩家，每次发放间隔可在配置中调整（默认每 60 秒发放一次），发放时会在聊天栏显示剩余时间提示。</p>
+                        <p>道具会在游戏过程中 <strong>定时发放</strong> 给人类玩家，每次发放间隔可在配置中调整（默认每 60 秒发放一次），发放时会在聊天栏显示剩余时间提示。默认发放道具会同时揭示所有玩家位置5秒</p>
                     </div>
                 </div>
             </div>
@@ -905,21 +913,21 @@ ghost-particle:
     // ========== 道具数据（已完整，保持不变） ==========
     const itemsDetailZh = {
         reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器", faction: "human", detail: "效果：猎魔人阶段自动获得，攻击鬼玩家造成配置的伤害值，显示伤害量和剩余血量，鬼血量归零后进入旁观模式并触发复活倒计时。<br>冷却时间：2秒<br>使用音效：无（近战攻击）" },
-        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容，有使用次数限制（默认2次），使用后救赎者被随机传送到安全位置。<br>冷却时间：10秒<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
-        secondChance: { name: "❤️ 第二次机会", desc: "被动触发", faction: "human", detail: "效果：人类玩家被鬼感染时自动触发，免疫本次感染并保留人类身份，触发后进入冷却（180秒），冷却期间被感染则正常变为鬼。<br>冷却时间：180秒<br>使用音效：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code>" },
-        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：投掷后对命中的玩家施加 <strong>缓慢 III（3秒）</strong> 效果，对所有玩家（人类/鬼）均生效，可用于逃跑或追击。<br>使用音效：投掷 <code>ENTITY_SNOWBALL_THROW</code>" },
-        stinkySteak: { name: "🥩 臭牛排", desc: "速度道具", faction: "neutral", detail: "效果：使用后无视饱食度直接获得 <strong>速度 III（5秒）</strong> 效果，附带发光效果标记使用者位置。<br>使用音效：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
-        soulControl: { name: "🔮 控魂术", desc: "控制类道具", faction: "human", detail: "效果：对人类玩家使用可短暂控制附近的鬼玩家，使其无法移动或攻击。<br>冷却时间：18秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
-        soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：使用后在小地图或方位指示器上显示附近鬼玩家的位置。<br>冷却时间：35秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
-        teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
-        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
-        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：右键使用获得速度效果。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" },
+        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容，有使用次数限制（默认2次，自2.2.2版本起修改为1次），使用后救赎者被随机传送到安全位置。<br>冷却时间：10秒<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
+        secondChance: { name: "❤️ 第二次机会", desc: "被动触发", faction: "human", detail: "效果：人类玩家专用道具，被鬼感染时自动触发，免疫本次感染并保留人类身份，触发后进入冷却（180秒），冷却期间被感染则正常变为鬼。<br>冷却时间：180秒<br>使用音效：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code>" },
+        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：投掷后对命中的玩家施加 <strong>缓慢 Ⅳ（4秒）</strong> 效果，对所有玩家（人类/鬼）均生效，可用于逃跑或追击。<br>使用音效：投掷 <code>ENTITY_SNOWBALL_THROW</code>" },
+        stinkySteak: { name: "🥩 臭牛排", desc: "速度道具", faction: "neutral", detail: "效果：使用后无视饱食度直接获得 <strong>速度 III（14秒）</strong> 效果，附带发光效果(10秒)标记使用者位置。<br>使用音效：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
+        soulControl: { name: "🔮 控魂术", desc: "控制类道具", faction: "human", detail: "效果：人类玩家专用道具，可短暂控制全场的鬼玩家，使整个鬼阵容无法移动6秒。<br>冷却时间：18秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
+        soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：使用后持续揭示所有玩家的位置25秒。<br>冷却时间：35秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
+        teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用(该道具仅能右键使用)。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
+        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：使用获得速度Ⅱ效果10秒。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
+        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：使用获得速度Ⅱ效果10秒。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" },
 		spearRush: { name: "🗡️ 冲刺矛", desc: "左键冲刺，消耗品", faction: "neutral", detail: "效果：左键使用进行一次原版矛的冲刺效果，使用后即刻消失。<br>服务器版本要求：<strong>1.21.4 及以上</strong>，插件启动时自动检测版本。<br>使用音效：矛冲刺音效（由游戏内置）" },
         levitationPotion: { 
             name: "🧪 漂浮药水", 
             desc: "右键获得漂浮效果", 
             faction: "neutral", 
-            detail: "效果：右键使用获得 <strong>漂浮</strong> 效果，持续 4.5 秒。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" 
+            detail: "效果：右键使用获得 <strong>漂浮</strong> 效果 4.5 秒(大约可以飞3.4个方块高度)。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" 
         }
     };  // 这是 itemsDetailZh 的结束
 
