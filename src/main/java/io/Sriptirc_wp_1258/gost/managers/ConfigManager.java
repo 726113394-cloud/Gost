@@ -8,7 +8,7 @@ public class ConfigManager {
     private final Gost plugin;
     private FileConfiguration config;
     
-    private static final int CURRENT_CONFIG_VERSION = 27;
+    private static final int CURRENT_CONFIG_VERSION = 28;
     
     // 记录迁移数据，用于服务器启动后打印详情
     private boolean configMigrated = false;
@@ -229,7 +229,7 @@ public class ConfigManager {
         
         // 鬼玩家粒子效果设置
         config.addDefault("ghost-particle.enabled", true); // 是否启用鬼玩家粒子效果
-        config.addDefault("ghost-particle.type", "REDSTONE"); // 粒子类型：REDSTONE, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANTMENT_TABLE, CRIT_MAGIC, FIREWORKS_SPARK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM_OF_UNDYING, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
+        config.addDefault("ghost-particle.type", "DUST"); // 粒子类型：DUST, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANT, SWEEP_ATTACK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
         config.addDefault("ghost-particle.count", 5); // 每次生成粒子数量
         config.addDefault("ghost-particle.interval", 15); // 粒子生成间隔（刻，20刻=1秒）
         config.addDefault("ghost-particle.mother-color", "255,0,0"); // 母体鬼粒子颜色（RGB格式：红,绿,蓝）
@@ -240,6 +240,18 @@ public class ConfigManager {
         // 生物清理设置
         config.addDefault("entity-clear.enabled", true); // 游戏开始时是否清除区域内的生物
         config.addDefault("entity-clear.prevent-spawn", true); // 是否禁止游戏区域内生成任何生物
+        
+        // 救赎者常驻设置
+        config.addDefault("redeemer.enabled", true); // 救赎者常驻（每局最多2名）
+        config.addDefault("redeemer.max-count", 2); // 最大救赎者数量
+        config.addDefault("redeemer.max-uses", 2); // 神之救赎使用次数
+        
+        // 收割者技能设置
+        config.addDefault("reaper.harvest-cooldown", 10); // 收割技能冷却（秒）
+        config.addDefault("reaper.harvest-range", 4); // 收割技能范围（方块）
+        
+        // 背包限制设置
+        config.addDefault("inventory.max-item-types", 9); // 对局期间最多道具种类
         
         config.options().copyDefaults(true);
         plugin.saveConfig();
@@ -706,7 +718,7 @@ public class ConfigManager {
     }
     
     public String getGhostParticleType() {
-        return config.getString("ghost-particle.type", "REDSTONE");
+        return config.getString("ghost-particle.type", "DUST");
     }
     
     public int getGhostParticleCount() {
@@ -782,6 +794,34 @@ public class ConfigManager {
     public boolean isPreventEntitySpawnEnabled() {
         ensureConfigLoaded();
         return config.getBoolean("entity-clear.prevent-spawn", true);
+    }
+    
+    // 救赎者常驻设置
+    public boolean isRedeemerEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("redeemer.enabled", true);
+    }
+    
+    public int getRedeemerMaxCount() {
+        ensureConfigLoaded();
+        return config.getInt("redeemer.max-count", 2);
+    }
+    
+    // 收割者技能设置
+    public int getReaperHarvestCooldown() {
+        ensureConfigLoaded();
+        return config.getInt("reaper.harvest-cooldown", 10);
+    }
+    
+    public double getReaperHarvestRange() {
+        ensureConfigLoaded();
+        return config.getDouble("reaper.harvest-range", 4.0);
+    }
+    
+    // 背包限制设置
+    public int getMaxItemTypes() {
+        ensureConfigLoaded();
+        return config.getInt("inventory.max-item-types", 9);
     }
     
     // 游戏血量配置

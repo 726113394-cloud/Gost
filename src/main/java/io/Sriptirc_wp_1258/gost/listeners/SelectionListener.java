@@ -2,8 +2,11 @@ package io.Sriptirc_wp_1258.gost.listeners;
 
 import io.Sriptirc_wp_1258.gost.Gost;
 import io.Sriptirc_wp_1258.gost.managers.SelectionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -48,10 +51,61 @@ public class SelectionListener implements Listener {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             // 左键设置第一个点
             plugin.getSelectionManager().setPos1(player, clickedBlock.getLocation());
+            player.sendMessage(ChatColor.GREEN + "已设置第一个点！");
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             // 右键设置第二个点
             plugin.getSelectionManager().setPos2(player, clickedBlock.getLocation());
+            player.sendMessage(ChatColor.GREEN + "已设置第二个点！");
         }
+        
+        // 显示选区粒子框（持续30秒）
+        showSelectionParticles(player);
+    }
+    
+    /**
+     * 显示选区框定粒子效果（30秒）
+     */
+    private void showSelectionParticles(Player player) {
+        io.Sriptirc_wp_1258.gost.managers.SelectionManager.PlayerSelection sel = plugin.getSelectionManager().getSelection(player);
+        if (sel == null) return;
+        org.bukkit.Location pos1 = sel.getPos1();
+        org.bukkit.Location pos2 = sel.getPos2();
+        if (pos1 == null || pos2 == null) return;
+        
+        int minX = Math.min(pos1.getBlockX(), pos2.getBlockX());
+        int minY = Math.min(pos1.getBlockY(), pos2.getBlockY());
+        int minZ = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
+        int maxX = Math.max(pos1.getBlockX(), pos2.getBlockX());
+        int maxY = Math.max(pos1.getBlockY(), pos2.getBlockY());
+        int maxZ = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
+        
+        // 每5 tick刷新一次，持续30秒（600 ticks）
+        int totalTicks = 600;
+        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+            int ticks = 0;
+            @Override
+            public void run() {
+                if (ticks >= totalTicks || !player.isOnline()) return;
+                // 沿12条边生成粒子
+                for (int i = 0; i <= 8; i++) {
+                    double t = i / 8.0;
+                    // X方向边
+                    player.spawnParticle(org.bukkit.Particle.FLAME, 
+                        minX + (maxX - minX) * t, minY, minZ, 1, 0, 0, 0, 0);
+                    player.spawnParticle(org.bukkit.Particle.FLAME,
+                        minX + (maxX - minX) * t, maxY, maxZ, 1, 0, 0, 0, 0);
+                    // Z方向边
+                    player.spawnParticle(org.bukkit.Particle.FLAME,
+                        minX, minY, minZ + (maxZ - minZ) * t, 1, 0, 0, 0, 0);
+                    player.spawnParticle(org.bukkit.Particle.FLAME,
+                        maxX, maxY, minZ + (maxZ - minZ) * t, 1, 0, 0, 0, 0);
+                }
+                ticks += 5;
+                if (ticks >= totalTicks) {
+                    player.sendMessage(ChatColor.GRAY + "选区粒子效果已结束");
+                }
+            }
+        }, 0L, 5L);
     }
     
     /**

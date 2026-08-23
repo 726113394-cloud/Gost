@@ -405,7 +405,7 @@ public class GameManager implements Listener {
                     for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
                         Player player = Bukkit.getPlayer(playerId);
                         if (player != null && player.isOnline()) {
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1.0f, 1.0f);
+                            player.playSound(player.getLocation(), SoundCompat.noteHat(), 1.0f, 1.0f);
                         }
                     }
                 }
@@ -496,6 +496,33 @@ public class GameManager implements Listener {
     private void startMotherGhostImmobilizeCountdown(Player motherGhost) {
         int immobilizeDuration = plugin.getConfigManager().getGhostImmobilizeDuration();
         
+        // 随机锁定游戏区域内某坐标
+        AreaManager.GameArea area = plugin.getAreaManager().getSelectedArea();
+        if (area != null && area.getPos1() != null && area.getPos2() != null) {
+            Location pos1 = area.getPos1();
+            Location pos2 = area.getPos2();
+            Random random = new Random();
+            double rx = pos1.getX() + random.nextDouble() * (pos2.getX() - pos1.getX());
+            double rz = pos1.getZ() + random.nextDouble() * (pos2.getZ() - pos1.getZ());
+            double ry = Math.max(pos1.getY(), pos2.getY());
+            Location lockLoc = new Location(pos1.getWorld(), rx, ry, rz);
+            motherGhost.teleport(lockLoc);
+            boolean en = "en_US".equals(plugin.getConfigManager().getDefaultLanguage());
+            if (en) {
+                motherGhost.sendMessage(ChatColor.RED + "Locked at coordinates: (" + (int)rx + ", " + (int)ry + ", " + (int)rz + ")");
+            } else {
+                motherGhost.sendMessage(ChatColor.RED + "你被锁定在区域坐标: (" + (int)rx + ", " + (int)ry + ", " + (int)rz + ")");
+            }
+        }
+        
+        // 母体禁足开始字幕提醒（中英）
+        boolean en = "en_US".equals(plugin.getConfigManager().getDefaultLanguage());
+        if (en) {
+            motherGhost.sendTitle("§c⛓ Locked!", "§7Can't move for " + immobilizeDuration + "s", 10, 40, 10);
+        } else {
+            motherGhost.sendTitle("§c⛓ 禁足中!", "§7" + immobilizeDuration + "秒内无法移动", 10, 40, 10);
+        }
+        
         new BukkitRunnable() {
             int timeLeft = immobilizeDuration;
             
@@ -510,19 +537,33 @@ public class GameManager implements Listener {
                 if (timeLeft > 0) {
                     // 只在最后10秒显示居中大文本倒计时提示
                     if (timeLeft <= 10) {
-                        motherGhost.sendTitle(ChatColor.RED + "禁足中", ChatColor.YELLOW + "剩余: " + timeLeft + " 秒", 0, 20, 0);
+                        boolean eng = "en_US".equals(plugin.getConfigManager().getDefaultLanguage());
+                        if (eng) {
+                            motherGhost.sendTitle(ChatColor.RED + "Locked", ChatColor.YELLOW + "Remaining: " + timeLeft + "s", 0, 20, 0);
+                        } else {
+                            motherGhost.sendTitle(ChatColor.RED + "禁足中", ChatColor.YELLOW + "剩余: " + timeLeft + " 秒", 0, 20, 0);
+                        }
                     }
                     
                     // 最后10秒发送聊天提示
                     if (timeLeft == 10 || timeLeft == 5 || timeLeft <= 3) {
-                        motherGhost.sendMessage(ChatColor.RED + "禁足解除倒计时: " + timeLeft + " 秒");
+                        boolean eng = "en_US".equals(plugin.getConfigManager().getDefaultLanguage());
+                        motherGhost.sendMessage(eng
+                            ? ChatColor.RED + "Lock release countdown: " + timeLeft + "s"
+                            : ChatColor.RED + "禁足解除倒计时: " + timeLeft + " 秒");
                     }
                     
                     timeLeft--;
                 } else {
                     // 禁足结束
-                    motherGhost.sendTitle(ChatColor.GREEN + "禁足解除", ChatColor.YELLOW + "你可以开始行动了！", 10, 40, 10);
-                    motherGhost.sendMessage(ChatColor.GREEN + "禁足已解除，你可以开始感染人类了！");
+                    boolean eng = "en_US".equals(plugin.getConfigManager().getDefaultLanguage());
+                    if (eng) {
+                        motherGhost.sendTitle(ChatColor.GREEN + "Unlocked!", ChatColor.YELLOW + "You can move now!", 10, 40, 10);
+                        motherGhost.sendMessage(ChatColor.GREEN + "Immobilization released. Start infecting humans!");
+                    } else {
+                        motherGhost.sendTitle(ChatColor.GREEN + "禁足解除", ChatColor.YELLOW + "你可以开始行动了！", 10, 40, 10);
+                        motherGhost.sendMessage(ChatColor.GREEN + "禁足已解除，你可以开始感染人类了！");
+                    }
                     this.cancel();
                 }
             }

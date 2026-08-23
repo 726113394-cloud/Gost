@@ -84,8 +84,8 @@ public class InfectionListener implements Listener {
         
         if (plugin.getDivineGuardianManager().isDemonHunter(attacker.getUniqueId()) && 
             plugin.getPlayerManager().isGhost(victim.getUniqueId())) {
-            // 猎魔人右键攻击鬼玩家
-            if (plugin.getDivineGuardianManager().handleDemonHunterAttack(attacker, victim)) {
+            // 猎魔人右键点击鬼玩家 - 触发范围收割技能
+            if (plugin.getDivineGuardianManager().handleDemonHunterHarvest(attacker)) {
                 event.setCancelled(true);
             }
             return;

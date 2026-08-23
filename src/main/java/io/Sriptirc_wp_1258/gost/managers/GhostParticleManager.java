@@ -163,16 +163,35 @@ public class GhostParticleManager {
         Color color = getColorForRole(role);
         
         try {
-            // 解析粒子类型
-            Particle particle = Particle.valueOf(particleType);
+            // 解析粒子类型（新旧名映射兼容）
+            Particle particle = resolveParticle(particleType);
             
             // 生成环绕粒子效果
             generateOrbitingParticles(world, location, particle, color, particleCount, particleSize, role);
             
         } catch (IllegalArgumentException e) {
-            // 如果粒子类型无效，使用默认的REDSTONE
-            plugin.getLogger().warning("无效的粒子类型: " + particleType + "，使用默认REDSTONE");
-            generateOrbitingParticles(world, location, Particle.DUST, color, particleCount, particleSize, role);
+            // 如果粒子类型无效，使用默认DUST
+            plugin.getLogger().warning("无效的粒子类型: " + particleType + "，使用默认DUST");
+            generateOrbitingParticles(world, location, ParticleCompat.dust(), color, particleCount, particleSize, role);
+        }
+    }
+    
+    /**
+     * 兼容解析粒子类型（1.20.x 与 1.21.x 名称映射）
+     */
+    private Particle resolveParticle(String name) {
+        try { return Particle.valueOf(name); }
+        catch (IllegalArgumentException e) {
+            switch (name.toUpperCase()) {
+                case "DUST": case "REDSTONE": return ParticleCompat.dust();
+                case "ENCHANT": case "ENCHANTMENT_TABLE": return ParticleCompat.enchant();
+                case "FIREWORK": case "FIREWORKS_SPARK": return ParticleCompat.firework();
+                case "TOTEM": case "TOTEM_OF_UNDYING": return ParticleCompat.totem();
+                case "EXPLOSION": case "EXPLOSION_LARGE": return ParticleCompat.explosion();
+                case "EXPLOSION_EMITTER": case "EXPLOSION_HUGE": return ParticleCompat.explosionEmitter();
+                case "ENCHANTED_HIT": case "CRIT_MAGIC": return ParticleCompat.enchantedHit();
+                default: return ParticleCompat.dust();
+            }
         }
     }
     
@@ -236,7 +255,7 @@ public class GhostParticleManager {
             Location particleLoc = center.clone().add(x, height, z);
             
             // 根据粒子类型生成不同的效果
-            if (particle == Particle.DUST) {
+            if (particle == ParticleCompat.dust()) {
                 // 红色/绿色粒子
                 world.spawnParticle(
                     particle,
@@ -271,7 +290,7 @@ public class GhostParticleManager {
         // 为母体鬼添加额外的头顶粒子
         if (role == PlayerRole.GHOST_MOTHER) {
             Location headLoc = center.clone().add(0, 2.2, 0);
-            if (particle == Particle.DUST || particle == Particle.DUST_COLOR_TRANSITION) {
+            if (particle == ParticleCompat.dust() || particle == Particle.DUST_COLOR_TRANSITION) {
                 world.spawnParticle(
                     particle,
                     headLoc,

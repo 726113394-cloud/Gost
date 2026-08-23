@@ -1,5 +1,5 @@
 name: Gost
-version: 2.3.0
+version: 2.3.1
 main: io.Sriptirc_wp_1258.gost.Gost
 api-version: 1.20
 description: 极限生存对抗游戏 - 融合猫抓老鼠、鬼抓人、躲猫猫、CF生化模式等多种玩法
@@ -15,34 +15,17 @@ commands:
     usage: /<command> [join|leave|info|help]
     aliases: [join, leave]
   gostadmin:
-    description: 管理员命令 - 管理游戏和区域
-    usage: /<command> [start|stop|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|dark|heartbeat|economy|help]
+    description: 管理员命令 - 管理游戏、区域、神圣守护、粒子效果
+    usage: /<command> [start|stop|testmode|giveitem|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|dark|heartbeat|economy|divine|particle|help]
     aliases: [ga]
-  divineguardian:
-    description: 神圣守护管理命令
-    usage: /<command> [status|enable|disable|reload|setcharges|setcooldown|broadcast|info|force|clear]
-    aliases: [dg]
-  ghostparticle:
-    description: 鬼玩家粒子效果管理命令
-    usage: /<command> [status|enable|disable|reload|settype|setcount|setinterval|setmothercolor|setnormalcolor|setsize|setpreparation|test|listtypes]
-    aliases: [gp]
 
 permissions:
+  gost.use:
+    description: 允许使用基础命令
+    default: true
   gost.player:
     description: 允许玩家使用基本命令
     default: true
-  gost.join:
-    description: 允许玩家加入游戏
-    default: true
-  gost.leave:
-    description: 允许玩家离开游戏
-    default: true
   gost.admin:
     description: 管理员权限
-    default: op
-  gost.admin.divineguardian:
-    description: 允许管理神圣守护
-    default: op
-  gost.admin.ghostparticle:
-    description: 允许管理鬼玩家粒子效果
     default: op

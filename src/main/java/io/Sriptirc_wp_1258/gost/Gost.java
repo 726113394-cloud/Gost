@@ -2,8 +2,6 @@ package io.Sriptirc_wp_1258.gost;
 
 import io.Sriptirc_wp_1258.gost.commands.GostCommand;
 import io.Sriptirc_wp_1258.gost.commands.GostAdminCommand;
-import io.Sriptirc_wp_1258.gost.commands.DivineGuardianCommand;
-import io.Sriptirc_wp_1258.gost.commands.GhostParticleCommand;
 import io.Sriptirc_wp_1258.gost.listeners.*;
 import io.Sriptirc_wp_1258.gost.managers.*;
 import org.bukkit.Bukkit;
@@ -83,10 +81,7 @@ public class Gost extends JavaPlugin {
             
             getCommand("gost").setExecutor(new GostCommand(this));
             getCommand("gostadmin").setExecutor(new GostAdminCommand(this));
-            getCommand("divineguardian").setExecutor(new DivineGuardianCommand(this));
-            getCommand("divineguardian").setTabCompleter(new DivineGuardianCommand(this));
-            getCommand("ghostparticle").setExecutor(new GhostParticleCommand(this));
-            getCommand("ghostparticle").setTabCompleter(new GhostParticleCommand(this));
+            getCommand("gostadmin").setTabCompleter(new GostAdminCommand(this));
             
             getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
             getServer().getPluginManager().registerEvents(new GameListener(this), this);

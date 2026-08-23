@@ -1,6 +1,7 @@
 package io.Sriptirc_wp_1258.gost.listeners;
 
 import io.Sriptirc_wp_1258.gost.Gost;
+import io.Sriptirc_wp_1258.gost.managers.SoundCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -143,7 +144,7 @@ public class ItemListener implements Listener {
         player.sendTitle("§a⚡ 肾上腺素! ⚡", "§7移动速度大幅提升!", 10, 30, 10);
         
         // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_SPLASH, 1.0f, 1.5f);
+        player.playSound(player.getLocation(), SoundCompat.playerSplash(), 1.0f, 1.5f);
         
         // 消耗物品
         consumeItem(player, item);
@@ -166,7 +167,7 @@ public class ItemListener implements Listener {
         player.sendTitle("§c💢 狂暴药水! 💢", "§7攻击力与速度提升!", 10, 30, 10);
         
         // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1.0f, 1.2f);
+        player.playSound(player.getLocation(), SoundCompat.witherShoot(), 1.0f, 1.2f);
         
         // 消耗物品
         consumeItem(player, item);
@@ -177,7 +178,7 @@ public class ItemListener implements Listener {
         plugin.getActionBarManager().sendIceBallHint(player);
         
         // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), SoundCompat.snowballThrow(), 1.0f, 1.0f);
         
         // 允许投掷雪球（不消耗物品，由事件处理）
         // 这里不消耗物品，让雪球正常投掷
@@ -218,9 +219,9 @@ public class ItemListener implements Listener {
         plugin.getItemManager().applySoulControlEffect(ghostPlayers);
         
         // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), SoundCompat.illusionerCast(), 1.0f, 1.0f);
         for (Player ghost : ghostPlayers) {
-            ghost.playSound(ghost.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.0f, 0.8f);
+            ghost.playSound(ghost.getLocation(), SoundCompat.elderCurse(), 1.0f, 0.8f);
             // 被控鬼居中字幕提示
             ghost.sendTitle("§d✧ §c你被控魂! §d✧", "§7无法移动!", 10, 30, 10);
         }
@@ -305,48 +306,58 @@ public class ItemListener implements Listener {
             return;
         }
         
-        // 发送ActionBar提示
+        // 发送ActionBar提示（开始食用）
         plugin.getActionBarManager().sendStinkySteakHint(player);
+        player.sendMessage(ChatColor.GRAY + "你开始食用臭牛排...");
         
         // 保存当前饱食度
         float savedFoodLevel = player.getFoodLevel();
         float savedSaturation = player.getSaturation();
         
-        // 临时设置饱食度为20，确保可以食用
-        player.setFoodLevel(20);
-        player.setSaturation(20);
+        // 播放开始吃音效
+        player.playSound(player.getLocation(), SoundCompat.genericEat(), 1.0f, 0.8f);
         
-        // 从配置获取效果参数
-        int speedDuration = plugin.getConfigManager().getStinkySteakSpeedDuration();
-        int speedLevel = plugin.getConfigManager().getStinkySteakSpeedLevel();
-        int glowingDuration = plugin.getConfigManager().getStinkySteakGlowingDuration();
-        int cooldown = plugin.getConfigManager().getStinkySteakCooldown();
-        
-        // 应用臭牛排效果 - 速度效果
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, speedDuration * 20, speedLevel));
-        
-        // 应用发光效果
-        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, glowingDuration * 20, 0));
-        
-        // 使用者居中字幕提示
-        player.sendTitle("§6🥩 好臭! §6", "§7速度提升，但位置已暴露!", 10, 30, 10);
-        
-        // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1.0f, 0.8f);
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, 1.0f, 1.0f);
-        
-        // 设置冷却时间
-        setCooldown(player, "stinky-steak", cooldown);
-        
-        // 消耗物品
-        consumeItem(player, item);
-        
-        // 恢复原来的饱食度
-        player.setFoodLevel((int) savedFoodLevel);
-        player.setSaturation(savedSaturation);
-        
-        // 发送使用提示
-        player.sendMessage(ChatColor.GREEN + "你食用了臭牛排，获得了速度" + (speedLevel + 1) + "效果和发光效果！");
+        // 延迟1秒（吃完后）才应用效果并消耗物品
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!player.isOnline()) return;
+            // 检查手中是否还是臭牛排
+            ItemStack current = player.getInventory().getItemInMainHand();
+            if (current == null || !current.hasItemMeta() || !current.getItemMeta().hasDisplayName() ||
+                !current.getItemMeta().getDisplayName().contains("臭牛排")) {
+                player.sendMessage(ChatColor.RED + "食用被打断！臭牛排效果未生效。");
+                return;
+            }
+            
+            // 从配置获取效果参数
+            int speedDuration = plugin.getConfigManager().getStinkySteakSpeedDuration();
+            int speedLevel = plugin.getConfigManager().getStinkySteakSpeedLevel();
+            int glowingDuration = plugin.getConfigManager().getStinkySteakGlowingDuration();
+            int cooldown = plugin.getConfigManager().getStinkySteakCooldown();
+            
+            // 应用臭牛排效果 - 速度效果
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, speedDuration * 20, speedLevel));
+            // 应用发光效果
+            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, glowingDuration * 20, 0));
+            
+            // 使用者居中字幕提示
+            player.sendTitle("§6🥩 好臭! §6", "§7速度提升，但位置已暴露!", 10, 30, 10);
+            
+            // 吃完音效
+            player.playSound(player.getLocation(), SoundCompat.playerBurp(), 1.0f, 1.0f);
+            
+            // 设置冷却时间
+            setCooldown(player, "stinky-steak", cooldown);
+            
+            // 消耗物品
+            consumeItem(player, current);
+            
+            // 恢复原来的饱食度
+            player.setFoodLevel((int) savedFoodLevel);
+            player.setSaturation(savedSaturation);
+            
+            // 发送使用提示
+            player.sendMessage(ChatColor.GREEN + "你吃完了臭牛排，获得了速度" + (speedLevel + 1) + "效果和发光效果！");
+        }, 20L); // 20 ticks = 1秒吃完
     }
     
     private void handleTeleportPearl(Player player, ItemStack item, PlayerInteractEvent event) {
@@ -361,7 +372,7 @@ public class ItemListener implements Listener {
         plugin.getActionBarManager().sendTeleportPearlHint(player);
         
         // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), SoundCompat.enderPearlThrow(), 1.0f, 1.0f);
         
         // 允许使用末影珍珠（不取消事件）
         event.setCancelled(false);
@@ -453,9 +464,9 @@ public class ItemListener implements Listener {
         consumeItem(player, item);
         
         // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_PREPARE_MIRROR, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), SoundCompat.illusionerMirror(), 1.0f, 1.0f);
         Bukkit.getOnlinePlayers().forEach(p -> 
-            p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.3f, 1.5f)
+            p.playSound(p.getLocation(), SoundCompat.enderDragonFlap(), 0.3f, 1.5f)
         );
         
         // 设置冷却时间
@@ -512,7 +523,7 @@ public class ItemListener implements Listener {
         player.sendTitle("§d🪄 漂浮药水! §d", "§7获得漂浮效果 4.5秒!", 10, 30, 10);
         
         // 音效
-        player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.0f, 1.2f);
+        player.playSound(player.getLocation(), SoundCompat.illusionerCast(), 1.0f, 1.2f);
         
         // 消耗物品
         consumeItem(player, item);

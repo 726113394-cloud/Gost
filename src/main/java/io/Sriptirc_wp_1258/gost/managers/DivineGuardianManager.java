@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,11 +32,15 @@ public class DivineGuardianManager {
     private final Set<UUID> demonHunterPlayers = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Integer> demonHunterKillCount = new ConcurrentHashMap<>();
     private final Map<UUID, Long> reaperAttackCooldown = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> reaperHarvestCooldown = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> ghostHitCount = new ConcurrentHashMap<>(); // 记录鬼被攻击次数
+    private final Map<UUID, Integer> motherHitCount = new ConcurrentHashMap<>(); // 记录母体被攻击次数
+    private final Map<UUID, Integer> demonHunterHitCount = new ConcurrentHashMap<>(); // 记录猎魔人被母体击中次数（4次感染）
     
     // 神之救赎道具数据
     private final Map<UUID, Integer> holyRedemptionUses = new ConcurrentHashMap<>();
     private final Map<UUID, Long> holyRedemptionCooldown = new ConcurrentHashMap<>();
+    private final Set<UUID> redeemerPlayers = ConcurrentHashMap.newKeySet(); // 常驻救赎者（最多2名）
     
     // 母体数据
     private final Set<UUID> additionalMothers = ConcurrentHashMap.newKeySet(); // 新增的母体
@@ -52,6 +57,8 @@ public class DivineGuardianManager {
     // 复活机制数据
     private final Map<UUID, Long> respawnTimers = new ConcurrentHashMap<>(); // 玩家ID -> 复活时间戳
     private final Map<UUID, org.bukkit.scheduler.BukkitTask> respawnTasks = new ConcurrentHashMap<>(); // 复活任务
+    private final Map<UUID, Location> deathLocations = new ConcurrentHashMap<>(); // 鬼死亡时固定坐标
+    private final Map<UUID, org.bukkit.scheduler.BukkitTask> respawnLockTasks = new ConcurrentHashMap<>(); // 原地锁定任务
     
     public DivineGuardianManager(Gost plugin) {
         this.plugin = plugin;
@@ -164,7 +171,7 @@ public class DivineGuardianManager {
                 
                 // 白色附魔台粒子（主要效果）
                 player.getWorld().spawnParticle(
-                    Particle.ENCHANT, 
+                    ParticleCompat.enchant(), 
                     loc.clone().add(0, 2.2, 0), 
                     12, 
                     0.5, 0.3, 0.5, 
@@ -218,7 +225,7 @@ public class DivineGuardianManager {
                 // 激活时的白色爆发效果
                 for (int i = 0; i < 2; i++) {
                     player.getWorld().spawnParticle(
-                        Particle.FIREWORK, 
+                        ParticleCompat.firework(), 
                         loc.clone().add(0, 1, 0), 
                         25, 
                         1.0, 0.5, 1.0, 
@@ -321,25 +328,19 @@ public class DivineGuardianManager {
                 
                 // 检查猎魔人是否有神圣守护
                 if (!holyGuardianPlayers.contains(targetId)) {
-                    // 无神圣守护的猎魔人，母体根据伤害值攻击
-                    double damage = plugin.getConfigManager().getMotherAttackDamage();
-                    double currentHealth = target.getHealth();
-                    double newHealth = currentHealth - damage;
-                    
-                    if (newHealth <= 0) {
-                        // 血量耗尽，击杀猎魔人
+                    // 无神圣守护的猎魔人，母体击中4次感染（用击中次数判定，不依赖血量）
+                    int hits = demonHunterHitCount.getOrDefault(targetId, 0) + 1;
+                    demonHunterHitCount.put(targetId, hits);
+                    attacker.sendMessage(String.format("§6§l[母体] §e你击中了猎魔人！(§c%d§e/§c4§e)", hits));
+                    target.sendMessage(String.format("§c§l[猎魔人] §c你被母体击中！(§4%d§c/§4%d§c)", hits, 4));
+                    // 视觉效果
+                    Location loc = target.getLocation();
+                    loc.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, loc, 10, 0.5, 0.5, 0.5, 0.5);
+                    loc.getWorld().playSound(loc, SoundCompat.playerHurt(), 1.0f, 1.0f);
+                    if (hits >= 4) {
+                        // 4次击中 → 感染（进入旁观）
+                        demonHunterHitCount.remove(targetId);
                         killDemonHunter(target, attacker);
-                    } else {
-                        // 应用伤害
-                        target.setHealth(newHealth);
-                        attacker.sendMessage(String.format("§6§l[母体] §e你对猎魔人造成了 §c%.1f §e点伤害！剩余血量: §c%.1f❤", 
-                            damage, newHealth));
-                        target.sendMessage(String.format("§c§l[猎魔人] §c你受到母体攻击！剩余血量: §c%.1f❤", newHealth));
-                        
-                        // 视觉效果
-                        Location loc = target.getLocation();
-                        loc.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, loc, 10, 0.5, 0.5, 0.5, 0.5);
-                        loc.getWorld().playSound(loc, Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
                     }
                     return true; // 阻止后续处理
                 }
@@ -412,9 +413,9 @@ public class DivineGuardianManager {
             
             // 视觉效果
             world.spawnParticle(Particle.PORTAL, currentLoc, 50, 0.5, 0.5, 0.5, 0.5);
-            world.playSound(currentLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+            world.playSound(currentLoc, SoundCompat.endermanTeleport(), 1.0f, 1.0f);
             world.spawnParticle(Particle.PORTAL, newLoc, 50, 0.5, 0.5, 0.5, 0.5);
-            world.playSound(newLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+            world.playSound(newLoc, SoundCompat.endermanTeleport(), 1.0f, 1.0f);
         }
     }
     
@@ -439,8 +440,8 @@ public class DivineGuardianManager {
         
         // 视觉效果
         Location loc = player.getLocation();
-        loc.getWorld().spawnParticle(Particle.ENCHANTED_HIT, loc, 30, 0.5, 0.5, 0.5, 0.5);
-        loc.getWorld().playSound(loc, Sound.ENTITY_IRON_GOLEM_DAMAGE, 1.0f, 0.5f);
+        loc.getWorld().spawnParticle(ParticleCompat.enchantedHit(), loc, 30, 0.5, 0.5, 0.5, 0.5);
+        loc.getWorld().playSound(loc, SoundCompat.ironGolemDamage(), 1.0f, 0.5f);
         
         return true;
     }
@@ -559,11 +560,6 @@ public class DivineGuardianManager {
         player.sendMessage("§7• 只有§c母体§7可以攻击你");
         player.sendMessage("§7• 击杀鬼玩家可获得§e30%§7人类奖池奖金");
         player.sendMessage("§7• 被母体击杀后进入旁观模式");
-        
-        // 如果禁止回血，添加提示
-        if (plugin.getConfigManager().isNoHealingInDemonHunterPhase()) {
-            player.sendMessage("§c⚠ 猎魔人阶段禁止回血");
-        }
     }
     
     /**
@@ -672,7 +668,7 @@ public class DivineGuardianManager {
                 
                 // 金色火花粒子
                 player.getWorld().spawnParticle(
-                    Particle.FIREWORK, 
+                    ParticleCompat.firework(), 
                     loc.clone().add(0, 2.0, 0), 
                     10, 
                     0.8, 0.3, 0.8, 
@@ -681,7 +677,7 @@ public class DivineGuardianManager {
                 
                 // 金色附魔粒子
                 player.getWorld().spawnParticle(
-                    Particle.ENCHANT, 
+                    ParticleCompat.enchant(), 
                     loc.clone().add(0, 2.5, 0), 
                     8, 
                     0.4, 0.2, 0.4, 
@@ -721,7 +717,7 @@ public class DivineGuardianManager {
                 // 金色爆炸效果
                 for (int i = 0; i < 3; i++) {
                     player.getWorld().spawnParticle(
-                        Particle.EXPLOSION, 
+                        ParticleCompat.explosion(), 
                         loc.clone().add(0, 1.5 + i * 0.5, 0), 
                         8, 
                         1.2, 0.3, 1.2, 
@@ -738,7 +734,7 @@ public class DivineGuardianManager {
                     0.1
                 );
                 
-                player.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 0.8f);
+                player.playSound(loc, SoundCompat.lightningThunder(), 1.0f, 0.8f);
             }
         }.runTaskLater(plugin, 2L); // 激活后2 ticks执行
     }
@@ -769,39 +765,92 @@ public class DivineGuardianManager {
         // 获取伤害值
         int damage = plugin.getConfigManager().getReaperWeaponDamagePerHit();
         
-        // 记录攻击次数
-        int hitCount = ghostHitCount.getOrDefault(ghostId, 0) + 1;
-        ghostHitCount.put(ghostId, hitCount);
+        // 判断目标是否是母体（普通鬼2次击杀，母体4次击杀）—— 用击中次数判定，不依赖血量
+        boolean isMother = plugin.getPlayerManager().isMotherGhost(ghostId);
+        int maxHits = isMother ? 4 : 2;
+        int hitCount;
+        if (isMother) {
+            hitCount = motherHitCount.getOrDefault(ghostId, 0) + 1;
+            motherHitCount.put(ghostId, hitCount);
+        } else {
+            hitCount = ghostHitCount.getOrDefault(ghostId, 0) + 1;
+            ghostHitCount.put(ghostId, hitCount);
+        }
         
-        int hitsToKill = plugin.getConfigManager().getReaperWeaponHitsToKill();
-        
-        demonHunter.sendMessage("§6§l[收割者] §e命中！ (§c" + hitCount + "§e/§c" + hitsToKill + "§e)");
+        demonHunter.sendMessage("§6§l[收割者] §e命中！ (§c" + hitCount + "§e/§c" + maxHits + "§e)");
         demonHunter.sendMessage("§7造成伤害: §c" + damage + "❤");
         
-        // 对鬼玩家造成伤害
-        double currentHealth = ghost.getHealth();
-        double newHealth = currentHealth - damage;
-        
-        if (newHealth <= 0) {
-            // 玩家死亡
+        // 击中次数达到上限 → 击杀（不再依赖血量）
+        if (hitCount >= maxHits) {
             killGhostWithReaper(ghost, demonHunter);
-            ghostHitCount.remove(ghostId);
+            if (isMother) motherHitCount.remove(ghostId);
+            else ghostHitCount.remove(ghostId);
         } else {
-            // 设置新血量
-            ghost.setHealth(newHealth);
-            
             // 击退效果
             Vector direction = ghost.getLocation().toVector().subtract(demonHunter.getLocation().toVector()).normalize();
             ghost.setVelocity(direction.multiply(0.5).setY(0.3));
             
             // 视觉效果
             ghost.getWorld().spawnParticle(Particle.CRIT, ghost.getLocation(), 10, 0.5, 0.5, 0.5, 0.5);
-            ghost.playSound(ghost.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
+            ghost.playSound(ghost.getLocation(), SoundCompat.playerAttackCrit(), 1.0f, 1.0f);
             
-            // 发送血量信息给鬼玩家
-            ghost.sendMessage(String.format("§c§l[收割者] §c你被猎魔人攻击！剩余血量: §4%.1f❤", newHealth));
+            // 发送命中次数信息给鬼玩家
+            ghost.sendMessage(String.format("§c§l[收割者] §c你被猎魔人攻击！(§4%d§c/§4%d§c)", hitCount, maxHits));
         }
         
+        return true;
+    }
+    
+    /**
+     * 收割者右键范围攻击 - 收割
+     */
+    public boolean handleDemonHunterHarvest(Player demonHunter) {
+        UUID demonHunterId = demonHunter.getUniqueId();
+        if (!demonHunterPlayers.contains(demonHunterId)) return false;
+        Long last = reaperHarvestCooldown.get(demonHunterId);
+        if (last != null && System.currentTimeMillis() - last < 10000) {
+            long rem = 10 - (System.currentTimeMillis() - last) / 1000;
+            demonHunter.sendMessage("§c§l[收割] §c技能冷却中，剩余 §e" + rem + "§c 秒");
+            return true;
+        }
+        reaperHarvestCooldown.put(demonHunterId, System.currentTimeMillis());
+        Location center = demonHunter.getLocation();
+        int hitCount = 0;
+        for (Entity entity : center.getWorld().getNearbyEntities(center, 4, 4, 4)) {
+            if (!(entity instanceof Player)) continue;
+            Player target = (Player) entity;
+            if (target.getUniqueId().equals(demonHunterId)) continue;
+            if (!plugin.getPlayerManager().isGhost(target.getUniqueId())) continue;
+            boolean isMother = plugin.getPlayerManager().isMotherGhost(target.getUniqueId());
+            int maxHits = isMother ? 4 : 2;
+            int hits;
+            if (isMother) {
+                hits = motherHitCount.getOrDefault(target.getUniqueId(), 0) + 1;
+                motherHitCount.put(target.getUniqueId(), hits);
+            } else {
+                hits = ghostHitCount.getOrDefault(target.getUniqueId(), 0) + 1;
+                ghostHitCount.put(target.getUniqueId(), hits);
+            }
+            // 用击中次数判定击杀，不依赖血量
+            if (hits >= maxHits) {
+                killGhostWithReaper(target, demonHunter);
+                if (isMother) motherHitCount.remove(target.getUniqueId());
+                else ghostHitCount.remove(target.getUniqueId());
+            } else {
+                target.sendMessage(String.format("§c§l[收割] §c你被范围攻击命中！(§4%d§c/§4%d§c)", hits, maxHits));
+            }
+            demonHunter.sendMessage("§6§l[收割] §e命中 §c" + target.getName() + "§e！ (§c" + hits + "§e/§c" + maxHits + "§e)");
+            hitCount++;
+        }
+        center.getWorld().spawnParticle(ParticleCompat.explosion(), center.clone().add(0, 1, 0), 3, 2, 1, 2, 0.1);
+        center.getWorld().spawnParticle(Particle.SWEEP_ATTACK, center.clone().add(0, 1, 0), 20, 4, 1, 4, 0.1);
+        // 收割音效（用 SoundCompat 兼容解析，优先凋零骷髅死亡）
+        center.getWorld().playSound(center, SoundCompat.witherSkeletonDeath(), 1.0f, 1.0f);
+        demonHunter.sendMessage("§6§l[收割] §a收割完成！命中 §c" + hitCount + " §a名鬼玩家");
+        // 收割字幕提醒（中英）
+        sendBilingualTitle(demonHunter,
+            "§d⚔ 收割!", "§7命中 " + hitCount + " 名鬼玩家",
+            "§d⚔ Harvest!", "§7Hit " + hitCount + " ghost(s)");
         return true;
     }
     
@@ -812,14 +861,8 @@ public class DivineGuardianManager {
         UUID ghostId = ghost.getUniqueId();
         UUID demonHunterId = demonHunter.getUniqueId();
         
-        // 检查是否启用复活机制
-        if (plugin.getConfigManager().isRespawnEnabled() && isDemonHunterPhase) {
-            // 启动复活计时器
-            startRespawnTimer(ghost);
-        } else {
-            // 将鬼玩家变为旁观者（旧逻辑）
-            setPlayerToSpectator(ghost);
-        }
+        // 鬼被击杀：固定原坐标并隐身，触发10秒复活倒计时
+        startRespawnTimer(ghost);
         
         // 更新击杀计数
         int kills = demonHunterKillCount.getOrDefault(demonHunterId, 0) + 1;
@@ -843,8 +886,8 @@ public class DivineGuardianManager {
         
         // 视觉效果
         Location loc = ghost.getLocation();
-        loc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, loc, 1);
-        loc.getWorld().playSound(loc, Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f);
+        loc.getWorld().spawnParticle(ParticleCompat.explosionEmitter(), loc, 1);
+        loc.getWorld().playSound(loc, SoundCompat.witherDeath(), 1.0f, 1.0f);
         
         demonHunter.sendMessage("§6§l[猎魔人] §a你击杀了一名鬼玩家！");
         demonHunter.sendMessage("§7累计击杀: §e" + kills);
@@ -879,7 +922,7 @@ public class DivineGuardianManager {
         // 视觉效果
         Location loc = demonHunter.getLocation();
         loc.getWorld().spawnParticle(Particle.DRAGON_BREATH, loc, 50, 0.5, 0.5, 0.5, 0.5);
-        loc.getWorld().playSound(loc, Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.0f);
+        loc.getWorld().playSound(loc, SoundCompat.enderDragonDeath(), 1.0f, 1.0f);
         
         motherGhost.sendMessage("§6§l[母体] §a你成功击杀了猎魔人！");
         
@@ -999,7 +1042,7 @@ public class DivineGuardianManager {
             demonHunter.sendMessage(String.format("§a你获得了 §e§l%.2f §a金币奖励！", reward));
             demonHunter.sendMessage(String.format("§7（基于人类奖池的 §e%.0f%%§7 分配）", rewardRatio * 100));
             demonHunter.sendMessage("§6════════════════════════════════");
-            demonHunter.playSound(demonHunter.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            demonHunter.playSound(demonHunter.getLocation(), SoundCompat.playerLevelup(), 1.0f, 1.0f);
         }
     }
     
@@ -1023,8 +1066,8 @@ public class DivineGuardianManager {
             mother.sendMessage(String.format("§7（基于总奖池的 §e%.0f%%§7 分配）", rewardRatio * 100));
             mother.sendMessage("§7（高于普通感染奖励）");
             mother.sendMessage("§6════════════════════════════════");
-            mother.playSound(mother.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.8f, 0.9f);
-            mother.playSound(mother.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 0.8f);
+            mother.playSound(mother.getLocation(), SoundCompat.enderDragonGrowl(), 0.8f, 0.9f);
+            mother.playSound(mother.getLocation(), SoundCompat.playerLevelup(), 1.0f, 0.8f);
         }
     }
     
@@ -1146,6 +1189,7 @@ public class DivineGuardianManager {
         // 清除神之救赎使用次数
         holyRedemptionUses.clear();
         holyRedemptionCooldown.clear();
+        redeemerPlayers.clear();
     }
     
     /**
@@ -1174,7 +1218,10 @@ public class DivineGuardianManager {
         demonHunterPlayers.clear();
         demonHunterKillCount.clear();
         reaperAttackCooldown.clear();
+        reaperHarvestCooldown.clear();
         ghostHitCount.clear();
+        motherHitCount.clear();
+        demonHunterHitCount.clear();
         holyRedemptionUses.clear();
         holyRedemptionCooldown.clear();
         additionalMothers.clear();
@@ -1234,6 +1281,32 @@ public class DivineGuardianManager {
         cancelRespawnTask(playerId);
         
         int respawnTime = plugin.getConfigManager().getRespawnTime();
+        
+        // 记录死亡坐标并固定原坐标
+        deathLocations.put(playerId, player.getLocation().clone());
+        
+        // 死亡字幕提醒（中英）
+        sendBilingualTitle(player,
+            "§c💀 你被击杀了!", "§7等待复活中...",
+            "§c💀 You were eliminated!", "§7Waiting to respawn...");
+        player.sendActionBar(isEnglish() ? "§eRespawning in §6" + respawnTime + "§e seconds" : "§e将在 §6" + respawnTime + "§e 秒后复活");
+        
+        // 隐身效果
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, respawnTime * 20, 0, true, true));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, respawnTime * 20, 255, true, true));
+        player.setAllowFlight(true);
+        
+        // 原地锁定任务（防止移动）
+        org.bukkit.scheduler.BukkitTask lockTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (player.isOnline() && deathLocations.containsKey(playerId)) {
+                Location fixed = deathLocations.get(playerId);
+                if (player.getLocation().distance(fixed) > 0.5) {
+                    player.teleport(fixed);
+                }
+            }
+        }, 0L, 5L);
+        respawnLockTasks.put(playerId, lockTask);
+        
         long respawnTimestamp = System.currentTimeMillis() + (respawnTime * 1000L);
         respawnTimers.put(playerId, respawnTimestamp);
         
@@ -1257,9 +1330,11 @@ public class DivineGuardianManager {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (player.isOnline() && respawnTimers.containsKey(player.getUniqueId())) {
                     if (remaining > 0) {
-                        player.sendActionBar(String.format("§e复活倒计时: §6%d秒", remaining));
+                        player.sendActionBar(isEnglish() 
+                            ? String.format("§eRespawning: §6%d§es", remaining)
+                            : String.format("§e复活倒计时: §6%d§e秒", remaining));
                     } else {
-                        player.sendActionBar("§a正在复活...");
+                        player.sendActionBar(isEnglish() ? "§aRespawning..." : "§a正在复活...");
                     }
                 }
             }, i * 20L);
@@ -1278,15 +1353,22 @@ public class DivineGuardianManager {
             return;
         }
         
-        // 检查玩家是否还是旁观者
-        if (!spectatorPlayers.contains(playerId)) {
+        // 检查玩家是否在复活列表中
+        if (!deathLocations.containsKey(playerId)) {
             respawnTimers.remove(playerId);
             cancelRespawnTask(playerId);
             return;
         }
         
-        // 恢复为生存模式
-        player.setGameMode(GameMode.SURVIVAL);
+        // 取消原地锁定任务
+        org.bukkit.scheduler.BukkitTask lockTask = respawnLockTasks.remove(playerId);
+        if (lockTask != null && !lockTask.isCancelled()) lockTask.cancel();
+        deathLocations.remove(playerId);
+        
+        // 解除隐身和冻结
+        player.removePotionEffect(PotionEffectType.INVISIBILITY);
+        player.removePotionEffect(PotionEffectType.SLOWNESS);
+        player.setAllowFlight(false);
         
         // 移除旁观者数据
         spectatorPlayers.remove(playerId);
@@ -1307,18 +1389,28 @@ public class DivineGuardianManager {
         cancelRespawnTask(playerId);
         
         // 发送消息
-        player.sendMessage("§a§l[复活] §a你已复活！");
-        player.sendMessage(String.format("§7当前血量: §c%.1f❤", health));
+        player.sendMessage(isEnglish() ? "§a§l[Respawn] §aYou have respawned!" : "§a§l[复活] §a你已复活！");
+        player.sendMessage(isEnglish() 
+            ? String.format("§7Current health: §c%.1f❤", health)
+            : String.format("§7当前血量: §c%.1f❤", health));
+        
+        // 重生字幕提醒（中英）
+        sendBilingualTitle(player,
+            "§a✨ 你已重生!", "§7继续战斗!",
+            "§a✨ You have respawned!", "§7Keep fighting!");
+        player.sendActionBar(isEnglish() ? "§aBack in action!" : "§a你已重返战场!");
         
         // 广播消息
         if (plugin.getConfigManager().isDivineGuardianBroadcastEnabled()) {
-            Bukkit.broadcastMessage(String.format("§6§l[猎魔人] §e鬼玩家 §c%s §e已复活！", player.getName()));
+            Bukkit.broadcastMessage(isEnglish()
+                ? String.format("§6§l[Hunter] §eGhost §c%s §ehas respawned!", player.getName())
+                : String.format("§6§l[猎魔人] §e鬼玩家 §c%s §e已复活！", player.getName()));
         }
         
         // 视觉效果
         Location loc = player.getLocation();
-        loc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, loc, 30, 0.5, 0.5, 0.5, 0.5);
-        loc.getWorld().playSound(loc, Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
+        loc.getWorld().spawnParticle(ParticleCompat.totem(), loc, 30, 0.5, 0.5, 0.5, 0.5);
+        loc.getWorld().playSound(loc, SoundCompat.totemUse(), 1.0f, 1.0f);
     }
     
     /**
@@ -1341,9 +1433,17 @@ public class DivineGuardianManager {
                 task.cancel();
             }
         }
+        // 取消所有原地锁定任务
+        for (org.bukkit.scheduler.BukkitTask task : respawnLockTasks.values()) {
+            if (task != null && !task.isCancelled()) {
+                task.cancel();
+            }
+        }
         
         respawnTimers.clear();
         respawnTasks.clear();
+        deathLocations.clear();
+        respawnLockTasks.clear();
     }
     
     /**
@@ -1382,11 +1482,6 @@ public class DivineGuardianManager {
                 
                 player.setHealth(health);
                 player.sendMessage(String.format("§6§l[猎魔人阶段] §e你的血量已调整为 §c%.1f❤", health));
-                
-                // 如果禁止回血，添加提示
-                if (plugin.getConfigManager().isNoHealingInDemonHunterPhase()) {
-                    player.sendMessage("§c⚠ 猎魔人阶段禁止回血");
-                }
             }
         }
     }
@@ -1490,7 +1585,51 @@ public class DivineGuardianManager {
      */
     public boolean isRedeemer(UUID playerId) {
         // 检查玩家是否有神之救赎使用次数
-        return holyRedemptionUses.containsKey(playerId) && holyRedemptionUses.get(playerId) > 0;
+        return redeemerPlayers.contains(playerId) || 
+            (holyRedemptionUses.containsKey(playerId) && holyRedemptionUses.get(playerId) > 0);
+    }
+    
+    /**
+     * 随机绑定救赎者（每局最多2名），神之救赎道具发放时调用
+     */
+    public boolean assignRedeemer(Player player) {
+        UUID playerId = player.getUniqueId();
+        if (redeemerPlayers.contains(playerId)) return true;
+        if (redeemerPlayers.size() >= 2) return false;
+        if (plugin.getPlayerManager().isGhost(playerId)) return false;
+        redeemerPlayers.add(playerId);
+        holyRedemptionUses.put(playerId, 2);
+        holyGuardianPlayers.add(playerId);
+        holyGuardianHitCount.put(playerId, 0);
+        // 救赎者绑定字幕提醒（中英）
+        sendBilingualTitle(player,
+            "§6✝ 你被选为救赎者!",
+            "§7获得神之救赎道具（2次）",
+            "§6✝ You are the Redeemer!",
+            "§7Holy Redemption x2 granted");
+        if (isEnglish()) {
+            player.sendMessage("§6§l[Redeemer] §eYou have been chosen as the Redeemer!");
+            player.sendMessage("§7• Holy Redemption x2 — right-click a ghost to convert them");
+            player.sendMessage("§7• You directly gain Holy Guardian protection");
+        } else {
+            player.sendMessage("§6§l[救赎者] §e你被选为救赎者！");
+            player.sendMessage("§7• 获得神之救赎道具（2次），可将鬼转化回人类");
+            player.sendMessage("§7• 直接获得神圣守护效果");
+        }
+        return true;
+    }
+    
+    public int getRedeemerCount() {
+        return redeemerPlayers.size();
+    }
+    
+    private boolean isEnglish() {
+        return "en_US".equals(plugin.getConfigManager().getDefaultLanguage());
+    }
+    
+    private void sendBilingualTitle(Player p, String zhTitle, String zhSub, String enTitle, String enSub) {
+        if (isEnglish()) p.sendTitle(enTitle, enSub, 10, 40, 10);
+        else p.sendTitle(zhTitle, zhSub, 10, 40, 10);
     }
 
     
@@ -1560,30 +1699,48 @@ public class DivineGuardianManager {
             }
         }
         
-        // 发送消息
-        redeemer.sendMessage("§6§l[神之救赎] §a你成功将 §e" + target.getName() + " §a转化回人类！");
-        redeemer.sendMessage(String.format("§7剩余使用次数: §e%d", remainingUses));
+        // 发送消息（中英）
+        boolean en = isEnglish();
+        if (en) {
+            redeemer.sendMessage("§6§l[Holy Redemption] §aYou converted §e" + target.getName() + " §aback to human!");
+            redeemer.sendMessage(String.format("§7Remaining uses: §e%d", remainingUses));
+            target.sendMessage("§6§l[Holy Redemption] §aYou were redeemed by §e" + redeemer.getName() + "§a!");
+        } else {
+            redeemer.sendMessage("§6§l[神之救赎] §a你成功将 §e" + target.getName() + " §a转化回人类！");
+            redeemer.sendMessage(String.format("§7剩余使用次数: §e%d", remainingUses));
+            target.sendMessage("§6§l[神之救赎] §a你被 §e" + redeemer.getName() + " §a使用神之救赎转化回人类！");
+        }
         
-        target.sendMessage("§6§l[神之救赎] §a你被 §e" + redeemer.getName() + " §a使用神之救赎转化回人类！");
-        
-        // 居中字幕提示
-        redeemer.sendTitle("§6✝ 神之救赎成功! ✝", "§a" + target.getName() + " 已转化回人类!", 10, 40, 10);
-        target.sendTitle("§6✝ 你被救赎了! ✝", "§a" + redeemer.getName() + " 将你转化回人类!", 10, 40, 10);
+        // 居中字幕提示（中英）
+        if (en) {
+            redeemer.sendTitle("§6✝ Redemption Success! ✝", "§a" + target.getName() + " is human again!", 10, 40, 10);
+            target.sendTitle("§6✝ You are redeemed! ✝", "§a" + redeemer.getName() + " saved you!", 10, 40, 10);
+        } else {
+            redeemer.sendTitle("§6✝ 神之救赎成功! ✝", "§a" + target.getName() + " 已转化回人类!", 10, 40, 10);
+            target.sendTitle("§6✝ 你被救赎了! ✝", "§a" + redeemer.getName() + " 将你转化回人类!", 10, 40, 10);
+        }
         
         // 广播消息
         if (plugin.getConfigManager().isDivineGuardianBroadcastEnabled()) {
-            Bukkit.broadcastMessage(String.format("§6§l[神之救赎] §e救赎者 §a%s §e使用神之救赎将 §a%s §e转化回人类！", 
-                redeemer.getName(), target.getName()));
+            if (en) {
+                Bukkit.broadcastMessage(String.format("§6§l[Holy Redemption] §eRedeemer §a%s §econverted §a%s §eback to human!",
+                    redeemer.getName(), target.getName()));
+            } else {
+                Bukkit.broadcastMessage(String.format("§6§l[神之救赎] §e救赎者 §a%s §e使用神之救赎将 §a%s §e转化回人类！", 
+                    redeemer.getName(), target.getName()));
+            }
         }
         
         // 视觉效果
         Location loc = target.getLocation();
-        loc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, loc, 30, 0.5, 0.5, 0.5, 0.5);
-        loc.getWorld().playSound(loc, Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
+        loc.getWorld().spawnParticle(ParticleCompat.totem(), loc, 30, 0.5, 0.5, 0.5, 0.5);
+        loc.getWorld().playSound(loc, SoundCompat.totemUse(), 1.0f, 1.0f);
         
         // 随机传送救赎者（防止被报复）
         teleportAttackerRandomly(redeemer);
-        redeemer.sendMessage("§6§l[神之救赎] §e你被随机传送以保护安全！");
+        redeemer.sendMessage(en 
+            ? "§6§l[Holy Redemption] §eYou were teleported to safety!"
+            : "§6§l[神之救赎] §e你被随机传送以保护安全！");
         
         // 更新神圣守护检查
         List<UUID> humanPlayers = plugin.getPlayerManager().getHumanPlayers();

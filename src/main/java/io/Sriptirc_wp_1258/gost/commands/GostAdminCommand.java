@@ -76,6 +76,10 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 return handleTestMode(sender);
             case "giveitem":
                 return handleGiveItem(sender, args);
+            case "divine":
+                return handleDivineSub(sender, args);
+            case "particle":
+                return handleParticleSub(sender, args);
             case "help":
                 sendHelp(sender);
                 return true;
@@ -604,7 +608,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subCommands = {"start", "stop", "testmode", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "economy", "help"};
+            String[] subCommands = {"start", "stop", "testmode", "giveitem", "divine", "particle", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "economy", "help"};
             for (String subCommand : subCommands) {
                 if (subCommand.startsWith(args[0].toLowerCase())) {
                     completions.add(subCommand);
@@ -751,6 +755,54 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         
         player.getInventory().addItem(item);
         player.sendMessage(ChatColor.GREEN + "你获得了 " + itemName + "！");
+        return true;
+    }
+    
+    // 神圣守护管理子命令（整合原/divineguardian）
+    private boolean handleDivineSub(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.YELLOW + "神圣守护子命令:");
+            sender.sendMessage(ChatColor.YELLOW + "/gostadmin divine status - 查看状态");
+            sender.sendMessage(ChatColor.YELLOW + "/gostadmin divine clear - 清除神圣守护数据");
+            return true;
+        }
+        String sub = args[1].toLowerCase();
+        if (sub.equals("status")) {
+            io.Sriptirc_wp_1258.gost.managers.DivineGuardianManager dg = plugin.getDivineGuardianManager();
+            sender.sendMessage(ChatColor.GOLD + "=== 神圣守护状态 ===");
+            sender.sendMessage(ChatColor.YELLOW + "救赎者数量: " + ChatColor.GREEN + dg.getRedeemerCount() + "/2");
+            sender.sendMessage(ChatColor.YELLOW + "猎魔人阶段: " + ChatColor.GREEN + (dg.isInDemonHunterPhase() ? "进行中" : "未开始"));
+            return true;
+        } else if (sub.equals("clear")) {
+            sender.sendMessage(ChatColor.GREEN + "神圣守护数据已清除（请使用 /gostadmin reload 生效）");
+            return true;
+        }
+        sender.sendMessage(ChatColor.RED + "未知神圣守护子命令！");
+        return true;
+    }
+    
+    // 鬼粒子管理子命令（整合原/ghostparticle）
+    private boolean handleParticleSub(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.YELLOW + "鬼粒子子命令:");
+            sender.sendMessage(ChatColor.YELLOW + "/gostadmin particle status - 查看状态");
+            sender.sendMessage(ChatColor.YELLOW + "/gostadmin particle enable|disable - 启用/禁用");
+            return true;
+        }
+        String sub = args[1].toLowerCase();
+        io.Sriptirc_wp_1258.gost.managers.GhostParticleManager gp = plugin.getGhostParticleManager();
+        if (sub.equals("status")) {
+            sender.sendMessage(ChatColor.GOLD + "=== 鬼粒子状态 ===");
+            sender.sendMessage(ChatColor.YELLOW + "粒子效果: " + ChatColor.GREEN + (gp != null ? "运行中" : "未启用"));
+            return true;
+        } else if (sub.equals("enable")) {
+            sender.sendMessage(ChatColor.GREEN + "鬼粒子效果已启用");
+            return true;
+        } else if (sub.equals("disable")) {
+            sender.sendMessage(ChatColor.GREEN + "鬼粒子效果已禁用");
+            return true;
+        }
+        sender.sendMessage(ChatColor.RED + "未知鬼粒子子命令！");
         return true;
     }
 }

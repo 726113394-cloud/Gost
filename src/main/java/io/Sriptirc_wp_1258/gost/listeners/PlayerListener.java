@@ -112,4 +112,78 @@ public class PlayerListener implements Listener {
             player.setSaturation(20);
         }
     }
+    
+    @EventHandler
+    public void onInventoryClick(org.bukkit.event.inventory.InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) return;
+        Player player = (Player) event.getWhoClicked();
+        if (!plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) return;
+        
+        org.bukkit.inventory.ItemStack item = event.getCurrentItem();
+        if (item == null || item.getType() == org.bukkit.Material.AIR || !item.hasItemMeta()) return;
+        
+        String name = item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : "";
+        if (name.isEmpty()) return;
+        
+        // 特殊道具强制放第一格（收割者、神之救赎）
+        if (name.contains("收割者") || name.contains("神之救赎")) {
+            int slot = event.getSlot();
+            if (slot != 0) {
+                org.bukkit.inventory.ItemStack first = player.getInventory().getItem(0);
+                if (first == null || first.getType() == org.bukkit.Material.AIR) {
+                    player.getInventory().setItem(0, item);
+                    event.setCancelled(true);
+                } else {
+                    // 物品栏满则替换第一格
+                    player.getInventory().setItem(0, item);
+                    event.setCancelled(true);
+                }
+            }
+            return;
+        }
+        
+        // 道具不堆叠、不允许同样的道具（人鬼通用道具不受限）
+        boolean isFactionItem = name.contains("肾上腺素") || name.contains("狂暴药水");
+        if (!isFactionItem) {
+            // 检查是否已有同样道具
+            for (org.bukkit.inventory.ItemStack inv : player.getInventory().getContents()) {
+                if (inv != null && inv.hasItemMeta() && inv.getItemMeta().hasDisplayName() &&
+                    inv.getItemMeta().getDisplayName().equals(name) && inv != item) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "你不允许携带两个相同道具！");
+                    return;
+                }
+            }
+        }
+        if (name.contains("肾上腺素")) {
+            for (org.bukkit.inventory.ItemStack inv : player.getInventory().getContents()) {
+                if (inv != null && inv.hasItemMeta() && inv.getItemMeta().hasDisplayName() &&
+                    inv.getItemMeta().getDisplayName().contains("肾上腺素") && inv != item) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "你不允许携带两个肾上腺素！");
+                    return;
+                }
+            }
+        }
+        
+        // 背包区域（27格以上）不允许放道具，强制移回物品栏
+        int slot = event.getSlot();
+        if (slot >= 9) {
+            event.setCancelled(true);
+            // 尝试放回物品栏空闲位置
+            boolean placed = false;
+            for (int i = 0; i < 9; i++) {
+                org.bukkit.inventory.ItemStack s = player.getInventory().getItem(i);
+                if (s == null || s.getType() == org.bukkit.Material.AIR) {
+                    player.getInventory().setItem(i, item);
+                    event.getClickedInventory().setItem(slot, null);
+                    placed = true;
+                    break;
+                }
+            }
+            if (!placed) {
+                player.sendMessage(ChatColor.RED + "物品栏已满！道具无法放入背包！");
+            }
+        }
+    }
 }

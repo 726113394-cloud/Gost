@@ -362,6 +362,25 @@ public class ItemManager {
             }
         }
         
+        // 8. 救赎者常驻：随机绑定救赎者（每局最多2名）
+        if (plugin.getConfigManager().isRedeemerEnabled()) {
+            int current = plugin.getDivineGuardianManager().getRedeemerCount();
+            int needed = plugin.getConfigManager().getRedeemerMaxCount() - current;
+            if (needed > 0 && !humanPlayers.isEmpty()) {
+                List<UUID> candidates = new ArrayList<>(humanPlayers);
+                candidates.removeIf(id -> plugin.getDivineGuardianManager().isRedeemer(id));
+                List<UUID> chosen = getRandomPlayers(candidates, Math.min(needed, candidates.size()));
+                for (UUID pid : chosen) {
+                    Player p = Bukkit.getPlayer(pid);
+                    if (p != null && p.isOnline()) {
+                        if (plugin.getDivineGuardianManager().assignRedeemer(p)) {
+                            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.2f);
+                        }
+                    }
+                }
+            }
+        }
+        
         // 发放道具全局音效
         for (UUID playerId : allPlayers) {
             Player player = Bukkit.getPlayer(playerId);
