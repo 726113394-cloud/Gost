@@ -57,8 +57,14 @@ public class DivineGuardianManager {
     // 复活机制数据
     private final Map<UUID, Long> respawnTimers = new ConcurrentHashMap<>(); // 玩家ID -> 复活时间戳
     private final Map<UUID, org.bukkit.scheduler.BukkitTask> respawnTasks = new ConcurrentHashMap<>(); // 复活任务
-    private final Map<UUID, Location> deathLocations = new ConcurrentHashMap<>(); // 鬼死亡时固定坐标
-    private final Map<UUID, org.bukkit.scheduler.BukkitTask> respawnLockTasks = new ConcurrentHashMap<>(); // 原地锁定任务
+    private final Map<UUID, Location> deathLocations = new ConcurrentHashMap<>(); // 鬼死亡时坐标（用于记录）
+    
+    // 额外奖励点数（结算时发放，与奖池分离）
+    private final Map<UUID, Integer> rewardPoints = new ConcurrentHashMap<>();
+    
+    // 母体升级绿宝石数据
+    private org.bukkit.entity.Item motherEmerald = null; // 场上发光绿宝石实体
+    private org.bukkit.scheduler.BukkitTask motherEmeraldGlowTask = null; // 发光标记任务
     
     public DivineGuardianManager(Gost plugin) {
         this.plugin = plugin;
@@ -240,28 +246,36 @@ public class DivineGuardianManager {
      * 给予神之救赎道具
      */
     private void giveHolyRedemptionItem(Player player) {
-        int maxUses = plugin.getConfigManager().getDemonHunterMaxUses();
+        int maxUses = 1; // 神之救赎固定单次使用
         holyRedemptionUses.put(player.getUniqueId(), maxUses);
+        
+        // 防重复：背包/物品栏已有神之救赎则不重复发放
+        for (ItemStack inv : player.getInventory().getContents()) {
+            if (inv != null && inv.hasItemMeta() && inv.getItemMeta().hasDisplayName() &&
+                inv.getItemMeta().getDisplayName().contains("神之救赎")) {
+                return;
+            }
+        }
         
         ItemStack holyRedemption = createHolyRedemptionItem(maxUses);
         
-        // 尝试将神之救赎放在第二个物品栏（slot 1），如果被占用则寻找其他空位
-        int preferredSlot = 1; // 第二个物品栏
+        // 神之救赎强制放置第一格（slot 0）
+        int preferredSlot = 0;
         ItemStack currentItem = player.getInventory().getItem(preferredSlot);
         if (currentItem != null && currentItem.getType() != Material.AIR) {
-            // 如果第二个物品栏已有物品，尝试寻找其他空位
+            // 第一格已有物品：尝试移到空闲格，满则直接替换
             int emptySlot = player.getInventory().firstEmpty();
-            if (emptySlot != -1) {
+            if (emptySlot != -1 && emptySlot != 0) {
                 player.getInventory().setItem(emptySlot, currentItem);
                 player.getInventory().setItem(preferredSlot, holyRedemption);
-                player.sendMessage("§6§l[神圣守护] §a神之救赎已放置在第二个物品栏，原有物品已移动到其他位置");
+                player.sendMessage("§6§l[神圣守护] §a神之救赎已放置在第一格，原有物品已移动到其他位置");
             } else {
                 // 没有空位，直接替换
                 player.getInventory().setItem(preferredSlot, holyRedemption);
-                player.sendMessage("§6§l[神圣守护] §a神之救赎已放置在第二个物品栏，替换了原有物品");
+                player.sendMessage("§6§l[神圣守护] §a神之救赎已放置在第一格，替换了原有物品");
             }
         } else {
-            // 第二个物品栏为空，直接放置
+            // 第一格为空，直接放置
             player.getInventory().setItem(preferredSlot, holyRedemption);
         }
         
@@ -475,24 +489,37 @@ public class DivineGuardianManager {
         // 清除所有的神之救赎道具
         clearAllHolyRedemptionItems();
         
-        // 在猎魔人阶段，为所有剩余人类玩家激活神圣守护（忽略触发数量限制）
+        // 在猎魔人阶段，为所有剩余人类玩家获得/刷新神圣守护（配置开关控制）
         List<UUID> humanPlayers = plugin.getPlayerManager().getHumanPlayers();
+        boolean holyGuardianOnPhase = plugin.getConfigManager().isDemonHunterHolyGuardianEnabled();
         
-        // 清理：移除不再是人类或被神之救赎转化的玩家
-        holyGuardianPlayers.removeIf(playerId -> {
-            if (!humanPlayers.contains(playerId)) {
-                return true; // 不再是人类
+        // 清理：移除不再是人类的玩家
+        holyGuardianPlayers.removeIf(playerId -> !humanPlayers.contains(playerId));
+        
+        if (holyGuardianOnPhase) {
+            // 开关开启：所有剩余人类（猎魔人）获得/刷新神圣守护
+            for (UUID playerId : humanPlayers) {
+                if (holyGuardianPlayers.contains(playerId)) {
+                    // 刷新：重置攻击计数与激活时间，重新应用效果
+                    holyGuardianActivationTime.put(playerId, System.currentTimeMillis());
+                    holyGuardianHitCount.put(playerId, 0);
+                    Player p = Bukkit.getPlayer(playerId);
+                    if (p != null && p.isOnline()) {
+                        applyHolyGuardianEffects(p);
+                        p.sendMessage("§6§l[神圣守护] §a猎魔人阶段神圣守护已刷新！");
+                    }
+                } else {
+                    activateHolyGuardian(playerId);
+                }
             }
-            // 检查是否被神之救赎转化
-            return plugin.getPlayerManager().isConvertedByRedemption(playerId);
-        });
-        
-        // 为所有剩余人类玩家激活神圣守护（排除被神之救赎转化的人类）
-        for (UUID playerId : humanPlayers) {
-            // 检查是否是神之救赎转化的玩家
-            boolean isConvertedByRedemption = plugin.getPlayerManager().isConvertedByRedemption(playerId);
-            if (!isConvertedByRedemption && !holyGuardianPlayers.contains(playerId)) {
-                activateHolyGuardian(playerId);
+        } else {
+            // 开关关闭：仅按原逻辑激活（排除被神之救赎转化的人类，已有不刷新）
+            holyGuardianPlayers.removeIf(playerId -> plugin.getPlayerManager().isConvertedByRedemption(playerId));
+            for (UUID playerId : humanPlayers) {
+                boolean isConvertedByRedemption = plugin.getPlayerManager().isConvertedByRedemption(playerId);
+                if (!isConvertedByRedemption && !holyGuardianPlayers.contains(playerId)) {
+                    activateHolyGuardian(playerId);
+                }
             }
         }
         
@@ -531,6 +558,153 @@ public class DivineGuardianManager {
         
         // 检查是否需要新增母体
         checkAndAddAdditionalMother();
+        
+        // 玩家 > 5人时，在游戏区域放置发光绿宝石（普通鬼拾取可变为母体）
+        if (plugin.getPlayerManager().getAllPlayers().size() > 5) {
+            spawnMotherEmerald();
+        }
+    }
+    
+    /**
+     * 在游戏区域放置发光绿宝石（普通鬼拾取可变为母体）
+     */
+    private void spawnMotherEmerald() {
+        removeMotherEmerald(); // 清理旧的
+        
+        io.Sriptirc_wp_1258.gost.managers.AreaManager.GameArea area = plugin.getAreaManager().getSelectedArea();
+        if (area == null || area.getPos1() == null || area.getPos2() == null) {
+            return;
+        }
+        Location pos1 = area.getPos1();
+        Location pos2 = area.getPos2();
+        double rx = pos1.getX() + random.nextDouble() * (pos2.getX() - pos1.getX());
+        double rz = pos1.getZ() + random.nextDouble() * (pos2.getZ() - pos1.getZ());
+        double ry = Math.max(pos1.getY(), pos2.getY());
+        Location spawnLoc = new Location(pos1.getWorld(), rx, ry, rz);
+        
+        // 创建发光绿宝石实体（不可拾取进入背包，防止被当普通物品拿走）
+        ItemStack emerald = new ItemStack(Material.EMERALD);
+        ItemMeta meta = emerald.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(isEnglish() ? "§a§lMother Upgrade Emerald" : "§a§l母体升级宝石");
+            meta.setLore(java.util.Arrays.asList(
+                isEnglish() ? "§7Pick up to become the Mother Ghost!" : "§7拾取后变为母体鬼！",
+                isEnglish() ? "§7Only normal ghosts can use it" : "§7仅普通鬼可拾取"
+            ));
+            emerald.setItemMeta(meta);
+        }
+        
+        motherEmerald = pos1.getWorld().dropItem(spawnLoc, emerald);
+        motherEmerald.setPickupDelay(40); // 短暂延迟防误拾
+        motherEmerald.setCustomName(isEnglish() ? "§a§l✦ Mother Emerald ✦" : "§a§l✦ 母体绿宝石 ✦");
+        motherEmerald.setCustomNameVisible(true);
+        motherEmerald.setGlowing(true); // 发光效果
+        
+        // 全服公告
+        boolean en = isEnglish();
+        if (plugin.getConfigManager().isDivineGuardianBroadcastEnabled()) {
+            if (en) {
+                Bukkit.broadcastMessage("§a§l✦ A Mother Upgrade Emerald has appeared in the area! §7Normal ghosts: pick it up to become the Mother Ghost!");
+            } else {
+                Bukkit.broadcastMessage("§a§l✦ 游戏区域出现母体升级绿宝石！§7普通鬼拾取后可变身为母体鬼！");
+            }
+        }
+        
+        // 音效提示
+        Bukkit.getOnlinePlayers().forEach(p -> 
+            p.playSound(p.getLocation(), SoundCompat.toastChallengeComplete(), 0.5f, 1.2f));
+        
+        // 持续发光标记任务（每隔一段时间刷新，防止实体发光失效）
+        motherEmeraldGlowTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (motherEmerald != null && motherEmerald.isValid() && !motherEmerald.isDead()) {
+                motherEmerald.setGlowing(true);
+                motherEmerald.getWorld().spawnParticle(ParticleCompat.enchant(), 
+                    motherEmerald.getLocation().add(0, 0.5, 0), 5, 0.3, 0.3, 0.3, 0.05);
+            } else {
+                motherEmeraldGlowTask.cancel();
+            }
+        }, 0L, 20L);
+    }
+    
+    /**
+     * 处理普通鬼拾取母体绿宝石 → 变为母体
+     */
+    public boolean handleMotherEmeraldPickup(Player player) {
+        if (motherEmerald == null || motherEmerald.isDead() || !motherEmerald.isValid()) {
+            return false;
+        }
+        UUID pid = player.getUniqueId();
+        // 仅普通鬼可拾取
+        if (!plugin.getPlayerManager().isGhost(pid) || plugin.getPlayerManager().isMotherGhost(pid)) {
+            return false;
+        }
+        
+        // 转变为母体
+        plugin.getPlayerManager().setPlayerRole(pid, io.Sriptirc_wp_1258.gost.managers.PlayerManager.PlayerRole.GHOST_MOTHER);
+        
+        // 移除绿宝石
+        removeMotherEmerald();
+        
+        // 提示与音效
+        boolean en = isEnglish();
+        if (en) {
+            player.sendTitle("§4👑 You are the Mother Ghost!", "§7Hunt the Demon Hunters!", 10, 40, 10);
+            Bukkit.broadcastMessage("§4§l" + player.getName() + " §cpicked up the Mother Emerald and became the MOTHER GHOST!");
+        } else {
+            player.sendTitle("§4👑 你成为了母体鬼!", "§7去猎杀猎魔人吧!", 10, 40, 10);
+            Bukkit.broadcastMessage("§4§l" + player.getName() + " §c拾取了母体绿宝石，变身为母体鬼！");
+        }
+        player.playSound(player.getLocation(), SoundCompat.enderDragonGrowl(), 1.0f, 0.8f);
+        
+        // 调整血量
+        player.setHealth(plugin.getConfigManager().getGhostMotherHealth());
+        return true;
+    }
+    
+    /**
+     * 移除母体绿宝石及其发光任务
+     */
+    private void removeMotherEmerald() {
+        if (motherEmerald != null) {
+            motherEmerald.remove();
+            motherEmerald = null;
+        }
+        if (motherEmeraldGlowTask != null) {
+            motherEmeraldGlowTask.cancel();
+            motherEmeraldGlowTask = null;
+        }
+    }
+    
+    /**
+     * 检查实体是否是该玩家拾取时对应的母体绿宝石
+     */
+    public boolean isMotherEmerald(org.bukkit.entity.Item item) {
+        return motherEmerald != null && motherEmerald.isValid() && motherEmerald.equals(item);
+    }
+    
+    /**
+     * 记录额外奖励点数（结算时发放，与奖池分离）
+     */
+    public void addRewardPoints(UUID playerId, int points) {
+        rewardPoints.merge(playerId, points, Integer::sum);
+    }
+    
+    /**
+     * 结算额外奖励（游戏结束时调用）：由服务器额外发放游戏币，与奖池分离
+     */
+    public void settleRewardPoints() {
+        if (rewardPoints.isEmpty()) return;
+        boolean en = isEnglish();
+        for (Map.Entry<UUID, Integer> e : rewardPoints.entrySet()) {
+            Player p = Bukkit.getPlayer(e.getKey());
+            if (p != null && p.isOnline() && e.getValue() > 0) {
+                plugin.getEconomyManager().depositServerReward(p, e.getValue());
+                p.sendMessage(en
+                    ? "§6§l[Reward] §aBonus reward: §e" + e.getValue() + " §acoins"
+                    : "§6§l[奖励] §a额外奖励: §e" + e.getValue() + " §a游戏币");
+            }
+        }
+        rewardPoints.clear();
     }
     
     /**
@@ -868,6 +1042,12 @@ public class DivineGuardianManager {
         int kills = demonHunterKillCount.getOrDefault(demonHunterId, 0) + 1;
         demonHunterKillCount.put(demonHunterId, kills);
         
+        // 记录击杀奖励（结算时发放，与奖池分离）：普通鬼50 / 母体100
+        boolean isMotherGhost = plugin.getPlayerManager().isMotherGhost(ghostId);
+        addRewardPoints(demonHunterId, isMotherGhost 
+            ? plugin.getConfigManager().getRewardKillMother() 
+            : plugin.getConfigManager().getRewardKillNormal());
+        
         // 奖励分配
         distributeDemonHunterKillReward(demonHunter, ghost);
         
@@ -884,16 +1064,45 @@ public class DivineGuardianManager {
             }
         }
         
-        // 视觉效果
+        // 视觉效果：在击杀处放烟花 + 爆炸粒子 + 音效
         Location loc = ghost.getLocation();
         loc.getWorld().spawnParticle(ParticleCompat.explosionEmitter(), loc, 1);
         loc.getWorld().playSound(loc, SoundCompat.witherDeath(), 1.0f, 1.0f);
+        spawnKillFirework(loc);
+        
+        // 击杀字幕提醒（中英）
+        sendBilingualTitle(demonHunter,
+            "§a💥 击杀成功!",
+            "§7你击杀了 §c" + ghost.getName(),
+            "§a💥 Elimination!",
+            "§7You eliminated §c" + ghost.getName());
         
         demonHunter.sendMessage("§6§l[猎魔人] §a你击杀了一名鬼玩家！");
         demonHunter.sendMessage("§7累计击杀: §e" + kills);
         
         // 检查游戏是否结束
         checkGameEnd();
+    }
+    
+    /**
+     * 在指定位置放烟花（击杀反馈）
+     */
+    private void spawnKillFirework(Location loc) {
+        org.bukkit.entity.Firework fw = loc.getWorld().spawn(loc.clone().add(0, 1, 0), org.bukkit.entity.Firework.class);
+        org.bukkit.inventory.meta.FireworkMeta meta = fw.getFireworkMeta();
+        meta.addEffect(org.bukkit.FireworkEffect.builder()
+            .with(org.bukkit.FireworkEffect.Type.BURST)
+            .withColor(org.bukkit.Color.RED, org.bukkit.Color.YELLOW)
+            .withFade(org.bukkit.Color.ORANGE)
+            .trail(true)
+            .build());
+        meta.setPower(0);
+        fw.setFireworkMeta(meta);
+        // 立即引爆
+        org.bukkit.scheduler.BukkitRunnable run = new org.bukkit.scheduler.BukkitRunnable() {
+            @Override public void run() { fw.detonate(); }
+        };
+        run.runTaskLater(plugin, 1L);
     }
     
     /**
@@ -1190,6 +1399,7 @@ public class DivineGuardianManager {
         holyRedemptionUses.clear();
         holyRedemptionCooldown.clear();
         redeemerPlayers.clear();
+        rewardPoints.clear();
     }
     
     /**
@@ -1228,6 +1438,9 @@ public class DivineGuardianManager {
         spectatorPlayers.clear();
         spectatorOriginalLocations.clear();
         spectatorBoundaryTasks.clear();
+        
+        // 清理母体绿宝石
+        removeMotherEmerald();
         
         // 清理复活数据
         cleanupRespawnData();
@@ -1291,21 +1504,8 @@ public class DivineGuardianManager {
             "§c💀 You were eliminated!", "§7Waiting to respawn...");
         player.sendActionBar(isEnglish() ? "§eRespawning in §6" + respawnTime + "§e seconds" : "§e将在 §6" + respawnTime + "§e 秒后复活");
         
-        // 隐身效果
+        // 死亡状态：隐身但可自由移动（不锁定坐标、不减速）
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, respawnTime * 20, 0, true, true));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, respawnTime * 20, 255, true, true));
-        player.setAllowFlight(true);
-        
-        // 原地锁定任务（防止移动）
-        org.bukkit.scheduler.BukkitTask lockTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            if (player.isOnline() && deathLocations.containsKey(playerId)) {
-                Location fixed = deathLocations.get(playerId);
-                if (player.getLocation().distance(fixed) > 0.5) {
-                    player.teleport(fixed);
-                }
-            }
-        }, 0L, 5L);
-        respawnLockTasks.put(playerId, lockTask);
         
         long respawnTimestamp = System.currentTimeMillis() + (respawnTime * 1000L);
         respawnTimers.put(playerId, respawnTimestamp);
@@ -1354,21 +1554,21 @@ public class DivineGuardianManager {
         }
         
         // 检查玩家是否在复活列表中
-        if (!deathLocations.containsKey(playerId)) {
+        // 检查玩家是否在复活列表中
+        if (!respawnTimers.containsKey(playerId)) {
             respawnTimers.remove(playerId);
             cancelRespawnTask(playerId);
             return;
         }
         
-        // 取消原地锁定任务
-        org.bukkit.scheduler.BukkitTask lockTask = respawnLockTasks.remove(playerId);
-        if (lockTask != null && !lockTask.isCancelled()) lockTask.cancel();
+        // 死亡坐标已不再用于锁定，清理记录
         deathLocations.remove(playerId);
         
-        // 解除隐身和冻结
+        // 随机地点复活（游戏区域内随机坐标）
+        teleportToRandomAreaLocation(player);
+        
+        // 解除隐身
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
-        player.removePotionEffect(PotionEffectType.SLOWNESS);
-        player.setAllowFlight(false);
         
         // 移除旁观者数据
         spectatorPlayers.remove(playerId);
@@ -1414,6 +1614,21 @@ public class DivineGuardianManager {
     }
     
     /**
+     * 随机传送玩家到游戏区域内随机坐标（用于随机复活）
+     */
+    private void teleportToRandomAreaLocation(Player player) {
+        io.Sriptirc_wp_1258.gost.managers.AreaManager.GameArea area = plugin.getAreaManager().getSelectedArea();
+        if (area != null && area.getPos1() != null && area.getPos2() != null) {
+            Location pos1 = area.getPos1();
+            Location pos2 = area.getPos2();
+            double rx = pos1.getX() + random.nextDouble() * (pos2.getX() - pos1.getX());
+            double rz = pos1.getZ() + random.nextDouble() * (pos2.getZ() - pos1.getZ());
+            double ry = Math.max(pos1.getY(), pos2.getY());
+            player.teleport(new Location(pos1.getWorld(), rx, ry, rz));
+        }
+    }
+    
+    /**
      * 取消复活任务
      */
     private void cancelRespawnTask(UUID playerId) {
@@ -1433,17 +1648,10 @@ public class DivineGuardianManager {
                 task.cancel();
             }
         }
-        // 取消所有原地锁定任务
-        for (org.bukkit.scheduler.BukkitTask task : respawnLockTasks.values()) {
-            if (task != null && !task.isCancelled()) {
-                task.cancel();
-            }
-        }
         
         respawnTimers.clear();
         respawnTasks.clear();
         deathLocations.clear();
-        respawnLockTasks.clear();
     }
     
     /**
@@ -1598,23 +1806,23 @@ public class DivineGuardianManager {
         if (redeemerPlayers.size() >= 2) return false;
         if (plugin.getPlayerManager().isGhost(playerId)) return false;
         redeemerPlayers.add(playerId);
-        holyRedemptionUses.put(playerId, 2);
-        holyGuardianPlayers.add(playerId);
-        holyGuardianHitCount.put(playerId, 0);
+        holyRedemptionUses.put(playerId, 1);
+        // 救赎者不再直接获得神圣守护（保留两个系统独立存在）
+        // 救赎者可以成为猎魔人
+        // 直接发放神之救赎道具（单次使用，强制第一格）
+        giveHolyRedemptionItem(player);
         // 救赎者绑定字幕提醒（中英）
         sendBilingualTitle(player,
             "§6✝ 你被选为救赎者!",
-            "§7获得神之救赎道具（2次）",
+            "§7获得神之救赎道具（1次）",
             "§6✝ You are the Redeemer!",
-            "§7Holy Redemption x2 granted");
+            "§7Holy Redemption x1 granted");
         if (isEnglish()) {
             player.sendMessage("§6§l[Redeemer] §eYou have been chosen as the Redeemer!");
-            player.sendMessage("§7• Holy Redemption x2 — right-click a ghost to convert them");
-            player.sendMessage("§7• You directly gain Holy Guardian protection");
+            player.sendMessage("§7• Holy Redemption x1 — right-click a ghost to convert them");
         } else {
             player.sendMessage("§6§l[救赎者] §e你被选为救赎者！");
-            player.sendMessage("§7• 获得神之救赎道具（2次），可将鬼转化回人类");
-            player.sendMessage("§7• 直接获得神圣守护效果");
+            player.sendMessage("§7• 获得神之救赎道具（1次），可将鬼转化回人类");
         }
         return true;
     }
@@ -1691,23 +1899,27 @@ public class DivineGuardianManager {
             ItemMeta meta = itemInHand.getItemMeta();
             if (meta != null && meta.hasDisplayName() && 
                 meta.getDisplayName().equals("§6§l神之救赎")) {
-                if (itemInHand.getAmount() > 1) {
-                    itemInHand.setAmount(itemInHand.getAmount() - 1);
-                } else {
-                    redeemer.getInventory().setItemInMainHand(null);
-                }
+                redeemer.getInventory().setItemInMainHand(null);
             }
         }
         
+        // 记录救赎奖励（结算时发放）
+        addRewardPoints(redeemerId, plugin.getConfigManager().getRewardRedeemGhost());
+        
+        // 单次使用：道具用完即消失，不重新发放
         // 发送消息（中英）
         boolean en = isEnglish();
         if (en) {
             redeemer.sendMessage("§6§l[Holy Redemption] §aYou converted §e" + target.getName() + " §aback to human!");
-            redeemer.sendMessage(String.format("§7Remaining uses: §e%d", remainingUses));
+            redeemer.sendMessage(remainingUses > 0
+                ? String.format("§7Remaining uses: §e%d", remainingUses)
+                : "§7Holy Redemption item has been used up");
             target.sendMessage("§6§l[Holy Redemption] §aYou were redeemed by §e" + redeemer.getName() + "§a!");
         } else {
             redeemer.sendMessage("§6§l[神之救赎] §a你成功将 §e" + target.getName() + " §a转化回人类！");
-            redeemer.sendMessage(String.format("§7剩余使用次数: §e%d", remainingUses));
+            redeemer.sendMessage(remainingUses > 0
+                ? String.format("§7剩余使用次数: §e%d", remainingUses)
+                : "§7神之救赎道具已用完");
             target.sendMessage("§6§l[神之救赎] §a你被 §e" + redeemer.getName() + " §a使用神之救赎转化回人类！");
         }
         

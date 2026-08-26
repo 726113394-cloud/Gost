@@ -9,7 +9,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -40,21 +39,6 @@ public class GameListener implements Listener {
         if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "游戏期间禁止放置方块！");
-        }
-    }
-    
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-        
-        Player player = (Player) event.getWhoClicked();
-        
-        // 如果玩家在游戏中，禁止移动物品
-        if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "游戏期间禁止移动物品！");
         }
     }
     
@@ -91,5 +75,20 @@ public class GameListener implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         // 这个事件由InfectionListener处理
         return;
+    }
+    
+    @EventHandler
+    public void onPlayerPickupItem(org.bukkit.event.player.PlayerAttemptPickupItemEvent event) {
+        Player player = event.getPlayer();
+        org.bukkit.entity.Item item = event.getItem();
+        
+        // 检查是否拾取的是母体绿宝石
+        if (plugin.getDivineGuardianManager() != null && 
+            plugin.getDivineGuardianManager().isMotherEmerald(item)) {
+            // 处理拾取（普通鬼变母体）
+            if (plugin.getDivineGuardianManager().handleMotherEmeraldPickup(player)) {
+                event.setCancelled(true); // 取消实际拾取，绿宝石被消费
+            }
+        }
     }
 }

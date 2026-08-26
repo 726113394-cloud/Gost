@@ -617,7 +617,7 @@ public class GameManager implements Listener {
         for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), SoundCompat.enderDragonGrowl(), 1.0f, 1.0f);
             }
         }
     }
@@ -796,16 +796,16 @@ public class GameManager implements Listener {
                 if (humanWin) {
                     boolean isHuman = plugin.getPlayerManager().isHuman(playerId);
                     if (isHuman) {
-                        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), SoundCompat.toastChallengeComplete(), 1.0f, 1.0f);
                     } else {
-                        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 0.8f);
+                        player.playSound(player.getLocation(), SoundCompat.witherDeath(), 0.8f, 0.8f);
                     }
                 } else {
                     boolean isGhost = plugin.getPlayerManager().isGhost(playerId);
                     if (isGhost) {
-                        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 0.8f);
+                        player.playSound(player.getLocation(), SoundCompat.toastChallengeComplete(), 1.0f, 0.8f);
                     } else {
-                        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.8f, 0.8f);
+                        player.playSound(player.getLocation(), SoundCompat.witherDeath(), 0.8f, 0.8f);
                     }
                 }
             }
@@ -816,6 +816,9 @@ public class GameManager implements Listener {
         
         // 计算并分发奖金
         plugin.getEconomyManager().distributeRewards(humanWin);
+        
+        // 结算额外奖励（救赎/击杀游戏币，与奖池分离）
+        plugin.getDivineGuardianManager().settleRewardPoints();
         
         // 停止心跳声效果
         plugin.getHeartbeatManager().stopHeartbeat();
@@ -881,6 +884,9 @@ public class GameManager implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "你的入场金已退还！");
             }
         }
+        
+        // 结算额外奖励（救赎/击杀游戏币，与奖池分离）
+        plugin.getDivineGuardianManager().settleRewardPoints();
         
         // 停止心跳声效果
         plugin.getHeartbeatManager().stopHeartbeat();
@@ -953,6 +959,9 @@ public class GameManager implements Listener {
         
         // 停止心跳声效果
         plugin.getHeartbeatManager().stopHeartbeat();
+        
+        // 结算额外奖励（救赎/击杀游戏币，与奖池分离）
+        plugin.getDivineGuardianManager().settleRewardPoints();
         
         // 然后清理数据并恢复所有玩家状态
         plugin.getPlayerManager().cleanup();

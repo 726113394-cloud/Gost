@@ -250,6 +250,11 @@ public class ConfigManager {
         config.addDefault("reaper.harvest-cooldown", 10); // 收割技能冷却（秒）
         config.addDefault("reaper.harvest-range", 4); // 收割技能范围（方块）
         
+        // 额外奖励设置（结算时由服务器发放，与奖池分离）
+        config.addDefault("reward.redeem-ghost", 100); // 成功救赎一名鬼玩家奖励游戏币
+        config.addDefault("reward.kill-normal", 50); // 击杀一名普通鬼奖励游戏币
+        config.addDefault("reward.kill-mother", 100); // 击杀一名母体奖励游戏币
+        
         // 背包限制设置
         config.addDefault("inventory.max-item-types", 9); // 对局期间最多道具种类
         
@@ -818,6 +823,22 @@ public class ConfigManager {
         return config.getDouble("reaper.harvest-range", 4.0);
     }
     
+    // 额外奖励设置
+    public int getRewardRedeemGhost() {
+        ensureConfigLoaded();
+        return config.getInt("reward.redeem-ghost", 100);
+    }
+    
+    public int getRewardKillNormal() {
+        ensureConfigLoaded();
+        return config.getInt("reward.kill-normal", 50);
+    }
+    
+    public int getRewardKillMother() {
+        ensureConfigLoaded();
+        return config.getInt("reward.kill-mother", 100);
+    }
+    
     // 背包限制设置
     public int getMaxItemTypes() {
         ensureConfigLoaded();
@@ -885,6 +906,12 @@ public class ConfigManager {
     public int getDemonHunterMaxUses() {
         ensureConfigLoaded();
         return config.getInt("divine-guardian.demon-hunter.max-uses", 2);
+    }
+    
+    // 猎魔人阶段：猎魔人获得/刷新神圣守护效果开关
+    public boolean isDemonHunterHolyGuardianEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.holy-guardian-on-phase", true);
     }
     
     public int getDemonHunterHolyRedemptionCooldown() {

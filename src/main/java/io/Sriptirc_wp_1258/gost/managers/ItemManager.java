@@ -278,9 +278,8 @@ public class ItemManager {
         for (UUID playerId : humanPlayers) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                player.getInventory().addItem(getAdrenaline());
-                player.sendMessage(ChatColor.GREEN + "你获得了肾上腺素！");
-                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.2f);
+                tryGiveItem(player, getAdrenaline(), "肾上腺素");
+                player.playSound(player.getLocation(), SoundCompat.itemPickup(), 1.0f, 1.2f);
             }
         }
         
@@ -288,9 +287,8 @@ public class ItemManager {
         for (UUID playerId : ghostPlayers) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                player.getInventory().addItem(getFrenzyPotion());
-                player.sendMessage(ChatColor.RED + "你获得了狂暴药水！");
-                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.8f);
+                tryGiveItem(player, getFrenzyPotion(), "狂暴药水");
+                player.playSound(player.getLocation(), SoundCompat.itemPickup(), 1.0f, 0.8f);
             }
         }
         
@@ -299,9 +297,8 @@ public class ItemManager {
         for (UUID playerId : iceBallRecipients) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                player.getInventory().addItem(getIceBall());
-                player.sendMessage(ChatColor.AQUA + "你获得了凝冰球！");
-                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.5f);
+                tryGiveItem(player, getIceBall(), "凝冰球");
+                player.playSound(player.getLocation(), SoundCompat.itemPickup(), 1.0f, 1.5f);
             }
         }
         
@@ -314,9 +311,8 @@ public class ItemManager {
             for (UUID playerId : soulControlRecipients) {
                 Player player = Bukkit.getPlayer(playerId);
                 if (player != null && player.isOnline()) {
-                    player.getInventory().addItem(getSoulControl());
-                    player.sendMessage(ChatColor.DARK_PURPLE + "你获得了控魂术！");
-                    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.9f);
+                    tryGiveItem(player, getSoulControl(), "控魂术");
+                    player.playSound(player.getLocation(), SoundCompat.itemPickup(), 1.0f, 0.9f);
                 }
             }
         }
@@ -326,11 +322,9 @@ public class ItemManager {
         for (UUID playerId : teleportPearlRecipients) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                // 给予传送珍珠（从ItemSpawnManager获取）
                 ItemStack teleportPearl = plugin.getItemSpawnManager().createTeleportPearl();
-                player.getInventory().addItem(teleportPearl);
-                player.sendMessage(ChatColor.LIGHT_PURPLE + "你获得了传送珍珠！");
-                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.1f);
+                tryGiveItem(player, teleportPearl, "传送珍珠");
+                player.playSound(player.getLocation(), SoundCompat.itemPickup(), 1.0f, 1.1f);
                 plugin.getLogger().info("给予玩家 " + player.getName() + " 传送珍珠");
             }
         }
@@ -343,9 +337,8 @@ public class ItemManager {
                 if (player != null && player.isOnline()) {
                     ItemStack spear = getSpearRush();
                     if (spear != null) {
-                        player.getInventory().addItem(spear);
-                        player.sendMessage(ChatColor.GOLD + "你获得了冲刺矛！");
-                        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.3f);
+                        tryGiveItem(player, spear, "冲刺矛");
+                        player.playSound(player.getLocation(), SoundCompat.itemPickup(), 1.0f, 1.3f);
                     }
                 }
             }
@@ -356,9 +349,8 @@ public class ItemManager {
         for (UUID playerId : levitationRecipients) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                player.getInventory().addItem(getLevitationPotion());
-                player.sendMessage(ChatColor.LIGHT_PURPLE + "你获得了漂浮药水！");
-                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.7f);
+                tryGiveItem(player, getLevitationPotion(), "漂浮药水");
+                player.playSound(player.getLocation(), SoundCompat.itemPickup(), 1.0f, 0.7f);
             }
         }
         
@@ -374,7 +366,7 @@ public class ItemManager {
                     Player p = Bukkit.getPlayer(pid);
                     if (p != null && p.isOnline()) {
                         if (plugin.getDivineGuardianManager().assignRedeemer(p)) {
-                            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.2f);
+                            p.playSound(p.getLocation(), SoundCompat.noteBell(), 1.0f, 1.2f);
                         }
                     }
                 }
@@ -385,7 +377,7 @@ public class ItemManager {
         for (UUID playerId : allPlayers) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f, 1.8f);
+                player.playSound(player.getLocation(), SoundCompat.notePling(), 0.5f, 1.8f);
             }
         }
         
@@ -393,6 +385,41 @@ public class ItemManager {
         plugin.getLogger().info("道具分发完成: 人类=" + humanPlayers.size() + ", 鬼=" + ghostPlayers.size() + 
             ", 凝冰球=" + iceBallRecipients.size() + ", 控魂术=" + (humanPlayers.isEmpty() ? 0 : Math.min(3, humanPlayers.size())) + 
             ", 传送珍珠=" + teleportPearlRecipients.size());
+    }
+    
+    /**
+     * 安全发放道具：物品栏满不发放并提示；专属道具已有同款不发放；只放入物品栏（0-8格）
+     */
+    private void tryGiveItem(Player player, ItemStack item, String itemName) {
+        if (player == null || !player.isOnline()) return;
+        // 专属道具不允许重复：已有同款不发放（人鬼通用道具不受限）
+        if (!isUniversalItem(itemName)) {
+            for (ItemStack inv : player.getInventory().getContents()) {
+                if (inv != null && inv.hasItemMeta() && inv.getItemMeta().hasDisplayName() &&
+                    inv.getItemMeta().getDisplayName().contains(itemName)) {
+                    return; // 已有同款，不发放
+                }
+            }
+        }
+        // 物品栏（前9格）已满 → 不发放（道具只放入物品栏，不放背包）
+        for (int i = 0; i < 9; i++) {
+            ItemStack s = player.getInventory().getItem(i);
+            if (s == null || s.getType() == org.bukkit.Material.AIR) {
+                player.getInventory().setItem(i, item);
+                player.sendMessage(ChatColor.GREEN + "你获得了" + itemName + "！");
+                return;
+            }
+        }
+        player.sendMessage(ChatColor.RED + "物品栏已满！无法获得 " + itemName + "！");
+    }
+    
+    /**
+     * 人鬼通用道具（允许重复持有）
+     */
+    private boolean isUniversalItem(String name) {
+        return name.contains("凝冰球") || name.contains("传送珍珠") || 
+               name.contains("漂浮药水") || name.contains("臭牛排") || 
+               name.contains("冲刺矛");
     }
     
     // 随机选择玩家

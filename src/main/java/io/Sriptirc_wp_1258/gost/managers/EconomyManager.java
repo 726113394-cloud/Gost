@@ -128,6 +128,16 @@ public class EconomyManager {
         }
     }
     
+    /**
+     * 发放服务器额外奖励（与奖池分离，由服务器支出）
+     */
+    public void depositServerReward(Player player, double amount) {
+        if (!isEconomyEnabled() || amount <= 0) {
+            return;
+        }
+        deposit(player, amount);
+    }
+    
     // 退还入场费
     public void refundEntryFee(Player player) {
         if (!isEconomyEnabled()) {
