@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gost 文档 | 鬼抓人</title>
+    <title>Gost v2.3.1 文档 | 鬼抓人 · 救赎者 · 猎魔人</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -20,9 +20,6 @@
         .logo span:first-child { background: linear-gradient(135deg, #a855f7, #d8b4fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .logo .colorful { background: linear-gradient(90deg, #ff5e5e, #ffb347, #2ecc71, #3498db, #e74c3c, #ff5e5e); background-size: 300% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: rainbow 3s linear infinite; }
         @keyframes rainbow { 0% { background-position: 0% center; } 100% { background-position: 300% center; } }
-        .lang-switch { display: flex; gap: 0.8rem; background: #1a1e2a; padding: 0.3rem 0.8rem; border-radius: 40px; }
-        .lang-btn { background: none; border: none; color: #ccd6f0; font-weight: 600; cursor: pointer; padding: 0.3rem 0.8rem; border-radius: 30px; transition: 0.2s; }
-        .lang-btn.active { background: #ff3b3b; color: white; box-shadow: 0 0 8px #ff5e5e; }
         .section { margin: 2.5rem 0; }
         .section-title { font-size: 1.8rem; font-weight: 700; border-left: 5px solid #ff5e5e; padding-left: 1rem; margin-bottom: 1.5rem; }
         .grid-2col { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
@@ -45,9 +42,6 @@
         .modal-content { background: #11161f; border: 1px solid #ff5e5e; border-radius: 2rem; max-width: 750px; width:90%; max-height:85vh; overflow-y: auto; padding:1.8rem; transform: scale(0.95); transition: transform 0.2s; }
         .modal.show .modal-content { transform: scale(1); }
         .modal-close { float: right; font-size: 1.8rem; cursor: pointer; color: #ffa0a0; }
-        .lang-content { display: none; }
-        .lang-content.active-lang { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         footer { text-align: center; padding: 2rem; border-top: 1px solid #232838; margin-top: 2rem; color: #7e8aa8; }
         hr { border-color: #2a2f3f; margin: 1rem 0; }
         @media (max-width: 750px) { .container { padding: 0 1rem; } }
@@ -80,107 +74,108 @@
         table { width: 100%; border-collapse: collapse; background: #0f121b; border-radius: 1rem; margin: 1rem 0; }
         th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #2a2f3f; }
         th { background: #1e2434; color: #ffb7b7; }
-		.tool-card {
-    background: linear-gradient(135deg, #0f172a, #0a0c12);
-    border: 1px solid #3b82f6;
-    border-radius: 1rem;
-    padding: 1rem 1.5rem;
-    margin: 1rem 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    transition: all 0.2s ease;
-}
-.tool-card:hover {
-    border-color: #60a5fa;
-    box-shadow: 0 0 12px rgba(59,130,246,0.3);
-}
-.tool-card .message {
-    flex: 1;
-}
-.tool-card .message p {
-    margin: 0 0 0.3rem 0;
-    color: #e2e8f0;
-    font-size: 0.95rem;
-}
-.tool-card .builtin-badge {
-    background: #2ecc71;
-    color: #0a0c12;
-    font-size: 0.7rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    font-weight: bold;
-    display: inline-block;
-}
-.migration-tool-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    border: none;
-    border-radius: 2rem;
-    padding: 0.7rem 1.5rem;
-    color: white !important;
-    font-weight: 700;
-    font-size: 0.95rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(37,99,235,0.4);
-}
-.migration-tool-btn:hover {
-    background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(59,130,246,0.6);
-    color: white;
-}
+        .tool-card {
+            background: linear-gradient(135deg, #0f172a, #0a0c12);
+            border: 1px solid #3b82f6;
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+        .tool-card:hover { border-color: #60a5fa; box-shadow: 0 0 12px rgba(59,130,246,0.3); }
+        .tool-card .message { flex: 1; }
+        .tool-card .message p { margin: 0 0 0.3rem 0; color: #e2e8f0; font-size: 0.95rem; }
+        .tool-card .builtin-badge { background: #2ecc71; color: #0a0c12; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: bold; display: inline-block; }
+        .migration-tool-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            border: none;
+            border-radius: 2rem;
+            padding: 0.7rem 1.5rem;
+            color: white !important;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+        }
+        .migration-tool-btn:hover { background: linear-gradient(135deg, #3b82f6, #1e3a8a); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,130,246,0.6); color: white; }
+
+        /* 版本切换 Tab 样式 */
+        .version-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .version-tab {
+            padding: 0.5rem 1.2rem;
+            background: rgba(30,35,50,0.6);
+            border: 1px solid #2a2f3f;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            color: #ccd6f0;
+        }
+        .version-tab:hover { background: #ff5e5e40; border-color: #ff5e5e; }
+        .version-tab.active { background: #ff5e5e; border-color: #ff5e5e; color: white; box-shadow: 0 0 12px #ff5e5e; }
+        .version-panel { display: none; }
+        .version-panel.active { display: block; animation: fadeIn 0.3s; }
+
+        /* 版本标签 */
+        .ver-tag { display: inline-block; background: #ff5e5e30; padding: 0.1rem 0.6rem; border-radius: 12px; font-size: 0.7rem; margin-left: 0.5rem; color: #ffa0a0; }
+        .ver-tag-current { background: #2ecc71; color: #0a0c12; }
+        .ver-tag-old { background: #ff5e5e60; }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.3</span></div>
-        <div class="lang-switch">
-            <button class="lang-btn active" data-lang="zh">中文</button>
-            <button class="lang-btn" data-lang="en">English</button>
-        </div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.3.1</span></div>
     </div>
 </div>
 
 <div class="container">
-    <!-- 中文内容 -->
     <div id="zh-content" class="lang-content active-lang">
         <div style="padding: 1.5rem 0 1rem;">
-            <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — 人鬼追逐 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
-            <p><strong>Gost </strong> — 一款基于 Bukkit/Spigot 的我的世界多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
-            <div class="badge">⚡ 救赎者系统 | 🎮 模式切换 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 猎魔人阶段 | 🔊 音效系统全面更新</div>
+            <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
+            <p><strong>Gost v2.3.1</strong> — 一款基于 Bukkit/Spigot 的 Minecraft 多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
+            <div class="badge">⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 收割者双技能 | 🔊 音效系统全面更新</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
                 <a href="https://726113394-cloud.github.io/PersonalPage/" target="_blank" class="link-btn"><i class="fab fa-bilibili"></i> 作者主页</a>
                 <a href="https://www.bilibili.com/video/BV1UTKs6KESo/" target="_blank" class="link-btn"><i class="fas fa-video"></i> 预览视频</a>
-				<a href="https://www.bilibili.com/video/BV1eHKj69E4H/" target="_blank" class="link-btn"><i class="fas fa-video"></i> 2.3.0版本更新介绍</a>
+                <a href="https://www.bilibili.com/video/BV1eHKj69E4H/" target="_blank" class="link-btn"><i class="fas fa-video"></i> 2.3.0 更新介绍</a>
             </div>
         </div>
 
         <!-- 轮播图 -->
         <div class="carousel-container" id="carousel"></div>
-        <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.7;">
-            <i class="fas fa-image"></i> 轮播图
-        </div>
+        <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.7;"><i class="fas fa-image"></i> 轮播图（请将图片放入 images/ 文件夹）</div>
+
         <!-- 推广卡片 -->
-<div class="tool-card">
-    <div class="message">
-        <p><i class="fas fa-sync-alt" style="color:#3b82f6;"></i> <strong>你换了一个插件版本，但是不想再写一遍配置？</strong> 试试我的新插件 —— 全自动配置迁移工具，智能合并，自动备份。</p>
-        <div class="builtin-badge">✨ 已内置在 v2.2.3 及更新的版本中</div>
-    </div>
-    <a href="https://726113394-cloud.github.io/ReloadConfig/" target="_blank" class="migration-tool-btn">
-        <i class="fas fa-rocket"></i> ReloadConfig 自动迁移工具
-        <i class="fas fa-arrow-right"></i>
-    </a>
-</div>
-        <!-- 核心玩法（折叠） -->
+        <div class="tool-card">
+            <div class="message">
+                <p><i class="fas fa-sync-alt" style="color:#3b82f6;"></i> <strong>你换了一个插件版本，但是不想再写一遍配置？</strong> 试试我的新插件 —— 全自动配置迁移工具，智能合并，自动备份。</p>
+                <div class="builtin-badge">✨ 已内置在 v2.2.3 及更新的版本中</div>
+            </div>
+            <a href="https://726113394-cloud.github.io/ReloadConfig/" target="_blank" class="migration-tool-btn">
+                <i class="fas fa-rocket"></i> ReloadConfig 自动迁移工具
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- 核心玩法 -->
         <div class="section">
             <div class="section-title">🎯 核心玩法</div>
             <div class="collapsible">
@@ -192,24 +187,24 @@
                             <li><strong>准备阶段</strong> — 玩家进入匹配队列，满员后开始游戏</li>
                             <li><strong>感染阶段</strong> — 鬼玩家追逐并感染人类，人类可拾取道具自保</li>
                             <li><strong>神圣守护阶段</strong> — 剩余人类数量 ≤ 触发人数时，自动激活神圣守护</li>
-                            <li><strong>猎魔人阶段</strong> — 该阶段需要至少3名玩家，当游戏剩余 90 秒时进入，拥有神圣守护的人类变为猎魔人，普通鬼失去感染能力</li>
+                            <li><strong>猎魔人阶段</strong> — 游戏剩余 90 秒时进入，拥有神圣守护的人类变为猎魔人反杀鬼</li>
                         </ol>
                         <h3>两大阵营</h3>
                         <div class="table-wrapper">
                             <table>
                                 <tr><th>阵营</th><th>说明</th></tr>
                                 <tr><td>👤 人类</td><td>初始身份，被鬼感染后变为鬼</td></tr>
-                                <tr><td>👻 鬼</td><td>感染人类使其加入鬼阵营，普通鬼在猎魔人阶段会失去感染能力，其母体为鬼阵营领袖</td></tr>
+                                <tr><td>👻 鬼</td><td>感染人类使其加入鬼阵营，母体为鬼阵营领袖</td></tr>
                             </table>
                         </div>
                         <h3>特殊角色</h3>
                         <div class="table-wrapper">
                             <table>
                                 <tr><th>角色</th><th>说明</th></tr>
-                                <tr><td>🛡️ 神圣守护</td><td>剩余人类较少时自动激活，可抵挡 <strong>3 次</strong> 鬼的攻击，每次攻击会将进攻者随机传送。</td></tr>
-                                <tr><td>🎯 猎魔人</td><td>猎魔人阶段由拥有</strong> 神圣守护</strong> 的玩家转化，持有 <strong>收割者</strong> 道具，可击杀鬼玩家。玩家成为猎魔人后神圣守护会刷新。猎魔人被感染后成为普通鬼</td></tr>
-                                <tr><td>👑 母体</td><td>鬼阵营领袖，每局游戏会产出一位，在猎魔人阶段可攻击猎魔人，猎魔人阶段可感染普通人类。</td></tr>
-                                <tr><td>✨ 救赎者</td><td>模式2专属，最后一名人类成为救赎者(2.2.2及之后版本改为随机)，持有 <strong>神之救赎</strong> 道具，可转化鬼玩家回人类。救赎者无法获得</strong> 神圣守护</strong> </td></tr>
+                                <tr><td>🛡️ 神圣守护</td><td>抵挡 <strong>3 次</strong> 鬼的攻击，每次攻击将进攻者随机传送</td></tr>
+                                <tr><td>🎯 猎魔人</td><td>猎魔人阶段由人类转化，持有 <strong>收割者</strong> 武器反杀鬼</td></tr>
+                                <tr><td>👑 母体</td><td>鬼阵营领袖，可攻击猎魔人，可感染普通人类</td></tr>
+                                <tr><td>✨ 救赎者</td><td>常驻角色，每局最多 2 名，持有神之救赎道具转化鬼回人类</td></tr>
                             </table>
                         </div>
                     </div>
@@ -217,77 +212,245 @@
             </div>
         </div>
 
-        <!-- 神圣守护系统 — 双模式（折叠） -->
+        <!-- ===================== 神圣守护系统（独立板块，分版本） ===================== -->
         <div class="section">
-            <div class="section-title">🛡️ 神圣守护系统 — 双模式</div>
+            <div class="section-title">🛡️ 神圣守护系统</div>
             <div class="collapsible">
                 <div class="collapsible-header">📖 展开查看详情 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
-                    <div class="grid-2col">
-                        <div class="card"><h3>模式1：传统神圣守护（感染免疫 + 随机传送）</h3>
-                            <p><strong>激活条件</strong>：剩余人类数量 ≤ 配置的触发人数（默认 2 人）<br>
-                            <strong>防御次数</strong>：可抵挡 <strong>3 次(2.2.2版本之前是2次)</strong> 攻击（无论攻击者是母体还是普通鬼）<br>
-                            <strong>2.2.2前|传送效果</strong>：神圣守护持有者被攻击时，会被随机传送到附近区域<br>
-                            <strong>2.2.2起|传送效果</strong>：每次被攻击，进攻者会被随机传送到附近区域并得到减速效果<br>
-                            <strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
-                        </div>
-                        <div class="card"><h3>模式2：救赎者模式（转化鬼玩家|2.2.2版本前）</h3>
-                            <p><strong>激活条件</strong>：人类数量减少到 <strong>1 人</strong> 时，最后一名人类成为 <strong>救赎者</strong><br>
-                            <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
-                            <strong>随机传送</strong>：使用道具后救赎者会被随机传送到安全位置<br>
-                            <strong>次数限制</strong>：道具可使用 <strong>2 次</strong>（可配置），使用完后回归普通人类<br>
-                            <strong>视觉效果</strong>：救赎者全程高亮显示，拥有速度效果</p>
-                        </div>
-                        <div class="card"><h3>模式2：救赎者模式（转化鬼玩家|2.2.2版本-最新版本）</h3>
-                            <p><strong>激活条件</strong>：被发放道具[神圣救赎]的人类成为 <strong>救赎者</strong>，无法再获得神圣守护，不可取消<br>
-                            <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
-                            <strong>随机传送</strong>：使用道具后救赎者会被随机传送到安全位置<br>
-                            <strong>次数限制</strong>：道具可使用 <strong>1 次</strong>，使用完后依旧保留<strong>救赎者</strong>身份<br>
-                            <strong>视觉效果</strong>：救赎者全程有云雾围绕效果</p>
-							</div>
+                    <div class="version-tabs">
+                        <div class="version-tab active" data-panel="dg-v222">📅 v2.2.2 及以前</div>
+                        <div class="version-tab" data-panel="dg-v223">📅 v2.2.2 ~ v2.3.0</div>
+                        <div class="version-tab" data-panel="dg-v231">📅 v2.3.1+ <span class="ver-tag ver-tag-current">当前</span></div>
                     </div>
-                    <p class="card" style="margin-top:1rem;"><strong>模式切换命令</strong>：<code>/divineguardian setmode &lt;1|2&gt;</code>，游戏进行中切换模式会 <strong>立即生效</strong>。</p>
+
+                    <!-- v2.2.2 及以前 -->
+                    <div class="version-panel active" id="dg-v222">
+                        <div class="grid-2col">
+                            <div class="card">
+                                <h3>⚔️ 模式1：传统神圣守护 <span class="ver-tag ver-tag-old">v2.2.2 前</span></h3>
+                                <p><strong>激活条件</strong>：剩余人类 ≤ 触发人数（默认 2 人）<br>
+                                <strong>防御次数</strong>：可抵挡 <strong>2 次</strong> 攻击<br>
+                                <strong>传送效果</strong>：持有者被攻击时随机传送<br>
+                                <strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
+                            </div>
+                            <div class="card">
+                                <h3>⚔️ 模式1：传统神圣守护 <span class="ver-tag">v2.2.2 起</span></h3>
+                                <p><strong>激活条件</strong>：剩余人类 ≤ 触发人数（默认 2 人）<br>
+                                <strong>防御次数</strong>：可抵挡 <strong>3 次</strong> 攻击<br>
+                                <strong>传送效果</strong>：进攻者被随机传送到附近区域并减速<br>
+                                <strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
+                            </div>
+                        </div>
+                        <div class="card" style="margin-top:1rem;">
+                            <p><strong>版本说明</strong>：<br>
+                            🔹 v2.2.2 前：防御 2 次，传送持有者<br>
+                            🔹 v2.2.2 起：防御 3 次，传送进攻者并减速</p>
+                        </div>
+                    </div>
+
+                    <!-- v2.2.2 ~ v2.3.0 -->
+                    <div class="version-panel" id="dg-v223">
+                        <div class="card">
+                            <h3>🛡️ 传统神圣守护 <span class="ver-tag">v2.2.2 ~ v2.3.0</span></h3>
+                            <p><strong>激活条件</strong>：剩余人类 ≤ 触发人数（默认 2 人）<br>
+                            <strong>防御次数</strong>：可抵挡 <strong>3 次</strong> 攻击<br>
+                            <strong>传送效果</strong>：每次被攻击，进攻者被随机传送到附近区域并减速<br>
+                            <strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
+                            <p style="margin-top:0.8rem; color:#aaa;">💡 此版本神圣守护机制保持稳定，与 v2.2.2 起一致。</p>
+                        </div>
+                    </div>
+
+                    <!-- v2.3.1+ -->
+                    <div class="version-panel" id="dg-v231">
+                        <div class="card">
+                            <h3>🛡️ 传统神圣守护 <span class="ver-tag ver-tag-current">v2.3.1+ 当前</span></h3>
+                            <p><strong>激活条件</strong>：剩余人类 ≤ 触发人数（默认 2 人）<br>
+                            <strong>防御次数</strong>：可抵挡 <strong>3 次</strong> 攻击<br>
+                            <strong>传送效果</strong>：进攻者被随机传送到附近区域并减速<br>
+                            <strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
+                            <p style="margin-top:0.8rem; color:#aaa;">💡 传统神圣守护机制保持不变，新增的救赎者系统拥有独立的神圣守护（详见下方救赎者板块）。</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 猎魔人阶段（折叠） -->
+        <!-- ===================== 救赎者系统（独立板块，分版本） ===================== -->
+        <div class="section">
+            <div class="section-title">✨ 救赎者系统</div>
+            <div class="collapsible">
+                <div class="collapsible-header">📖 展开查看详情 <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <div class="version-tabs">
+                        <div class="version-tab active" data-panel="rd-v222">📅 v2.2.2 及以前</div>
+                        <div class="version-tab" data-panel="rd-v223">📅 v2.2.2 ~ v2.3.0</div>
+                        <div class="version-tab" data-panel="rd-v231">📅 v2.3.1+ <span class="ver-tag ver-tag-current">当前</span></div>
+                    </div>
+
+                    <!-- v2.2.2 及以前 -->
+                    <div class="version-panel active" id="rd-v222">
+                        <div class="grid-2col">
+                            <div class="card">
+                                <h3>✨ 救赎者模式 <span class="ver-tag ver-tag-old">v2.2.2 前</span></h3>
+                                <p><strong>激活条件</strong>：人类数量减少到 <strong>1 人</strong> 时，最后一名人类成为 <strong>救赎者</strong><br>
+                                <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
+                                <strong>随机传送</strong>：使用道具后救赎者被随机传送到安全位置<br>
+                                <strong>次数限制</strong>：道具可使用 <strong>2 次</strong>（可配置），使用完后回归普通人类<br>
+                                <strong>视觉效果</strong>：救赎者全程高亮显示，拥有速度效果</p>
+                            </div>
+                            <div class="card">
+                                <h3>✨ 救赎者模式 <span class="ver-tag">v2.2.2 起</span></h3>
+                                <p><strong>激活条件</strong>：被发放道具[神圣救赎]的人类成为 <strong>救赎者</strong>，无法再获得神圣守护，不可取消<br>
+                                <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
+                                <strong>随机传送</strong>：使用道具后救赎者被随机传送到安全位置<br>
+                                <strong>次数限制</strong>：道具可使用 <strong>1 次</strong>，使用完后依旧保留<strong>救赎者</strong>身份<br>
+                                <strong>视觉效果</strong>：救赎者全程有云雾围绕效果</p>
+                            </div>
+                        </div>
+                        <div class="card" style="margin-top:1rem;">
+                            <p><strong>版本演进</strong>：<br>
+                            🔹 v2.2.2 前：最后一人成为救赎者，2 次使用，用完后回归普通人类<br>
+                            🔹 v2.2.2 起：随机发放道具成为救赎者，1 次使用，保留救赎者身份</p>
+                        </div>
+                    </div>
+
+                    <!-- v2.2.2 ~ v2.3.0 -->
+                    <div class="version-panel" id="rd-v223">
+                        <div class="card">
+                            <h3>✨ 救赎者模式 <span class="ver-tag">v2.2.2 ~ v2.3.0</span></h3>
+                            <p><strong>激活条件</strong>：被发放道具[神圣救赎]的人类成为 <strong>救赎者</strong>，无法再获得神圣守护，不可取消<br>
+                            <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
+                            <strong>随机传送</strong>：使用道具后救赎者被随机传送到安全位置<br>
+                            <strong>次数限制</strong>：道具可使用 <strong>1 次</strong>，使用完后依旧保留<strong>救赎者</strong>身份<br>
+                            <strong>视觉效果</strong>：救赎者全程有云雾围绕效果</p>
+                            <p style="margin-top:0.8rem; color:#aaa;">💡 此版本救赎者机制与 v2.2.2 起一致。</p>
+                        </div>
+                    </div>
+
+                    <!-- v2.3.1+ -->
+                    <div class="version-panel" id="rd-v231">
+                        <div class="card">
+                            <h3>✨ 救赎者系统（常驻） <span class="ver-tag ver-tag-current">v2.3.1+ 当前</span></h3>
+                            <p><strong>常驻机制</strong>：救赎者 <strong>常驻每一局游戏</strong>，每局最多 <strong>2 名</strong><br>
+                            <strong>激活条件</strong>：随"神之救赎"道具发放 <strong>随机绑定</strong> 人类玩家<br>
+                            <strong>独立神圣守护</strong>：救赎者直接获得独立的神圣守护（<strong>2 次</strong> 防御），不影响原有神圣守护系统<br>
+                            <strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br>
+                            <strong>次数限制</strong>：道具可使用 <strong>2 次</strong>，使用后依旧保留救赎者身份<br>
+                            <strong>随机传送</strong>：使用道具后救赎者被随机传送到安全位置<br>
+                            <strong>视觉效果</strong>：救赎者全程有云雾围绕效果</p>
+                            <p style="margin-top:0.8rem; color:#aaa;">💡 v2.3.1 重大更新：删除模式切换，救赎者常驻；独立守护 2 次 + 神之救赎 2 次；每局最多 2 名。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== 猎魔人阶段（分版本） ===================== -->
         <div class="section">
             <div class="section-title">⚔️ 猎魔人阶段</div>
             <div class="collapsible">
                 <div class="collapsible-header">📖 展开查看详情 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
-                    <div class="card">
-                        <p>游戏剩余 90 秒时自动进入猎魔人阶段：</p>
-                        <ul style="margin-left:1.5rem;">
-                            <li>所有拥有神圣守护的人类变为 <strong>猎魔人</strong></li>
-                            <li>猎魔人持有 <strong>收割者</strong> 道具，可攻击鬼玩家</li>
-                            <li><strong>普通鬼</strong> 不能感染人类，只能躲避猎杀</li>
-                            <li><strong>母体</strong> 可以攻击猎魔人，每次造成配置的伤害值</li>
-                            <li>母体需要攻击 <strong>3 次</strong> 才能破除猎魔人的神圣守护</li>
-                            <li>所有 <strong>神之救赎</strong> 道具被清除</li>
-                            <li>鬼玩家血量调整，猎魔人阶段禁止回血</li>
-                        </ul>
+                    <div class="version-tabs">
+                        <div class="version-tab active" data-panel="dh-old">📅 v2.2.2 ~ v2.3.0</div>
+                        <div class="version-tab" data-panel="dh-new">📅 v2.3.1+ <span class="ver-tag ver-tag-current">当前</span></div>
+                    </div>
+
+                    <!-- 旧版猎魔人 -->
+                    <div class="version-panel active" id="dh-old">
+                        <div class="card">
+                            <h3>⚔️ 猎魔人阶段 <span class="ver-tag">v2.2.2 ~ v2.3.0</span></h3>
+                            <ul style="margin-left:1.5rem;">
+                                <li>所有拥有神圣守护的人类变为 <strong>猎魔人</strong></li>
+                                <li>猎魔人持有 <strong>收割者</strong> 道具，基于伤害值击杀鬼玩家（可配置）</li>
+                                <li><strong>普通鬼</strong> 不能感染人类，只能躲避猎杀</li>
+                                <li><strong>母体</strong> 可以攻击猎魔人，每次造成配置的伤害值</li>
+                                <li>母体需要攻击 <strong>3 次</strong> 才能破除猎魔人的神圣守护</li>
+                                <li>所有 <strong>神之救赎</strong> 道具被清除</li>
+                                <li>鬼玩家血量调整（普通鬼 2❤，母体鬼 3❤）</li>
+                                <li>猎魔人阶段 <strong>禁止回血</strong>（自然恢复、饱食度、药水均无效）</li>
+                                <li>鬼被击杀后进入 <strong>旁观模式</strong>（可配置复活时间）</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 新版猎魔人 v2.3.1+ -->
+                    <div class="version-panel" id="dh-new">
+                        <div class="card">
+                            <h3>⚔️ 猎魔人阶段（重做） <span class="ver-tag ver-tag-current">v2.3.1+ 当前</span></h3>
+
+                            <h4 style="color:#ffa07a; margin-top:1rem;">🗡️ 收割者武器重做</h4>
+                            <ul style="margin-left:1.5rem;">
+                                <li><strong>左键单体攻击</strong>：普通鬼 <strong>2 次</strong> 击杀，母体鬼 <strong>4 次</strong> 击杀（纯击中次数判定，不依赖血量）</li>
+                                <li><strong>右键范围技能「收割」</strong>：4 格半径 AOE，10 秒冷却，冲击粒子 + 凋零死亡音效</li>
+                                <li>攻击冷却 <strong>2 秒</strong></li>
+                            </ul>
+
+                            <h4 style="color:#ffa07a; margin-top:1rem;">👻 鬼复活机制（优化）</h4>
+                            <ul style="margin-left:1.5rem;">
+                                <li>被击杀后进入 <strong>死亡状态</strong>：隐身但可自由移动（不锁定坐标、不减速、不飞行）</li>
+                                <li><strong>10 秒复活倒计时</strong>（ActionBar 显示）</li>
+                                <li>复活时 <strong>随机传送</strong> 至游戏区域内某坐标（非原地）</li>
+                                <li>复活后恢复原身份（普通鬼/母体）继续参与对局</li>
+                                <li>击杀位置绽放 <strong>红黄 BURST 烟花</strong> + 爆炸粒子 + 凋零死亡音效</li>
+                                <li>击杀字幕（中英双语）：💥 击杀成功! / 💥 Elimination!</li>
+                            </ul>
+
+                            <h4 style="color:#ffa07a; margin-top:1rem;">👑 母体进化系统（v2.3.1 新增）</h4>
+                            <ul style="margin-left:1.5rem;">
+                                <li><strong>触发条件</strong>：猎魔人阶段，参与游戏玩家 > 5 人</li>
+                                <li><strong>生成</strong>：游戏区域内随机坐标放置 <strong>发光绿宝石</strong>（附魔粒子 + 发光效果标记）</li>
+                                <li><strong>拾取条件</strong>：仅普通鬼可拾取</li>
+                                <li><strong>效果</strong>：拾取后变身为母体鬼，获得母体血量，可猎杀猎魔人</li>
+                                <li><strong>公告/字幕/音效</strong>（中英双语）：
+                                    <br>✦ 游戏区域出现母体升级绿宝石！ / ✦ A Mother Upgrade Emerald has appeared!
+                                    <br>变身字幕：👑 你成为了母体鬼! / 👑 You are the Mother Ghost!
+                                    <br>广播：[玩家]拾取了母体绿宝石，变身为母体鬼！
+                                    <br>音效：挑战完成提示 + 末影龙低吼</li>
+                                <li>游戏结束时自动清理绿宝石</li>
+                            </ul>
+
+                            <h4 style="color:#ffa07a; margin-top:1rem;">🛡️ 猎魔人阶段防御规则</h4>
+                            <ul style="margin-left:1.5rem;">
+                                <li><strong>阵营伤害保护</strong>：猎魔人无法伤害人类/猎魔人，鬼无法伤害鬼（母体无法击杀普通鬼），人类无法伤害人类</li>
+                                <li><strong>死亡拦截</strong>：鬼/猎魔人真实死亡事件被取消，不会回重生点</li>
+                                <li><strong>环境伤害免疫</strong>：鬼/猎魔人免疫坠落/岩浆/火焰等环境伤害</li>
+                                <li><strong>正常回血</strong>：不再禁止回血，玩家可正常恢复</li>
+                            </ul>
+
+                            <h4 style="color:#ffa07a; margin-top:1rem;">👑 母体攻击猎魔人</h4>
+                            <ul style="margin-left:1.5rem;">
+                                <li><strong>无神圣守护猎魔人</strong>：母体 <strong>4 次</strong> 击中 → 感染（进入旁观）</li>
+                                <li><strong>有神圣守护猎魔人</strong>：先 <strong>3 次</strong> 破除守护，再 <strong>4 次</strong> 感染</li>
+                            </ul>
+
+                            <h4 style="color:#ffa07a; margin-top:1rem;">🚫 母体禁足</h4>
+                            <ul style="margin-left:1.5rem;">
+                                <li>对局开始前母体随机锁定游戏区域坐标，<strong>20 秒</strong> 无法移动</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 道具系统（卡片网格 + 模态框详情，已包含音效和详细说明） -->
+        <!-- 道具系统 -->
         <div class="section">
             <div class="section-title">🧰 道具系统</div>
             <div class="collapsible">
                 <div class="collapsible-header">📖 查看道具说明 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
                     <div class="card">
-                        <p>道具会在游戏过程中 <strong>定时发放</strong> 给人类玩家，每次发放间隔可在配置中调整（默认每 60 秒发放一次），发放时会在聊天栏显示剩余时间提示。默认发放道具会同时揭示所有玩家位置5秒</p>
+                        <p>道具会在游戏过程中 <strong>定时发放</strong> 给玩家，每次发放间隔可在配置中调整（默认每 60 秒发放一次），同时区域会随机刷新道具。发放道具时会揭示所有玩家位置 5 秒。</p>
+                        <p><strong>背包管理（v2.3.1）</strong>：对局期间最多 <strong>9 个</strong> 道具，不可放入背包，不堆叠，不允许相同道具（除通用道具外），收割者/神之救赎强制放第一格。</p>
                     </div>
                 </div>
             </div>
             <div class="grid-3col" id="items-list-zh"></div>
         </div>
 
-        <!-- 发放道具音效 & 阵容切换音效（新增） -->
+        <!-- 音效系统 -->
         <div class="section">
             <div class="section-title">🔊 音效系统</div>
             <div class="collapsible">
@@ -295,15 +458,9 @@
                 <div class="collapsible-content">
                     <div class="card">
                         <h3>发放道具音效</h3>
-                        <ul>
-                            <li>每个玩家获得道具时播放：<code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）</li>
-                            <li>发放完毕全局提示：<code>BLOCK_NOTE_BLOCK_PLING</code></li>
-                        </ul>
+                        <ul><li>每个玩家获得道具时播放：<code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）</li><li>发放完毕全局提示：<code>BLOCK_NOTE_BLOCK_PLING</code></li></ul>
                         <h3>阵容切换音效</h3>
-                        <ul>
-                            <li>👤 人类 → 👻 鬼：<code>ENTITY_VEX_AMBIENT</code>（阴森低鸣）</li>
-                            <li>👻 鬼 → 👤 人类：<code>ENTITY_PLAYER_LEVELUP</code>（升级音效）</li>
-                        </ul>
+                        <ul><li>👤 人类 → 👻 鬼：<code>ENTITY_VEX_AMBIENT</code>（阴森低鸣）</li><li>👻 鬼 → 👤 人类：<code>ENTITY_PLAYER_LEVELUP</code>（升级音效）</li></ul>
                         <h3>阶段音效</h3>
                         <ul>
                             <li>准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）</li>
@@ -311,12 +468,17 @@
                             <li>人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code></li>
                             <li>鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code></li>
                         </ul>
+                        <h3>猎魔人击杀反馈（v2.3.1）</h3>
+                        <ul>
+                            <li>击杀位置烟花 + 爆炸粒子 + <code>ENTITY_WITHER_DEATH</code></li>
+                            <li>母体升级：<code>ENTITY_ENDER_DRAGON_GROWL</code></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 鬼转人类功能（折叠） -->
+        <!-- 鬼转人类功能 -->
         <div class="section">
             <div class="section-title">👻 鬼转人类功能</div>
             <div class="collapsible">
@@ -334,7 +496,7 @@
             </div>
         </div>
 
-        <!-- 经济与奖励系统（折叠） -->
+        <!-- 经济与奖励系统 -->
         <div class="section">
             <div class="section-title">🏆 经济与奖励系统</div>
             <div class="collapsible">
@@ -353,7 +515,7 @@
                         </div>
                         <h3>个人奖金计算</h3>
                         <div class="table-wrapper">
-                            </table>
+                            <table>
                                 <tr><th>阵营</th><th>分配方式</th></tr>
                                 <tr><td>👤 人类</td><td>100% 按 <strong>存活时间比例</strong> 分配</td></tr>
                                 <tr><td>👻 鬼</td><td>70% 按 <strong>鬼存活时间</strong> + 30% 按 <strong>感染人数比例</strong> 分配</td></tr>
@@ -361,12 +523,14 @@
                         </div>
                         <h3>猎魔人奖励</h3>
                         <p>猎魔人每击杀一名鬼玩家，可获得 <strong>人类奖池 30%</strong> 的奖金；<strong>母体</strong> 击杀猎魔人可获得 <strong>50%</strong> 的额外奖励（高于普通感染奖励）。</p>
+                        <h3>奖金排行榜</h3>
+                        <p>游戏结束后显示奖金排行榜，前三名显示 🥇🥈🥉 奖牌。</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 特色系统（折叠） -->
+        <!-- 特色系统 -->
         <div class="section">
             <div class="section-title">✨ 特色系统</div>
             <div class="collapsible">
@@ -394,45 +558,84 @@
                         <div class="card"><h3>❤️ 心跳声系统</h3>
                             <p>游戏过程中人类方循环播放监守者出现时的心跳声。<br>
                             管理员可通过 <code>/gostadmin heartbeat</code> 控制开关。</p>
-							
+                        </div>
+                        <div class="card"><h3>🎒 背包管理系统（v2.3.1）</h3>
+                            <p>对局期间最多 <strong>9 个</strong> 道具。<br>
+                            道具不可放入背包（强制移回物品栏）。<br>
+                            道具不堆叠、不允许两个相同道具、不允许两个肾上腺素（人鬼通用道具除外）。<br>
+                            <strong>收割者</strong> / <strong>神之救赎</strong> 强制放第一格。</p>
+                        </div>
+                        <div class="card"><h3>🔥 选区粒子框（v2.3.1）</h3>
+                            <p>设置选区后自动显示 <strong>火焰粒子框</strong>，持续 <strong>30 秒</strong>。<br>
+                            帮助管理员直观确认游戏区域边界。</p>
+                        </div>
+                        <div class="card"><h3>🌐 双语字幕（v2.3.1）</h3>
+                            <p>复活等待、重生、收割、救赎、母体禁足等核心事件新增 <strong>中英双语字幕</strong>。<br>
+                            根据服务器语言设置自动切换。</p>
+                        </div>
+                        <div class="card"><h3>📦 版本兼容性</h3>
+                            <p>支持 <strong>1.20.x 至 1.21.x 全版本</strong>。<br>
+                            粒子/音效/物品名称自动版本兼容。<br>
+                            冲刺矛（GOLDEN_SPEAR）仅 ≥1.21.4 生成。</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 命令（折叠） -->
+        <!-- ===================== 命令（保留旧版指令及权限） ===================== -->
         <div class="section">
             <div class="section-title">📋 命令</div>
             <div class="collapsible">
                 <div class="collapsible-header">📖 展开查看所有命令 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
+                    <div class="card">
+                        <h3>📌 命令整合说明</h3>
+                        <p>v2.3.1 起，<code>/divineguardian</code> 和 <code>/ghostparticle</code> 命令已整合到 <code>/gostadmin</code> 下。<br>
+                        旧版命令仍然可用，但建议使用新版统一命令格式。以下列出所有可用命令及权限。</p>
+                    </div>
+
                     <div class="table-wrapper">
                         <table>
                             <tr><th>命令</th><th>说明</th><th>权限</th></tr>
-                            <tr><td><code>/gost join</code></td><td>加入游戏队列</td><td>gost.use</td></tr>
-                            <tr><td><code>/gost leave</code></td><td>离开游戏队列</td><td>gost.use</td></tr>
-                            <tr><td><code>/gost stop</code></td><td>管理员强制结束游戏</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gost join</code></td><td>加入游戏队列</td><td>gost.player</td></tr>
+                            <tr><td><code>/gost leave</code></td><td>离开游戏队列</td><td>gost.player</td></tr>
+                            <tr><td><code>/gost info</code></td><td>查看游戏信息</td><td>gost.player</td></tr>
+                            <tr><td><code>/gost help</code></td><td>显示帮助</td><td>gost.player</td></tr>
+                            <tr><td><code>/gost start</code></td><td>管理员强制开始游戏（跳过人数限制）</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gost stop</code></td><td>强制结束游戏</td><td>gost.admin</td></tr>
                             <tr><td><code>/gost reload</code></td><td>重载配置文件</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gostadmin dark &lt;on/off/status&gt;</code></td><td>控制黑暗效果开关</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gostadmin heartbeat &lt;on/off/status&gt;</code></td><td>控制心跳声开关</td><td>gost.admin</td></tr>
-							<tr><td><code>/gost start</code></td><td>管理员强制开始游戏（跳过人数限制）</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gostadmin testmode</code></td><td>管理员单人测试模式（对局不因人数不足结束）</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin tool</code></td><td>获取选区工具（岩浆膏）</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin pos1/pos2</code></td><td>设置选区点</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin save/list/load/delete/info</code></td><td>区域管理</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin dark &lt;on/off/status&gt;</code></td><td>黑暗效果管理</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin heartbeat &lt;on/off/status&gt;</code></td><td>心跳声管理</td><td>gost.admin</td></tr>
+                            <tr><td><code>/gostadmin testmode</code></td><td>单人测试模式</td><td>gost.admin</td></tr>
                             <tr><td><code>/gostadmin giveitem &lt;道具名&gt;</code></td><td>直接获得指定道具（支持模糊匹配）</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian status</code></td><td>查看神圣守护状态</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian setmode &lt;1/2&gt;</code></td><td>切换神圣守护模式</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian setcharges &lt;次数&gt;</code></td><td>设置最大使用次数</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian force &lt;玩家&gt;</code></td><td>强制激活神圣守护</td><td>gost.admin</td></tr>
-                            <tr><td><code>/ghostparticle status</code></td><td>查看粒子效果状态</td><td>gost.admin.ghostparticle</td></tr>
-                            <tr><td><code>/ghostparticle settype &lt;类型&gt;</code></td><td>设置粒子类型</td><td>gost.admin.ghostparticle</td></tr>
-                            <tr><td><code>/ghostparticle setmothercolor &lt;R,G,B&gt;</code></td><td>设置母体鬼颜色</td><td>gost.admin.ghostparticle</td></tr>
+                            <tr><td><code>/gostadmin economy &lt;set|status&gt;</code></td><td>经济管理</td><td>gost.admin</td></tr>
+                            <tr><td><code style="color:#ffa07a;">/divineguardian</code> <span class="ver-tag">旧版</span></td><td>神圣守护管理（已整合到 <code>/gostadmin divine</code>）</td><td>gost.admin</td></tr>
+                            <tr><td><code style="color:#ffa07a;">/ghostparticle</code> <span class="ver-tag">旧版</span></td><td>鬼粒子管理（已整合到 <code>/gostadmin particle</code>）</td><td>gost.admin</td></tr>
                         </table>
+                    </div>
+
+                    <div class="card" style="margin-top:1rem;">
+                        <h4>📌 新版整合命令</h4>
+                        <ul>
+                            <li><code>/gostadmin divine &lt;status|clear&gt;</code> — 神圣守护管理（替代 <code>/divineguardian</code>）</li>
+                            <li><code>/gostadmin particle &lt;status|enable|disable&gt;</code> — 鬼粒子管理（替代 <code>/ghostparticle</code>）</li>
+                        </ul>
+                        <p style="margin-top:0.5rem; color:#aaa;">💡 旧版 <code>/divineguardian</code> 和 <code>/ghostparticle</code> 命令仍可正常使用，但建议迁移到新版命令以保持一致性。</p>
+                    </div>
+
+                    <div class="card" style="margin-top:1rem;">
+                        <h4>🔥 选区粒子框</h4>
+                        <p>设置选区后，选区边界持续显示火焰粒子框 30 秒。</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 权限（折叠） -->
+        <!-- ===================== 权限（保留旧版权限说明） ===================== -->
         <div class="section">
             <div class="section-title">🔐 权限</div>
             <div class="collapsible">
@@ -440,70 +643,24 @@
                 <div class="collapsible-content">
                     <div class="table-wrapper">
                         <table>
-                            <tr><th>权限节点</th><th>说明</th></tr>
-                            <tr><td><code>gost.use</code></td><td>玩家基础权限（加入/离开游戏）</td></tr>
-                            <tr><td><code>gost.player</code></td><td>玩家权限（默认直接给予所有玩家）</td></tr>
-                            <tr><td><code>gost.admin</code></td><td>管理员权限（开始/结束/重载/黑暗/心跳）</td></tr>
-                            <tr><td><code>gost.admin.divineguardian</code></td><td>神圣守护管理权限</td></tr>
-                            <tr><td><code>gost.admin.ghostparticle</code></td><td>鬼玩家粒子效果管理权限</td></tr>
+                            <tr><th>权限节点</th><th>说明</th><th>默认</th></tr>
+                            <tr><td><code>gost.use</code></td><td>基础命令权限</td><td>所有玩家</td></tr>
+                            <tr><td><code>gost.player</code></td><td>玩家游戏权限</td><td>所有玩家</td></tr>
+                            <tr><td><code>gost.admin</code></td><td>管理员权限</td><td>OP</td></tr>
+                            <tr><td><code style="color:#ffa07a;">gost.admin.divineguardian</code> <span class="ver-tag">旧版</span></td><td>神圣守护管理权限（已合并到 <code>gost.admin</code>）</td><td>OP</td></tr>
+                            <tr><td><code style="color:#ffa07a;">gost.admin.ghostparticle</code> <span class="ver-tag">旧版</span></td><td>鬼粒子管理权限（已合并到 <code>gost.admin</code>）</td><td>OP</td></tr>
                         </table>
+                    </div>
+                    <div class="card" style="margin-top:1rem;">
+                        <p><strong>权限精简说明（v2.3.1）</strong>：<br>
+                        旧版 <code>gost.admin.divineguardian</code> 和 <code>gost.admin.ghostparticle</code> 权限已合并到 <code>gost.admin</code> 中。<br>
+                        旧版权限节点仍然有效，但新版统一使用 <code>gost.admin</code> 管理所有管理员功能。</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 配置（折叠） -->
-        <div class="section">
-            <div class="section-title">⚙️ 配置</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📋 查看配置示例 <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <pre style="background:#0b0e14; padding:1rem; border-radius:1rem; overflow-x:auto; font-size:0.75rem;">
-# 游戏设置
-game:
-  duration: 420          # 游戏时长（秒），默认7分钟
-  min-players: 2
-  max-players: 16
-
-# 经济设置
-economy:
-  entry-fee: 100.0       # 入场费
-  server-bonus: 5000.0   # 服务器奖金
-
-# 黑暗效果设置
-dark-effect:
-  enabled: true          # 黑暗效果默认启用
-  description: "不影响疾跑"
-
-# 神圣守护设置
-divine-guardian:
-  enabled: true
-  trigger-human-count: 2
-  holy-guardian:
-    defense-charges: 3
-    teleport-attacker: true
-    teleport-radius: 10.0
-  demon-hunter:
-    phase-start-time: 90
-    health:
-      demon-hunter: 2.0
-      mother-attack-damage: 1.0
-
-# 鬼玩家粒子效果
-ghost-particle:
-  enabled: true
-  particle-type: REDSTONE
-  interval: 15
-  count: 5
-  mother-color: "255,0,0"
-  normal-color: "0,255,0"
-                    </pre>
-                    <p>完整配置请参考 <code>config.yml</code> 文件，支持热重载 <code>/gost reload</code>。</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 版本历史（包含 v2.3） -->
+        <!-- 版本历史 -->
         <div class="section">
             <div class="section-title">📈 版本历史</div>
             <div class="version-list" id="version-list-zh"></div>
@@ -511,366 +668,13 @@ ghost-particle:
 
         <footer>🎉 开始你的生存对抗之旅！ /gost join | 感染方式：左键/右键 | 道具发放全体高亮5秒 | 猎魔人阶段带来全新体验</footer>
     </div>
-
-    <!-- 英文内容（完整翻译，与中文版一致） -->
-    <div id="en-content" class="lang-content">
-        <div style="padding:1.5rem 0 1rem;">
-            <h1 style="font-size:2.8rem; background:linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — Ghost Chase · Redeemer · Demon Hunter Multi-Stage Confrontation Plugin</h1>
-            <p><strong>Gost</strong> — A multiplayer mini-game plugin for Minecraft Bukkit/Spigot <br>Inspired by <strong>Dead Realm</strong> — honoring the deceased masterpiece that brought countless joys, and attempting to recreate the tension and fun of chase and confrontation in Minecraft.</p>
-            <div class="badge">⚡ Redeemer System | 🎮 Mode Switching | 🌑 Dark Effect + Sprint | 🔧 Queue Optimization | ✨ Demon Hunter Phase | 🔊 Sound System Overhaul</div>
-            <div class="link-buttons">
-                <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Download on Modrinth</a>
-                <a href="https://726113394-cloud.github.io/PersonalPage/" target="_blank" class="link-btn"><i class="fab fa-bilibili"></i> Author's Homepage</a>
-                <a href="https://www.bilibili.com/video/BV1UTKs6KESo/" target="_blank" class="link-btn"><i class="fas fa-video"></i> Preview Video</a>
-				<a href="https://www.bilibili.com/video/BV1eHKj69E4H/" target="_blank" class="link-btn"><i class="fas fa-video"></i> 2.3.0 Update Introduction</a>
-            </div>
-        </div>
-
-        <!-- Carousel -->
-        <div class="carousel-container" id="carouselEn"></div>
-        <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.7;">
-            <i class="fas fa-image"></i> Carousel
-        </div>
-        <div class="tool-card">
-    <div class="message">
-        <p><i class="fas fa-sync-alt" style="color:#3b82f6;"></i> <strong>Upgraded plugin but don't want to rewrite config?</strong> Try my auto‑migration tool — smart merge, auto backup.</p>
-        <div class="builtin-badge">✨ Built-in in v2.2.3 +</div>
-    </div>
-    <a href="https://726113394-cloud.github.io/ReloadConfig/" target="_blank" class="migration-tool-btn">
-        <i class="fas fa-rocket"></i> ReloadConfig Tool
-        <i class="fas fa-arrow-right"></i>
-    </a>
-</div>
-        <!-- Core Gameplay (Collapsible) -->
-        <div class="section">
-            <div class="section-title">🎯 Core Gameplay</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Details <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card">
-                        <h3>Game Flow</h3>
-                        <ol style="margin-left:1.5rem;">
-                            <li><strong>Preparation Phase</strong> — Players join the queue, game starts when full.</li>
-                            <li><strong>Infection Phase</strong> — Ghosts chase and infect humans; humans pick up items to survive.</li>
-                            <li><strong>Divine Guardian Phase</strong> — Activated automatically when remaining humans ≤ trigger count.</li>
-                            <li><strong>Demon Hunter Phase</strong> — Enters at 90 seconds remaining, all remaining humans become Demon Hunters.</li>
-                        </ol>
-                        <h3>Two Factions</h3>
-                        <div class="table-wrapper">
-                            <tr>
-                                <tr><th>Faction</th><th>Description</th></tr>
-                                <tr><td>👤 Human</td><td>Initial identity, becomes ghost after infection.</td></tr>
-                                <tr><td>👻 Ghost</td><td>Infects humans to join ghost faction; Mother is the leader.</td></tr>
-                            </table>
-                        </div>
-                        <h3>Special Roles</h3>
-                        <div class="table-wrapper">
-                            <table>
-                                <tr><th>Role</th><th>Description</th></tr>
-                                <tr><td>🛡️ Divine Guardian</td><td>Activates when few humans remain, blocks <strong>3</strong> attacks, teleports attacker on each hit.</td></tr>
-                                <tr><td>🎯 Demon Hunter</td><td>Transformed from Divine Guardian during Demon Hunter phase, holds <strong>Reaper</strong> to kill ghosts.</td></tr>
-                                <tr><td>👑 Mother Ghost</td><td>Ghost leader, can attack Demon Hunters, can infect normal humans during Demon Hunter phase.</td></tr>
-                                <tr><td>✨ Redeemer</td><td>Mode 2 exclusive. Last human becomes Redeemer, holds <strong>Holy Redemption</strong> item to convert ghosts back to humans.</td></tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Divine Guardian Modes (Collapsible) -->
-        <div class="section">
-            <div class="section-title">🛡️ Divine Guardian System — Two Modes</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Details <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="grid-2col">
-                        <div class="card"><h3>Mode 1: Classic Divine Guardian (Immunity + Teleport)</h3>
-                            <p><strong>Trigger condition</strong>: Remaining humans ≤ configured count (default 2)<br>
-                            <strong>Defense charges</strong>: Blocks <strong>3</strong> attacks (from Mother or normal ghost)<br>
-                            <strong>Teleport effect</strong>: Each attack teleports the attacker to a nearby location<br>
-                            <strong>Demon Hunter phase</strong>: All remaining humans gain Divine Guardian and become Demon Hunters.</p>
-                        </div>
-                        <div class="card"><h3>Mode 2: Redeemer Mode (Convert Ghosts|Useless since 2.2.2)</h3>
-                            <p><strong>Trigger condition</strong>: When only <strong>1</strong> human remains, the last human becomes <strong>Redeemer</strong><br>
-                            <strong>Holy Redemption item</strong>: Redeemer gets exclusive item to convert a ghost back to human<br>
-                            <strong>Random teleport</strong>: Teleports Redeemer to a safe location after use<br>
-                            <strong>Usage limit</strong>: 2 times (configurable), returns to normal human after uses exhausted<br>
-                            <strong>Visual effects</strong>: Redeemer is always highlighted and has speed effect.</p>
-                        </div>
-                    </div>
-                    <p class="card" style="margin-top:1rem;"><strong>Mode switch command</strong>: <code>/divineguardian setmode &lt;1|2&gt;</code>, takes effect <strong>immediately</strong> even during game.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Demon Hunter Phase (Collapsible) -->
-        <div class="section">
-            <div class="section-title">⚔️ Demon Hunter Phase</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Details <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card">
-                        <p>Automatically enters Demon Hunter phase when 90 seconds remain:</p>
-                        <ul style="margin-left:1.5rem;">
-                            <li>All humans with Divine Guardian become <strong>Demon Hunters</strong></li>
-                            <li>Demon Hunters receive <strong>Reaper</strong> item to attack ghosts</li>
-                            <li><strong>Normal ghosts</strong> cannot infect humans, only avoid being hunted</li>
-                            <li><strong>Mother ghost</strong> can attack Demon Hunters, dealing configured damage each hit</li>
-                            <li>Mother needs to attack <strong>3 times</strong> to break a Demon Hunter's Divine Guardian</li>
-                            <li>All <strong>Holy Redemption</strong> items are cleared</li>
-                            <li>Ghost health adjusted, healing disabled during Demon Hunter phase</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Item System (Cards + Modal) -->
-        <div class="section">
-            <div class="section-title">🧰 Item System</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 View Item Information <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card">
-                        <p>Items are <strong>periodically distributed</strong> to human players during the game. The interval can be configured (default every 60 seconds). The remaining time is displayed in chat when items are distributed.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="grid-3col" id="items-list-en"></div>
-        </div>
-
-        <!-- Sound System Details (新增) -->
-        <div class="section">
-            <div class="section-title">🔊 Sound System</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Sound Details <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card">
-                        <h3>Item Distribution Sounds</h3>
-                        <ul>
-                            <li>Each player receives an item: <code>ENTITY_ITEM_PICKUP</code> (different pitch per item)</li>
-                            <li>Global distribution complete: <code>BLOCK_NOTE_BLOCK_PLING</code></li>
-                        </ul>
-                        <h3>Faction Switch Sounds</h3>
-                        <ul>
-                            <li>👤 Human → 👻 Ghost: <code>ENTITY_VEX_AMBIENT</code> (eerie hum)</li>
-                            <li>👻 Ghost → 👤 Human: <code>ENTITY_PLAYER_LEVELUP</code> (level up sound)</li>
-                        </ul>
-                        <h3>Phase Sounds</h3>
-                        <ul>
-                            <li>Last 3 seconds of preparation countdown: <code>BLOCK_NOTE_BLOCK_HAT</code> (once per second)</li>
-                            <li>Game start: <code>ENTITY_ENDER_DRAGON_GROWL</code> (global)</li>
-                            <li>Human victory: Humans hear <code>UI_TOAST_CHALLENGE_COMPLETE</code>, Ghosts hear <code>ENTITY_WITHER_DEATH</code></li>
-                            <li>Ghost victory: Ghosts hear <code>UI_TOAST_CHALLENGE_COMPLETE</code>, Humans hear <code>ENTITY_WITHER_DEATH</code></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ghost-to-Human Feature (Collapsible) -->
-        <div class="section">
-            <div class="section-title">👻 Ghost-to-Human Feature</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Details <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card">
-                        <p>With <strong>3 minutes</strong> remaining, the system randomly converts some <strong>non‑Mother ghosts</strong> back to the human faction (disabled by default, can be enabled in config).</p>
-                        <ul style="margin-left:1.5rem;">
-                            <li>Converted players retain their accumulated ghost time records.</li>
-                            <li>Receive a <strong>20% extra bonus compensation</strong>.</li>
-                            <li>Still receive their ghost bonus inheritance.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Economy & Reward System (Collapsible) -->
-        <div class="section">
-            <div class="section-title">🏆 Economy & Reward System</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Details <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="card">
-                        <h3>Entry & Prize Pool</h3>
-                        <p>Players pay an <strong>entry fee</strong> (default 100 coins) which goes into the <strong>Human Prize Pool</strong>. Server can add <strong>bonus</strong> (default 5000 coins) to increase total pool.</p>
-                        <h3>Victory Bonus Distribution</h3>
-                        <div class="table-wrapper">
-                            </table>
-                                <tr><th>Winner</th><th>Distribution</th></tr>
-                                <tr><td>👤 Human Victory</td><td>Human faction gets <strong>70%</strong> of pool, Ghost faction gets <strong>30%</strong></td></tr>
-                                <tr><td>👻 Ghost Victory</td><td>Ghost faction gets <strong>100%</strong> of pool</td></tr>
-                            </table>
-                        </div>
-                        <h3>Individual Bonus Calculation</h3>
-                        <div class="table-wrapper">
-                            <table>
-                                <tr><th>Faction</th><th>Calculation</th></tr>
-                                <tr><td>👤 Human</td><td>100% proportional to <strong>survival time</strong></td></tr>
-                                <tr><td>👻 Ghost</td><td>70% proportional to <strong>ghost survival time</strong> + 30% proportional to <strong>number of infections</strong></td></tr>
-                            </table>
-                        </div>
-                        <h3>Demon Hunter Reward</h3>
-                        <p>Each ghost kill by a Demon Hunter grants the Demon Hunter <strong>30% of the Human Prize Pool</strong>. <strong>Mother ghost</strong> killing a Demon Hunter receives an additional <strong>50% bonus</strong> (higher than normal infection reward).</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feature Systems (Collapsible) -->
-        <div class="section">
-            <div class="section-title">✨ Feature Systems</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Details <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="grid-2col">
-                        <div class="card"><h3>🌑 Dark Effect + Sprint Coexistence</h3>
-                            <p>Uses native Minecraft <strong>DARKNESS</strong> effect (1.19+) or <strong>BLINDNESS</strong> (older versions).<br>
-                            Adds <strong>+30% movement speed</strong> via attribute modifier to counteract dark effect's sprint inhibition.<br>
-                            Smart check every 10 ticks restores sprint if blocked.<br>
-                            Admins and creative mode players also receive dark effect, with clear notification.</p>
-                        </div>
-                        <div class="card"><h3>👻 Ghost Particle Effects</h3>
-                            <p>Continuous orbiting particles around ghosts.<br>
-                            <strong>Mother ghost</strong>: red particles, <strong>normal ghost</strong>: green particles.<br>
-                            Supports 21 particle types, RGB color customization.<br>
-                            Configurable whether to show during preparation phase.</p>
-                        </div>
-                        <div class="card"><h3>💬 Comprehensive Language System (Cover version core improvement)</h3>
-                            <p>Greatly expanded default message library: 90+ default Chinese messages.<br>
-                            Smart fallback mechanism, no more error codes.<br>
-                            Error isolation protection, does not affect core gameplay.<br>
-                            Plugin startup protection: LanguageManager continues even if initialization fails.</p>
-                        </div>
-                        <div class="card"><h3>❤️ Heartbeat Sound System</h3>
-                            <p>During the game, humans hear the Warden's heartbeat sound in a loop.<br>
-                            Admins can toggle with <code>/gostadmin heartbeat</code>.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Commands (Collapsible) -->
-        <div class="section">
-            <div class="section-title">📋 Commands</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand All Commands <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="table-wrapper">
-                        <table>
-                            <tr><th>Command</th><th>Description</th><th>Permission</th></tr>
-                            <tr><td><code>/gost join</code></td><td>Join game queue</td><td>gost.use</td></tr>
-                            <tr><td><code>/gost leave</code></td><td>Leave game queue</td><td>gost.use</td></tr>
-                            <tr><td><code>/gost stop</code></td><td>Force stop game (admin)</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gost reload</code></td><td>Reload config</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gostadmin dark &lt;on/off/status&gt;</code></td><td>Toggle dark effect</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gostadmin heartbeat &lt;on/off/status&gt;</code></td><td>Toggle heartbeat sound</td><td>gost.admin</td></tr>
-							<tr><td><code>/gost start</code></td><td>Force start game (bypass player limit)</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gostadmin testmode</code></td><td>Admin solo test mode (game won't end due to low players)</td><td>gost.admin</td></tr>
-                            <tr><td><code>/gostadmin giveitem &lt;item name&gt;</code></td><td>Get any item directly (fuzzy match supported)</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian status</code></td><td>View Divine Guardian status</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian setmode &lt;1/2&gt;</code></td><td>Switch Divine Guardian mode</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian setcharges &lt;count&gt;</code></td><td>Set max defense charges</td><td>gost.admin</td></tr>
-                            <tr><td><code>/divineguardian force &lt;player&gt;</code></td><td>Force activate Divine Guardian</td><td>gost.admin</td></tr>
-                            <tr><td><code>/ghostparticle status</code></td><td>View particle effect status</td><td>gost.admin.ghostparticle</td></tr>
-                            <tr><td><code>/ghostparticle settype &lt;type&gt;</code></td><td>Set particle type</td><td>gost.admin.ghostparticle</td></tr>
-                            <tr><td><code>/ghostparticle setmothercolor &lt;R,G,B&gt;</code></td><td>Set mother ghost particle color</td><td>gost.admin.ghostparticle</td></tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Permissions (Collapsible) -->
-        <div class="section">
-            <div class="section-title">🔐 Permissions</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📖 Expand Permission Nodes <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <div class="table-wrapper">
-                        <table>
-                            <tr><th>Permission Node</th><th>Description</th></tr>
-                            <tr><td><code>gost.use</code></td><td>Basic player permission (join/leave)</td></tr>
-                            <tr><td><code>gost.player</code></td><td>Player permission (default given to all players)</td></tr>
-                            <tr><td><code>gost.admin</code></td><td>Admin permission (start/stop/reload/dark/heartbeat)</td></tr>
-                            <tr><td><code>gost.admin.divineguardian</code></td><td>Divine Guardian management</td></tr>
-                            <tr><td><code>gost.admin.ghostparticle</code></td><td>Ghost particle management</td></tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Configuration (Collapsible) -->
-        <div class="section">
-            <div class="section-title">⚙️ Configuration</div>
-            <div class="collapsible">
-                <div class="collapsible-header">📋 View Configuration Example <i class="fas fa-chevron-down"></i></div>
-                <div class="collapsible-content">
-                    <pre style="background:#0b0e14; padding:1rem; border-radius:1rem; overflow-x:auto; font-size:0.75rem;">
-# Game settings
-game:
-  duration: 420          # Game duration (seconds), default 7 minutes
-  min-players: 2
-  max-players: 16
-
-# Economy settings
-economy:
-  entry-fee: 100.0       # Entry fee
-  server-bonus: 5000.0   # Server bonus
-
-# Dark effect settings
-dark-effect:
-  enabled: true          # Dark effect enabled by default
-  description: "Does not affect sprint"
-
-# Divine Guardian settings
-divine-guardian:
-  enabled: true
-  trigger-human-count: 2
-  holy-guardian:
-    defense-charges: 3
-    teleport-attacker: true
-    teleport-radius: 10.0
-  demon-hunter:
-    phase-start-time: 90
-    health:
-      demon-hunter: 2.0
-      mother-attack-damage: 1.0
-
-# Ghost particle effect
-ghost-particle:
-  enabled: true
-  particle-type: REDSTONE
-  interval: 15
-  count: 5
-  mother-color: "255,0,0"
-  normal-color: "0,255,0"
-                    </pre>
-                    <p>See <code>config.yml</code> for full configuration. Supports hot reload via <code>/gost reload</code>.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Version History -->
-        <div class="section">
-            <div class="section-title">📈 Version History</div>
-            <div class="version-list" id="version-list-en"></div>
-        </div>
-
-        <footer>🎉 Start your survival confrontation! /gost join | Infection: LEFT/RIGHT click | Global 5s glow on item spawn | Demon Hunter phase brings new experience</footer>
-    </div>
 </div>
 
-<div class="watermark">Gost v2.3 | 来自太空的小头脑</div>
+<div class="watermark">Gost v2.3.1 | 来自太空的小头脑</div>
 <div id="modal" class="modal"><div class="modal-content"><span class="modal-close">&times;</span><div id="modal-body"></div></div></div>
 
 <script>
-    // ==================== Carousel configuration ====================
-    // 修复：添加逗号分隔图片路径
+    // ==================== 轮播图 ====================
     const carouselImages = [
         "images/screenshot1.png",
         "images/screenshot2.png",
@@ -878,7 +682,6 @@ ghost-particle:
         "images/screenshot4.png",
         "images/screenshot5.png"
     ];
-
     function initCarousel(containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -910,51 +713,26 @@ ghost-particle:
         container.addEventListener('mouseleave', () => { if(carouselImages.length>1) interval = setInterval(next, 5000); });
     }
 
-    // ========== 道具数据（已完整，保持不变） ==========
+    // ========== 道具数据（中文，包含版本备注） ==========
     const itemsDetailZh = {
-        reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器", faction: "human", detail: "效果：猎魔人阶段自动获得，攻击鬼玩家造成配置的伤害值，显示伤害量和剩余血量，鬼血量归零后进入旁观模式并触发复活倒计时。<br>冷却时间：2秒<br>使用音效：无（近战攻击）" },
-        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容，有使用次数限制（默认2次，自2.2.2版本起修改为1次），使用后救赎者被随机传送到安全位置。<br>冷却时间：10秒<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
+        reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器（双技能）", faction: "human", detail: "效果（v2.3.1 重做）：<br><strong>左键单体攻击</strong>：普通鬼 <strong>2 次</strong> 击杀，母体鬼 <strong>4 次</strong> 击杀（纯击中次数判定）<br><strong>右键范围技能「收割」</strong>（v2.3.1）：4 格半径 AOE，10 秒冷却，冲击粒子 + 凋零死亡音效<br>攻击冷却：2 秒<br>使用音效：左键无音效，右键有 AOE 特效" },
+        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容<br>使用次数：<strong>2 次</strong>（v2.3.1 起）<br>冷却时间：10 秒<br>使用后救赎者被随机传送到安全位置<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
         secondChance: { name: "❤️ 第二次机会", desc: "被动触发", faction: "human", detail: "效果：人类玩家专用道具，被鬼感染时自动触发，免疫本次感染并保留人类身份，触发后进入冷却（180秒），冷却期间被感染则正常变为鬼。<br>冷却时间：180秒<br>使用音效：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code>" },
-        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：投掷后对命中的玩家施加 <strong>缓慢 Ⅳ（4秒）</strong> 效果，对所有玩家（人类/鬼）均生效，可用于逃跑或追击。<br>使用音效：投掷 <code>ENTITY_SNOWBALL_THROW</code>" },
-        stinkySteak: { name: "🥩 臭牛排", desc: "速度道具", faction: "neutral", detail: "效果：使用后无视饱食度直接获得 <strong>速度 III（14秒）</strong> 效果，附带发光效果(10秒)标记使用者位置。<br>使用音效：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
-        soulControl: { name: "🔮 控魂术", desc: "控制类道具", faction: "human", detail: "效果：人类玩家专用道具，可短暂控制全场的鬼玩家，使整个鬼阵容无法移动6秒。<br>冷却时间：18秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
-        soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：使用后持续揭示所有玩家的位置25秒。<br>冷却时间：35秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
-        teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用(该道具仅能右键使用)。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
-        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：使用获得速度Ⅱ效果10秒。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
-        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：使用获得速度Ⅱ效果10秒。<br>持续时间：速度提升<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" },
-		spearRush: { name: "🗡️ 冲刺矛", desc: "左键冲刺，消耗品", faction: "neutral", detail: "效果：左键使用进行一次原版矛的冲刺效果，使用后即刻消失。<br>服务器版本要求：<strong>1.21.4 及以上</strong>，插件启动时自动检测版本。<br>使用音效：矛冲刺音效（由游戏内置）" },
-        levitationPotion: { 
-            name: "🧪 漂浮药水", 
-            desc: "右键获得漂浮效果", 
-            faction: "neutral", 
-            detail: "效果：右键使用获得 <strong>漂浮</strong> 效果 4.5 秒(大约可以飞3.4个方块高度)。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" 
-        }
-    };  // 这是 itemsDetailZh 的结束
+        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：投掷后对命中的玩家施加 <strong>缓慢 III（3秒）</strong> 效果，对所有玩家（人类/鬼）均生效，可用于逃跑或追击。<br>使用音效：投掷 <code>ENTITY_SNOWBALL_THROW</code>" },
+        stinkySteak: { name: "🥩 臭牛排", desc: "速度道具", faction: "neutral", detail: "效果（v2.3.1 修改）：<br><strong>右键开始食用</strong>，1 秒吃完后效果生效<br>中途切换物品会 <strong>打断</strong> 食用<br>获得 <strong>速度 III（14秒）</strong> 效果，附带发光效果（10秒）<br>无视饱食度<br>使用音效：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
+        soulControl: { name: "🔮 控魂术", desc: "控制类道具", faction: "human", detail: "效果：人类玩家专用道具，可短暂控制全场的鬼玩家，使整个鬼阵容无法移动 6 秒。<br>冷却时间：18秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
+        soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：使用后持续揭示所有玩家的位置 25 秒。<br>冷却时间：35秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
+        teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用（仅能右键使用）。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
+        adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：使用获得速度 II 效果 10 秒。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
+        frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：使用获得速度 II 效果 10 秒。<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" },
+        spearRush: { name: "🗡️ 冲刺矛", desc: "左键冲刺，消耗品", faction: "neutral", detail: "效果：左键使用进行一次原版矛的冲刺效果，使用后即刻消失。<br>服务器版本要求：<strong>1.21.4 及以上</strong>，插件启动时自动检测版本。<br>使用音效：矛冲刺音效（由游戏内置）" },
+        levitationPotion: { name: "🧪 漂浮药水", desc: "右键获得漂浮效果", faction: "neutral", detail: "效果：右键使用获得 <strong>漂浮</strong> 效果 4.5 秒（大约可以飞 3.4 个方块高度）。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" }
+    };
 
-    const itemsDetailEn = {
-        reaper: { name: "🗡️ Reaper", desc: "Demon Hunter exclusive weapon", faction: "human", detail: "Effect: Deals configured damage per hit, displays damage and remaining health. Ghosts enter spectator mode when health reaches zero and trigger respawn timer.<br>Cooldown: 2 seconds<br>Sound: None (melee)" },
-        holyRedemption: { name: "💊 Holy Redemption", desc: "Redeemer exclusive item", faction: "human", detail: "Effect: Converts a ghost back to human. Limited uses (default 2). Teleports Redeemer to safe location after use.<br>Cooldown: 10 seconds<br>Sound: <code>ITEM_TOTEM_USE</code>" },
-        secondChance: { name: "❤️ Second Chance", desc: "Passive trigger", faction: "human", detail: "Effect: Triggers when a human is infected, blocks infection and keeps human identity. Cooldown 180s.<br>Sound: User <code>ITEM_TOTEM_USE</code>, attacker ghost <code>ENTITY_ELDER_GUARDIAN_CURSE</code>, others <code>ENTITY_PLAYER_LEVELUP</code>" },
-        iceBall: { name: "🧊 Ice Ball", desc: "Throwable control item", faction: "neutral", detail: "Effect: Applies <strong>Slowness III (3s)</strong> to hit player. Affects both humans and ghosts.<br>Sound: <code>ENTITY_SNOWBALL_THROW</code>" },
-        stinkySteak: { name: "🥩 Stinky Steak", desc: "Speed item", faction: "neutral", detail: "Effect: Grants <strong>Speed III (5s)</strong> regardless of hunger. Also applies glowing effect.<br>Sound: <code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
-        soulControl: { name: "🔮 Soul Control", desc: "Control item", faction: "human", detail: "Effect: Briefly controls nearby ghosts, preventing movement and attack.<br>Cooldown: 18 seconds<br>Sound: User <code>ENTITY_ILLUSIONER_CAST_SPELL</code>, affected ghost <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
-        soulDetector: { name: "👁️ Soul Detector", desc: "Detection item", faction: "ghost", detail: "Effect: Reveals nearby ghost positions on minimap or direction indicator.<br>Cooldown: 35 seconds<br>Sound: User <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>, global <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
-        teleportPearl: { name: "🪄 Teleport Pearl", desc: "Tactical teleport item", faction: "neutral", detail: "Effect: Teleports player to pearl landing point. Usable by both factions.<br>Cooldown: 20 seconds<br>Sound: <code>ENTITY_ENDER_PEARL_THROW</code>" },
-        adrenaline: { name: "🧪 Adrenaline", desc: "Human only", faction: "human", detail: "Effect: Grants speed boost.<br>Sound: <code>ENTITY_PLAYER_SPLASH</code>" },
-        frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost only", faction: "ghost", detail: "Effect: Grants speed boost.<br>Sound: <code>ENTITY_WITHER_SHOOT</code>" },
-		        spearRush: { name: "🗡️ Spear Rush", desc: "Left-click dash, consumed", faction: "neutral", detail: "Effect: Left-click to perform a spear rush‑like dash, consumed immediately after use.<br>Server version requirement: <strong>≥ 1.21.4</strong>, auto‑detected on startup.<br>Sound: Built‑in spear rush sound" },
-        levitationPotion: { 
-            name: "🧪 Levitation Potion", 
-            desc: "Right-click for levitation", 
-            faction: "neutral", 
-            detail: "Effect: Right-click to gain <strong>Levitation</strong> for 4.5 seconds.<br>Sound: <code>ENTITY_PLAYER_SPLASH</code>" 
-        }
-    };  // 这是 itemsDetailEn 的结束
-	
-    function renderItems(lang) {
-        const container = document.getElementById(`items-list-${lang}`);
+    function renderItems() {
+        const container = document.getElementById('items-list-zh');
         if (!container) return;
-        const data = lang === 'zh' ? itemsDetailZh : itemsDetailEn;
+        const data = itemsDetailZh;
         container.innerHTML = '';
         for (let key in data) {
             const item = data[key];
@@ -962,14 +740,13 @@ ghost-particle:
             if (item.faction === 'human') factionClass = 'card-human';
             else if (item.faction === 'ghost') factionClass = 'card-ghost';
             const card = document.createElement('div'); card.className = `card ${factionClass}`;
-            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem;">${item.desc}</span><br><button class="btn-detail" data-item="${key}" data-lang="${lang}">📖 Details</button>`;
+            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem;">${item.desc}</span><br><button class="btn-detail" data-item="${key}">📖 详情</button>`;
             container.appendChild(card);
         }
     }
 
-    function showItemDetail(lang, key) {
-        const data = lang === 'zh' ? itemsDetailZh : itemsDetailEn;
-        const item = data[key];
+    function showItemDetail(key) {
+        const item = itemsDetailZh[key];
         document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><hr><div style="line-height:1.6;">${item.detail}</div>`;
         showModal();
     }
@@ -990,35 +767,34 @@ ghost-particle:
 
     function bindModalEvents() {
         document.querySelectorAll('.btn-detail[data-item]').forEach(btn => {
-            btn.removeEventListener('click', (e) => showItemDetail(btn.dataset.lang, btn.dataset.item));
-            btn.addEventListener('click', (e) => showItemDetail(btn.dataset.lang, btn.dataset.item));
+            btn.removeEventListener('click', (e) => showItemDetail(btn.dataset.item));
+            btn.addEventListener('click', (e) => showItemDetail(btn.dataset.item));
         });
     }
 
-    function setLanguage(lang) {
-        document.getElementById('zh-content').classList.toggle('active-lang', lang === 'zh');
-        document.getElementById('en-content').classList.toggle('active-lang', lang === 'en');
-        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
-        renderItems(lang);
-        bindModalEvents();
-        renderVersionList(lang);
+    // 版本切换 Tab
+    function initVersionTabs() {
+        document.querySelectorAll('.version-tabs').forEach(tabsContainer => {
+            const tabs = tabsContainer.querySelectorAll('.version-tab');
+            const panels = tabsContainer.parentElement.querySelectorAll('.version-panel');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const panelId = tab.dataset.panel;
+                    panels.forEach(p => p.classList.remove('active'));
+                    document.getElementById(panelId).classList.add('active');
+                });
+            });
+        });
     }
 
-    // 版本数据
+    // 版本历史数据
     const versionData = {
         zh: [
-		    { version: "v2.3.0", tag: "当前版本|新道具 & 管理员工具", content: `<strong>🎯 新增道具：</strong><br>• <strong>冲刺矛</strong>（<code>GOLDEN_SPEAR</code>）：左键冲刺，使用后消失（仅 1.21.4+ 可用）<br>• <strong>漂浮药水</strong>（<code>LINGERING_POTION</code>）：右键获得漂浮 4.5 秒<br><br><strong>🛠️ 新增管理员命令：</strong><br>• <code>/gost start</code> — 强制开局（跳过人数限制）<br>• <code>/gostadmin testmode</code> — 单人测试模式<br>• <code>/gostadmin giveitem &lt;道具名&gt;</code> — 直接获得道具（支持模糊匹配）<br><br><strong>⚙️ 配置版本升级到 27</strong><br>插件版本升级到 2.3.0<br><br><strong>+ 新增游戏结束奖金排行榜：游戏结算时按奖金从高到低排序显示所有参与玩家的奖励排行，前三名分别显示金银铜奖牌（🥇🥈🥉），方便玩家查看最终收益。` },
-            { version: "v2.2.3", tag: "视觉、听觉沉浸&重新支持英文", content: `<p>🔊 新增音效系统：<br>
-<strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br>
-<strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br>
-<strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br>
-<strong>🎬 新增道具居中字幕提示：</strong><br>• 肾上腺素使用者：⚡ 肾上腺素! → 移动速度大幅提升!<br>• 狂暴药水使用者：💢 狂暴药水! → 攻击力与速度提升!<br>• 凝冰球被击中者：❄ 被冻伤! → 移动速度降低!<br>• 控魂术被控者：✧ 你被控魂! → 无法移动!<br>• 臭牛排使用者：🥩 好臭! → 速度提升，但位置已暴露!<br>• 灵魂探测器被揭露者：⚠ 你的位置被揭露! → 所有玩家都能看到你!<br>• 神之救赎双方：救赎者 ✝ 神之救赎成功! / 被救者 ✝ 你被救赎了!<br>
-<strong>🌐 新增英文语言支持：</strong> 在 config.yml 中设置 language.default: en_US 即可切换为英文。<br>
-<strong>⚙️ 配置自动迁移：</strong> 检测到配置版本不一致时自动迁移，旧配置备份为 config_old_v{版本号}.yml。<br>
-<strong>🔧 修复1.20.x API兼容性。</strong><br>配置版本升级到26。</p>
-<div style="margin-top: 1rem; text-align: right;">
-    <a href="https://modrinth.com/plugin/gost/changelog" target="_blank" class="link-btn" style="background: #ff5e5e30; border: 1px solid #ff5e5e; border-radius: 2rem; padding: 0.4rem 1.2rem; color: #ffb7b7; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;" onmouseover="this.style.background='#ff5e5e'; this.style.color='white';" onmouseout="this.style.background='#ff5e5e30'; this.style.color='#ffb7b7';">📜 在 Modrinth 查看完整更新日志 <i class="fas fa-external-link-alt"></i></a>
-</div>` },
+            { version: "v2.3.1", tag: "当前版本|救赎者重构 & 收割者重做", content: `<strong>✨ 救赎者系统重构</strong><br>• 删除神圣守护模式切换，救赎者常驻每局游戏<br>• 每局最多 <strong>2 名</strong> 救赎者，随"神之救赎"道具发放随机绑定<br>• 救赎者获得独立神圣守护（2 次防御）+ 2 次"神之救赎"使用次数<br><br><strong>⚔️ 收割者武器重做</strong><br>• 左键单体：普通鬼 2 次击杀，母体鬼 4 次击杀（纯击中次数）<br>• 右键范围技能「收割」：4 格 AOE，10 秒冷却<br><br><strong>👻 鬼复活机制优化</strong><br>• 死亡状态：隐身但可自由移动（不锁定坐标、不减速、不飞行）<br>• 复活方式：随机地点复活（游戏区域内随机坐标传送），不再原地复活<br>• 保留 10 秒倒计时 + 重生字幕/音效<br><br><strong>🎆 击杀烟花反馈</strong><br>• 猎魔人击杀鬼时，击杀位置绽放红黄 BURST 烟花（1 tick 后引爆）<br>• 爆炸粒子 + 凋零死亡音效<br>• 击杀字幕（中英双语）：💥 击杀成功! → 你击杀了 [玩家]<br><br><strong>👑 母体进化系统</strong><br>• 触发条件：猎魔人阶段，参与游戏玩家 > 5 人<br>• 生成：游戏区域内随机位置放置发光绿宝石（附魔粒子 + 发光效果）<br>• 拾取条件：仅普通鬼可拾取<br>• 效果：拾取后变身为母体鬼，获得母体血量，可猎杀猎魔人<br>• 公告/字幕/音效（中英双语）<br><br><strong>🛡️ 猎魔人阶段防御重构</strong><br>• 新增阵营伤害保护、死亡拦截、环境伤害保护<br>• 删除"禁止回血"设计<br><br><strong>🥩 臭牛排机制修改</strong><br>• 右键开始食用，1 秒后生效，切换物品打断<br><br><strong>🎒 背包管理系统</strong><br>• 最多 9 个道具，不可放入背包，不堆叠<br><br><strong>📋 命令整合与权限精简</strong><br>• divineguardian/ghostparticle 并入 /gostadmin<br>• 仅保留 gost.use / gost.player / gost.admin 三个权限<br><br><strong>🔥 选区粒子框</strong><br>• 设置选区后显示火焰粒子框 30 秒<br><br><strong>🌐 双语字幕</strong><br>• 核心事件新增中英双语字幕<br><br><strong>⚙️ 配置版本升级到 28</strong><br>插件版本升级到 2.3.1` },
+            { version: "v2.3.0", tag: "新道具 & 管理员工具", content: `<strong>🎯 新增道具：</strong><br>• <strong>冲刺矛</strong>（<code>GOLDEN_SPEAR</code>）：左键冲刺，使用后消失（仅 1.21.4+ 可用）<br>• <strong>漂浮药水</strong>（<code>LINGERING_POTION</code>）：右键获得漂浮 4.5 秒<br><br><strong>🛠️ 新增管理员命令：</strong><br>• <code>/gost start</code> — 强制开局（跳过人数限制）<br>• <code>/gostadmin testmode</code> — 单人测试模式<br>• <code>/gostadmin giveitem &lt;道具名&gt;</code> — 直接获得道具（支持模糊匹配）<br><br><strong>⚙️ 配置版本升级到 27</strong><br>插件版本升级到 2.3.0<br><br><strong>+ 新增游戏结束奖金排行榜</strong>` },
+            { version: "v2.2.3", tag: "视觉、听觉沉浸&重新支持英文", content: `<p>🔊 新增音效系统：<br><strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br><strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br><strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br><strong>🎬 新增道具居中字幕提示：</strong><br>• 肾上腺素使用者：⚡ 肾上腺素! → 移动速度大幅提升!<br>• 狂暴药水使用者：💢 狂暴药水! → 攻击力与速度提升!<br>• 凝冰球被击中者：❄ 被冻伤! → 移动速度降低!<br>• 控魂术被控者：✧ 你被控魂! → 无法移动!<br>• 臭牛排使用者：🥩 好臭! → 速度提升，但位置已暴露!<br>• 灵魂探测器被揭露者：⚠ 你的位置被揭露! → 所有玩家都能看到你!<br>• 神之救赎双方：救赎者 ✝ 神之救赎成功! / 被救者 ✝ 你被救赎了!<br><strong>🌐 新增英文语言支持：</strong> 在 config.yml 中设置 language.default: en_US 即可切换为英文。<br><strong>⚙️ 配置自动迁移：</strong> 检测到配置版本不一致时自动迁移，旧配置备份为 config_old_v{版本号}.yml。<br><strong>🔧 修复1.20.x API兼容性。</strong><br>配置版本升级到26。</p>` },
             { version: "v2.2.2", tag: "猎魔人登场(大改)", content: "<strong>1. 鬼玩家复活机制</strong>：猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。<br><strong>2. 智能血量调整系统</strong>：普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。<br><strong>3. 禁止回血机制</strong>：猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。<br><strong>4. 收割者伤害系统</strong>：基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。<br><strong>5. 神圣守护3次抵挡机制</strong>：母体需攻击3次才能破除猎魔人守护，普通鬼猎魔人阶段无法感染只能躲避猎杀。<br><strong>6. 猎魔人阶段自动激活所有人类神圣守护</strong>，无猎魔人时广播提示。<br>配置项：divine-guardian.demon-hunter 下可调整复活时间、血量、伤害等参数。" },
             { version: "v2.2.1_Cover", tag: "第二稳定版本|修复神圣守护2&凝冰球问题", content: "🎯 语言系统全面优化（Cover version核心改进）：大幅扩充默认消息库，90+条默认中文消息，智能消息回退机制，错误隔离保护，插件启动保护。<br>🛠️ 游戏平衡性调整：凝冰球修复（对所有玩家生效），默认血量调整为10颗心，道具系统优化，配置版本更新（v19→v20）。<br>🌑 黑暗效果与疾跑并存系统：原生DARKNESS效果，属性修改器增加30%移动速度，智能检查机制，版本兼容性。<br>🛡️ 神圣守护系统修复：触发修复，救赎者模式优化，模式切换稳定性，冷却时间修复。<br>🎯 道具系统修复：\"一次机会\"道具修复，冷却时间同步，发放逻辑优化，使用反馈增强。<br>⚙️ 配置系统升级：配置版本升级到20，黑暗效果描述更新为\"不影响疾跑\"，黑暗效果默认启用。" },
             { version: "v2.2.0", tag: "新增神圣守护模式2(新玩意)", content: "⚡ 神圣守护模式2 - 救赎者系统：最后一名人类成为救赎者，神之救赎道具转化鬼玩家，随机传送，2次使用限制，高亮显示+速度效果。<br>🎮 游戏模式切换：模式1传统神圣守护，模式2救赎者模式，/divineguardian setmode <1|2>，游戏进行中切换立即生效。<br>🔧 队列系统全面优化：智能队列清理，退出队列提示，加入队列引导，Boss栏同步修复，队列状态透明。<br>🗑️ 代码精简与性能提升：移除冗余系统（NPC、独立货币发放、观战系统），配置清理，内存优化，错误修复。" },
@@ -1030,28 +806,13 @@ ghost-particle:
             { version: "v2.0.1", tag: "新增传送珍珠&臭牛排", content: "新增传送珍珠、臭牛排，智能倒计时系统。" },
             { version: "v2.0.0", tag: "最初版本", content: "架构重构，独立区域系统，道具系统优化。" },
             { version: "v1.0.0", tag: "已作废", content: "⚠️ 此版本已作废（因机制与作者想要的不一致）。基础感染对抗玩法。" }
-        ],
-        en: [
-		    { version: "v2.3.0", tag: "Current|New Items & Admin Tools", content: `<strong>🎯 New Items:</strong><br>• <strong>Spear Rush</strong> (<code>GOLDEN_SPEAR</code>): Left-click to dash, consumed on use (≥1.21.4 only)<br>• <strong>Levitation Potion</strong> (<code>LINGERING_POTION</code>): Right-click for Levitation 4.5s<br><br><strong>🛠️ New Admin Commands:</strong><br>• <code>/gost start</code> — Force start (bypass player limit)<br>• <code>/gostadmin testmode</code> — Solo test mode<br>• <code>/gostadmin giveitem &lt;name&gt;</code> — Get any item (fuzzy match)<br><br><strong>⚙️ Config version upgraded to 27</strong><br>Plugin version upgraded to 2.3.0 <br><br><strong>+ Added end-of-game reward leaderboard: <br>When the game ends, all participating players’ rewards are sorted from highest to lowest and displayed. The top three players receive gold, silver, and bronze medals (🥇🥈🥉), allowing players to easily view their final earnings.` },
-            { version: "v2.2.3", tag: "More immersive|Support English again", content: "🔊 New sound system added:<br>• Phase sounds: preparation countdown, game start, victory sounds<br>• Item distribution sounds: <code>ENTITY_ITEM_PICKUP</code> and <code>BLOCK_NOTE_BLOCK_PLING</code><br>• Item usage sounds for all items (see item details)<br>• Faction switch sounds<br>⚙️ Automatic config migration: old config values are preserved, deprecated keys removed, new keys use defaults. Old config backed up as config_old_v{version}.yml.<br>Config version upgraded to 26." },
-            { version: "v2.2.2", tag: "", content: "Ghost respawn (15s), health adjustments, no healing, Reaper damage system, Divine Guardian 3-hit protection." },
-            { version: "v2.2.1_Cover", tag: "Language Overhaul", content: "Language system overhaul (90+ messages), Dark+Sprint, bug fixes." },
-            { version: "v2.2.0", tag: "", content: "Redeemer system, mode switching, queue optimization." },
-			{ version: "v2.1.3", tag: "", content: "Fixed admin immunity, creative mode auto-switch to survival." },
-			{ version: "v2.1.2", tag: "", content: "Ghost particle effects, 21 types, RGB colors, /ghostparticle commands." },
-			{ version: "v2.1.1", tag: "", content: "Divine Guardian system, visual effects, management commands." },
-			{ version: "v2.1.0", tag: "", content: "Prize pool optimization, heartbeat sound, ghost-to-human feature." },
-			{ version: "v2.0.2", tag: "", content: "Dark effect system, fixed soul detector." },
-			{ version: "v2.0.1", tag: "", content: "Teleport pearl, stinky steak, smart countdown." },
-			{ version: "v2.0.0", tag: "", content: "Architecture refactor, area system, item system optimization." },
-			{ version: "v1.0.0", tag: "Deprecated", content: "Deprecated – basic infection gameplay." }
         ]
     };
 
-    function renderVersionList(lang) {
-        const container = document.getElementById(`version-list-${lang}`);
+    function renderVersionList() {
+        const container = document.getElementById('version-list-zh');
         if (!container) return;
-        const data = versionData[lang];
+        const data = versionData.zh;
         container.innerHTML = '';
         data.forEach((ver, idx) => {
             const itemDiv = document.createElement('div');
@@ -1061,33 +822,31 @@ ghost-particle:
                     <div><h3>${ver.version} ${ver.tag ? `<span class="version-tag">${ver.tag}</span>` : ''}</h3></div>
                     <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="version-detail" id="version-detail-${lang}-${idx}">${ver.content}</div>
+                <div class="version-detail" id="version-detail-${idx}">${ver.content}</div>
             `;
             container.appendChild(itemDiv);
         });
-        document.querySelectorAll(`#version-list-${lang} .version-header`).forEach(header => {
+        document.querySelectorAll('.version-header').forEach(header => {
             header.addEventListener('click', () => {
                 const idx = header.dataset.idx;
-                const detailDiv = document.getElementById(`version-detail-${lang}-${idx}`);
+                const detail = document.getElementById(`version-detail-${idx}`);
                 const icon = header.querySelector('i');
-                detailDiv.classList.toggle('show');
-                icon.className = detailDiv.classList.contains('show') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                detail.classList.toggle('show');
+                icon.className = detail.classList.contains('show') ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
             });
         });
     }
 
+    // 初始化
     document.querySelector('.modal-close').addEventListener('click', hideModal);
     window.addEventListener('click', (e) => { if (e.target === document.getElementById('modal')) hideModal(); });
     window.addEventListener('DOMContentLoaded', () => {
         initCarousel('carousel');
-        initCarousel('carouselEn');
-        renderItems('zh');
-        renderItems('en');
+        renderItems();
         initCollapsibles();
         bindModalEvents();
-        renderVersionList('zh');
-        renderVersionList('en');
-        document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+        renderVersionList();
+        initVersionTabs();
         document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('show'));
     });
 </script>
