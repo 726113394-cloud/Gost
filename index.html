@@ -7,129 +7,554 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ===== 基础重置 & 液态玻璃背景 ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0c12; font-family: 'Inter', sans-serif; color: #eef2ff; line-height: 1.5; scroll-behavior: smooth; }
-        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -2; background: radial-gradient(circle at 30% 20%, rgba(80, 30, 40, 0.4), #0a0c12 85%); }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #14181f; border-radius: 6px; }
-        ::-webkit-scrollbar-thumb { background: #ff3b3b80; border-radius: 6px; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2; }
-        .navbar { position: sticky; top: 0; background: rgba(10,12,18,0.65); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,59,59,0.5); z-index: 100; padding: 0.8rem 0; }
-        .nav-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
-        .logo { font-weight: 800; font-size: 1.6rem; }
-        .logo span:first-child { background: linear-gradient(135deg, #a855f7, #d8b4fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .logo .colorful { background: linear-gradient(90deg, #ff5e5e, #ffb347, #2ecc71, #3498db, #e74c3c, #ff5e5e); background-size: 300% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: rainbow 3s linear infinite; }
+        body {
+            background: #080a14;
+            font-family: 'Inter', sans-serif;
+            color: #eef2ff;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+            background: radial-gradient(circle at 20% 30%, rgba(180, 70, 120, 0.35), rgba(60, 40, 140, 0.2) 40%, #080a14 85%);
+            animation: breatheGlow 12s ease-in-out infinite alternate;
+        }
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 70%, rgba(255, 80, 80, 0.15), transparent 60%);
+            animation: breatheGlow2 15s ease-in-out infinite alternate;
+        }
+        @keyframes breatheGlow {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+            100% { transform: scale(1.2) rotate(3deg); opacity: 1; }
+        }
+        @keyframes breatheGlow2 {
+            0% { transform: scale(0.9) rotate(-2deg); opacity: 0.5; }
+            100% { transform: scale(1.1) rotate(2deg); opacity: 0.9; }
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 100, 100, 0.4); border-radius: 10px; backdrop-filter: blur(10px); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 100, 100, 0.7); }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== 导航栏 ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(8, 10, 20, 0.55);
+            backdrop-filter: blur(40px) saturate(1.2);
+            -webkit-backdrop-filter: blur(40px) saturate(1.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            z-index: 100;
+            padding: 0.6rem 0;
+            transition: box-shadow 0.4s ease;
+        }
+        .navbar:hover {
+            box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+        }
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logo {
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+        }
+        .logo span:first-child {
+            background: linear-gradient(135deg, #c084fc, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo .colorful {
+            background: linear-gradient(90deg, #ff7b7b, #ffb347, #6ee7b7, #60a5fa, #f472b6, #ff7b7b);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow 4s linear infinite;
+        }
         @keyframes rainbow { 0% { background-position: 0% center; } 100% { background-position: 300% center; } }
-        .section { margin: 2.5rem 0; scroll-margin-top: 80px; }
-        .section-title { font-size: 1.8rem; font-weight: 700; border-left: 5px solid #ff5e5e; padding-left: 1rem; margin-bottom: 1.5rem; }
+
+        .section {
+            margin: 2.5rem 0;
+            scroll-margin-top: 80px;
+            animation: fadeSlideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+        }
+        .section:nth-child(2) { animation-delay: 0.05s; }
+        .section:nth-child(3) { animation-delay: 0.1s; }
+        .section:nth-child(4) { animation-delay: 0.15s; }
+        .section:nth-child(5) { animation-delay: 0.2s; }
+        .section:nth-child(6) { animation-delay: 0.25s; }
+
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #f0f2ff, #a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            padding-left: 0;
+            border-left: none;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(255, 100, 100, 0.6), transparent);
+            border-radius: 10px;
+        }
+
+        /* ===== 液态玻璃卡片 ===== */
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px) saturate(1.1);
+            -webkit-backdrop-filter: blur(24px) saturate(1.1);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 28px !important;
+            padding: 1.5rem;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            opacity: 0.5;
+        }
+        .card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .card-human {
+            background: rgba(46, 204, 113, 0.08) !important;
+            border-left: 3px solid rgba(46, 204, 113, 0.5) !important;
+        }
+        .card-ghost {
+            background: rgba(231, 76, 60, 0.08) !important;
+            border-left: 3px solid rgba(231, 76, 60, 0.5) !important;
+        }
+
         .grid-2col { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
         .grid-3col { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-        .card { background: rgba(20,25,35,0.7); backdrop-filter: blur(4px); border: 1px solid rgba(255,80,80,0.3); border-radius: 1.5rem; padding: 1.5rem; transition: all 0.25s ease; }
-        .card:hover { border-color: #ff5e5e; transform: translateY(-3px); background: rgba(32,36,48,0.9); }
-        .card-human { background: rgba(34,139,34,0.25); border-left: 3px solid #2ecc71; }
-        .card-ghost { background: rgba(220,20,60,0.25); border-left: 3px solid #e74c3c; }
-        .badge { background: #ff5e5e20; color: #ffa0a0; border-radius: 30px; padding: 0.2rem 0.8rem; font-size: 0.7rem; display: inline-block; }
-        .command-block { background: #0b0e14; padding: 0.6rem 1rem; border-radius: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; border-left: 3px solid #ff5e5e; overflow-x: auto; white-space: pre-wrap; }
-        .btn-detail { background: #ff5e5e30; border: 1px solid #ff5e5e; color: #ffb7b7; padding: 0.3rem 0.9rem; border-radius: 2rem; cursor: pointer; font-size: 0.75rem; transition: 0.2s; margin-top: 0.8rem; display: inline-block; }
-        .btn-detail:hover { background: #ff5e5e; color: white; }
-        .collapsible { background: #11161f; border-radius: 1.2rem; margin: 1rem 0; border: 1px solid #2a2f3f; overflow: hidden; }
-        .collapsible-header { padding: 1rem 1.4rem; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; background: #0f141c; transition: 0.2s; }
-        .collapsible-header:hover { background: #1a212e; color: #ff9f6e; }
-        .collapsible-content { padding: 0 1.4rem; max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.2s; background: #0a0e16; }
-        .collapsible-content.show { padding: 1.2rem 1.4rem; max-height: 5000px; }
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index:1000; align-items: center; justify-content: center; opacity:0; transition: opacity 0.2s; }
-        .modal.show { display: flex; opacity:1; }
-        .modal-content { background: #11161f; border: 1px solid #ff5e5e; border-radius: 2rem; max-width: 750px; width:90%; max-height:85vh; overflow-y: auto; padding:1.8rem; transform: scale(0.95); transition: transform 0.2s; }
-        .modal.show .modal-content { transform: scale(1); }
-        .modal-close { float: right; font-size: 1.8rem; cursor: pointer; color: #ffa0a0; }
-        footer { text-align: center; padding: 2rem; border-top: 1px solid #232838; margin-top: 2rem; color: #7e8aa8; }
-        hr { border-color: #2a2f3f; margin: 1rem 0; }
-        @media (max-width: 750px) { .container { padding: 0 1rem; } }
-        pre { font-family: 'JetBrains Mono', monospace; white-space: pre-wrap; word-break: break-word; }
-        .link-buttons { margin-top: 0.8rem; display: flex; gap: 1rem; flex-wrap: wrap; }
-        .link-btn { background: rgba(30,35,50,0.8); border: 1px solid #ff5e5e; border-radius: 2rem; padding: 0.4rem 1rem; color: #ffb7b7; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: 0.2s; }
-        .link-btn:hover { background: #ff5e5e; color: white; }
-        .carousel-container { margin: 2rem 0 2.5rem; position: relative; width: 100%; border-radius: 2rem; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(255,80,80,0.4); }
-        .carousel-slides { display: flex; transition: transform 0.5s ease-in-out; }
-        .carousel-slide { flex: 0 0 100%; }
-        .carousel-slide img { width: 100%; height: auto; max-height: 480px; object-fit: cover; display: block; }
-        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 2rem; padding: 0.5rem 1rem; cursor: pointer; z-index: 10; backdrop-filter: blur(4px); transition: 0.2s; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
-        .carousel-btn:hover { background: #ff5e5e; }
-        .carousel-btn-left { left: 1rem; }
-        .carousel-btn-right { right: 1rem; }
-        .carousel-dots { position: absolute; bottom: 1rem; left: 0; right: 0; display: flex; justify-content: center; gap: 0.6rem; z-index: 10; }
-        .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; transition: 0.2s; }
-        .dot.active { background: #ff5e5e; transform: scale(1.2); box-shadow: 0 0 8px #ff5e5e; }
-        @media (max-width:750px){ .carousel-btn{ width:32px; height:32px; font-size:1.2rem; } .carousel-slide img{ max-height:280px; } }
-        .version-list { display: flex; flex-direction: column; gap: 0.8rem; }
-        .version-item { border-bottom: 1px solid #2a2f3f; }
-        .version-header { padding: 0.8rem 1rem; background: #0f141c; border-radius: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .version-header:hover { background: #1a212e; }
-        .version-header h3 { margin: 0; font-size: 1.2rem; }
-        .version-header .version-tag { background: #ff5e5e30; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; }
-        .version-detail { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; padding: 0 1rem; }
-        .version-detail.show { max-height: 800px; padding: 1rem; }
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; background: #0f121b; border-radius: 1rem; margin: 1rem 0; }
-        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #2a2f3f; }
-        th { background: #1e2434; color: #ffb7b7; }
-        .tool-card {
-            background: linear-gradient(135deg, #0f172a, #0a0c12);
-            border: 1px solid #3b82f6;
-            border-radius: 1rem;
-            padding: 1rem 1.5rem;
+
+        /* ===== 折叠面板 - 采用侧边胶囊缓出动效 ===== */
+        .collapsible {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 28px;
             margin: 1rem 0;
+            overflow: hidden;
+            transition: box-shadow 0.4s ease;
+        }
+        .collapsible:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+        .collapsible-header {
+            padding: 1.2rem 1.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+            color: #d4dcff;
+            font-size: 1.1rem;
+            user-select: none;
+        }
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+        }
+        .collapsible-header i {
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .collapsible-content {
+            padding: 0 1.8rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                        padding 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            background: rgba(0,0,0,0.1);
+            border-top: 0px solid transparent;
+        }
+        .collapsible-content.show {
+            padding: 1.5rem 1.8rem;
+            max-height: 5000px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* ===== 版本历史 - 采用侧边胶囊缓出动效 ===== */
+        .version-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .version-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.3s ease;
+        }
+        .version-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .version-header {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .version-header:hover { background: rgba(255, 255, 255, 0.04); }
+        .version-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+        .version-header .version-tag {
+            background: rgba(255, 80, 80, 0.2);
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 80, 80, 0.1);
+        }
+        .version-header i {
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .version-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                        padding 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            padding: 0 1.5rem;
+            color: #b8c4e0;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .version-detail.show {
+            max-height: 1200px;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        /* ===== 版本切换 Tab ===== */
+        .version-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
+        }
+        .version-tab {
+            padding: 0.5rem 1.4rem;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            color: #aab4d0;
+            transform-origin: center;
+            will-change: transform;
+        }
+        .version-tab:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+        .version-tab.active {
+            background: rgba(255, 80, 80, 0.15);
+            border-color: rgba(255, 80, 80, 0.3);
+            color: #ffb7b7;
+            box-shadow: 0 4px 20px rgba(255, 80, 80, 0.1);
+        }
+        .version-panel {
+            display: none;
+            animation: fadeSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .version-panel.active { display: block; }
+
+        /* ===== 工具卡片 & 按钮 ===== */
+        .tool-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 28px;
+            padding: 1.2rem 2rem;
+            margin: 1.5rem 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 1rem;
-            transition: all 0.2s ease;
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
-        .tool-card:hover { border-color: #60a5fa; box-shadow: 0 0 12px rgba(59,130,246,0.3); }
-        .tool-card .message { flex: 1; }
-        .tool-card .message p { margin: 0 0 0.3rem 0; color: #e2e8f0; font-size: 0.95rem; }
-        .tool-card .builtin-badge { background: #2ecc71; color: #0a0c12; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: bold; display: inline-block; }
+        .tool-card:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .tool-card .message p { margin: 0 0 0.3rem 0; color: #d4dcff; font-size: 0.95rem; }
+        .tool-card .builtin-badge {
+            background: rgba(46, 204, 113, 0.2);
+            color: #6ee7b7;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            backdrop-filter: blur(10px);
+        }
         .migration-tool-btn {
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            border: none;
-            border-radius: 2rem;
-            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 40px;
+            padding: 0.6rem 1.8rem;
             color: white !important;
             font-weight: 700;
             font-size: 0.95rem;
             text-decoration: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
+            transform-origin: center;
+            will-change: transform;
         }
-        .migration-tool-btn:hover { background: linear-gradient(135deg, #3b82f6, #1e3a8a); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,130,246,0.6); color: white; }
-        .version-tabs {
-            display: flex;
+        .migration-tool-btn:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(37, 99, 235, 0.2));
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+
+        .link-buttons { margin-top: 0.8rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .link-btn {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 0.4rem 1.4rem;
+            color: #c8d0e8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
             gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            transform-origin: center;
+            will-change: transform;
         }
-        .version-tab {
-            padding: 0.5rem 1.2rem;
-            background: rgba(30,35,50,0.6);
-            border: 1px solid #2a2f3f;
-            border-radius: 2rem;
+        .link-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .btn-detail {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #b0bcd8;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: 0.2s;
-            color: #ccd6f0;
+            font-size: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            margin-top: 0.8rem;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            transform-origin: center;
+            will-change: transform;
         }
-        .version-tab:hover { background: #ff5e5e40; border-color: #ff5e5e; }
-        .version-tab.active { background: #ff5e5e; border-color: #ff5e5e; color: white; box-shadow: 0 0 12px #ff5e5e; }
-        .version-panel { display: none; }
-        .version-panel.active { display: block; animation: fadeIn 0.3s; }
-        .ver-tag { display: inline-block; background: #ff5e5e30; padding: 0.1rem 0.6rem; border-radius: 12px; font-size: 0.7rem; margin-left: 0.5rem; color: #ffa0a0; }
-        .ver-tag-current { background: #2ecc71; color: #0a0c12; }
-        .ver-tag-old { background: #ff5e5e60; }
+        .btn-detail:hover {
+            background: rgba(255, 80, 80, 0.15);
+            border-color: rgba(255, 80, 80, 0.3);
+            color: #ffb7b7;
+            transform: scale(1.05);
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #b0bcd8;
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.7rem;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ===== 表格 ===== */
+        .table-wrapper { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 1rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        th, td {
+            padding: 0.75rem 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #c8d4f0;
+            font-weight: 600;
+        }
+        tr:last-child td { border-bottom: none; }
+
+        /* ===== 模态框 ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(30px) saturate(1.2);
+            -webkit-backdrop-filter: blur(30px) saturate(1.2);
+            z-index:1000;
+            align-items: center;
+            justify-content: center;
+            opacity:0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show { display: flex; opacity:1; }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            max-width: 750px;
+            width:90%;
+            max-height:85vh;
+            overflow-y: auto;
+            padding:2rem;
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+        }
+        .modal.show .modal-content { transform: scale(1); }
+        .modal-close {
+            float: right;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #8892b0;
+            transition: all 0.3s ease;
+            line-height: 1;
+        }
+        .modal-close:hover { color: #fff; transform: rotate(90deg); }
+
+        /* ===== 轮播 ===== */
+        .carousel-container {
+            margin: 2rem 0 2.5rem;
+            position: relative;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0,0,0,0.2);
+        }
+        .carousel-slides { display: flex; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .carousel-slide { flex: 0 0 100%; }
+        .carousel-slide img { width: 100%; height: auto; max-height: 480px; object-fit: cover; display: block; }
+        .carousel-btn {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .carousel-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255,255,255,0.2); transform: translateY(-50%) scale(1.05); }
+        .carousel-btn-left { left: 1rem; }
+        .carousel-btn-right { right: 1rem; }
+        .carousel-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 0; right: 0;
+            display: flex; justify-content: center; gap: 0.6rem;
+            z-index: 10;
+        }
+        .dot {
+            width: 8px; height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid transparent;
+        }
+        .dot.active {
+            background: #ff5e5e;
+            transform: scale(1.3);
+            box-shadow: 0 0 20px rgba(255, 80, 80, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
 
         /* ===== 目录系统 ===== */
         .toc-pill-btn {
@@ -138,26 +563,27 @@
             top: 50%;
             transform: translateY(-50%);
             z-index: 60;
-            width: 44px;
-            height: 70px;
-            background: rgba(10, 12, 18, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 80, 80, 0.3);
-            border-radius: 30px;
+            width: 48px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(40px) saturate(1.2);
+            -webkit-backdrop-filter: blur(40px) saturate(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             writing-mode: vertical-rl;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             font-size: 0.7rem;
             font-weight: 600;
-            color: #eef2ff;
+            color: #aab4d0;
             user-select: none;
         }
-        .toc-pill-btn:hover { background: rgba(255, 80, 80, 0.2); border-color: #ff5e5e; width: 48px; }
+        .toc-pill-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); width: 52px; color: #fff; }
         .toc-pill-btn .pill-icon { writing-mode: horizontal-tb; font-size: 1.2rem; }
 
         .toc-panel {
@@ -166,37 +592,37 @@
             top: 50%;
             transform: translateY(-50%) translateX(120%);
             z-index: 59;
-            background: rgba(10, 12, 18, 0.8);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 80, 80, 0.2);
-            border-radius: 1.2rem;
-            padding: 1rem 0.8rem;
-            min-width: 160px;
+            background: rgba(8, 10, 20, 0.7);
+            backdrop-filter: blur(48px) saturate(1.2);
+            -webkit-backdrop-filter: blur(48px) saturate(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 28px;
+            padding: 1.2rem 0.8rem;
+            min-width: 170px;
             max-height: 70vh;
             overflow-y: auto;
-            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
             scrollbar-width: thin;
         }
         .toc-panel.open { transform: translateY(-50%) translateX(0); }
         .toc-panel::-webkit-scrollbar { width: 3px; }
-        .toc-panel::-webkit-scrollbar-thumb { background: #ff5e5e60; border-radius: 10px; }
+        .toc-panel::-webkit-scrollbar-thumb { background: rgba(255, 80, 80, 0.3); border-radius: 10px; }
         .toc-panel .toc-item {
             display: block;
-            padding: 0.4rem 0.6rem;
+            padding: 0.5rem 0.8rem;
             color: #8892b0;
             text-decoration: none;
             font-size: 0.75rem;
             font-weight: 500;
-            border-radius: 0.6rem;
-            transition: all 0.2s;
+            border-radius: 14px;
+            transition: all 0.3s ease;
             cursor: pointer;
             white-space: nowrap;
             border-left: 2px solid transparent;
         }
-        .toc-panel .toc-item:hover { color: #ffb7b7; background: rgba(255,80,80,0.1); border-left-color: #ff5e5e; }
-        .toc-panel .toc-item.active { color: #ff5e5e; background: rgba(255,80,80,0.15); border-left-color: #ff5e5e; font-weight: 600; }
-        .toc-panel .toc-item .toc-icon { margin-right: 0.4rem; }
+        .toc-panel .toc-item:hover { color: #f0f2ff; background: rgba(255, 255, 255, 0.04); border-left-color: rgba(255, 255, 255, 0.2); }
+        .toc-panel .toc-item.active { color: #ffb7b7; background: rgba(255, 80, 80, 0.08); border-left-color: #ff5e5e; font-weight: 600; }
 
         .toc-mobile-float {
             position: fixed;
@@ -205,27 +631,29 @@
             transform: translateX(-50%);
             z-index: 60;
             display: none;
-            background: rgba(10, 12, 18, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 80, 80, 0.3);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(40px) saturate(1.2);
+            -webkit-backdrop-filter: blur(40px) saturate(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 40px;
-            padding: 0.6rem 1.4rem;
-            color: #eef2ff;
-            font-size: 0.85rem;
+            padding: 0.6rem 1.8rem;
+            color: #c8d0e8;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            transition: all 0.2s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
             align-items: center;
             gap: 0.6rem;
         }
-        .toc-mobile-float:hover { background: rgba(255,80,80,0.2); border-color: #ff5e5e; }
+        .toc-mobile-float:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
 
         .toc-mobile-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10, 12, 18, 0.75);
-            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(40px) saturate(1.2);
+            -webkit-backdrop-filter: blur(40px) saturate(1.2);
             z-index: 70;
             display: none;
             flex-direction: column;
@@ -233,24 +661,23 @@
             justify-content: center;
             padding: 2rem;
         }
-        .toc-mobile-overlay.open { display: flex; }
+        .toc-mobile-overlay.open { display: flex; animation: fadeSlideUp 0.4s ease; }
         .toc-mobile-overlay .close-toc {
             position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
+            top: 2rem;
+            right: 2rem;
             font-size: 2rem;
-            color: #ffa0a0;
+            color: #8892b0;
             cursor: pointer;
-            background: rgba(255,80,80,0.15);
+            background: rgba(255,255,255,0.03);
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
+            width: 52px; height: 52px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
+            align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.04);
         }
-        .toc-mobile-overlay .close-toc:hover { background: rgba(255,80,80,0.3); }
+        .toc-mobile-overlay .close-toc:hover { background: rgba(255,255,255,0.08); color: #fff; transform: rotate(90deg); }
         .toc-mobile-overlay .toc-grid {
             display: flex;
             flex-wrap: wrap;
@@ -260,51 +687,54 @@
             width: 100%;
         }
         .toc-mobile-overlay .toc-item-mobile {
-            background: rgba(20,25,35,0.5);
-            border: 1px solid rgba(255,80,80,0.2);
-            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
             padding: 0.8rem 1.2rem;
-            color: #eef2ff;
+            color: #c8d0e8;
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: 0.2s;
+            transition: all 0.3s ease;
             width: calc(50% - 0.4rem);
             min-width: 120px;
             justify-content: center;
         }
-        .toc-mobile-overlay .toc-item-mobile:hover { background: rgba(255,80,80,0.2); border-color: #ff5e5e; }
-        .toc-mobile-overlay .toc-item-mobile .toc-icon { font-size: 1.1rem; }
+        .toc-mobile-overlay .toc-item-mobile:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); color: #fff; }
 
+        /* ===== 回到顶部 ===== */
         .back-to-top {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
             z-index: 55;
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            background: rgba(10, 12, 18, 0.7);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 80, 80, 0.4);
-            color: #ffb7b7;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(40px) saturate(1.2);
+            -webkit-backdrop-filter: blur(40px) saturate(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #b0bcd8;
             font-size: 1.4rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             opacity: 0;
             visibility: hidden;
             transform: translateY(20px);
         }
         .back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-        .back-to-top:hover { background: rgba(255,80,80,0.3); border-color: #ff5e5e; transform: scale(1.05); }
+        .back-to-top:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); color: #fff; transform: scale(1.05); }
 
+        /* ===== 响应式 ===== */
         @media (max-width: 900px) {
             .toc-pill-btn { display: none; }
             .toc-panel { display: none; }
@@ -312,8 +742,8 @@
             .back-to-top {
                 bottom: 5.5rem;
                 right: 1rem;
-                width: 42px;
-                height: 42px;
+                width: 44px;
+                height: 44px;
                 font-size: 1.2rem;
             }
         }
@@ -322,19 +752,51 @@
             .toc-mobile-overlay { display: none !important; }
             .toc-pill-btn { display: flex; }
         }
-        @media (max-width: 900px) {
-            .back-to-top {
-                bottom: 5.5rem;
-                right: 1rem;
-            }
+        @media (max-width: 750px) {
+            .container { padding: 0 1rem; }
+            .carousel-btn { width: 36px; height: 36px; font-size: 1rem; }
+            .carousel-slide img { max-height: 220px; }
+            .section-title { font-size: 1.4rem; }
         }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 2rem;
+            color: #5a6688;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        hr { border: none; border-top: 1px solid rgba(255,255,255,0.04); margin: 1rem 0; }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255,255,255,0.04);
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #d4dcff;
+        }
+        .ver-tag {
+            display: inline-block;
+            background: rgba(255, 80, 80, 0.15);
+            padding: 0.1rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            margin-left: 0.5rem;
+            color: #ffa0a0;
+            border: 1px solid rgba(255, 80, 80, 0.1);
+        }
+        .ver-tag-current { background: rgba(46, 204, 113, 0.2); color: #6ee7b7; border-color: rgba(46, 204, 113, 0.2); }
+        .ver-tag-old { background: rgba(255, 80, 80, 0.1); color: #ff7b7b; }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem;">v2.3.1</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem; font-weight:400; color:#8892b0;">v2.3.1</span></div>
     </div>
 </div>
 
@@ -342,8 +804,8 @@
     <div id="zh-content" class="lang-content active-lang">
         <!-- 页面头部 -->
         <div style="padding: 1.5rem 0 1rem;">
-            <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent;">🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
-            <p><strong>Gost v2.3.1</strong> — 一款基于 Bukkit/Spigot 的 Minecraft 多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
+            <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-0.5px;">🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
+            <p style="font-size:1.1rem; color:#b8c4e0; max-width: 800px;"><strong>Gost v2.3.1</strong> — 一款基于 Bukkit/Spigot 的 Minecraft 多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
             <div class="badge">⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 收割者双技能 | 🔊 音效系统全面更新</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
@@ -355,12 +817,12 @@
 
         <!-- 轮播图 -->
         <div class="carousel-container" id="carousel"></div>
-        <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.7;"><i class="fas fa-image"></i> 轮播图（请将图片放入 images/ 文件夹）</div>
+        <div style="font-size:0.7rem; text-align:center; margin-top:-1.5rem; margin-bottom:1rem; opacity:0.4; letter-spacing:1px;"><i class="fas fa-image"></i> 轮播图（请将图片放入 images/ 文件夹）</div>
 
         <!-- 推广卡片 -->
         <div class="tool-card">
             <div class="message">
-                <p><i class="fas fa-sync-alt" style="color:#3b82f6;"></i> <strong>你换了一个插件版本，但是不想再写一遍配置？</strong> 试试我的新插件 —— 全自动配置迁移工具，智能合并，自动备份。</p>
+                <p><i class="fas fa-sync-alt" style="color:#60a5fa;"></i> <strong>你换了一个插件版本，但是不想再写一遍配置？</strong> 试试我的新插件 —— 全自动配置迁移工具，智能合并，自动备份。</p>
                 <div class="builtin-badge">✨ 已内置在 v2.2.3 及更新的版本中</div>
             </div>
             <a href="https://726113394-cloud.github.io/ReloadConfig/" target="_blank" class="migration-tool-btn">
@@ -376,14 +838,14 @@
                 <div class="collapsible-header">📖 展开查看详情 <i class="fas fa-chevron-down"></i></div>
                 <div class="collapsible-content">
                     <div class="card">
-                        <h3>游戏流程</h3>
-                        <ol style="margin-left:1.5rem;">
+                        <h3 style="color:#d4dcff;">游戏流程</h3>
+                        <ol style="margin-left:1.5rem; color:#b8c4e0;">
                             <li><strong>准备阶段</strong> — 玩家进入匹配队列，满员后开始游戏</li>
                             <li><strong>感染阶段</strong> — 鬼玩家追逐并感染人类，人类可拾取道具自保</li>
                             <li><strong>神圣守护阶段</strong> — 剩余人类数量 ≤ 触发人数时，自动激活神圣守护</li>
                             <li><strong>猎魔人阶段</strong> — 游戏剩余 90 秒时进入，拥有神圣守护的人类变为猎魔人反杀鬼</li>
                         </ol>
-                        <h3>两大阵营</h3>
+                        <h3 style="color:#d4dcff; margin-top:1rem;">两大阵营</h3>
                         <div class="table-wrapper">
                             <table>
                                 <tr><th>阵营</th><th>说明</th></tr>
@@ -391,7 +853,7 @@
                                 <tr><td>👻 鬼</td><td>感染人类使其加入鬼阵营，母体为鬼阵营领袖</td></tr>
                             </table>
                         </div>
-                        <h3>特殊角色</h3>
+                        <h3 style="color:#d4dcff; margin-top:1rem;">特殊角色</h3>
                         <div class="table-wrapper">
                             <table>
                                 <tr><th>角色</th><th>说明</th></tr>
@@ -431,13 +893,13 @@
                     <div class="version-panel" id="dg-v223">
                         <div class="card"><h3>🛡️ 传统神圣守护 <span class="ver-tag">v2.2.2 ~ v2.3.0</span></h3>
                             <p><strong>激活条件</strong>：剩余人类 ≤ 触发人数（默认 2 人）<br><strong>防御次数</strong>：可抵挡 <strong>3 次</strong> 攻击<br><strong>传送效果</strong>：每次被攻击，进攻者被随机传送到附近区域并减速<br><strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
-                            <p style="margin-top:0.8rem; color:#aaa;">💡 此版本神圣守护机制保持稳定，与 v2.2.2 起一致。</p>
+                            <p style="margin-top:0.8rem; color:#8892b0;">💡 此版本神圣守护机制保持稳定，与 v2.2.2 起一致。</p>
                         </div>
                     </div>
                     <div class="version-panel" id="dg-v231">
                         <div class="card"><h3>🛡️ 传统神圣守护 <span class="ver-tag ver-tag-current">v2.3.1+ 当前</span></h3>
                             <p><strong>激活条件</strong>：剩余人类 ≤ 触发人数（默认 2 人）<br><strong>防御次数</strong>：可抵挡 <strong>3 次</strong> 攻击<br><strong>传送效果</strong>：进攻者被随机传送到附近区域并减速<br><strong>猎魔人阶段</strong>：所有神圣守护自动刷新防御次数，并转化为猎魔人</p>
-                            <p style="margin-top:0.8rem; color:#aaa;">💡 传统神圣守护机制保持不变，新增的救赎者系统拥有独立的神圣守护（详见下方救赎者板块）。</p>
+                            <p style="margin-top:0.8rem; color:#8892b0;">💡 传统神圣守护机制保持不变，新增的救赎者系统拥有独立的神圣守护（详见下方救赎者板块）。</p>
                         </div>
                     </div>
                 </div>
@@ -469,13 +931,13 @@
                     <div class="version-panel" id="rd-v223">
                         <div class="card"><h3>✨ 救赎者模式 <span class="ver-tag">v2.2.2 ~ v2.3.0</span></h3>
                             <p><strong>激活条件</strong>：被发放道具[神圣救赎]的人类成为 <strong>救赎者</strong>，无法再获得神圣守护，不可取消<br><strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br><strong>随机传送</strong>：使用道具后救赎者被随机传送到安全位置<br><strong>次数限制</strong>：道具可使用 <strong>1 次</strong>，使用完后依旧保留<strong>救赎者</strong>身份<br><strong>视觉效果</strong>：救赎者全程有云雾围绕效果</p>
-                            <p style="margin-top:0.8rem; color:#aaa;">💡 此版本救赎者机制与 v2.2.2 起一致。</p>
+                            <p style="margin-top:0.8rem; color:#8892b0;">💡 此版本救赎者机制与 v2.2.2 起一致。</p>
                         </div>
                     </div>
                     <div class="version-panel" id="rd-v231">
                         <div class="card"><h3>✨ 救赎者系统（常驻） <span class="ver-tag ver-tag-current">v2.3.1+ 当前</span></h3>
                             <p><strong>常驻机制</strong>：救赎者 <strong>常驻每一局游戏</strong>，每局最多 <strong>2 名</strong><br><strong>激活条件</strong>：随"神之救赎"道具发放 <strong>随机绑定</strong> 人类玩家<br><strong>独立神圣守护</strong>：救赎者直接获得独立的神圣守护（<strong>2 次</strong> 防御），不影响原有神圣守护系统<br><strong>神之救赎道具</strong>：救赎者获得专属道具，可转化鬼玩家回人类<br><strong>次数限制</strong>：道具可使用 <strong>2 次</strong>，使用后依旧保留救赎者身份<br><strong>随机传送</strong>：使用道具后救赎者被随机传送到安全位置<br><strong>视觉效果</strong>：救赎者全程有云雾围绕效果</p>
-                            <p style="margin-top:0.8rem; color:#aaa;">💡 v2.3.1 重大更新：删除模式切换，救赎者常驻；独立守护 2 次 + 神之救赎 2 次；每局最多 2 名。</p>
+                            <p style="margin-top:0.8rem; color:#8892b0;">💡 v2.3.1 重大更新：删除模式切换，救赎者常驻；独立守护 2 次 + 神之救赎 2 次；每局最多 2 名。</p>
                         </div>
                     </div>
                 </div>
@@ -647,7 +1109,7 @@
                             <tr><td><code style="color:#ffa07a;">/ghostparticle</code> <span class="ver-tag">旧版</span></td><td>鬼粒子管理（已整合到 <code>/gostadmin particle</code>）</td><td>gost.admin</td></tr>
                         </table>
                     </div>
-                    <div class="card" style="margin-top:1rem;"><h4>📌 新版整合命令</h4><ul><li><code>/gostadmin divine &lt;status|clear&gt;</code> — 神圣守护管理（替代 <code>/divineguardian</code>）</li><li><code>/gostadmin particle &lt;status|enable|disable&gt;</code> — 鬼粒子管理（替代 <code>/ghostparticle</code>）</li></ul><p style="margin-top:0.5rem; color:#aaa;">💡 旧版 <code>/divineguardian</code> 和 <code>/ghostparticle</code> 命令仍可正常使用，但建议迁移到新版命令以保持一致性。</p></div>
+                    <div class="card" style="margin-top:1rem;"><h4>📌 新版整合命令</h4><ul><li><code>/gostadmin divine &lt;status|clear&gt;</code> — 神圣守护管理（替代 <code>/divineguardian</code>）</li><li><code>/gostadmin particle &lt;status|enable|disable&gt;</code> — 鬼粒子管理（替代 <code>/ghostparticle</code>）</li></ul><p style="margin-top:0.5rem; color:#8892b0;">💡 旧版 <code>/divineguardian</code> 和 <code>/ghostparticle</code> 命令仍可正常使用，但建议迁移到新版命令以保持一致性。</p></div>
                     <div class="card" style="margin-top:1rem;"><h4>🔥 选区粒子框</h4><p>设置选区后，选区边界持续显示火焰粒子框 30 秒。</p></div>
                 </div>
             </div>
@@ -735,9 +1197,7 @@
 </div>
 
 <script>
-    // ========== 所有函数定义 ==========
-
-    // 道具数据
+    // ========== 道具数据 ==========
     const itemsDetailZh = {
         reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器（双技能）", faction: "human", detail: "效果（v2.3.1 重做）：<br><strong>左键单体攻击</strong>：普通鬼 <strong>2 次</strong> 击杀，母体鬼 <strong>4 次</strong> 击杀（纯击中次数判定）<br><strong>右键范围技能「收割」</strong>（v2.3.1）：4 格半径 AOE，10 秒冷却，冲击粒子 + 凋零死亡音效<br>攻击冷却：2 秒<br>使用音效：左键无音效，右键有 AOE 特效" },
         holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容<br>使用次数：<strong>2 次</strong>（v2.3.1 起）<br>冷却时间：10 秒<br>使用后救赎者被随机传送到安全位置<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
@@ -753,7 +1213,7 @@
         levitationPotion: { name: "🧪 漂浮药水", desc: "右键获得漂浮效果", faction: "neutral", detail: "效果：右键使用获得 <strong>漂浮</strong> 效果 4.5 秒（大约可以飞 3.4 个方块高度）。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" }
     };
 
-    // 版本历史数据
+    // ========== 版本历史数据 ==========
     const versionData = {
         zh: [
             { version: "v2.3.1", tag: "当前版本|救赎者重构 & 收割者重做", content: `<strong>✨ 救赎者系统重构</strong><br>• 删除神圣守护模式切换，救赎者常驻每局游戏<br>• 每局最多 <strong>2 名</strong> 救赎者，随"神之救赎"道具发放随机绑定<br>• 救赎者获得独立神圣守护（2 次防御）+ 2 次"神之救赎"使用次数<br><br><strong>⚔️ 收割者武器重做</strong><br>• 左键单体：普通鬼 2 次击杀，母体鬼 4 次击杀（纯击中次数）<br>• 右键范围技能「收割」：4 格 AOE，10 秒冷却<br><br><strong>👻 鬼复活机制优化</strong><br>• 死亡状态：隐身但可自由移动（不锁定坐标、不减速、不飞行）<br>• 复活方式：随机地点复活（游戏区域内随机坐标传送），不再原地复活<br>• 保留 10 秒倒计时 + 重生字幕/音效<br><br><strong>🎆 击杀烟花反馈</strong><br>• 猎魔人击杀鬼时，击杀位置绽放红黄 BURST 烟花（1 tick 后引爆）<br>• 爆炸粒子 + 凋零死亡音效<br>• 击杀字幕（中英双语）：💥 击杀成功! → 你击杀了 [玩家]<br><br><strong>👑 母体进化系统</strong><br>• 触发条件：猎魔人阶段，参与游戏玩家 > 5 人<br>• 生成：游戏区域内随机位置放置发光绿宝石（附魔粒子 + 发光效果）<br>• 拾取条件：仅普通鬼可拾取<br>• 效果：拾取后变身为母体鬼，获得母体血量，可猎杀猎魔人<br>• 公告/字幕/音效（中英双语）<br><br><strong>🛡️ 猎魔人阶段防御重构</strong><br>• 新增阵营伤害保护、死亡拦截、环境伤害保护<br>• 删除"禁止回血"设计<br><br><strong>🥩 臭牛排机制修改</strong><br>• 右键开始食用，1 秒后生效，切换物品打断<br><br><strong>🎒 背包管理系统</strong><br>• 最多 9 个道具，不可放入背包，不堆叠<br><br><strong>📋 命令整合与权限精简</strong><br>• divineguardian/ghostparticle 并入 /gostadmin<br>• 仅保留 gost.use / gost.player / gost.admin 三个权限<br><br><strong>🔥 选区粒子框</strong><br>• 设置选区后显示火焰粒子框 30 秒<br><br><strong>🌐 双语字幕</strong><br>• 核心事件新增中英双语字幕<br><br><strong>⚙️ 配置版本升级到 28</strong><br>插件版本升级到 2.3.1` },
@@ -823,15 +1283,14 @@
             if (item.faction === 'human') factionClass = 'card-human';
             else if (item.faction === 'ghost') factionClass = 'card-ghost';
             const card = document.createElement('div'); card.className = `card ${factionClass}`;
-            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem;">${item.desc}</span><br><button class="btn-detail" data-item="${key}">📖 详情</button>`;
+            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem; color:#b8c4e0;">${item.desc}</span><br><button class="btn-detail" data-item="${key}">📖 详情</button>`;
             container.appendChild(card);
         }
-        // 重新绑定道具详情按钮
         document.querySelectorAll('.btn-detail[data-item]').forEach(btn => {
             btn.addEventListener('click', function() {
                 const key = this.dataset.item;
                 const item = itemsDetailZh[key];
-                document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><hr><div style="line-height:1.6;">${item.detail}</div>`;
+                document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><hr><div style="line-height:1.6; color:#b8c4e0;">${item.detail}</div>`;
                 showModal();
             });
         });
@@ -840,7 +1299,6 @@
     function showModal() { document.getElementById('modal').classList.add('show'); }
     function hideModal() { document.getElementById('modal').classList.remove('show'); }
 
-    // 折叠面板
     function initCollapsibles() {
         document.querySelectorAll('.collapsible-header').forEach(header => {
             header.addEventListener('click', function() {
@@ -854,7 +1312,6 @@
         });
     }
 
-    // 版本历史列表
     function renderVersionList() {
         const container = document.getElementById('version-list-zh');
         if (!container) return;
@@ -887,7 +1344,6 @@
         });
     }
 
-    // 版本标签切换
     function initVersionTabs() {
         document.querySelectorAll('.version-tabs').forEach(tabsContainer => {
             const tabs = tabsContainer.querySelectorAll('.version-tab');
@@ -905,7 +1361,6 @@
         });
     }
 
-    // 目录交互
     function initTOC() {
         const pillBtn = document.getElementById('tocPillBtn');
         const panel = document.getElementById('tocPanel');
@@ -940,7 +1395,6 @@
             });
         }
 
-        // 移动端
         const mobileFloat = document.getElementById('tocMobileFloat');
         const overlay = document.getElementById('tocMobileOverlay');
         const closeBtn = document.getElementById('closeTocMobile');
@@ -970,7 +1424,6 @@
             });
         }
 
-        // 高亮当前章节
         const sectionIds = [
             'section-core', 'section-divine', 'section-redeemer', 'section-demonhunter',
             'section-items', 'section-sound', 'section-ghost2human', 'section-economy',
@@ -994,8 +1447,8 @@
             if (overlay) {
                 overlay.querySelectorAll('.toc-item-mobile').forEach(item => {
                     const href = item.getAttribute('href').replace('#', '');
-                    item.style.border = href === currentId ? '1px solid #ff5e5e' : '';
-                    item.style.background = href === currentId ? 'rgba(255,80,80,0.2)' : '';
+                    item.style.border = href === currentId ? '1px solid rgba(255,80,80,0.3)' : '';
+                    item.style.background = href === currentId ? 'rgba(255,80,80,0.1)' : '';
                 });
             }
         }
@@ -1005,7 +1458,6 @@
         });
     }
 
-    // 回到顶部
     function initBackToTop() {
         const backBtn = document.getElementById('backToTop');
         window.addEventListener('scroll', function() {
@@ -1020,7 +1472,7 @@
         });
     }
 
-    // ========== 初始化（直接执行，不依赖DOMContentLoaded） ==========
+    // ========== 初始化 ==========
     (function() {
         initCarousel('carousel');
         renderItems();
@@ -1030,20 +1482,38 @@
         initTOC();
         initBackToTop();
 
-        // 模态框关闭
         document.querySelector('.modal-close').addEventListener('click', hideModal);
         window.addEventListener('click', function(e) {
             if (e.target === document.getElementById('modal')) hideModal();
         });
 
-        // 默认收起所有折叠内容（除第一个可能展开的，但这里全部收起）
         document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('show'));
-        // 但为了用户体验，可以保留第一个展开（可选），这里保持全部收起。
-        // 版本历史也默认收起
         document.querySelectorAll('.version-detail').forEach(d => d.classList.remove('show'));
 
-        console.log('✅ Gost 文档已完全初始化，所有展开按钮已修复。');
+        console.log('✅ Gost 文档已完全初始化（侧边胶囊缓出动效）');
     })();
+
+    // ==================== 鼠标跟随 3D 动效 ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('.btn-detail, .link-btn, .migration-tool-btn, .version-tab');
+
+        elements.forEach(el => {
+            el.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                const rotateX = y * -8;
+                const rotateY = x * 8;
+                this.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                this.style.transition = 'transform 0.1s ease';
+            });
+
+            el.addEventListener('mouseleave', function() {
+                this.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+                this.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+            });
+        });
+    });
 </script>
 </body>
 </html>
