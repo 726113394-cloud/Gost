@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gost v2.3.1 文档 | 鬼抓人 · 救赎者 · 猎魔人</title>
+    <title>Gost v2.3.2 文档 | 鬼抓人 · 救赎者 · 猎魔人</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -284,7 +284,7 @@
             line-height: 1.7;
         }
         .version-detail.show {
-            max-height: 1200px;
+            max-height: 3000px;
             padding: 0 1.5rem 1.5rem 1.5rem;
         }
 
@@ -322,12 +322,12 @@
         }
         .version-panel.active { display: block; }
 
-        /* ===== 工具卡片 & 按钮 ===== */
+        /* ===== 工具卡片 - 液态玻璃风格 ===== */
         .tool-card {
             background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(24px) saturate(1.1);
+            -webkit-backdrop-filter: blur(24px) saturate(1.1);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 28px;
             padding: 1.2rem 2rem;
             margin: 1.5rem 0;
@@ -335,50 +335,92 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
-            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            gap: 1.2rem;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            opacity: 0.5;
         }
         .tool-card:hover {
-            border-color: rgba(59, 130, 246, 0.5);
+            border-color: rgba(255, 255, 255, 0.15);
             transform: translateY(-4px);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
             background: rgba(255, 255, 255, 0.07);
         }
-        .tool-card .message p { margin: 0 0 0.3rem 0; color: #d4dcff; font-size: 0.95rem; }
+        .tool-card .message {
+            flex: 1;
+        }
+        .tool-card .message p {
+            margin: 0 0 0.3rem 0;
+            color: #d4dcff;
+            font-size: 0.95rem;
+        }
+        .tool-card .message .highlight-icon {
+            color: #60a5fa;
+            margin-right: 0.4rem;
+        }
         .tool-card .builtin-badge {
-            background: rgba(46, 204, 113, 0.2);
+            background: rgba(46, 204, 113, 0.15);
             color: #6ee7b7;
             font-size: 0.7rem;
-            padding: 0.2rem 0.8rem;
+            padding: 0.2rem 0.9rem;
             border-radius: 30px;
             font-weight: 600;
-            border: 1px solid rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.15);
             backdrop-filter: blur(10px);
+            display: inline-block;
         }
         .migration-tool-btn {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+            gap: 10px;
+            background: rgba(59, 130, 246, 0.12);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 40px;
             padding: 0.6rem 1.8rem;
-            color: white !important;
-            font-weight: 700;
+            color: #b8d0ff !important;
+            font-weight: 600;
             font-size: 0.95rem;
             text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
             transform-origin: center;
             will-change: transform;
+            white-space: nowrap;
+        }
+        .migration-tool-btn i {
+            color: #60a5fa;
+            transition: transform 0.3s ease;
         }
         .migration-tool-btn:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(37, 99, 235, 0.2));
-            border-color: rgba(59, 130, 246, 0.6);
-            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.3);
-            color: white;
+            background: rgba(59, 130, 246, 0.22);
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #ffffff !important;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.2);
+        }
+        .migration-tool-btn:hover i {
+            transform: translateX(3px);
+        }
+        /* 右侧箭头单独颜色 */
+        .migration-tool-btn .arrow-icon {
+            color: rgba(96, 165, 250, 0.6);
+            font-size: 0.8rem;
+            margin-left: 2px;
+        }
+        .migration-tool-btn:hover .arrow-icon {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .link-buttons { margin-top: 0.8rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
@@ -702,22 +744,26 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            padding-top: 5rem;
         }
         .toc-mobile-overlay.open { display: flex; animation: fadeSlideUp 0.4s ease; }
         .toc-mobile-overlay .close-toc {
             position: absolute;
-            top: 2rem;
-            right: 2rem;
+            top: 1.2rem;
+            right: 1.5rem;
             font-size: 2rem;
             color: #8892b0;
             cursor: pointer;
             background: rgba(255,255,255,0.03);
             border-radius: 50%;
-            width: 52px; height: 52px;
+            width: 48px;
+            height: 48px;
             display: flex;
-            align-items: center; justify-content: center;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.04);
+            z-index: 71;
         }
         .toc-mobile-overlay .close-toc:hover { background: rgba(255,255,255,0.08); color: #fff; transform: rotate(90deg); }
         .toc-mobile-overlay .toc-grid {
@@ -727,6 +773,7 @@
             justify-content: center;
             max-width: 500px;
             width: 100%;
+            margin-top: 1rem;
         }
         .toc-mobile-overlay .toc-item-mobile {
             background: rgba(255, 255, 255, 0.03);
@@ -788,6 +835,16 @@
                 height: 44px;
                 font-size: 1.2rem;
             }
+            .toc-mobile-overlay {
+                padding-top: 4.5rem;
+            }
+            .toc-mobile-overlay .close-toc {
+                top: 1rem;
+                right: 1.2rem;
+                width: 44px;
+                height: 44px;
+                font-size: 1.6rem;
+            }
         }
         @media (min-width: 901px) {
             .toc-mobile-float { display: none !important; }
@@ -801,6 +858,31 @@
             .section-title { font-size: 1.4rem; }
             .image-modal-content { max-width: 95%; }
             .image-modal-close { font-size: 32px; right: 20px; top: 10px; }
+            .tool-card {
+                padding: 1rem 1.2rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .migration-tool-btn {
+                justify-content: center;
+                width: 100%;
+            }
+            .toc-mobile-overlay .toc-item-mobile {
+                width: calc(50% - 0.3rem);
+                min-width: 80px;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .toc-mobile-overlay .close-toc {
+                top: 0.8rem;
+                right: 0.8rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.4rem;
+            }
+            .toc-mobile-overlay {
+                padding-top: 4rem;
+            }
         }
 
         footer {
@@ -840,7 +922,7 @@
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem; font-weight:400; color:#8892b0;">v2.3.1</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem; font-weight:400; color:#8892b0;">v2.3.2</span></div>
     </div>
 </div>
 
@@ -849,8 +931,8 @@
         <!-- 页面头部 -->
         <div style="padding: 1.5rem 0 1rem;">
             <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-0.5px;">🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
-            <p style="font-size:1.1rem; color:#b8c4e0; max-width: 800px;"><strong>Gost v2.3.1</strong> — 一款基于 Bukkit/Spigot 的 Minecraft 多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
-            <div class="badge">⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🔧 队列优化 | ✨ 收割者双技能 | 🔊 音效系统全面更新</div>
+            <p style="font-size:1.1rem; color:#b8c4e0; max-width: 800px;"><strong>Gost v2.3.2</strong> — 一款基于 Bukkit/Spigot 的 Minecraft 多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
+            <div class="badge">⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🍖 饥饿值系统 | 🗡️ 冲刺矛全版本兼容 | 🔊 音效系统全面更新</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
                 <a href="https://726113394-cloud.github.io/PersonalPage/" target="_blank" class="link-btn"><i class="fab fa-bilibili"></i> 作者主页</a>
@@ -871,15 +953,15 @@
             <img class="image-modal-content" id="imgModalContent">
         </div>
 
-        <!-- 推广卡片 -->
+        <!-- 推广卡片 - 液态玻璃风格 -->
         <div class="tool-card">
             <div class="message">
-                <p><i class="fas fa-sync-alt" style="color:#60a5fa;"></i> <strong>你换了一个插件版本，但是不想再写一遍配置？</strong> 试试我的新插件 —— 全自动配置迁移工具，智能合并，自动备份。</p>
+                <p><i class="fas fa-sync-alt highlight-icon"></i> <strong>你换了一个插件版本，但是不想再写一遍配置？</strong> 试试我的新插件 —— 全自动配置迁移工具，智能合并，自动备份。</p>
                 <div class="builtin-badge">✨ 已内置在 v2.2.3 及更新的版本中</div>
             </div>
             <a href="https://726113394-cloud.github.io/ReloadConfig/" target="_blank" class="migration-tool-btn">
                 <i class="fas fa-rocket"></i> ReloadConfig 自动迁移工具
-                <i class="fas fa-arrow-right"></i>
+                <i class="fas fa-arrow-right arrow-icon"></i>
             </a>
         </div>
 
@@ -1050,10 +1132,56 @@
                     <div class="card">
                         <p>道具会在游戏过程中 <strong>定时发放</strong> 给玩家，每次发放间隔可在配置中调整（默认每 60 秒发放一次），同时区域会随机刷新道具。发放道具时会揭示所有玩家位置 5 秒。</p>
                         <p><strong>背包管理（v2.3.1）</strong>：对局期间最多 <strong>9 个</strong> 道具，不可放入背包，不堆叠，不允许相同道具（除通用道具外），收割者/神之救赎强制放第一格。</p>
+                        <p style="margin-top:0.8rem; color:#6ee7b7;"><strong>🗡️ 冲刺矛（v2.3.2 更新）</strong>：<br>• 右键使用进行冲刺，向前冲刺 <strong>5 米</strong>，使用后即刻消失。<br>• <strong>全版本兼容</strong>：在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 版本中显示为 <strong>矛</strong>，功能完全一致。<br>• 使用音效：矛冲刺音效（由游戏内置）。</p>
                     </div>
                 </div>
             </div>
             <div class="grid-3col" id="items-list-zh"></div>
+        </div>
+
+        <!-- ===================== 饥饿值系统（v2.3.2 新增） ===================== -->
+        <div class="section" id="section-hunger">
+            <div class="section-title">🍖 饥饿值系统</div>
+            <div class="collapsible">
+                <div class="collapsible-header">📖 展开查看详情 <i class="fas fa-chevron-down"></i></div>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <p><strong>v2.3.2 新增</strong> — 对局饥饿值消耗功能，可配置、可开关。对局内饥饿值与局外独立，结算后恢复开局前饱食度。</p>
+
+                        <h4 style="color:#d4dcff; margin-top:1.2rem;">⚙️ 核心机制</h4>
+                        <ul style="margin-left:1.5rem; color:#b8c4e0;">
+                            <li>进入对局时所有玩家饱食度 <strong>回满</strong></li>
+                            <li>游戏过程中 <strong>奔跑</strong> 会正常消耗饱食度</li>
+                            <li>对局内的饥饿值 <strong>独立于局外</strong>，结算后恢复开局前状态</li>
+                            <li>此功能支持 <strong>开关</strong> 和 <strong>恢复速度</strong> 配置</li>
+                        </ul>
+
+                        <h4 style="color:#d4dcff; margin-top:1.2rem;">👤 人类蹲下恢复</h4>
+                        <ul style="margin-left:1.5rem; color:#b8c4e0;">
+                            <li>按下 <strong>[Shift] 蹲下</strong>，每秒恢复 <strong>1</strong> 饱食度</li>
+                        </ul>
+
+                        <h4 style="color:#d4dcff; margin-top:1.2rem;">👻 鬼蹲下恢复</h4>
+                        <ul style="margin-left:1.5rem; color:#b8c4e0;">
+                            <li>按下 <strong>[Shift] 蹲下</strong>，每 <strong>0.8</strong> 秒恢复 1 饱食度</li>
+                        </ul>
+
+                        <h4 style="color:#d4dcff; margin-top:1.2rem;">🔄 阵容转换</h4>
+                        <ul style="margin-left:1.5rem; color:#b8c4e0;">
+                            <li>转换阵容时饱食度 <strong>回满</strong></li>
+                        </ul>
+
+                        <h4 style="color:#d4dcff; margin-top:1.2rem;">⚔️ 猎魔人阶段</h4>
+                        <ul style="margin-left:1.5rem; color:#b8c4e0;">
+                            <li>进入猎魔人阶段时饱食度 <strong>回满</strong> 且 <strong>不再消耗</strong></li>
+                        </ul>
+
+                        <div style="margin-top:1rem; padding:0.8rem 1.2rem; background:rgba(46,204,113,0.08); border-radius:16px; border-left:3px solid #2ecc71;">
+                            <p style="color:#6ee7b7; font-size:0.9rem;"><i class="fas fa-info-circle"></i> 配置项位于 <code>config.yml</code> 的 <code>food</code> 节点下，支持开关、恢复速度等参数调整。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- 音效系统 -->
@@ -1126,7 +1254,7 @@
                         <div class="card"><h3>🎒 背包管理系统（v2.3.1）</h3><p>对局期间最多 <strong>9 个</strong> 道具。<br>道具不可放入背包（强制移回物品栏）。<br>道具不堆叠、不允许两个相同道具、不允许两个肾上腺素（人鬼通用道具除外）。<br><strong>收割者</strong> / <strong>神之救赎</strong> 强制放第一格。</p></div>
                         <div class="card"><h3>🔥 选区粒子框（v2.3.1）</h3><p>设置选区后自动显示 <strong>火焰粒子框</strong>，持续 <strong>30 秒</strong>。<br>帮助管理员直观确认游戏区域边界。</p></div>
                         <div class="card"><h3>🌐 双语字幕（v2.3.1）</h3><p>复活等待、重生、收割、救赎、母体禁足等核心事件新增 <strong>中英双语字幕</strong>。<br>根据服务器语言设置自动切换。</p></div>
-                        <div class="card"><h3>📦 版本兼容性</h3><p>支持 <strong>1.20.x 至 1.21.x 全版本</strong>。<br>粒子/音效/物品名称自动版本兼容。<br>冲刺矛（GOLDEN_SPEAR）仅 ≥1.21.4 生成。</p></div>
+                        <div class="card"><h3>📦 版本兼容性</h3><p>支持 <strong>1.20.x 至 1.21.x 全版本</strong>。<br>粒子/音效/物品名称自动版本兼容。<br>冲刺矛（v2.3.2）已实现 <strong>全版本兼容</strong>，&lt;1.21.4 显示为三叉戟，≥1.21.4 显示为矛。</p></div>
                     </div>
                 </div>
             </div>
@@ -1208,6 +1336,7 @@
     <a class="toc-item" href="#section-redeemer"><span class="toc-icon">✨</span>救赎者</a>
     <a class="toc-item" href="#section-demonhunter"><span class="toc-icon">⚔️</span>猎魔人</a>
     <a class="toc-item" href="#section-items"><span class="toc-icon">🧰</span>道具系统</a>
+    <a class="toc-item" href="#section-hunger"><span class="toc-icon">🍖</span>饥饿值系统</a>
     <a class="toc-item" href="#section-sound"><span class="toc-icon">🔊</span>音效系统</a>
     <a class="toc-item" href="#section-ghost2human"><span class="toc-icon">👻</span>鬼转人类</a>
     <a class="toc-item" href="#section-economy"><span class="toc-icon">🏆</span>经济奖励</a>
@@ -1228,6 +1357,7 @@
         <a class="toc-item-mobile" href="#section-redeemer"><span class="toc-icon">✨</span>救赎者</a>
         <a class="toc-item-mobile" href="#section-demonhunter"><span class="toc-icon">⚔️</span>猎魔人</a>
         <a class="toc-item-mobile" href="#section-items"><span class="toc-icon">🧰</span>道具系统</a>
+        <a class="toc-item-mobile" href="#section-hunger"><span class="toc-icon">🍖</span>饥饿值系统</a>
         <a class="toc-item-mobile" href="#section-sound"><span class="toc-icon">🔊</span>音效系统</a>
         <a class="toc-item-mobile" href="#section-ghost2human"><span class="toc-icon">👻</span>鬼转人类</a>
         <a class="toc-item-mobile" href="#section-economy"><span class="toc-icon">🏆</span>经济奖励</a>
@@ -1261,14 +1391,15 @@
         teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用（仅能右键使用）。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
         adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：使用获得速度 II 效果 10 秒。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
         frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：使用获得速度 II 效果 10 秒。<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" },
-        spearRush: { name: "🗡️ 冲刺矛", desc: "左键冲刺，消耗品", faction: "neutral", detail: "效果：左键使用进行一次原版矛的冲刺效果，使用后即刻消失。<br>服务器版本要求：<strong>1.21.4 及以上</strong>，插件启动时自动检测版本。<br>使用音效：矛冲刺音效（由游戏内置）" },
+        spearRush: { name: "🗡️ 冲刺矛", desc: "右键冲刺，全版本兼容", faction: "neutral", detail: "效果（v2.3.2 更新）：<br><strong>右键使用</strong>进行冲刺，向前冲刺 <strong>5 米</strong>，使用后即刻消失。<br><strong>全版本兼容</strong>：在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 版本中显示为 <strong>矛</strong>，功能完全一致。<br>使用音效：矛冲刺音效（由游戏内置）。" },
         levitationPotion: { name: "🧪 漂浮药水", desc: "右键获得漂浮效果", faction: "neutral", detail: "效果：右键使用获得 <strong>漂浮</strong> 效果 4.5 秒（大约可以飞 3.4 个方块高度）。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" }
     };
 
     // ========== 版本历史数据 ==========
     const versionData = {
         zh: [
-            { version: "v2.3.1", tag: "当前版本|救赎者重构 & 收割者重做", content: `<strong>✨ 救赎者系统重构</strong><br>• 删除神圣守护模式切换，救赎者常驻每局游戏<br>• 每局最多 <strong>2 名</strong> 救赎者，随"神之救赎"道具发放随机绑定<br>• 救赎者获得独立神圣守护（2 次防御）+ 2 次"神之救赎"使用次数<br><br><strong>⚔️ 收割者武器重做</strong><br>• 左键单体：普通鬼 2 次击杀，母体鬼 4 次击杀（纯击中次数）<br>• 右键范围技能「收割」：4 格 AOE，10 秒冷却<br><br><strong>👻 鬼复活机制优化</strong><br>• 死亡状态：隐身但可自由移动（不锁定坐标、不减速、不飞行）<br>• 复活方式：随机地点复活（游戏区域内随机坐标传送），不再原地复活<br>• 保留 10 秒倒计时 + 重生字幕/音效<br><br><strong>🎆 击杀烟花反馈</strong><br>• 猎魔人击杀鬼时，击杀位置绽放红黄 BURST 烟花（1 tick 后引爆）<br>• 爆炸粒子 + 凋零死亡音效<br>• 击杀字幕（中英双语）：💥 击杀成功! → 你击杀了 [玩家]<br><br><strong>👑 母体进化系统</strong><br>• 触发条件：猎魔人阶段，参与游戏玩家 > 5 人<br>• 生成：游戏区域内随机位置放置发光绿宝石（附魔粒子 + 发光效果）<br>• 拾取条件：仅普通鬼可拾取<br>• 效果：拾取后变身为母体鬼，获得母体血量，可猎杀猎魔人<br>• 公告/字幕/音效（中英双语）<br><br><strong>🛡️ 猎魔人阶段防御重构</strong><br>• 新增阵营伤害保护、死亡拦截、环境伤害保护<br>• 删除"禁止回血"设计<br><br><strong>🥩 臭牛排机制修改</strong><br>• 右键开始食用，1 秒后生效，切换物品打断<br><br><strong>🎒 背包管理系统</strong><br>• 最多 9 个道具，不可放入背包，不堆叠<br><br><strong>📋 命令整合与权限精简</strong><br>• divineguardian/ghostparticle 并入 /gostadmin<br>• 仅保留 gost.use / gost.player / gost.admin 三个权限<br><br><strong>🔥 选区粒子框</strong><br>• 设置选区后显示火焰粒子框 30 秒<br><br><strong>🌐 双语字幕</strong><br>• 核心事件新增中英双语字幕<br><br><strong>⚙️ 配置版本升级到 28</strong><br>插件版本升级到 2.3.1` },
+            { version: "v2.3.2", tag: "当前版本|冲刺矛全版本兼容 & 饥饿值系统", content: `<strong>🗡️ 冲刺矛全版本兼容</strong><br>• 冲刺矛道具现在支持 <strong>全版本</strong>（1.20.x ~ 1.21.x）<br>• 在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 显示为 <strong>矛</strong>，功能完全一致<br>• 右键使用向前冲刺 <strong>5 米</strong>，使用后即刻消失<br><br><strong>🍖 新增饥饿值系统</strong><br>• 对局饥饿值消耗功能，<strong>可配置、可开关</strong><br>• 对局内饥饿值与局外 <strong>独立</strong>，结算后恢复开局前饱食度<br>• 进入对局饱食度 <strong>回满</strong>，奔跑正常消耗<br>• 人类蹲下（Shift）：每秒恢复 <strong>1</strong> 饱食度<br>• 鬼蹲下（Shift）：每 <strong>0.8</strong> 秒恢复 1 饱食度<br>• 转换阵容时饱食度 <strong>回满</strong><br>• 猎魔人阶段饱食度 <strong>回满且不再消耗</strong><br><br><strong>⚙️ 配置版本升级到 29</strong><br>插件版本升级到 2.3.2` },
+            { version: "v2.3.1", tag: "救赎者重构 & 收割者重做", content: `<strong>✨ 救赎者系统重构</strong><br>• 删除神圣守护模式切换，救赎者常驻每局游戏<br>• 每局最多 <strong>2 名</strong> 救赎者，随"神之救赎"道具发放随机绑定<br>• 救赎者获得独立神圣守护（2 次防御）+ 2 次"神之救赎"使用次数<br><br><strong>⚔️ 收割者武器重做</strong><br>• 左键单体：普通鬼 2 次击杀，母体鬼 4 次击杀（纯击中次数）<br>• 右键范围技能「收割」：4 格 AOE，10 秒冷却<br><br><strong>👻 鬼复活机制优化</strong><br>• 死亡状态：隐身但可自由移动（不锁定坐标、不减速、不飞行）<br>• 复活方式：随机地点复活（游戏区域内随机坐标传送），不再原地复活<br>• 保留 10 秒倒计时 + 重生字幕/音效<br><br><strong>🎆 击杀烟花反馈</strong><br>• 猎魔人击杀鬼时，击杀位置绽放红黄 BURST 烟花（1 tick 后引爆）<br>• 爆炸粒子 + 凋零死亡音效<br>• 击杀字幕（中英双语）：💥 击杀成功! → 你击杀了 [玩家]<br><br><strong>👑 母体进化系统</strong><br>• 触发条件：猎魔人阶段，参与游戏玩家 > 5 人<br>• 生成：游戏区域内随机位置放置发光绿宝石（附魔粒子 + 发光效果）<br>• 拾取条件：仅普通鬼可拾取<br>• 效果：拾取后变身为母体鬼，获得母体血量，可猎杀猎魔人<br>• 公告/字幕/音效（中英双语）<br><br><strong>🛡️ 猎魔人阶段防御重构</strong><br>• 新增阵营伤害保护、死亡拦截、环境伤害保护<br>• 删除"禁止回血"设计<br><br><strong>🥩 臭牛排机制修改</strong><br>• 右键开始食用，1 秒后生效，切换物品打断<br><br><strong>🎒 背包管理系统</strong><br>• 最多 9 个道具，不可放入背包，不堆叠<br><br><strong>📋 命令整合与权限精简</strong><br>• divineguardian/ghostparticle 并入 /gostadmin<br>• 仅保留 gost.use / gost.player / gost.admin 三个权限<br><br><strong>🔥 选区粒子框</strong><br>• 设置选区后显示火焰粒子框 30 秒<br><br><strong>🌐 双语字幕</strong><br>• 核心事件新增中英双语字幕<br><br><strong>⚙️ 配置版本升级到 28</strong><br>插件版本升级到 2.3.1` },
             { version: "v2.3.0", tag: "新道具 & 管理员工具", content: `<strong>🎯 新增道具：</strong><br>• <strong>冲刺矛</strong>（<code>GOLDEN_SPEAR</code>）：左键冲刺，使用后消失（仅 1.21.4+ 可用）<br>• <strong>漂浮药水</strong>（<code>LINGERING_POTION</code>）：右键获得漂浮 4.5 秒<br><br><strong>🛠️ 新增管理员命令：</strong><br>• <code>/gost start</code> — 强制开局（跳过人数限制）<br>• <code>/gostadmin testmode</code> — 单人测试模式<br>• <code>/gostadmin giveitem &lt;道具名&gt;</code> — 直接获得道具（支持模糊匹配）<br><br><strong>⚙️ 配置版本升级到 27</strong><br>插件版本升级到 2.3.0<br><br><strong>+ 新增游戏结束奖金排行榜</strong>` },
             { version: "v2.2.3", tag: "视觉、听觉沉浸&重新支持英文", content: `<p>🔊 新增音效系统：<br><strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br><strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br><strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br><strong>🎬 新增道具居中字幕提示：</strong><br>• 肾上腺素使用者：⚡ 肾上腺素! → 移动速度大幅提升!<br>• 狂暴药水使用者：💢 狂暴药水! → 攻击力与速度提升!<br>• 凝冰球被击中者：❄ 被冻伤! → 移动速度降低!<br>• 控魂术被控者：✧ 你被控魂! → 无法移动!<br>• 臭牛排使用者：🥩 好臭! → 速度提升，但位置已暴露!<br>• 灵魂探测器被揭露者：⚠ 你的位置被揭露! → 所有玩家都能看到你!<br>• 神之救赎双方：救赎者 ✝ 神之救赎成功! / 被救者 ✝ 你被救赎了!<br><strong>🌐 新增英文语言支持：</strong> 在 config.yml 中设置 language.default: en_US 即可切换为英文。<br><strong>⚙️ 配置自动迁移：</strong> 检测到配置版本不一致时自动迁移，旧配置备份为 config_old_v{版本号}.yml。<br><strong>🔧 修复1.20.x API兼容性。</strong><br>配置版本升级到26。</p>` },
             { version: "v2.2.2", tag: "猎魔人登场(大改)", content: "<strong>1. 鬼玩家复活机制</strong>：猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。<br><strong>2. 智能血量调整系统</strong>：普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。<br><strong>3. 禁止回血机制</strong>：猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。<br><strong>4. 收割者伤害系统</strong>：基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。<br><strong>5. 神圣守护3次抵挡机制</strong>：母体需攻击3次才能破除猎魔人守护，普通鬼猎魔人阶段无法感染只能躲避猎杀。<br><strong>6. 猎魔人阶段自动激活所有人类神圣守护</strong>，无猎魔人时广播提示。<br>配置项：divine-guardian.demon-hunter 下可调整复活时间、血量、伤害等参数。" },
@@ -1297,9 +1428,6 @@
             "images/screenshot4.png",
             "images/screenshot5.png"
         ];
-        // 过滤掉无法加载的图片（可选）
-        // 但为了演示，我们保留全部
-
         if (images.length === 0) { container.style.display = 'none'; return; }
         container.innerHTML = `
             <div class="carousel-slides" id="slides-${containerId}"></div>
@@ -1310,7 +1438,6 @@
         const slidesDiv = document.getElementById(`slides-${containerId}`);
         const dotsDiv = document.getElementById(`dots-${containerId}`);
 
-        let loadedCount = 0;
         images.forEach((src, idx) => {
             const slide = document.createElement('div'); slide.className = 'carousel-slide';
             const img = document.createElement('img');
@@ -1318,13 +1445,8 @@
             img.alt = `Gost screenshot ${idx+1}`;
             img.loading = 'lazy';
             img.onerror = () => {
-                console.warn(`图片加载失败: ${src}`);
-                // 加载失败时显示占位色块
                 img.style.background = 'rgba(255,80,80,0.1)';
                 img.style.minHeight = '200px';
-                img.style.display = 'flex';
-                img.style.alignItems = 'center';
-                img.style.justifyContent = 'center';
                 img.alt = '图片加载失败';
             };
             slide.appendChild(img);
@@ -1365,7 +1487,7 @@
 
         function resetInterval() {
             if (interval) clearInterval(interval);
-            if (images.length > 1) interval = setInterval(next, 4000); // 4秒切换
+            if (images.length > 1) interval = setInterval(next, 4000);
         }
 
         document.getElementById(`prev-${containerId}`).addEventListener('click', prev);
@@ -1374,7 +1496,6 @@
         update();
         resetInterval();
 
-        // 鼠标悬停暂停
         container.addEventListener('mouseenter', () => interval && clearInterval(interval));
         container.addEventListener('mouseleave', () => { if (images.length > 1) interval = setInterval(next, 4000); });
 
@@ -1404,7 +1525,6 @@
             }
         });
 
-        // ESC 键关闭
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && modal.style.display === 'block') {
                 modal.style.display = 'none';
@@ -1566,8 +1686,9 @@
 
         const sectionIds = [
             'section-core', 'section-divine', 'section-redeemer', 'section-demonhunter',
-            'section-items', 'section-sound', 'section-ghost2human', 'section-economy',
-            'section-features', 'section-commands', 'section-permissions', 'section-versions'
+            'section-items', 'section-hunger', 'section-sound', 'section-ghost2human',
+            'section-economy', 'section-features', 'section-commands', 'section-permissions',
+            'section-versions'
         ];
         function updateActiveToc() {
             let currentId = sectionIds[0];
@@ -1630,7 +1751,7 @@
         document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('show'));
         document.querySelectorAll('.version-detail').forEach(d => d.classList.remove('show'));
 
-        console.log('✅ Gost 文档初始化完成（轮播图优化 + 点击查看大图）');
+        console.log('✅ Gost v2.3.2 文档已完全初始化');
     })();
 
     // ==================== 鼠标跟随 3D 动效 ====================
