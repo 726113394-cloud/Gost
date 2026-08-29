@@ -1,6 +1,6 @@
 # Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段对抗插件
 
-> 一款基于 Bukkit/Spigot 1.20.x - 1.21.x 的多人对抗小游戏插件，当前最新版本 **v2.3.1**。  
+> 一款基于 Bukkit/Spigot 1.20.x - 1.21.x 的多人对抗小游戏插件，当前最新版本 **v2.3.2**。  
 > 本插件灵感来源于游戏 **《Dead Realm》**——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。  
 > 玩家分为 **人类** 与 **鬼** 两个阵营，鬼负责感染人类，人类利用 **神圣守护**、**救赎者**、**猎魔人** 等机制周旋求生。  
 > 支持 **1.20.x 至 1.21.x 全版本**（粒子/音效/物品自动版本兼容）。
@@ -219,8 +219,8 @@
 | 🪄 **传送珍珠** | 右键投掷传送 | 通用 | 一直存在 |
 | 💉 **肾上腺素** | 右键获得速度效果 | 仅人类 | 一直存在 |
 | 🔥 **狂暴药水** | 右键获得速度效果 | 仅鬼 | 一直存在 |
-| 🗡️ **冲刺矛** | 左键冲刺，消耗品（仅 ≥1.21.4 版本生成） | 通用 | v2.3.0 新增 |
-| 🧪 **漂浮药水** | 右键获得漂浮效果 | 通用 | v2.3.0 新增 |
+| 🗡️ **冲刺矛** | 左键冲刺（≥1.21.4 为三叉戟材质，<1.21.4 为三叉戟）[reference:0] | 通用 | v2.3.2 全版本兼容[reference:1] |
+| 🧪 **漂浮药水** | 右键获得漂浮效果 4.5 秒 | 通用 | v2.3.0 新增 |
 
 ---
 
@@ -267,7 +267,7 @@
 - **Minecraft 1.20+ 全版本（截止 2026.8.23）**
 - 粒子名称自动兼容（`ParticleCompat` 运行时解析新旧枚举名）
 - 音效名称自动兼容（`SoundCompat` 运行时解析）
-- 冲刺矛（`GOLDEN_SPEAR`）仅 ≥1.21.4 生成，低版本自动禁用
+- **冲刺矛全版本兼容**（v2.3.2）：≥1.21.4 使用三叉戟材质，<1.21.4 替换为三叉戟，功能一致[reference:2]
 - Vault 经济接口多版本回退
 
 ---
@@ -307,6 +307,15 @@
 - 复活等待、重生、收割、救赎、母体禁足等核心事件新增 **中英双语字幕**。
 - 根据服务器语言设置自动切换。
 
+### 🍖 饥饿值系统（v2.3.2 新增）
+- 对局默认消耗饥饿值，与局外饥饿值独立，结算后恢复[reference:3]
+- 进入对局时所有人饱食度回满[reference:4]
+- **人类**：蹲下（Shift）每秒恢复 1 饱食度[reference:5]
+- **鬼**：蹲下（Shift）每 0.8 秒恢复 1 饱食度[reference:6]
+- 转换阵容时饱食度回满[reference:7]
+- 猎魔人阶段饱食度回满且不消耗[reference:8]
+- 可配置开关和恢复速度[reference:9]
+
 ---
 
 ## 📋 命令
@@ -335,7 +344,7 @@ v2.3.1 起，`/divineguardian` 和 `/ghostparticle` 命令已整合到 `/gostadm
 | `/gostadmin save/list/load/delete/info` | 区域管理 | gost.admin | 一直存在 |
 | `/gostadmin dark <on\|off\|status>` | 黑暗效果管理 | gost.admin | v2.0.2+ |
 | `/gostadmin heartbeat <on\|off\|status>` | 心跳声管理 | gost.admin | v2.1.0+ |
-| `/gostadmin testmode` | 单人测试模式 | gost.admin | v2.3.0+ |
+| `/gostadmin testmode` | 单人测试模式（对局不会因人数不足结束） | gost.admin | v2.3.0+ |
 | `/gostadmin giveitem <道具名>` | 直接获得指定道具（支持模糊匹配） | gost.admin | v2.3.0+ |
 | `/gostadmin economy <set\|status>` | 经济管理 | gost.admin | 一直存在 |
 | `/gostadmin divine <status\|clear>` | 神圣守护管理（替代 `/divineguardian`） | gost.admin | 整合自 v2.1.1 |
@@ -357,7 +366,24 @@ v2.3.1 起，`/divineguardian` 和 `/ghostparticle` 命令已整合到 `/gostadm
 
 ## 📈 版本历史
 
-### v2.3.1（当前）— 救赎者重构 & 收割者重做
+### v2.3.2（当前）— 饥饿值系统 & 冲刺矛全版本兼容
+
+> 基于 2.3.0 开发的 GostMod_v2 中发现对局中饱食度会消耗，修复时作者认为饥饿值也能成为追逐战中的决胜因素，随即做出此版本。[reference:10]
+
+**🍖 新增对局饥饿值消耗功能（可配置、可开关）**
+- 对局默认消耗饥饿值，与局外饥饿值独立，结算后恢复开局前饱食度[reference:11]
+- 进入对局所有人饱食度回满[reference:12]
+- **人类**：蹲下（Shift）每秒恢复 1 饱食度[reference:13]
+- **鬼**：蹲下（Shift）每 0.8 秒恢复 1 饱食度[reference:14]
+- 转换阵容时饱食度回满[reference:15]
+- 猎魔人阶段饱食度回满且不消耗[reference:16]
+
+**🗡️ 道具「冲刺矛」向低版本兼容**
+- 在 <1.21.4 的游戏版本中，冲刺矛替换为三叉戟，功能一致（右键向前冲刺 5 米）[reference:17]
+
+---
+
+### v2.3.1 — 救赎者重构 & 收割者重做
 
 **✨ 救赎者系统重构**
 - 删除神圣守护模式切换，救赎者**常驻每局游戏**
@@ -405,7 +431,7 @@ v2.3.1 起，`/divineguardian` 和 `/ghostparticle` 命令已整合到 `/gostadm
 ### v2.3.0 — 新道具 & 管理员工具
 
 - **新增道具**：冲刺矛（≥1.21.4）、漂浮药水
-- **新增管理员命令**：`/gost start`、`/gostadmin testmode`、`/gostadmin giveitem`
+- **新增管理员命令**：`/gost start`（强制开局）、`/gostadmin testmode`（单人测试模式）、`/gostadmin giveitem`（直接获得道具）
 - **新增游戏结束奖金排行榜**
 - 配置版本升级到 27
 
@@ -529,7 +555,7 @@ v2.3.1 起，`/divineguardian` 和 `/ghostparticle` 命令已整合到 `/gostadm
 
 ## Gost — Ghost Chase · Redeemer · Demon Hunter Multi‑Stage Confrontation Plugin
 
-> A Minecraft multiplayer mini‑game plugin based on Bukkit/Spigot 1.20.x – 1.21.x, current version **v2.3.1**.  
+> A Minecraft multiplayer mini‑game plugin based on Bukkit/Spigot 1.20.x – 1.21.x, current version **v2.3.2**.  
 > Inspired by **Dead Realm** – a tribute to that lost gem that brought countless joys, and an attempt to recreate the thrill of chase and tactical confrontation in Minecraft.  
 > Players are divided into **Human** and **Ghost** factions. Ghosts infect Humans, while Humans use **Divine Guardian**, **Redeemer**, and **Demon Hunter** mechanics to survive and fight back.  
 > Fully compatible with **1.20.x to 1.21.x** (particle/sound/item auto‑versioning).
@@ -747,7 +773,7 @@ Items are distributed periodically (default every 60 seconds) and also spawn ran
 | 🪄 **Teleport Pearl** | Right-click throw to teleport | Universal | Always present |
 | 💉 **Adrenaline** | Right-click for speed effect | Human only | Always present |
 | 🔥 **Frenzy Potion** | Right-click for speed effect | Ghost only | Always present |
-| 🗡️ **Spear Rush** | Left-click to dash (consumed) (only on ≥1.21.4) | Universal | v2.3.0+ |
+| 🗡️ **Spear Rush** | Left-click to dash (Trident on <1.21.4)[reference:18] | Universal | v2.3.2 full version compatibility[reference:19] |
 | 🧪 **Levitation Potion** | Right-click for levitation effect | Universal | v2.3.0+ |
 
 ---
@@ -795,7 +821,7 @@ At game end, a bonus leaderboard is shown with 🥇🥈🥉 medals.
 - **Minecraft 1.20+ all versions (as of 2026-08-23)**
 - Particle names auto-compatible (`ParticleCompat` resolves at runtime)
 - Sound names auto-compatible (`SoundCompat` resolves at runtime)
-- Spear Rush (`GOLDEN_SPEAR`) only spawns on ≥1.21.4; disabled on older versions
+- **Spear Rush full version compatibility** (v2.3.2): uses Trident on ≥1.21.4, replaced with Trident on <1.21.4, same function[reference:20]
 - Vault economy interface with fallback for multiple versions
 
 ---
@@ -833,6 +859,15 @@ At game end, a bonus leaderboard is shown with 🥇🥈🥉 medals.
 ### Bilingual Subtitles (v2.3.1)
 - Core events (respawn, harvest, redemption, immobilization, etc.) now have **bilingual subtitles**
 - Auto-switches based on server language setting
+
+### 🍖 Hunger System (new in v2.3.2)
+- Matches consume hunger by default, independent from outside hunger, restored after match[reference:21]
+- All players' hunger fully restored upon entering match[reference:22]
+- **Humans**: Crouch (Shift) to regain 1 hunger per second[reference:23]
+- **Ghosts**: Crouch (Shift) to regain 1 hunger every 0.8 seconds[reference:24]
+- Hunger fully restored when switching teams[reference:25]
+- During Hunter phase, hunger fully restored and does not deplete[reference:26]
+- Configurable toggle and recovery speed[reference:27]
 
 ---
 
@@ -884,7 +919,24 @@ From v2.3.1, `/divineguardian` and `/ghostparticle` commands have been integrate
 
 ## Version History
 
-### v2.3.1 (Current) — Redeemer Refactor & Reaper Rework
+### v2.3.2 (Current) — Hunger System & Spear Rush Full Version Compatibility
+
+> An issue was discovered in GostMod_v2, developed based on 2.3.0: hunger would deplete during matches. While fixing it, the author started wondering whether hunger could also become a decisive factor in chase battles.[reference:28]
+
+**🍖 New Hunger Consumption Feature (configurable & toggleable)**
+- Matches now consume hunger by default, independent from outside hunger, restored after match[reference:29]
+- All players' hunger fully restored upon entering match[reference:30]
+- **Humans**: Crouch (Shift) to regain 1 hunger per second[reference:31]
+- **Ghosts**: Crouch (Shift) to regain 1 hunger every 0.8 seconds[reference:32]
+- Hunger fully restored when switching teams[reference:33]
+- During Hunter phase, hunger fully restored and does not deplete[reference:34]
+
+**🗡️ "Spear Rush" Item Now Supports Backward Compatibility**
+- In game versions <1.21.4, "Spear Rush" will be replaced with a Trident, functioning identically (right-click to sprint forward 5 meters)[reference:35]
+
+---
+
+### v2.3.1 — Redeemer Refactor & Reaper Rework
 
 **✨ Redeemer System Refactor**
 - Removed Divine Guardian mode switching; Redeemers are **permanent in every game**
@@ -897,7 +949,7 @@ From v2.3.1, `/divineguardian` and `/ghostparticle` commands have been integrate
 
 **👻 Ghost Respawn Mechanic Optimization**
 - Death state: invisible but can move freely
-- Respawn: **random location teleport** (in game area), no longer原地复活
+- Respawn: **random location teleport** (in game area)
 - 10-second countdown + respawn subtitle/sound
 
 **🎆 Kill Firework Feedback**
