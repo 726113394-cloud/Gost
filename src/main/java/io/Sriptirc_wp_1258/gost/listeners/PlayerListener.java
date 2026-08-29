@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -98,15 +97,13 @@ public class PlayerListener implements Listener {
     }
     
     @EventHandler
-    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+    public void onFoodLevelChange(org.bukkit.event.entity.FoodLevelChangeEvent event) {
+        // v2.3.2：猎魔人阶段所有玩家不会自然掉饥饿值（饱食度锁定满）
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
-        
         Player player = (Player) event.getEntity();
-        
-        // 如果玩家在游戏中，锁定饱食度
-        if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
+        if (plugin.getDivineGuardianManager().isInDemonHunterPhase()) {
             event.setCancelled(true);
             player.setFoodLevel(20);
             player.setSaturation(20);

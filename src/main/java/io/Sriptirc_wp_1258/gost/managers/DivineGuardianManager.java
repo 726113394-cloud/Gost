@@ -486,6 +486,15 @@ public class DivineGuardianManager {
     private void enterDemonHunterPhase() {
         isDemonHunterPhase = true;
         
+        // v2.3.2：猎魔人阶段所有玩家饱食度回满（阶段内不再自然掉饥饿，由 PlayerListener 锁定）
+        for (UUID pid : plugin.getPlayerManager().getAllPlayers()) {
+            Player p = Bukkit.getPlayer(pid);
+            if (p != null && p.isOnline()) {
+                p.setFoodLevel(20);
+                p.setSaturation(20);
+            }
+        }
+        
         // 清除所有的神之救赎道具
         clearAllHolyRedemptionItems();
         

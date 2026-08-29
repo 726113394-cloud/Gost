@@ -29,6 +29,7 @@ public class Gost extends JavaPlugin {
     private HeartbeatManager heartbeatManager;
     private DivineGuardianManager divineGuardianManager;
     private GhostParticleManager ghostParticleManager;
+    private SaturationManager saturationManager;
     
     @Override
     public void onEnable() {
@@ -61,6 +62,7 @@ public class Gost extends JavaPlugin {
             heartbeatManager = new HeartbeatManager(this);
             divineGuardianManager = new DivineGuardianManager(this);
             ghostParticleManager = new GhostParticleManager(this);
+            saturationManager = new SaturationManager(this);
         } catch (Exception e) {
             getLogger().severe("初始化管理器时发生错误: " + e.getMessage());
             e.printStackTrace();
@@ -92,6 +94,7 @@ public class Gost extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new HolyRedemptionListener(this), this);
             getServer().getPluginManager().registerEvents(new DemonHunterPhaseListener(this), this);
             getServer().getPluginManager().registerEvents(gameManager, this);
+            getServer().getPluginManager().registerEvents(saturationManager, this);
             
             getLogger().info("==========================================");
             getLogger().info("作者: 来自太空的小头脑");
@@ -121,6 +124,9 @@ public class Gost extends JavaPlugin {
         if (ghostParticleManager != null) {
             ghostParticleManager.cleanup();
         }
+        if (saturationManager != null) {
+            saturationManager.shutdown();
+        }
         getLogger().info("Gost 插件已禁用");
     }
     
@@ -149,6 +155,7 @@ public class Gost extends JavaPlugin {
     public HeartbeatManager getHeartbeatManager() { return heartbeatManager; }
     public DivineGuardianManager getDivineGuardianManager() { return divineGuardianManager; }
     public GhostParticleManager getGhostParticleManager() { return ghostParticleManager; }
+    public SaturationManager getSaturationManager() { return saturationManager; }
     
     public boolean isSpearRushEnabled() {
         return spearRushEnabled;
@@ -164,11 +171,13 @@ public class Gost extends JavaPlugin {
             int minor = Integer.parseInt(parts[1]);
             int patch = (parts.length > 2) ? Integer.parseInt(parts[2]) : 0;
             if (major > 1 || (major == 1 && minor > 21) || (major == 1 && minor == 21 && patch >= 4)) {
+                // ≥1.21.4：矛（GOLDEN_SPEAR）存在，使用矛外观
                 spearRushEnabled = true;
-                getLogger().info("✓ 冲刺矛功能已启用（服务器版本 ≥ 1.21.4）");
+                getLogger().info("✓ 冲刺矛功能已启用（服务器版本 ≥ 1.21.4，使用长矛外观）");
             } else {
-                spearRushEnabled = false;
-                getLogger().info("✗ 冲刺矛功能已禁用（服务器版本 < 1.21.4）");
+                // <1.21.4：矛不存在，使用三叉戟外观（TRIDENT），功能不变
+                spearRushEnabled = true;
+                getLogger().info("✓ 冲刺矛功能已启用（服务器版本 < 1.21.4，使用三叉戟外观）");
             }
         } catch (Exception e) {
             spearRushEnabled = false;

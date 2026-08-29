@@ -129,6 +129,10 @@ public class PlayerManager {
             
             // 阵容切换音效
             if (oldRole != null && oldRole != role) {
+                // v2.3.2：阵容切换时饱食度回满
+                player.setFoodLevel(20);
+                player.setSaturation(20);
+                
                 if (role == PlayerRole.GHOST_MOTHER || role == PlayerRole.GHOST_NORMAL) {
                     // 变为鬼 - 阴森音效
                     player.playSound(player.getLocation(), Sound.ENTITY_VEX_AMBIENT, 0.8f, 0.7f);

@@ -82,7 +82,10 @@ public class ItemListener implements Listener {
         } else if (displayName.contains("灵魂探测器")) {
             handleSoulDetector(player, item);
         } else if (displayName.contains("冲刺矛")) {
-            handleSpearRush(player, item);
+            // v2.3.2：冲刺矛仅右键触发（向前冲刺5米）
+            if (isRightClick) {
+                handleSpearRush(player, item);
+            }
         } else if (displayName.contains("漂浮药水")) {
             handleLevitationPotion(player, item);
         }

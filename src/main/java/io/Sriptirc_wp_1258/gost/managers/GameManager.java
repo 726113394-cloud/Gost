@@ -579,6 +579,17 @@ public class GameManager implements Listener {
         // 重置神圣守护状态，确保一局游戏只触发一次
         plugin.getDivineGuardianManager().resetGame();
         
+        // v2.3.2：游戏开局时所有玩家恢复满饱食度（对局中正常消耗，蹲下可恢复）
+        if (plugin.getConfigManager().isFoodSystemEnabled()) {
+            for (UUID playerId : plugin.getPlayerManager().getAllPlayers()) {
+                Player player = Bukkit.getPlayer(playerId);
+                if (player != null && player.isOnline()) {
+                    player.setFoodLevel(20);
+                    player.setSaturation(20);
+                }
+            }
+        }
+        
         Bukkit.broadcastMessage(ChatColor.GREEN + "游戏正式开始！");
         
         // 注意：母体鬼已经在准备阶段选择并禁足，这里不再重复选择
@@ -827,6 +838,7 @@ public class GameManager implements Listener {
         plugin.getPlayerManager().cleanup();
         plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
         plugin.getDarkEffectManager().cleanup(); // 清理黑暗效果数据
+        plugin.getSaturationManager().cleanup(); // 清理饱食度恢复数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;
@@ -895,6 +907,7 @@ public class GameManager implements Listener {
         plugin.getPlayerManager().cleanup();
         plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
         plugin.getDarkEffectManager().cleanup(); // 清理黑暗效果数据
+        plugin.getSaturationManager().cleanup(); // 清理饱食度恢复数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;
@@ -967,6 +980,7 @@ public class GameManager implements Listener {
         plugin.getPlayerManager().cleanup();
         plugin.getDivineGuardianManager().cleanup(); // 清理神圣守护数据
         plugin.getDarkEffectManager().cleanup(); // 清理黑暗效果数据
+        plugin.getSaturationManager().cleanup(); // 清理饱食度恢复数据
         
         // 重置游戏状态
         gameState = GameState.STOPPED;

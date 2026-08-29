@@ -8,7 +8,7 @@ public class ConfigManager {
     private final Gost plugin;
     private FileConfiguration config;
     
-    private static final int CURRENT_CONFIG_VERSION = 28;
+    private static final int CURRENT_CONFIG_VERSION = 29;
     
     // 记录迁移数据，用于服务器启动后打印详情
     private boolean configMigrated = false;
@@ -159,6 +159,11 @@ public class ConfigManager {
         // 心跳声设置
         config.addDefault("heartbeat.enabled", true); // 是否启用心跳声
         config.addDefault("heartbeat.interval", 10); // 心跳声播放间隔（秒）
+        
+        // 局内饱食度设置（v2.3.2）
+        config.addDefault("food.enabled", true); // 是否启用局内饱食度恢复
+        config.addDefault("food.regenerate-per-second", 1); // 人类：按住蹲下每秒恢复的饱食度
+        config.addDefault("food.ghost-regenerate-interval", 0.8); // 鬼：按住蹲下每N秒恢复1点饱食度
         
         // 转化功能设置
         config.addDefault("conversion.enabled", false); // 是否启用转化功能
@@ -598,6 +603,24 @@ public class ConfigManager {
     public void setHeartbeatEnabled(boolean enabled) {
         config.set("heartbeat.enabled", enabled);
         plugin.saveConfig();
+    }
+    
+    // 局内饱食度配置（v2.3.2）
+    public boolean isFoodSystemEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("food.enabled", true);
+    }
+    
+    public int getFoodRegeneratePerSecond() {
+        ensureConfigLoaded();
+        int amount = config.getInt("food.regenerate-per-second", 1);
+        return Math.max(1, Math.min(20, amount)); // 限制在 1-20 之间
+    }
+    
+    public double getFoodGhostRegenerateInterval() {
+        ensureConfigLoaded();
+        double interval = config.getDouble("food.ghost-regenerate-interval", 0.8);
+        return Math.max(0.2, Math.min(10.0, interval)); // 限制在 0.2-10 秒之间
     }
     
     // 语言配置

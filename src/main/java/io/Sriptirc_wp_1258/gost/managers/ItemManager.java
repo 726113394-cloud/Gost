@@ -514,15 +514,15 @@ public class ItemManager {
         plugin.getLogger().info("已创建漂浮药水道具");
     }
     
-    // 创建冲刺矛
+    // 创建冲刺矛（v2.3.2：低版本矛不存在时使用三叉戟外观）
     private void createSpearRush() {
-        ItemStack spear = new ItemStack(Material.GOLDEN_SPEAR);
+        ItemStack spear = new ItemStack(resolveSpearMaterial());
         ItemMeta meta = spear.getItemMeta();
         
         if (meta != null) {
             meta.setDisplayName(ChatColor.GOLD + "冲刺矛");
             meta.setLore(Arrays.asList(
-                ChatColor.GRAY + "左键使用进行一次冲刺攻击",
+                ChatColor.GRAY + "右键使用向前冲刺5米",
                 ChatColor.GRAY + "使用后即刻消失",
                 "",
                 ChatColor.DARK_GRAY + "[一次性道具]"
@@ -536,7 +536,24 @@ public class ItemManager {
         }
         
         customItems.put("spear_rush", spear);
-        plugin.getLogger().info("已创建冲刺矛道具");
+        plugin.getLogger().info("已创建冲刺矛道具（外观: " + resolveSpearMaterial().name() + "）");
+    }
+    
+    /**
+     * 解析冲刺矛使用的物品材质（v2.3.2）
+     * ≥1.21.4 使用 GOLDEN_SPEAR（矛），低版本自动回退为 TRIDENT（三叉戟）
+     * 使用字符串匹配避免低版本直接引用枚举常量导致 NoSuchFieldError
+     */
+    private Material resolveSpearMaterial() {
+        try {
+            Material spear = Material.matchMaterial("GOLDEN_SPEAR");
+            if (spear != null) {
+                return spear;
+            }
+        } catch (Exception ignored) {
+            // 低版本枚举不存在，忽略
+        }
+        return Material.TRIDENT;
     }
     
     // 获取一次机会道具
@@ -597,8 +614,8 @@ public class ItemManager {
         // 获取玩家面向方向
         org.bukkit.util.Vector direction = player.getLocation().getDirection();
         
-        // 冲刺力度：水平方向强力冲刺
-        double power = 3.0;
+        // 冲刺力度：向前冲刺5米
+        double power = 5.0;
         direction.setY(0); // 取消上升位移
         direction.normalize().multiply(power);
         
@@ -609,7 +626,7 @@ public class ItemManager {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 0.8f);
         
         // 居中字幕提示
-        player.sendTitle("§6⚡ 冲刺! ⚡", "§7长矛冲刺!", 5, 20, 5);
+        player.sendTitle("§6⚡ 冲刺! ⚡", "§7向前冲刺5米!", 5, 20, 5);
         
         plugin.getLogger().info("玩家 " + player.getName() + " 使用了冲刺矛");
     }
