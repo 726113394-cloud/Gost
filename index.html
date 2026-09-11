@@ -823,6 +823,26 @@
         .back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
         .back-to-top:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); color: #fff; transform: scale(1.05); }
 
+        /* ============================================================
+           ★ 3D 倾斜：鼠标跟随高光层
+           ============================================================ */
+        .tilt-glare {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            background: radial-gradient(
+                circle at var(--tilt-gx, 50%) var(--tilt-gy, 50%),
+                rgba(255, 255, 255, 0.22) 0%,
+                rgba(255, 255, 255, 0.08) 26%,
+                rgba(255, 255, 255, 0) 62%
+            );
+            mix-blend-mode: screen;
+        }
+
         /* ===== 响应式 ===== */
         @media (max-width: 900px) {
             .toc-pill-btn { display: none; }
@@ -916,6 +936,11 @@
         }
         .ver-tag-current { background: rgba(46, 204, 113, 0.2); color: #6ee7b7; border-color: rgba(46, 204, 113, 0.2); }
         .ver-tag-old { background: rgba(255, 80, 80, 0.1); color: #ff7b7b; }
+
+        /* 减弱动态效果时禁用倾斜 */
+        @media (prefers-reduced-motion: reduce) {
+            .tilt-glare { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -1733,6 +1758,243 @@
         });
     }
 
+    /* ================================================================
+       ★★★ 卡片 3D 倾斜 · 弹簧曲线动效引擎 ★★★
+       ----------------------------------------------------------------
+       原理：
+       1. 指针位置 → 目标旋转角（rotateX / rotateY）
+       2. 每帧做「弹簧积分」逼近目标：
+              v = (v + (target - cur) * k) * d
+              cur += v
+          天然产生「加速 → 过冲 → 回弹 → 收敛」的曲线轨迹
+       3. 同时驱动：位移上浮 / 缩放 / 动态投影 / 跟随高光
+       ================================================================ */
+    (function () {
+        'use strict';
+
+        // 尊重系统「减弱动态效果」偏好
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const activeTilts = new Set();   // 正在动画的实例
+        const allTilts = new Set();      // 全部实例
+        let loopRunning = false;
+
+        /* ---------- 全局单一 rAF 循环（性能友好） ---------- */
+        function runLoop() {
+            activeTilts.forEach(t => {
+                if (!t.step()) activeTilts.delete(t);
+            });
+            if (activeTilts.size > 0) {
+                requestAnimationFrame(runLoop);
+            } else {
+                loopRunning = false;
+            }
+        }
+
+        function wake(tilt) {
+            activeTilts.add(tilt);
+            if (!loopRunning) {
+                loopRunning = true;
+                requestAnimationFrame(runLoop);
+            }
+        }
+
+        /* ---------- 倾斜实例 ---------- */
+        class TiltCard {
+            constructor(el, opts) {
+                this.el = el;
+                this.o = Object.assign({
+                    max: 9,            // 最大旋转角度(deg)
+                    scale: 1.025,      // 悬浮缩放
+                    lift: 8,           // 悬浮上浮(px)
+                    stiffness: 0.10,   // 弹簧刚度 → 曲线快慢
+                    damping: 0.75,     // 阻尼系数 → 回弹曲线
+                    perspective: 1000, // 景深
+                    glare: true,       // 跟随高光
+                    shadow: true       // 动态投影
+                }, opts);
+
+                // 目标值 / 当前值 / 速度
+                this.tx = 0; this.ty = 0; this.ts = 1; this.tl = 0;
+                this.cx = 0; this.cy = 0; this.cs = 1; this.cl = 0;
+                this.vx = 0; this.vy = 0; this.vs = 0; this.vl = 0;
+
+                this.hovering = false;
+                this.rect = null;
+
+                el.style.transformStyle = 'preserve-3d';
+                el.style.backfaceVisibility = 'hidden';
+
+                if (this.o.glare) {
+                    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+                    const g = document.createElement('div');
+                    g.className = 'tilt-glare';
+                    el.appendChild(g);
+                    this.glareEl = g;
+                }
+
+                this._enter = this._enter.bind(this);
+                this._move = this._move.bind(this);
+                this._leave = this._leave.bind(this);
+
+                el.addEventListener('pointerenter', this._enter);
+                el.addEventListener('pointermove', this._move);
+                el.addEventListener('pointerleave', this._leave);
+                el.addEventListener('pointercancel', this._leave);
+
+                allTilts.add(this);
+            }
+
+            _enter() {
+                this.rect = this.el.getBoundingClientRect();
+                this.hovering = true;
+                this.el.style.willChange = 'transform';
+                wake(this);
+            }
+
+            _move(e) {
+                if (!this.rect) this.rect = this.el.getBoundingClientRect();
+                const r = this.rect;
+                if (!r.width || !r.height) return;
+
+                // 归一化到 0~1
+                let px = (e.clientX - r.left) / r.width;
+                let py = (e.clientY - r.top) / r.height;
+                px = px < 0 ? 0 : (px > 1 ? 1 : px);
+                py = py < 0 ? 0 : (py > 1 ? 1 : py);
+
+                const nx = px - 0.5;   // -0.5 ~ 0.5
+                const ny = py - 0.5;
+
+                // 鼠标在右 → rotateY 正；鼠标在下 → rotateX 负
+                this.ty = nx * this.o.max * 2;
+                this.tx = -ny * this.o.max * 2;
+                this.ts = this.o.scale;
+                this.tl = this.o.lift;
+
+                if (this.glareEl) {
+                    this.glareEl.style.setProperty('--tilt-gx', (px * 100).toFixed(2) + '%');
+                    this.glareEl.style.setProperty('--tilt-gy', (py * 100).toFixed(2) + '%');
+                    this.glareEl.style.opacity = '1';
+                }
+                wake(this);
+            }
+
+            _leave() {
+                this.hovering = false;
+                this.rect = null;
+                this.tx = 0; this.ty = 0; this.ts = 1; this.tl = 0;
+                if (this.glareEl) this.glareEl.style.opacity = '0';
+                wake(this);
+            }
+
+            /* 弹簧积分 + 渲染，返回 true 表示还需继续动画 */
+            step() {
+                const k = this.o.stiffness;
+                const d = this.o.damping;
+
+                this.vx = (this.vx + (this.tx - this.cx) * k) * d; this.cx += this.vx;
+                this.vy = (this.vy + (this.ty - this.cy) * k) * d; this.cy += this.vy;
+                this.vs = (this.vs + (this.ts - this.cs) * k) * d; this.cs += this.vs;
+                this.vl = (this.vl + (this.tl - this.cl) * k) * d; this.cl += this.vl;
+
+                const settled =
+                    Math.abs(this.tx - this.cx) < 0.01 && Math.abs(this.vx) < 0.01 &&
+                    Math.abs(this.ty - this.cy) < 0.01 && Math.abs(this.vy) < 0.01 &&
+                    Math.abs(this.ts - this.cs) < 0.0005 && Math.abs(this.vs) < 0.0005 &&
+                    Math.abs(this.tl - this.cl) < 0.01 && Math.abs(this.vl) < 0.01;
+
+                if (settled) {
+                    this.cx = this.tx; this.cy = this.ty;
+                    this.cs = this.ts; this.cl = this.tl;
+                    this.vx = this.vy = this.vs = this.vl = 0;
+                }
+
+                this.render();
+
+                if (settled) {
+                    if (!this.hovering) {
+                        // 完全归位 → 交还给 CSS 接管
+                        this.el.style.transform = '';
+                        this.el.style.boxShadow = '';
+                        this.el.style.willChange = '';
+                    }
+                    return false;
+                }
+                return true;
+            }
+
+            render() {
+                const o = this.o;
+
+                this.el.style.transform =
+                    `perspective(${o.perspective}px) ` +
+                    `rotateX(${this.cx.toFixed(3)}deg) ` +
+                    `rotateY(${this.cy.toFixed(3)}deg) ` +
+                    `translate3d(0, ${(-this.cl).toFixed(2)}px, 0) ` +
+                    `scale(${this.cs.toFixed(4)})`;
+
+                if (o.shadow) {
+                    // 阴影朝鼠标反方向偏移，强化「纸片浮起」错觉
+                    const sx = -this.cy * 1.8;
+                    const sy = this.cx * 1.8 + this.cl * 1.5;
+                    const blur = 32 + this.cl * 3;
+                    const alpha = (0.24 + this.cl * 0.014).toFixed(3);
+                    this.el.style.boxShadow =
+                        `${sx.toFixed(1)}px ${sy.toFixed(1)}px ${blur.toFixed(0)}px rgba(0,0,0,${alpha}), ` +
+                        `inset 0 1px 0 rgba(255,255,255,0.08)`;
+                }
+            }
+        }
+
+        /* ---------- 挂载 ---------- */
+        function mount(selector, opts) {
+            document.querySelectorAll(selector).forEach(el => {
+                if (el.dataset.tiltReady === '1') return;
+                el.dataset.tiltReady = '1';
+                new TiltCard(el, opts);
+            });
+        }
+
+        window.initTiltEffects = function () {
+            // 大卡片：明显立体感 + 高光
+            mount('.card', {
+                max: 9, scale: 1.03, lift: 10,
+                stiffness: 0.10, damping: 0.74,
+                glare: true, shadow: true
+            });
+            // 推广卡片
+            mount('.tool-card', {
+                max: 6, scale: 1.02, lift: 8,
+                stiffness: 0.10, damping: 0.74,
+                glare: true, shadow: true
+            });
+            // 版本条目：轻量倾斜
+            mount('.version-item', {
+                max: 5, scale: 1.012, lift: 5,
+                stiffness: 0.10, damping: 0.74,
+                glare: true, shadow: false
+            });
+            // 小按钮：更灵敏的弹簧回弹
+            mount('.btn-detail, .link-btn, .migration-tool-btn, .version-tab', {
+                max: 14, scale: 1.06, lift: 3,
+                stiffness: 0.14, damping: 0.72,
+                glare: false, shadow: false
+            });
+        };
+
+        /* 尺寸/滚动变化 → 失效缓存矩形 */
+        let pending = null;
+        function invalidateAll() {
+            if (pending) cancelAnimationFrame(pending);
+            pending = requestAnimationFrame(() => {
+                allTilts.forEach(t => (t.rect = null));
+            });
+        }
+        window.addEventListener('resize', invalidateAll, { passive: true });
+        window.addEventListener('scroll', invalidateAll, { passive: true });
+    })();
+
     // ========== 初始化 ==========
     (function() {
         initCarousel('carousel');
@@ -1751,30 +2013,11 @@
         document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('show'));
         document.querySelectorAll('.version-detail').forEach(d => d.classList.remove('show'));
 
-        console.log('✅ Gost v2.3.2 文档已完全初始化');
+        // ★ 在动态内容渲染完成后再挂载倾斜效果
+        if (window.initTiltEffects) window.initTiltEffects();
+
+        console.log('✅ Gost v2.3.2 文档已完全初始化（含 3D 倾斜弹簧曲线动效）');
     })();
-
-    // ==================== 鼠标跟随 3D 动效 ====================
-    document.addEventListener('DOMContentLoaded', function() {
-        const elements = document.querySelectorAll('.btn-detail, .link-btn, .migration-tool-btn, .version-tab');
-
-        elements.forEach(el => {
-            el.addEventListener('mousemove', function(e) {
-                const rect = this.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                const rotateX = y * -8;
-                const rotateY = x * 8;
-                this.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-                this.style.transition = 'transform 0.1s ease';
-            });
-
-            el.addEventListener('mouseleave', function() {
-                this.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
-                this.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
-            });
-        });
-    });
 </script>
 </body>
 </html>
