@@ -1,0 +1,41 @@
+name: Gost
+version: 2.3.3
+main: io.Sriptirc_wp_1258.gost.Gost
+api-version: 1.20
+description: 极限生存对抗游戏 - 兼容 Bukkit/Spigot/Paper/Purpur，Folia 调度兼容
+author: ScriptIrc
+website: https://scriptirc.com
+
+# 服务端支持矩阵
+# | 服务端 | 支持 | 说明 |
+# |--------|------|------|
+# | Bukkit / Spigot / Paper / Purpur | 完整 | 同一套 Bukkit API + ApiCompat 跨版本 |
+# | Folia | 调度兼容 | ServerCompat/SchedulerCompat；玩法为单线程模型，属尽力兼容 |
+# | Sponge | 不支持 | 非 Bukkit API，需独立移植 |
+# | BungeeCord / Velocity / Waterfall | 不适用 | 代理端，本插件是游戏后端玩法插件 |
+
+folia-supported: true
+
+depend: [Vault]
+softdepend: []
+
+commands:
+  gost:
+    description: 玩家命令 - 加入/离开游戏
+    usage: /<command> [join|leave|info|help]
+    aliases: [join, leave]
+  gostadmin:
+    description: 管理员命令 - 管理游戏、区域、神圣守护、粒子效果
+    usage: /<command> [start|stop|testmode|giveitem|pos1|pos2|save|list|load|delete|info|tool|clear|reload|status|dark|heartbeat|economy|divine|particle|help]
+    aliases: [ga]
+
+permissions:
+  gost.use:
+    description: 允许使用基础命令
+    default: true
+  gost.player:
+    description: 允许玩家使用基本命令
+    default: true
+  gost.admin:
+    description: 管理员权限
+    default: op

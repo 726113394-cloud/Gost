@@ -1,0 +1,267 @@
+# Gost 插件配置文件
+# 版本: 2.3.3
+# Minecraft: 1.20.x
+
+ScriptIrc-config-version: 31
+
+# 服务端支持: Bukkit/Spigot/Paper/Purpur 完整 | Folia 调度兼容 | Sponge/代理端 不适用
+
+# ==================== 游戏设置 ====================
+game:
+  duration: 420 # 游戏时长（秒）
+  preparation-time: 20 # 准备时间（秒）
+  queue-time: 60 # 队列等待时间（秒）
+  min-players: 2 # 最小玩家数
+  max-players: 16 # 最大玩家数
+  max-games: 1 # 最大同时游戏数（0=禁止新游戏）
+  match-queue-time: 30 # 匹配队列时间（秒）
+
+# ==================== 经济设置 ====================
+economy:
+  entry-fee: 100.0 # 入场费
+  server-bonus: 5000.0 # 服务器奖金
+
+# 额外奖励（游戏结束后结算，由服务器额外支付，与奖池分离）
+reward:
+  redeem-ghost: 100
+  kill-normal: 50
+  kill-mother: 100
+
+# ==================== 道具设置 ====================
+items:
+  adrenaline:                 # 肾上腺素（喷溅夜视药水 / 人类）
+    duration: 10              # 速度Ⅱ持续（秒）
+    speed-level: 2            # 速度等级（2=速度Ⅱ）
+  frenzy:                     # 狂暴药水（喷溅治疗药水 / 鬼）
+    duration: 10
+    speed-level: 2
+  ice-ball:                   # 凝冰球（雪球 / 通用）
+    slow-duration: 4          # 缓慢Ⅳ持续（秒）
+    slow-level: 4             # 缓慢等级（4=缓慢Ⅳ）
+  soul-control:               # 控魂术（时钟 / 人类）
+    freeze-duration: 6        # 全场鬼无法移动（秒）
+    cooldown: 18
+  teleport-pearl:             # 传送珍珠（末影珍珠 / 通用）
+    cooldown: 20
+  stinky-steak:               # 臭牛排（通用）
+    speed-duration: 14        # 速度Ⅲ持续（秒）
+    speed-level: 2            # 2=速度Ⅲ
+    glowing-duration: 10      # 发光标记（秒）
+    cooldown: 30
+    eat-time-ticks: 20        # 食用耗时（刻），20=1秒
+  soul-detector:              # 灵魂探测器（指南针 / 母体）
+    duration: 25              # 揭示所有玩家位置（秒）
+    cooldown: 35
+  second-chance:              # 第二次机会（不死图腾 / 人类被动）
+    cooldown: 180
+    consume-on-trigger: false # 触发后是否消耗道具（false=保留并冷却）
+    teleport-on-trigger: true
+    human-speed-duration: 10
+    human-speed-level: 2
+    human-glowing-duration: 10
+    ghost-slow-duration: 7
+    ghost-slow-level: 1
+  levitation:                 # 漂浮药水（滞留药水 / 通用）
+    duration-ticks: 90        # 4.5 秒
+  spear-rush:                 # 冲刺矛（三叉戟/矛 / 通用）
+    distance: 5.5             # 冲刺距离（米）
+    consume-on-use: true
+  holy-redemption:            # 神之救赎（救赎者）
+    uses: 1
+    teleport-on-use: true
+  reaper:                     # 收割者（猎魔人）
+    damage-per-hit: 1.0       # 左键/收割 伤害值
+    attack-cooldown: 2.0      # 左键冷却（秒）
+    harvest-cooldown: 10      # 收割冷却（秒）
+    harvest-range: 4.0        # 收割范围（格）
+    sound-on-harvest: ENTITY_WITHER_DEATH
+
+# ==================== 背包管理（v2.3.1/2.3.3） ====================
+inventory:
+  max-item-types: 9
+  max-items: 9
+  allow-duplicate-universal: true
+  force-first-slot-items: "收割者,神之救赎"
+
+# ==================== 效果设置 ====================
+effects:
+  mother-ghost-blindness-duration: 20
+  ghost-immobilize-duration: 20
+  ghost-sense-duration: 5
+  infection-lightning: true
+  infection-sound: true
+  minute-glowing:
+    enabled: true
+    duration: 5
+    interval: 60
+  kill-firework:
+    enabled: true
+    type: BURST
+    colors: "RED,YELLOW"
+
+# ==================== 鬼转人类 ====================
+ghost-to-human:
+  enabled: false
+  remaining-time: 180
+  count: 1
+
+# ==================== 游戏血量 ====================
+health:
+  max-health: 10.0
+
+# ==================== 黑暗效果 ====================
+dark-effect:
+  enabled: true
+  duration: 999999
+  amplifier: 0
+
+# ==================== 心跳声 ====================
+heartbeat:
+  enabled: true
+  interval: 10
+
+# ==================== 局内饱食度（v2.3.2） ====================
+food:
+  enabled: true
+  regenerate-per-second: 1
+  ghost-regenerate-interval: 0.8
+
+# ==================== 区域选择 ====================
+area:
+  selection-tool: MAGMA_CREAM
+  max-areas: 20
+  auto-teleport: true
+  ignore-y-axis: false
+
+# ==================== 道具刷新 ====================
+item-spawn:
+  enabled: true
+  interval: 60
+  max-per-refresh: 3
+  max-per-player: 1
+
+# ==================== 语言 ====================
+language:
+  # 可选: zh_CN / en_US / ja_JP / es_ES / fr_FR / de_DE
+  # 语言文件: plugins/Gost/lang/<locale>.yml 可自行修改，/gost reload 生效
+  default: zh_CN
+  auto-detect: true
+  max-item-types-per-player: 6
+
+# ==================== 音效 / 字幕 / 广播 / 粒子 ====================
+sounds:
+  enabled: true
+  item-give: true
+  item-use: true
+  phase-change: true
+  kill-feedback: true
+  respawn: true
+
+titles:
+  enabled: true
+
+broadcast:
+  item-give: true
+  kill: true
+  respawn: true
+  mother-emerald: true
+
+particles:
+  kill-explosion: true
+  harvest-shockwave: true
+  respawn-totem: true
+  mother-emerald-glow: true
+
+# ==================== 母体进化水晶（v2.3.3） ====================
+# 神圣守护阶段在固定/中心/随机坐标生成发光绿宝石，普通鬼拾取进化为母体
+mother-emerald:
+  enabled: true
+  spawn-phase: holy-guardian    # holy-guardian / demon-hunter / both
+  player-threshold: 5           # 参与人数门槛
+  location-mode: center         # fixed / center / random
+  fixed:
+    world: ""                   # 留空则用选区世界
+    x: 0.0
+    y: 64.0
+    z: 0.0
+  pickup-delay-ticks: 40
+  glow-interval-ticks: 20
+  item-name: "母体升级宝石"
+  entity-name: "母体绿宝石"
+
+# ==================== 猎魔人死亡（v2.3.3） ====================
+# 被母体击杀 → 旁观 + 复活倒计时 → 以普通鬼身份复活
+demon-hunter:
+  death:
+    convert-to-normal-ghost: true
+    respawn-as-ghost: true
+
+# ==================== 神圣守护系统 ====================
+divine-guardian:
+  enabled: true
+  trigger-human-count: 2
+  broadcast: true
+
+  holy-guardian:
+    teleport-attacker: true
+    teleport-radius: 10.0
+    effect-duration: 30
+    defense-charges: 3
+
+  demon-hunter:
+    phase-start-time: 90
+    max-uses: 1
+    holy-redemption-cooldown: 10
+    holy-guardian-on-phase: true
+
+    reaper-weapon:
+      damage-per-hit: 1.0
+      hits-to-kill: 2          # 旧字段（兼容保留），现以伤害值判定
+      attack-cooldown: 2.0
+      enchant-glow: true
+
+    kill-rewards:
+      demon-hunter-kill-reward: 0.3
+      mother-kill-demon-hunter-reward: 0.5
+
+    respawn:
+      enabled: true
+      respawn-time: 15
+      random-location: true
+      restore-health-on-respawn: true
+      boundary-check: true
+      boundary-radius: 50
+
+    health:
+      ghost-normal: 2.0
+      ghost-mother: 4.0        # 伤害1时约4次击杀
+      demon-hunter: 2.0
+      mother-attack-damage: 1.0
+      no-healing: true         # 历史字段；v2.3.1+ 已允许正常回血
+
+    mother:
+      hits-to-infect-hunter: 4
+      hits-to-break-guardian: 3
+
+    additional-mother:
+      enabled: true
+      player-threshold: 8
+      only-in-demon-hunter-phase: true
+
+# ==================== 救赎者 ====================
+redeemer:
+  enabled: true
+  max-count: 2
+  max-uses: 1
+  holy-redemption-cooldown: 10
+
+# ==================== 鬼粒子 ====================
+ghost-particle:
+  enabled: true
+  type: REDSTONE
+  count: 5
+  interval: 15
+  mother-color: "255,0,0"
+  normal-color: "0,255,0"
+  size: 1.0
+  show-in-preparation: true

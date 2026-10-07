@@ -1,0 +1,1378 @@
+package io.Sriptirc_wp_1258.gost.managers;
+
+import io.Sriptirc_wp_1258.gost.Gost;
+import org.bukkit.configuration.file.FileConfiguration;
+
+public class ConfigManager {
+    
+    private final Gost plugin;
+    private FileConfiguration config;
+    
+    private static final int CURRENT_CONFIG_VERSION = 31;
+    
+    // 记录迁移数据，用于服务器启动后打印详情
+    private boolean configMigrated = false;
+    private int oldConfigVersion = 0;
+    private java.util.Map<String, Object> migratedValues = new java.util.LinkedHashMap<>();
+    
+    public ConfigManager(Gost plugin) {
+        this.plugin = plugin;
+        loadConfig();
+    }
+    
+    private void ensureConfigLoaded() {
+        if (config == null) {
+            loadConfig();
+        }
+    }
+    
+    private void loadConfig() {
+        if (config != null) {
+            return; // 已经加载
+        }
+        plugin.saveDefaultConfig();
+        config = plugin.getConfig();
+        
+        // 检查配置版本，如果不一致则自动迁移旧配置数据
+        int savedVersion = config.getInt("ScriptIrc-config-version", 0);
+        if (savedVersion != CURRENT_CONFIG_VERSION) {
+            plugin.getLogger().info("检测到配置版本不匹配 (当前: " + savedVersion + ", 期望: " + CURRENT_CONFIG_VERSION + ")，正在自动迁移配置...");
+            
+            // 保存旧配置的所有值
+            java.util.Map<String, Object> oldValues = new java.util.LinkedHashMap<>();
+            if (savedVersion > 0) {
+                for (String key : config.getKeys(true)) {
+                    // 跳过版本号本身
+                    if (key.equals("ScriptIrc-config-version")) continue;
+                    Object value = config.get(key);
+                    if (value != null) {
+                        oldValues.put(key, value);
+                    }
+                }
+                plugin.getLogger().info("已读取旧配置中的 " + oldValues.size() + " 个配置项");
+            }
+            
+            // 备份旧配置文件
+            java.io.File configFile = new java.io.File(plugin.getDataFolder(), "config.yml");
+            if (configFile.exists()) {
+                java.io.File backupFile = new java.io.File(plugin.getDataFolder(), "config_old_v" + savedVersion + ".yml");
+                try {
+                    java.nio.file.Files.copy(configFile.toPath(), backupFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    plugin.getLogger().info("旧配置文件已备份为: config_old_v" + savedVersion + ".yml");
+                } catch (java.io.IOException e) {
+                    plugin.getLogger().warning("备份旧配置文件失败: " + e.getMessage());
+                }
+            }
+            
+            // 重新生成新配置
+            plugin.getDataFolder().mkdirs();
+            plugin.saveResource("config.yml", true);
+            plugin.reloadConfig();
+            config = plugin.getConfig();
+            
+            // 将旧配置中存在的值写回新配置
+            int migratedCount = 0;
+            migratedValues.clear();
+            for (java.util.Map.Entry<String, Object> entry : oldValues.entrySet()) {
+                String key = entry.getKey();
+                // 只迁移新配置中也存在的键（避免旧配置的废弃项污染新配置）
+                if (config.contains(key)) {
+                    config.set(key, entry.getValue());
+                    migratedValues.put(key, entry.getValue());
+                    migratedCount++;
+                }
+            }
+            
+            // 确保版本号正确
+            config.set("ScriptIrc-config-version", CURRENT_CONFIG_VERSION);
+            plugin.saveConfig();
+            
+            // 记录迁移状态，等服务器完全启动后再打印详情
+            configMigrated = true;
+            oldConfigVersion = savedVersion;
+            
+            plugin.getLogger().info("配置迁移完成！已迁移 " + migratedCount + " 个配置项到新配置");
+            plugin.getLogger().info("旧配置已备份为 config_old_v" + savedVersion + ".yml，如有问题可参照恢复");
+            plugin.getLogger().info("服务器完全启动后将打印详细的迁移数据报告");
+        }
+        
+        // 设置默认值
+        config.addDefault("ScriptIrc-config-version", CURRENT_CONFIG_VERSION);
+        config.addDefault("game.duration", 420); // 7分钟，单位秒
+        config.addDefault("game.preparation-time", 20); // 准备时间，单位秒
+        config.addDefault("game.queue-time", 60); // 队列等待时间，单位秒
+        config.addDefault("game.min-players", 2); // 最小玩家数
+        config.addDefault("game.max-players", 16); // 最大玩家数
+        config.addDefault("game.max-games", 1); // 最大同时游戏数
+        config.addDefault("game.match-queue-time", 30); // 匹配队列时间，队列满员后等待多久开始游戏
+        
+        // 经济设置
+        config.addDefault("economy.entry-fee", 100.0); // 入场费
+        config.addDefault("economy.server-bonus", 5000.0); // 服务器奖金
+        
+        // 道具设置
+        config.addDefault("items.adrenaline.duration", 10); // 肾上腺素持续时间，单位秒
+        config.addDefault("items.adrenaline.speed-level", 2); // 肾上腺素速度等级
+        config.addDefault("items.frenzy.duration", 10); // 狂暴持续时间，单位秒
+        config.addDefault("items.frenzy.speed-level", 2); // 狂暴速度等级
+        config.addDefault("items.ice-ball.slow-duration", 4); // 凝冰球减速持续时间，单位秒
+        config.addDefault("items.ice-ball.slow-level", 4); // 凝冰球减速等级
+        config.addDefault("items.soul-control.freeze-duration", 6); // 控魂术冻结持续时间，单位秒
+        config.addDefault("items.soul-control.cooldown", 18); // 控魂术冷却时间，单位秒
+        config.addDefault("items.teleport-pearl.cooldown", 20); // 传送珍珠冷却时间，单位秒
+        config.addDefault("items.stinky-steak.speed-duration", 14); // 臭牛排速度效果持续时间，单位秒
+        config.addDefault("items.stinky-steak.speed-level", 2); // 臭牛排速度效果等级（1=速度II）
+        config.addDefault("items.stinky-steak.glowing-duration", 10); // 臭牛排发光效果持续时间，单位秒
+        config.addDefault("items.stinky-steak.cooldown", 30); // 臭牛排冷却时间，单位秒
+        config.addDefault("items.soul-detector.duration", 25); // 灵魂探测器暴露持续时间，单位秒
+        config.addDefault("items.soul-detector.cooldown", 35); // 灵魂探测器冷却时间，单位秒
+        config.addDefault("items.second-chance.cooldown", 180); // 一次机会冷却时间，单位秒
+        config.addDefault("items.second-chance.human-speed-duration", 10); // 人类玩家速度效果持续时间，单位秒
+        config.addDefault("items.second-chance.human-speed-level", 2); // 人类玩家速度效果等级
+        config.addDefault("items.second-chance.human-glowing-duration", 10); // 人类玩家高亮效果持续时间，单位秒
+        config.addDefault("items.second-chance.ghost-slow-duration", 7); // 鬼玩家缓慢效果持续时间，单位秒
+        config.addDefault("items.second-chance.ghost-slow-level", 1); // 鬼玩家缓慢效果等级
+        
+        // 效果设置
+        config.addDefault("effects.mother-ghost-blindness-duration", 20); // 母体失明持续时间，单位秒
+        config.addDefault("effects.ghost-immobilize-duration", 20); // 母体鬼固定时间，单位秒
+        config.addDefault("effects.ghost-sense-duration", 5); // 幽灵感知高亮持续时间，单位秒
+        config.addDefault("effects.infection-lightning", true); // 感染时是否显示闪电
+        config.addDefault("effects.infection-sound", true); // 感染时是否播放音效
+        config.addDefault("effects.minute-glowing.enabled", true); // 是否启用每分钟高亮效果
+        config.addDefault("effects.minute-glowing.duration", 5); // 高亮持续时间，单位秒
+        config.addDefault("effects.minute-glowing.interval", 60); // 触发间隔时间，单位秒
+        
+        // 游戏血量设置
+        config.addDefault("health.max-health", 10.0); // 游戏期间玩家的最大生命值（默认10颗心，即20点生命值）
+        
+        // 鬼转人类功能设置
+        config.addDefault("ghost-to-human.enabled", false); // 是否启用鬼转人类功能
+        config.addDefault("ghost-to-human.remaining-time", 180); // 剩余多少秒时触发（默认3分钟）
+        config.addDefault("ghost-to-human.count", 1); // 转换数量
+        
+        // 黑暗效果设置
+        config.addDefault("dark-effect.enabled", true); // 是否启用黑暗效果（默认开启）
+        config.addDefault("dark-effect.duration", 999999); // 黑暗效果持续时间（秒）
+        config.addDefault("dark-effect.amplifier", 0); // 黑暗效果等级
+        
+        // 心跳声设置
+        config.addDefault("heartbeat.enabled", true); // 是否启用心跳声
+        config.addDefault("heartbeat.interval", 10); // 心跳声播放间隔（秒）
+        
+        // 局内饱食度设置（v2.3.2）
+        config.addDefault("food.enabled", true); // 是否启用局内饱食度恢复
+        config.addDefault("food.regenerate-per-second", 1); // 人类：按住蹲下每秒恢复的饱食度
+        config.addDefault("food.ghost-regenerate-interval", 0.8); // 鬼：按住蹲下每N秒恢复1点饱食度
+        
+        // 转化功能设置
+        config.addDefault("conversion.enabled", false); // 是否启用转化功能
+        config.addDefault("conversion.activate-time", 120); // 转化激活时间（游戏剩余时间，秒）
+        config.addDefault("conversion.cooldown", 30); // 转化冷却时间（秒）
+        config.addDefault("conversion.cost", 15); // 转化消耗宝石数量
+        
+        // 道具刷新设置
+        config.addDefault("item-spawn.enabled", true); // 是否启用道具刷新
+        config.addDefault("item-spawn.interval", 60); // 刷新间隔（秒）
+        config.addDefault("item-spawn.max-per-refresh", 3); // 每次刷新数量上限
+        config.addDefault("item-spawn.max-per-player", 1); // 每位玩家最多获得数量
+        config.addDefault("item-spawn.max-item-types-per-player", 6); // 玩家最多拥有的道具种类数量
+        
+
+        
+        // 服务器模组设置（预留）
+        
+        // 区域选择设置
+        config.addDefault("area.selection-tool", "MAGMA_CREAM"); // 选区工具物品
+        config.addDefault("area.max-areas", 20); // 最大存档区域数量
+        config.addDefault("area.auto-teleport", true); // 是否自动传送到区域
+        
+        // 语言设置
+        config.addDefault("language.default", "zh_CN"); // 默认语言: zh_CN/en_US/ja_JP/es_ES/fr_FR/de_DE
+        config.addDefault("language.auto-detect", true); // 是否自动检测玩家语言
+        
+        // 神圣守护系统设置（v2.2.2重构）
+        config.addDefault("divine-guardian.enabled", true); // 是否启用神圣守护系统
+        config.addDefault("divine-guardian.trigger-human-count", 2); // 触发神圣守护的人类玩家数量（最后N位人类）
+        config.addDefault("divine-guardian.broadcast", true); // 是否广播神圣守护触发消息
+        
+        // 神圣守护效果设置
+        config.addDefault("divine-guardian.holy-guardian.teleport-attacker", true); // 随机传送尝试感染的鬼
+        config.addDefault("divine-guardian.holy-guardian.teleport-radius", 10.0); // 随机传送半径（方块）
+        config.addDefault("divine-guardian.holy-guardian.effect-duration", 30); // 神圣守护效果持续时间（秒），0表示永久直到猎魔人阶段
+        config.addDefault("divine-guardian.holy-guardian.defense-charges", 3); // 神圣守护可抵挡的攻击次数
+        
+        // 猎魔人阶段设置
+        config.addDefault("divine-guardian.demon-hunter.phase-start-time", 90); // 猎魔人阶段开始时间（游戏剩余秒数）
+        config.addDefault("divine-guardian.demon-hunter.max-uses", 2); // 神之救赎道具最大使用次数（保持不变）
+        config.addDefault("divine-guardian.demon-hunter.holy-redemption-cooldown", 10); // 神之救赎冷却时间（秒）
+        
+        // 收割者道具设置
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.damage-per-hit", 1.0); // 每次攻击伤害
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.hits-to-kill", 2); // 击杀所需攻击次数
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.attack-cooldown", 2.0); // 攻击冷却时间（秒）
+        config.addDefault("divine-guardian.demon-hunter.reaper-weapon.enchant-glow", true); // 是否显示附魔光效
+        
+        // 击杀奖励设置
+        config.addDefault("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", 0.3); // 猎魔人击杀鬼获得的奖金比例（从人类奖池分配）
+        config.addDefault("divine-guardian.demon-hunter.kill-rewards.mother-kill-demon-hunter-reward", 0.5); // 母体击杀猎魔人获得的奖金比例（高于感染奖励）
+        
+        // 复活机制设置
+        config.addDefault("divine-guardian.demon-hunter.respawn.enabled", true); // 是否启用鬼玩家复活机制
+        config.addDefault("divine-guardian.demon-hunter.respawn.respawn-time", 15); // 复活时间（秒）
+        
+        // 血量设置（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.ghost-normal", 2.0); // 普通鬼血量（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.ghost-mother", 4.0); // 母体鬼血量（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.demon-hunter", 2.0); // 猎魔人血量（猎魔人阶段）
+        config.addDefault("divine-guardian.demon-hunter.health.no-healing", true); // 猎魔人阶段禁止回血
+        
+        // 母体新增设置
+        config.addDefault("divine-guardian.demon-hunter.additional-mother.enabled", true); // 是否在猎魔人阶段新增母体
+        config.addDefault("divine-guardian.demon-hunter.additional-mother.player-threshold", 8); // 触发新增母体的玩家总数阈值
+        config.addDefault("divine-guardian.demon-hunter.additional-mother.only-in-demon-hunter-phase", true); // 是否只在猎魔人阶段新增
+        
+        // 鬼玩家粒子效果设置
+        config.addDefault("ghost-particle.enabled", true); // 是否启用鬼玩家粒子效果
+        config.addDefault("ghost-particle.type", "DUST"); // 粒子类型：DUST, FLAME, SOUL_FIRE_FLAME, DRAGON_BREATH, PORTAL, DUST_COLOR_TRANSITION, SPELL_MOB, SPELL_WITCH, ENCHANT, SWEEP_ATTACK, HEART, NOTE, VILLAGER_ANGRY, VILLAGER_HAPPY, TOTEM, COMPOSTER, SQUID_INK, DRIPPING_OBSIDIAN_TEAR, FALLING_OBSIDIAN_TEAR, LANDING_OBSIDIAN_TEAR
+        config.addDefault("ghost-particle.count", 5); // 每次生成粒子数量
+        config.addDefault("ghost-particle.interval", 15); // 粒子生成间隔（刻，20刻=1秒）
+        config.addDefault("ghost-particle.mother-color", "255,0,0"); // 母体鬼粒子颜色（RGB格式：红,绿,蓝）
+        config.addDefault("ghost-particle.normal-color", "0,255,0"); // 普通鬼粒子颜色（RGB格式：红,绿,蓝）
+        config.addDefault("ghost-particle.size", 1.0); // 粒子大小
+        config.addDefault("ghost-particle.show-in-preparation", true); // 准备阶段是否显示粒子
+        
+        // 生物清理设置
+        config.addDefault("entity-clear.enabled", true); // 游戏开始时是否清除区域内的生物
+        config.addDefault("entity-clear.prevent-spawn", true); // 是否禁止游戏区域内生成任何生物
+        
+        // 救赎者常驻设置
+        config.addDefault("redeemer.enabled", true); // 救赎者常驻（每局最多2名）
+        config.addDefault("redeemer.max-count", 2); // 最大救赎者数量
+        config.addDefault("redeemer.max-uses", 2); // 神之救赎使用次数
+        
+        // 收割者技能设置
+        config.addDefault("reaper.harvest-cooldown", 10); // 收割技能冷却（秒）
+        config.addDefault("reaper.harvest-range", 4); // 收割技能范围（方块）
+        
+        // 额外奖励设置（结算时由服务器发放，与奖池分离）
+        config.addDefault("reward.redeem-ghost", 100); // 成功救赎一名鬼玩家奖励游戏币
+        config.addDefault("reward.kill-normal", 50); // 击杀一名普通鬼奖励游戏币
+        config.addDefault("reward.kill-mother", 100); // 击杀一名母体奖励游戏币
+        
+        // 背包限制设置
+        config.addDefault("inventory.max-item-types", 9); // 对局期间最多道具种类
+        config.addDefault("inventory.max-items", 9); // 对局期间最多道具数量
+        config.addDefault("inventory.allow-duplicate-universal", true); // 通用道具是否允许重复
+        config.addDefault("inventory.force-first-slot-items", "收割者,神之救赎"); // 强制第一格道具
+        
+        // ===== v2.3.3 母体进化水晶 =====
+        config.addDefault("mother-emerald.enabled", true); // 是否启用母体进化水晶
+        config.addDefault("mother-emerald.spawn-phase", "holy-guardian"); // 出现阶段: holy-guardian / demon-hunter / both
+        config.addDefault("mother-emerald.player-threshold", 5); // 参与人数达到该值才出现
+        config.addDefault("mother-emerald.location-mode", "center"); // 坐标模式: fixed(固定坐标) / center(区域中心) / random(区域随机)
+        config.addDefault("mother-emerald.fixed.world", ""); // 固定坐标世界名（留空用选区世界）
+        config.addDefault("mother-emerald.fixed.x", 0.0);
+        config.addDefault("mother-emerald.fixed.y", 64.0);
+        config.addDefault("mother-emerald.fixed.z", 0.0);
+        config.addDefault("mother-emerald.pickup-delay-ticks", 40); // 拾取延迟（刻）
+        config.addDefault("mother-emerald.glow-interval-ticks", 20); // 发光粒子刷新间隔（刻）
+        config.addDefault("mother-emerald.item-name", "母体升级宝石");
+        config.addDefault("mother-emerald.entity-name", "母体绿宝石");
+        
+        // ===== v2.3.3 猎魔人死亡 → 普通鬼 =====
+        config.addDefault("demon-hunter.death.convert-to-normal-ghost", true); // 被母体击杀后转为普通鬼
+        config.addDefault("demon-hunter.death.respawn-as-ghost", true); // 复活时以普通鬼身份复活
+        
+        // ===== 道具细节（补全可配置） =====
+        config.addDefault("items.adrenaline.duration", 10);
+        config.addDefault("items.adrenaline.speed-level", 2);
+        config.addDefault("items.frenzy.duration", 10);
+        config.addDefault("items.frenzy.speed-level", 2);
+        config.addDefault("items.ice-ball.slow-duration", 4);
+        config.addDefault("items.ice-ball.slow-level", 4);
+        config.addDefault("items.soul-control.freeze-duration", 6);
+        config.addDefault("items.soul-control.cooldown", 18);
+        config.addDefault("items.teleport-pearl.cooldown", 20);
+        config.addDefault("items.stinky-steak.speed-duration", 14);
+        config.addDefault("items.stinky-steak.speed-level", 2);
+        config.addDefault("items.stinky-steak.glowing-duration", 10);
+        config.addDefault("items.stinky-steak.cooldown", 30);
+        config.addDefault("items.stinky-steak.eat-time-ticks", 20); // 食用耗时（刻）
+        config.addDefault("items.soul-detector.duration", 25);
+        config.addDefault("items.soul-detector.cooldown", 35);
+        config.addDefault("items.second-chance.cooldown", 180);
+        config.addDefault("items.levitation.duration-ticks", 90); // 漂浮 4.5 秒
+        config.addDefault("items.spear-rush.distance", 5.5); // 冲刺距离（米）
+        config.addDefault("items.spear-rush.consume-on-use", true);
+        config.addDefault("items.holy-redemption.uses", 1);
+        config.addDefault("items.holy-redemption.teleport-on-use", true);
+        config.addDefault("items.reaper.attack-cooldown", 2.0);
+        config.addDefault("items.reaper.damage-per-hit", 1.0);
+        config.addDefault("items.reaper.harvest-cooldown", 10);
+        config.addDefault("items.reaper.harvest-range", 4.0);
+        config.addDefault("items.reaper.sound-on-harvest", "ENTITY_WITHER_DEATH");
+        
+        // ===== 音效开关 =====
+        config.addDefault("sounds.enabled", true);
+        config.addDefault("sounds.item-give", true);
+        config.addDefault("sounds.item-use", true);
+        config.addDefault("sounds.phase-change", true);
+        config.addDefault("sounds.kill-feedback", true);
+        config.addDefault("sounds.respawn", true);
+        
+        // ===== 字幕/广播 =====
+        config.addDefault("titles.enabled", true);
+        config.addDefault("broadcast.item-give", true);
+        config.addDefault("broadcast.kill", true);
+        config.addDefault("broadcast.respawn", true);
+        config.addDefault("broadcast.mother-emerald", true);
+        
+        // ===== 粒子 =====
+        config.addDefault("particles.kill-explosion", true);
+        config.addDefault("particles.harvest-shockwave", true);
+        config.addDefault("particles.respawn-totem", true);
+        config.addDefault("particles.mother-emerald-glow", true);
+        
+        // ===== 复活细节 =====
+        config.addDefault("divine-guardian.demon-hunter.respawn.random-location", true);
+        config.addDefault("divine-guardian.demon-hunter.respawn.restore-health-on-respawn", true);
+        config.addDefault("divine-guardian.demon-hunter.respawn.boundary-check", true);
+        config.addDefault("divine-guardian.demon-hunter.respawn.boundary-radius", 50);
+        
+        // ===== 母体攻击猎魔人 =====
+        config.addDefault("divine-guardian.demon-hunter.mother.hits-to-infect-hunter", 4);
+        config.addDefault("divine-guardian.demon-hunter.mother.hits-to-break-guardian", 3);
+        
+        // ===== 击杀烟花 =====
+        config.addDefault("effects.kill-firework.enabled", true);
+        config.addDefault("effects.kill-firework.type", "BURST");
+        config.addDefault("effects.kill-firework.colors", "RED,YELLOW");
+        
+        // ===== 第二次机会 =====
+        config.addDefault("items.second-chance.consume-on-trigger", false); // 触发后是否消耗
+        config.addDefault("items.second-chance.teleport-on-trigger", true);
+        config.addDefault("items.second-chance.human-speed-duration", 10);
+        config.addDefault("items.second-chance.human-speed-level", 2);
+        config.addDefault("items.second-chance.human-glowing-duration", 10);
+        config.addDefault("items.second-chance.ghost-slow-duration", 7);
+        config.addDefault("items.second-chance.ghost-slow-level", 1);
+        
+        config.options().copyDefaults(true);
+        plugin.saveConfig();
+    }
+    
+    public void reloadConfig() {
+        plugin.reloadConfig();
+        config = plugin.getConfig();
+    }
+    
+    /**
+     * 服务器完全启动后调用，在控制台打印配置迁移详情
+     */
+    public void printMigrationReport() {
+        if (!configMigrated || migratedValues.isEmpty()) {
+            return;
+        }
+        
+        plugin.getLogger().info("§e§l══════════════════════════════════════════");
+        plugin.getLogger().info("§e§l     配置自动迁移报告");
+        plugin.getLogger().info("§e§l══════════════════════════════════════════");
+        plugin.getLogger().info("§7旧配置版本: §cv" + oldConfigVersion);
+        plugin.getLogger().info("§7新配置版本: §av" + CURRENT_CONFIG_VERSION);
+        plugin.getLogger().info("§7已迁移配置项: §e" + migratedValues.size() + " 项");
+        plugin.getLogger().info("");
+        plugin.getLogger().info("§6§l以下为已迁移的配置项详情:");
+        plugin.getLogger().info("");
+        
+        int index = 1;
+        for (java.util.Map.Entry<String, Object> entry : migratedValues.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            String valueStr = (value != null) ? value.toString() : "null";
+            // 截断过长的值
+            if (valueStr.length() > 60) {
+                valueStr = valueStr.substring(0, 57) + "...";
+            }
+            plugin.getLogger().info("§7  " + index + ". §b" + key + " §7= §f" + valueStr);
+            index++;
+        }
+        
+        plugin.getLogger().info("");
+        plugin.getLogger().info("§e旧配置文件已备份为: §fconfig_old_v" + oldConfigVersion + ".yml");
+        plugin.getLogger().info("§a如需恢复旧配置，请将备份文件重命名为 config.yml 并重启服务器");
+        plugin.getLogger().info("§e§l══════════════════════════════════════════");
+        
+        // 标记已打印，避免重复
+        configMigrated = false;
+    }
+    
+    // 获取配置值的方法
+    public int getConfigVersion() {
+        return config.getInt("ScriptIrc-config-version", 2);
+    }
+    
+    public int getGameDuration() {
+        ensureConfigLoaded();
+        return config.getInt("game.duration", 420);
+    }
+    
+    public int getPreparationTime() {
+        return config.getInt("game.preparation-time", 20);
+    }
+    
+    public int getQueueTime() {
+        return config.getInt("game.queue-time", 60);
+    }
+    
+    public int getMinPlayers() {
+        return config.getInt("game.min-players", 2);
+    }
+    
+    public int getMaxPlayers() {
+        return config.getInt("game.max-players", 16);
+    }
+    
+    public int getMaxGames() {
+        return config.getInt("game.max-games", 1);
+    }
+    
+    public double getEntryFee() {
+        ensureConfigLoaded();
+        return config.getDouble("economy.entry-fee", 100.0);
+    }
+    
+    public void setEntryFee(double entryFee) {
+        ensureConfigLoaded();
+        config.set("economy.entry-fee", entryFee);
+        plugin.saveConfig();
+    }
+    
+    public double getServerBonus() {
+        ensureConfigLoaded();
+        return config.getDouble("economy.server-bonus", 5000.0);
+    }
+    
+    public void setServerBonus(double serverBonus) {
+        ensureConfigLoaded();
+        config.set("economy.server-bonus", serverBonus);
+        plugin.saveConfig();
+    }
+    
+    public int getAdrenalineDuration() {
+        ensureConfigLoaded();
+        return config.getInt("items.adrenaline.duration", 10);
+    }
+    
+    public int getAdrenalineSpeedLevel() {
+        ensureConfigLoaded();
+        return config.getInt("items.adrenaline.speed-level", 2);
+    }
+    
+    public int getFrenzyDuration() {
+        ensureConfigLoaded();
+        return config.getInt("items.frenzy.duration", 10);
+    }
+    
+    public int getFrenzySpeedLevel() {
+        ensureConfigLoaded();
+        return config.getInt("items.frenzy.speed-level", 2);
+    }
+    
+    public int getIceBallSlowDuration() {
+        return config.getInt("items.ice-ball.slow-duration", 4);
+    }
+    
+    public int getIceBallSlowLevel() {
+        return config.getInt("items.ice-ball.slow-level", 4);
+    }
+    
+    public int getSoulControlFreezeDuration() {
+        return config.getInt("items.soul-control.freeze-duration", 6);
+    }
+    
+    public int getSoulControlCooldown() {
+        return config.getInt("items.soul-control.cooldown", 18);
+    }
+    
+    public int getMotherGhostBlindnessDuration() {
+        return config.getInt("effects.mother-ghost-blindness-duration", 20);
+    }
+    
+    public int getGhostSenseDuration() {
+        return config.getInt("effects.ghost-sense-duration", 5);
+    }
+    
+    public boolean isInfectionLightningEnabled() {
+        return config.getBoolean("effects.infection-lightning", true);
+    }
+    
+    public boolean isInfectionSoundEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("effects.infection-sound", true);
+    }
+    
+    public boolean isAutoTeleportEnabled() {
+        return config.getBoolean("area.auto-teleport", true);
+    }
+    
+    public String getSelectionTool() {
+        ensureConfigLoaded();
+        return config.getString("area.selection-tool", "MAGMA_CREAM");
+    }
+    
+    public int getMaxAreas() {
+        return config.getInt("area.max-areas", 20);
+    }
+    
+    // 新功能配置方法
+    
+    public int getGhostImmobilizeDuration() {
+        return config.getInt("effects.ghost-immobilize-duration", 20);
+    }
+    
+    public boolean isConversionEnabled() {
+        return config.getBoolean("conversion.enabled", false);
+    }
+    
+    public int getConversionActivateTime() {
+        return config.getInt("conversion.activate-time", 120);
+    }
+    
+    public int getConversionCooldown() {
+        return config.getInt("conversion.cooldown", 30);
+    }
+    
+    public int getConversionCost() {
+        return config.getInt("conversion.cost", 15);
+    }
+    
+    public boolean isItemSpawnEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("item-spawn.enabled", true);
+    }
+    
+    public int getItemSpawnInterval() {
+        return config.getInt("item-spawn.interval", 60);
+    }
+    
+    public int getItemSpawnMaxPerRefresh() {
+        return config.getInt("item-spawn.max-per-refresh", 3);
+    }
+    
+    public int getItemSpawnMaxPerPlayer() {
+        return config.getInt("item-spawn.max-per-player", 1);
+    }
+    
+
+    
+
+    
+
+    
+
+    
+    public int getMatchQueueTime() {
+        return config.getInt("game.match-queue-time", 30);
+    }
+    
+    public int getSoulDetectorDuration() {
+        return config.getInt("items.soul-detector.duration", 25);
+    }
+    
+    public int getSoulDetectorCooldown() {
+        return config.getInt("items.soul-detector.cooldown", 30);
+    }
+    
+    public int getTeleportPearlCooldown() {
+        return config.getInt("items.teleport-pearl.cooldown", 10);
+    }
+    
+    public int getStinkySteakSpeedDuration() {
+        return config.getInt("items.stinky-steak.speed-duration", 14);
+    }
+    
+    public int getStinkySteakSpeedLevel() {
+        return config.getInt("items.stinky-steak.speed-level", 2);
+    }
+    
+    public int getStinkySteakGlowingDuration() {
+        return config.getInt("items.stinky-steak.glowing-duration", 10);
+    }
+    
+    public int getStinkySteakCooldown() {
+        return config.getInt("items.stinky-steak.cooldown", 30);
+    }
+    
+    public int getSecondChanceCooldown() {
+        ensureConfigLoaded();
+        return config.getInt("items.second-chance.cooldown", 60);
+    }
+    
+    public int getSecondChanceHumanSpeedDuration() {
+        ensureConfigLoaded();
+        return config.getInt("items.second-chance.human-speed-duration", 10);
+    }
+    
+    public int getSecondChanceHumanSpeedLevel() {
+        ensureConfigLoaded();
+        return config.getInt("items.second-chance.human-speed-level", 2);
+    }
+    
+    public int getSecondChanceHumanGlowingDuration() {
+        ensureConfigLoaded();
+        return config.getInt("items.second-chance.human-glowing-duration", 10);
+    }
+    
+    public int getSecondChanceGhostSlowDuration() {
+        ensureConfigLoaded();
+        return config.getInt("items.second-chance.ghost-slow-duration", 7);
+    }
+    
+    public int getSecondChanceGhostSlowLevel() {
+        ensureConfigLoaded();
+        return config.getInt("items.second-chance.ghost-slow-level", 1);
+    }
+    
+    public int getMaxItemTypesPerPlayer() {
+        return config.getInt("item-spawn.max-item-types-per-player", 6);
+    }
+    
+    public boolean isMinuteGlowingEnabled() {
+        return config.getBoolean("effects.minute-glowing.enabled", true);
+    }
+    
+    public int getMinuteGlowingDuration() {
+        return config.getInt("effects.minute-glowing.duration", 5);
+    }
+    
+    public int getMinuteGlowingInterval() {
+        return config.getInt("effects.minute-glowing.interval", 60);
+    }
+    
+    // 鬼转人类功能配置
+    public boolean isGhostToHumanEnabled() {
+        return config.getBoolean("ghost-to-human.enabled", false);
+    }
+    
+    public int getGhostToHumanRemainingTime() {
+        return config.getInt("ghost-to-human.remaining-time", 180);
+    }
+    
+    public int getGhostToHumanCount() {
+        return config.getInt("ghost-to-human.count", 1);
+    }
+    
+    // 黑暗效果配置
+    public boolean isDarkEffectEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("dark-effect.enabled", true);
+    }
+    
+    public int getDarkEffectDuration() {
+        ensureConfigLoaded();
+        return config.getInt("dark-effect.duration", 999999);
+    }
+    
+    public int getDarkEffectAmplifier() {
+        ensureConfigLoaded();
+        return config.getInt("dark-effect.amplifier", 0);
+    }
+    
+    // 设置黑暗效果开关
+    public void setDarkEffectEnabled(boolean enabled) {
+        config.set("dark-effect.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    // 心跳声配置
+    public boolean isHeartbeatEnabled() {
+        return config.getBoolean("heartbeat.enabled", true);
+    }
+    
+    public int getHeartbeatInterval() {
+        return config.getInt("heartbeat.interval", 10);
+    }
+    
+    // 设置心跳声开关
+    public void setHeartbeatEnabled(boolean enabled) {
+        config.set("heartbeat.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    // 局内饱食度配置（v2.3.2）
+    public boolean isFoodSystemEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("food.enabled", true);
+    }
+    
+    public int getFoodRegeneratePerSecond() {
+        ensureConfigLoaded();
+        int amount = config.getInt("food.regenerate-per-second", 1);
+        return Math.max(1, Math.min(20, amount)); // 限制在 1-20 之间
+    }
+    
+    public double getFoodGhostRegenerateInterval() {
+        ensureConfigLoaded();
+        double interval = config.getDouble("food.ghost-regenerate-interval", 0.8);
+        return Math.max(0.2, Math.min(10.0, interval)); // 限制在 0.2-10 秒之间
+    }
+    
+    // 语言配置
+    public String getDefaultLanguage() {
+        return config.getString("language.default", "zh_CN");
+    }
+    
+    public boolean isAutoDetectLanguage() {
+        return config.getBoolean("language.auto-detect", true);
+    }
+    
+    public void setDefaultLanguage(String language) {
+        config.set("language.default", language);
+        plugin.saveConfig();
+    }
+    
+    public void setAutoDetectLanguage(boolean autoDetect) {
+        config.set("language.auto-detect", autoDetect);
+        plugin.saveConfig();
+    }
+    
+    // 神圣守护配置
+    public boolean isDivineGuardianEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.enabled", false);
+    }
+    
+    public int getDivineGuardianMaxCharges() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.max-charges", 3);
+    }
+    
+    public int getDivineGuardianCooldown() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.cooldown", 5);
+    }
+    
+    public int getDivineGuardianInvisibilityDuration() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.invisibility-duration", 10);
+    }
+    
+    public void setDivineGuardianEnabled(boolean enabled) {
+        config.set("divine-guardian.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianMaxCharges(int maxCharges) {
+        config.set("divine-guardian.max-charges", maxCharges);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianCooldown(int cooldown) {
+        config.set("divine-guardian.cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianBroadcastEnabled(boolean enabled) {
+        config.set("divine-guardian.broadcast", enabled);
+        plugin.saveConfig();
+    }
+    
+    public String getDivineGuardianMode() {
+        ensureConfigLoaded();
+        return config.getString("divine-guardian.mode", "1");
+    }
+    
+    public void setDivineGuardianMode(String mode) {
+        config.set("divine-guardian.mode", mode);
+        plugin.saveConfig();
+    }
+    
+    // 救赎者配置（模式2）
+    public int getRedeemerMaxUses() {
+        ensureConfigLoaded();
+        return config.getInt("redeemer.max-uses", 2);
+    }
+    
+    public int getRedeemerSpeedLevel() {
+        return config.getInt("redeemer.speed-level", 1);
+    }
+    
+    public int getHolyRedemptionCooldown() {
+        return config.getInt("redeemer.holy-redemption-cooldown", 10);
+    }
+    
+    public int getConversionInvincibilityTime() {
+        return config.getInt("redeemer.conversion-invincibility-time", 5);
+    }
+    
+    public boolean isRedeemerBroadcastEnabled() {
+        return config.getBoolean("redeemer.broadcast", true);
+    }
+    
+    public void setRedeemerMaxUses(int maxUses) {
+        config.set("redeemer.max-uses", maxUses);
+        plugin.saveConfig();
+    }
+    
+    public void setRedeemerSpeedLevel(int speedLevel) {
+        config.set("redeemer.speed-level", speedLevel);
+        plugin.saveConfig();
+    }
+    
+    public void setHolyRedemptionCooldown(int cooldown) {
+        config.set("redeemer.holy-redemption-cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setConversionInvincibilityTime(int time) {
+        config.set("redeemer.conversion-invincibility-time", time);
+        plugin.saveConfig();
+    }
+    
+    public void setRedeemerBroadcastEnabled(boolean enabled) {
+        config.set("redeemer.broadcast", enabled);
+        plugin.saveConfig();
+    }
+    
+    // 鬼玩家粒子效果配置
+    public boolean isGhostParticleEnabled() {
+        return config.getBoolean("ghost-particle.enabled", true);
+    }
+    
+    public String getGhostParticleType() {
+        return config.getString("ghost-particle.type", "DUST");
+    }
+    
+    public int getGhostParticleCount() {
+        return config.getInt("ghost-particle.count", 5);
+    }
+    
+    public int getGhostParticleInterval() {
+        return config.getInt("ghost-particle.interval", 15);
+    }
+    
+    public String getGhostParticleMotherColor() {
+        return config.getString("ghost-particle.mother-color", "255,0,0");
+    }
+    
+    public String getGhostParticleNormalColor() {
+        return config.getString("ghost-particle.normal-color", "0,255,0");
+    }
+    
+    public double getGhostParticleSize() {
+        return config.getDouble("ghost-particle.size", 1.0);
+    }
+    
+    public boolean isGhostParticleShowInPreparation() {
+        return config.getBoolean("ghost-particle.show-in-preparation", true);
+    }
+    
+    public void setGhostParticleEnabled(boolean enabled) {
+        config.set("ghost-particle.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleType(String type) {
+        config.set("ghost-particle.type", type);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleCount(int count) {
+        config.set("ghost-particle.count", count);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleInterval(int interval) {
+        config.set("ghost-particle.interval", interval);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleMotherColor(String color) {
+        config.set("ghost-particle.mother-color", color);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleNormalColor(String color) {
+        config.set("ghost-particle.normal-color", color);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleSize(double size) {
+        config.set("ghost-particle.size", size);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostParticleShowInPreparation(boolean show) {
+        config.set("ghost-particle.show-in-preparation", show);
+        plugin.saveConfig();
+    }
+    
+    // 生物清理设置
+    public boolean isClearEntitiesEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("entity-clear.enabled", true);
+    }
+    
+    public boolean isPreventEntitySpawnEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("entity-clear.prevent-spawn", true);
+    }
+    
+    // 救赎者常驻设置
+    public boolean isRedeemerEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("redeemer.enabled", true);
+    }
+    
+    public int getRedeemerMaxCount() {
+        ensureConfigLoaded();
+        return config.getInt("redeemer.max-count", 2);
+    }
+    
+    // 收割者技能设置
+    public int getReaperHarvestCooldown() {
+        ensureConfigLoaded();
+        return config.getInt("reaper.harvest-cooldown", 10);
+    }
+    
+    public double getReaperHarvestRange() {
+        ensureConfigLoaded();
+        return config.getDouble("reaper.harvest-range", 4.0);
+    }
+    
+    // 额外奖励设置
+    public int getRewardRedeemGhost() {
+        ensureConfigLoaded();
+        return config.getInt("reward.redeem-ghost", 100);
+    }
+    
+    public int getRewardKillNormal() {
+        ensureConfigLoaded();
+        return config.getInt("reward.kill-normal", 50);
+    }
+    
+    public int getRewardKillMother() {
+        ensureConfigLoaded();
+        return config.getInt("reward.kill-mother", 100);
+    }
+    
+    // 背包限制设置
+    public int getMaxItemTypes() {
+        ensureConfigLoaded();
+        return config.getInt("inventory.max-item-types", 9);
+    }
+    
+    // 游戏血量配置
+    public double getMaxHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("health.max-health", 10.0);
+    }
+    
+    public void setMaxHealth(double maxHealth) {
+        config.set("health.max-health", maxHealth);
+        plugin.saveConfig();
+    }
+    
+    // ==============================================
+    // 神圣守护系统 v2.2.2 新配置方法
+    // ==============================================
+    
+    // 基础设置
+    public boolean isDivineGuardianSystemEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.enabled", true);
+    }
+    
+    public int getDivineGuardianTriggerHumanCount() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.trigger-human-count", 2);
+    }
+    
+    public boolean isDivineGuardianBroadcastEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.broadcast", true);
+    }
+    
+    // 神圣守护效果设置
+    public boolean isHolyGuardianTeleportAttackerEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.holy-guardian.teleport-attacker", true);
+    }
+    
+    public double getHolyGuardianTeleportRadius() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.holy-guardian.teleport-radius", 10.0);
+    }
+    
+    public int getHolyGuardianEffectDuration() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.holy-guardian.effect-duration", 30);
+    }
+    
+    public int getHolyGuardianDefenseCharges() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.holy-guardian.defense-charges", 3);
+    }
+    
+    // 猎魔人阶段设置
+    public int getDemonHunterPhaseStartTime() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.phase-start-time", 90);
+    }
+    
+    public int getDemonHunterMaxUses() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.max-uses", 2);
+    }
+    
+    // 猎魔人阶段：猎魔人获得/刷新神圣守护效果开关
+    public boolean isDemonHunterHolyGuardianEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.holy-guardian-on-phase", true);
+    }
+    
+    public int getDemonHunterHolyRedemptionCooldown() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.holy-redemption-cooldown", 10);
+    }
+    
+    // 收割者道具设置
+    public double getReaperWeaponDamagePerHit() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.reaper-weapon.damage-per-hit", 1.0);
+    }
+    
+    public int getReaperWeaponHitsToKill() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.reaper-weapon.hits-to-kill", 2);
+    }
+    
+    public double getReaperWeaponAttackCooldown() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.reaper-weapon.attack-cooldown", 2.0);
+    }
+    
+    public boolean isReaperWeaponEnchantGlowEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.reaper-weapon.enchant-glow", true);
+    }
+    
+    // 击杀奖励设置
+    public double getDemonHunterKillRewardRatio() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", 0.3);
+    }
+    
+    public double getMotherKillDemonHunterRewardRatio() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.kill-rewards.mother-kill-demon-hunter-reward", 0.5);
+    }
+    
+    // 母体新增设置
+    public boolean isAdditionalMotherEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.additional-mother.enabled", true);
+    }
+    
+    public int getAdditionalMotherPlayerThreshold() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.additional-mother.player-threshold", 8);
+    }
+    
+    public boolean isAdditionalMotherOnlyInDemonHunterPhase() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.additional-mother.only-in-demon-hunter-phase", true);
+    }
+    
+    // 设置方法
+    public void setDivineGuardianSystemEnabled(boolean enabled) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setDivineGuardianTriggerHumanCount(int count) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.trigger-human-count", count);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterPhaseStartTime(int seconds) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.phase-start-time", seconds);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterMaxUses(int uses) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.max-uses", uses);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterHolyRedemptionCooldown(int cooldown) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.holy-redemption-cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setReaperWeaponHitsToKill(int hits) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.reaper-weapon.hits-to-kill", hits);
+        plugin.saveConfig();
+    }
+    
+    public void setReaperWeaponAttackCooldown(double cooldown) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.reaper-weapon.attack-cooldown", cooldown);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterKillRewardRatio(double ratio) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", ratio);
+        plugin.saveConfig();
+    }
+    
+    public void setMotherKillDemonHunterRewardRatio(double ratio) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.kill-rewards.mother-kill-demon-hunter-reward", ratio);
+        plugin.saveConfig();
+    }
+    
+    public void setAdditionalMotherPlayerThreshold(int threshold) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.additional-mother.player-threshold", threshold);
+        plugin.saveConfig();
+    }
+    
+    // 复活机制相关方法
+    public boolean isRespawnEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.respawn.enabled", true);
+    }
+    
+    public int getRespawnTime() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.respawn.respawn-time", 15);
+    }
+    
+    // 血量设置相关方法
+    public double getGhostNormalHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.ghost-normal", 2.0);
+    }
+    
+    public double getGhostMotherHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.ghost-mother", 4.0);
+    }
+    
+    public double getDemonHunterHealth() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.demon-hunter", 2.0);
+    }
+    
+    public double getMotherAttackDamage() {
+        ensureConfigLoaded();
+        return config.getDouble("divine-guardian.demon-hunter.health.mother-attack-damage", 1.0);
+    }
+    
+    public boolean isNoHealingInDemonHunterPhase() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.health.no-healing", true);
+    }
+    
+    public void setRespawnEnabled(boolean enabled) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.respawn.enabled", enabled);
+        plugin.saveConfig();
+    }
+    
+    public void setRespawnTime(int seconds) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.respawn.respawn-time", seconds);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostNormalHealth(double health) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.ghost-normal", health);
+        plugin.saveConfig();
+    }
+    
+    public void setGhostMotherHealth(double health) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.ghost-mother", health);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterHealth(double health) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.demon-hunter", health);
+        plugin.saveConfig();
+    }
+    
+    public void setNoHealingInDemonHunterPhase(boolean noHealing) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.health.no-healing", noHealing);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterPhaseActivateTime(int seconds) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.phase-start-time", seconds);
+        plugin.saveConfig();
+    }
+    
+    public void setDemonHunterKillReward(double ratio) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.kill-rewards.demon-hunter-kill-reward", ratio);
+        plugin.saveConfig();
+    }
+    
+    public void setAdditionalMotherThreshold(int threshold) {
+        ensureConfigLoaded();
+        config.set("divine-guardian.demon-hunter.additional-mother.player-threshold", threshold);
+        plugin.saveConfig();
+    }
+    
+    /**
+     * 检查Vault经济系统是否启用
+     */
+    public boolean isVaultEnabled() {
+        ensureConfigLoaded();
+        // 默认返回true，假设经济系统可用
+        return true;
+    }
+
+    // ===== v2.3.3 母体进化水晶 =====
+    public boolean isMotherEmeraldEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("mother-emerald.enabled", true);
+    }
+    public String getMotherEmeraldSpawnPhase() {
+        ensureConfigLoaded();
+        return config.getString("mother-emerald.spawn-phase", "holy-guardian");
+    }
+    public int getMotherEmeraldPlayerThreshold() {
+        ensureConfigLoaded();
+        return config.getInt("mother-emerald.player-threshold", 5);
+    }
+    public String getMotherEmeraldLocationMode() {
+        ensureConfigLoaded();
+        return config.getString("mother-emerald.location-mode", "center");
+    }
+    public boolean hasMotherEmeraldFixedLocation() {
+        ensureConfigLoaded();
+        return config.contains("mother-emerald.fixed.x") && config.contains("mother-emerald.fixed.z");
+    }
+    public org.bukkit.Location getMotherEmeraldFixedLocation(org.bukkit.World fallbackWorld) {
+        ensureConfigLoaded();
+        String worldName = config.getString("mother-emerald.fixed.world", "");
+        org.bukkit.World world = fallbackWorld;
+        if (worldName != null && !worldName.isEmpty()) {
+            org.bukkit.World w = org.bukkit.Bukkit.getWorld(worldName);
+            if (w != null) world = w;
+        }
+        double x = config.getDouble("mother-emerald.fixed.x", 0);
+        double y = config.getDouble("mother-emerald.fixed.y", 64);
+        double z = config.getDouble("mother-emerald.fixed.z", 0);
+        return new org.bukkit.Location(world, x, y, z);
+    }
+    public int getMotherEmeraldPickupDelayTicks() {
+        ensureConfigLoaded();
+        return config.getInt("mother-emerald.pickup-delay-ticks", 40);
+    }
+    public int getMotherEmeraldGlowIntervalTicks() {
+        ensureConfigLoaded();
+        return config.getInt("mother-emerald.glow-interval-ticks", 20);
+    }
+    
+    // ===== v2.3.3 猎魔人死亡 =====
+    public boolean isDemonHunterDeathConvertToNormalGhost() {
+        ensureConfigLoaded();
+        return config.getBoolean("demon-hunter.death.convert-to-normal-ghost", true);
+    }
+    public boolean isDemonHunterRespawnAsGhost() {
+        ensureConfigLoaded();
+        return config.getBoolean("demon-hunter.death.respawn-as-ghost", true);
+    }
+    
+    // ===== 道具补全 =====
+    public int getLevitationDurationTicks() {
+        ensureConfigLoaded();
+        return config.getInt("items.levitation.duration-ticks", 90);
+    }
+    public double getSpearRushDistance() {
+        ensureConfigLoaded();
+        return config.getDouble("items.spear-rush.distance", 5.5);
+    }
+    public boolean isSpearRushConsumeOnUse() {
+        ensureConfigLoaded();
+        return config.getBoolean("items.spear-rush.consume-on-use", true);
+    }
+    public int getHolyRedemptionUses() {
+        ensureConfigLoaded();
+        return config.getInt("items.holy-redemption.uses", 1);
+    }
+    public boolean isHolyRedemptionTeleportOnUse() {
+        ensureConfigLoaded();
+        return config.getBoolean("items.holy-redemption.teleport-on-use", true);
+    }
+    public double getReaperDamagePerHit() {
+        ensureConfigLoaded();
+        return config.getDouble("items.reaper.damage-per-hit",
+            config.getDouble("divine-guardian.demon-hunter.reaper-weapon.damage-per-hit", 1.0));
+    }
+    public int getReaperAttackCooldownSeconds() {
+        ensureConfigLoaded();
+        double v = config.getDouble("items.reaper.attack-cooldown",
+            config.getDouble("divine-guardian.demon-hunter.reaper-weapon.attack-cooldown", 2.0));
+        return (int) Math.ceil(v);
+    }
+    public int getStinkySteakEatTimeTicks() {
+        ensureConfigLoaded();
+        return config.getInt("items.stinky-steak.eat-time-ticks", 20);
+    }
+    public boolean isSecondChanceConsumeOnTrigger() {
+        ensureConfigLoaded();
+        return config.getBoolean("items.second-chance.consume-on-trigger", false);
+    }
+    public boolean isSecondChanceTeleportOnTrigger() {
+        ensureConfigLoaded();
+        return config.getBoolean("items.second-chance.teleport-on-trigger", true);
+    }
+    public int getMotherHitsToInfectHunter() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.mother.hits-to-infect-hunter", 4);
+    }
+    public int getMotherHitsToBreakGuardian() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.mother.hits-to-break-guardian", 3);
+    }
+    public boolean isKillFireworkEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("effects.kill-firework.enabled", true);
+    }
+    public boolean isSoundsEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("sounds.enabled", true);
+    }
+    public boolean isTitlesEnabled() {
+        ensureConfigLoaded();
+        return config.getBoolean("titles.enabled", true);
+    }
+    public boolean isRespawnRandomLocation() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.respawn.random-location", true);
+    }
+    public boolean isRespawnBoundaryCheck() {
+        ensureConfigLoaded();
+        return config.getBoolean("divine-guardian.demon-hunter.respawn.boundary-check", true);
+    }
+    public int getRespawnBoundaryRadius() {
+        ensureConfigLoaded();
+        return config.getInt("divine-guardian.demon-hunter.respawn.boundary-radius", 50);
+    }
+}
