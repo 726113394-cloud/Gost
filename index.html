@@ -1230,6 +1230,163 @@
         .lang-skip {
             background: rgba(255,255,255,0.08); color: #c9d2f0; border: 1px solid rgba(255,255,255,0.12) !important;
         }
+
+        /* ============================================================
+           ===== 详情弹窗可读性强化（深色实底 + 高对比文字） =====
+           ============================================================ */
+        .modal {
+            background: rgba(0, 0, 0, 0.72) !important;
+        }
+        .modal-content {
+            background: linear-gradient(165deg, rgba(30, 36, 58, 0.985), rgba(16, 20, 34, 0.995)) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+            backdrop-filter: blur(24px) saturate(1.15) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(1.15) !important;
+            max-width: 720px !important;
+            padding: 1.8rem 2rem 2rem !important;
+            position: relative;
+            overflow-x: hidden;
+        }
+        /* 顶部红色高光条，强化与背景的分层 */
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 110, 110, 0.85), rgba(120, 140, 255, 0.55), transparent);
+            pointer-events: none;
+        }
+        .modal-item-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+            padding-right: 2.6rem;
+            line-height: 1.3;
+        }
+        .modal-divider {
+            height: 1px;
+            margin: 0.95rem 0 1.1rem;
+            background: linear-gradient(90deg,
+                        rgba(255, 110, 110, 0.65),
+                        rgba(255, 255, 255, 0.12) 45%,
+                        transparent);
+            border: none;
+        }
+        .modal-item-detail {
+            line-height: 1.75;
+            color: #e2e8fa;
+            font-size: 0.95rem;
+        }
+        .modal-item-detail strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .modal-item-detail code {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffd8a6;
+            padding: 0.12rem 0.45rem;
+            border-radius: 6px;
+            font-size: 0.85em;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .modal-item-detail a { color: #9db4ff; }
+        .modal-content .modal-close {
+            position: absolute;
+            top: 1.1rem;
+            right: 1.3rem;
+            z-index: 3;
+            color: #9aa6c4;
+        }
+        .modal-content .modal-close:hover { color: #ffffff; }
+
+
+        /* ===== 命令表格：可点击复制按钮 ===== */
+        .table-wrapper td code,
+        .table-wrapper th code {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            user-select: none;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 0.28rem 0.7rem;
+            font-size: 0.82rem;
+            color: #e8edff;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        background 0.22s ease,
+                        border-color 0.22s ease,
+                        box-shadow 0.22s ease,
+                        color 0.22s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .table-wrapper td code::after {
+            content: '⧉';
+            font-size: 0.72rem;
+            opacity: 0.35;
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+        .table-wrapper td code:hover {
+            background: rgba(255, 100, 100, 0.18);
+            border-color: rgba(255, 100, 100, 0.45);
+            color: #ffd9d9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255, 80, 80, 0.18);
+        }
+        .table-wrapper td code:hover::after { opacity: 1; transform: scale(1.12); }
+        .table-wrapper td code:active { transform: translateY(0) scale(0.96); }
+        .table-wrapper td code.copied {
+            background: rgba(46, 204, 113, 0.22) !important;
+            border-color: rgba(46, 204, 113, 0.55) !important;
+            color: #b8ffd6 !important;
+        }
+        .table-wrapper td code.copied::after { content: '✓'; opacity: 1; color: #6ee7b7; }
+        .table-wrapper td code:focus-visible {
+            outline: 2px solid rgba(255, 120, 120, 0.8);
+            outline-offset: 2px;
+        }
+
+        /* ===== 复制提示 Toast ===== */
+        .copy-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 2.2rem;
+            transform: translate(-50%, 24px);
+            z-index: 2000;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(24, 30, 46, 0.96);
+            border: 1px solid rgba(110, 231, 183, 0.45);
+            color: #d6ffe8;
+            padding: 0.65rem 1.3rem;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(16px);
+            max-width: 90vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .copy-toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        .copy-toast i { color: #6ee7b7; }
+        @media (max-width: 750px) {
+            .copy-toast { bottom: 5.2rem; font-size: 0.8rem; padding: 0.55rem 1rem; }
+        }
+
     </style>
 </head>
 <body>
@@ -1249,7 +1406,7 @@
         <!-- 页面头部 -->
         <div style="padding: 1.5rem 0 1rem;">
             <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-0.5px;">🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
-            <p style="font-size:1.1rem; color:#b8c4e0; max-width: 800px;"><strong>Gost v2.3.3</strong> — 一款基于 Bukkit/Spigot/Paper/Purpur 的 Minecraft 多人对抗小游戏插件（Folia 调度兼容）。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
+            <p style="font-size:1.1rem; color:#b8c4e0; max-width: 800px;"><strong>Gost v2.3.3</strong> — 一款面向 <strong>Bukkit / Spigot / Paper / Purpur / Folia</strong> 等主流服务端的 Minecraft 多人对抗小游戏插件，兼容 <strong>1.20.x – 1.21.x</strong>。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
             <div class="badge">⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🍖 饥饿值系统 | 🗡️ 冲刺矛全版本兼容 | 🔊 音效系统全面更新</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
@@ -1574,7 +1731,7 @@
                         <div class="card"><h3>🎒 背包管理系统（v2.3.1）</h3><p>对局期间最多 <strong>9 个</strong> 道具。<br>道具不可放入背包（强制移回物品栏）。<br>道具不堆叠、不允许两个相同道具、不允许两个肾上腺素（人鬼通用道具除外）。<br><strong>收割者</strong> / <strong>神之救赎</strong> 强制放第一格。</p></div>
                         <div class="card"><h3>🔥 选区粒子框（v2.3.1）</h3><p>设置选区后自动显示 <strong>火焰粒子框</strong>，持续 <strong>30 秒</strong>。<br>帮助管理员直观确认游戏区域边界。</p></div>
                         <div class="card"><h3>🌐 双语字幕（v2.3.1）</h3><p>复活等待、重生、收割、救赎、母体禁足等核心事件新增 <strong>中英双语字幕</strong>。<br>根据服务器语言设置自动切换。</p></div>
-                        <div class="card"><h3>📦 版本与服务端兼容</h3><p>支持 <strong>1.20.x 至 1.21.x</strong>。<br><strong>Bukkit / Spigot / Paper / Purpur</strong> 完整支持；<strong>Folia</strong> 调度兼容。<br>Sponge 与代理端（BungeeCord/Velocity/Waterfall）不适用。<br>粒子/音效/属性/附魔跨版本自动兼容（ApiCompat / ParticleCompat / SoundCompat）。</p></div>
+                        <div class="card"><h3>📦 版本与服务端兼容</h3><p>支持 <strong>1.20.x 至 1.21.x</strong>。<br><strong>Bukkit / Spigot / Paper / Purpur</strong> 等 Bukkit 系服务端完整支持；<strong>Folia</strong> 调度兼容。<br>Sponge 与代理端（BungeeCord/Velocity/Waterfall）不适用。<br>粒子/音效/属性/附魔跨版本自动兼容（ApiCompat / ParticleCompat / SoundCompat）。</p></div>
                     </div>
                 </div>
             </div>
@@ -1729,7 +1886,7 @@
             modalTitle:"选择语言", modalSub:"专有名词遵循 Minecraft 官方译名。点击卡片选择，确认后生效。",
             confirm:"确认", skip:"稍后再说",
             heroTitle:"🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件",
-            heroDesc:"<strong>Gost v2.3.3</strong> — 一款基于 Bukkit/Spigot/Paper/Purpur 的 Minecraft 多人对抗小游戏插件（Folia 调度兼容）。<br>灵感来源于游戏 <strong>《Dead Realm》</strong>，在 Minecraft 中重现追逐与博弈的紧张与乐趣。",
+            heroDesc:"<strong>Gost v2.3.3</strong> — 一款基于 面向 <strong>Bukkit / Spigot / Paper / Purpur / Folia</strong> 等主流服务端的 Minecraft 多人对抗小游戏插件，兼容 <strong>1.20.x – 1.21.x</strong>。<br>灵感来源于游戏 <strong>《Dead Realm》</strong>，在 Minecraft 中重现追逐与博弈的紧张与乐趣。",
             badge:"⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🍖 饥饿值系统 | 🗡️ 冲刺矛全版本兼容 | 🔊 音效系统全面更新",
             download:"Modrinth 下载", author:"作者主页", preview:"预览视频", updateVideo:"2.3.0 更新介绍",
             clickImage:"点击图片可查看大图",
@@ -1748,7 +1905,7 @@
             modalTitle:"Choose Language", modalSub:"Terms follow official Minecraft names. Click a card, then confirm.",
             confirm:"Confirm", skip:"Later",
             heroTitle:"🎮 Gost — Ghost Chase · Redeemer · Demon Hunter Multi-Stage Minigame Plugin",
-            heroDesc:"<strong>Gost v2.3.3</strong> — A Minecraft multiplayer minigame plugin for Bukkit/Spigot/Paper/Purpur (Folia scheduler-compatible).<br>Inspired by <strong>Dead Realm</strong> — recreating tense chase and mind games in Minecraft.",
+            heroDesc:"<strong>Gost v2.3.3</strong> — A Minecraft multiplayer minigame plugin for <strong>Bukkit / Spigot / Paper / Purpur / Folia</strong> and other mainstream Minecraft server platforms, supporting <strong>1.20.x – 1.21.x</strong>.<br>Inspired by <strong>Dead Realm</strong> — recreating tense chase and mind games in Minecraft.",
             badge:"⚡ Permanent Redeemer | 🎮 Demon Hunter Rework | 🌑 Darkness + Sprint | 🍖 Hunger System | 🗡️ Spear Rush Cross-Version | 🔊 Full Sound Overhaul",
             download:"Download on Modrinth", author:"Author Page", preview:"Preview Video", updateVideo:"2.3.0 Update Video",
             clickImage:"Click an image to enlarge",
@@ -1767,7 +1924,7 @@
             modalTitle:"言語を選択", modalSub:"用語は Minecraft 公式訳に準拠。カードをクリックして確定してください。",
             confirm:"確定", skip:"後で",
             heroTitle:"🎮 Gost — ゴーストチェイス · 救済者 · デーモンハンター 多段階対抗プラグイン",
-            heroDesc:"<strong>Gost v2.3.3</strong> — Bukkit/Spigot/Paper/Purpur 向け Minecraft マルチ対抗ミニゲームプラグイン（Folia スケジューラ互換）。<br><strong>Dead Realm</strong> にインスパイアされ、Minecraft で緊迫の追跡と駆け引きを再現。",
+            heroDesc:"<strong>Gost v2.3.3</strong> — <strong>Bukkit / Spigot / Paper / Purpur / Folia</strong> など主要サーバー向け Minecraft マルチ対抗ミニゲームプラグイン（<strong>1.20.x – 1.21.x</strong> 対応）。<br><strong>Dead Realm</strong> にインスパイアされ、Minecraft で緊迫の追跡と駆け引きを再現。",
             badge:"⚡ 救済者常設 | 🎮 デーモンハンター刷新 | 🌑 暗闇+ダッシュ併用 | 🍖 空腹システム | 🗡️ スピアラッシュ全対応 | 🔊 効果音一新",
             download:"Modrinth でダウンロード", author:"作者ページ", preview:"プレビュー動画", updateVideo:"2.3.0 更新紹介",
             clickImage:"画像をクリックで拡大",
@@ -1786,7 +1943,7 @@
             modalTitle:"Elegir idioma", modalSub:"Los términos siguen los nombres oficiales de Minecraft. Elige una tarjeta y confirma.",
             confirm:"Confirmar", skip:"Luego",
             heroTitle:"🎮 Gost — Caza de fantasmas · Redentor · Cazador de demonios",
-            heroDesc:"<strong>Gost v2.3.3</strong> — Plugin de minijuego multijugador de Minecraft para Bukkit/Spigot/Paper/Purpur (compatible con Folia).<br>Inspirado en <strong>Dead Realm</strong> — recreando la persecución y la tensión en Minecraft.",
+            heroDesc:"<strong>Gost v2.3.3</strong> — Plugin de minijuego multijugador de Minecraft para <strong>Bukkit / Spigot / Paper / Purpur / Folia</strong> y otras plataformas de servidor, compatible con <strong>1.20.x – 1.21.x</strong>.<br>Inspirado en <strong>Dead Realm</strong> — recreando la persecución y la tensión en Minecraft.",
             badge:"⚡ Redentor permanente | 🎮 Cazador renovado | 🌑 Oscuridad + esprint | 🍖 Sistema de hambre | 🗡️ Lanza multiplataforma | 🔊 Sonidos actualizados",
             download:"Descargar en Modrinth", author:"Página del autor", preview:"Vídeo previo", updateVideo:"Vídeo 2.3.0",
             clickImage:"Haz clic en la imagen para ampliar",
@@ -1805,7 +1962,7 @@
             modalTitle:"Choisir la langue", modalSub:"Les termes suivent les noms officiels Minecraft. Cliquez une carte puis confirmez.",
             confirm:"Confirmer", skip:"Plus tard",
             heroTitle:"🎮 Gost — Chasse aux fantômes · Rédempteur · Chasseur de démons",
-            heroDesc:"<strong>Gost v2.3.3</strong> — Plugin de mini-jeu multijoueur Minecraft pour Bukkit/Spigot/Paper/Purpur (compatible Folia).<br>Inspiré de <strong>Dead Realm</strong> — recréer la poursuite et les mind games dans Minecraft.",
+            heroDesc:"<strong>Gost v2.3.3</strong> — Plugin de mini-jeu multijoueur Minecraft pour <strong>Bukkit / Spigot / Paper / Purpur / Folia</strong> et autres serveurs populaires, compatible <strong>1.20.x – 1.21.x</strong>.<br>Inspiré de <strong>Dead Realm</strong> — recréer la poursuite et les mind games dans Minecraft.",
             badge:"⚡ Rédempteur permanent | 🎮 Chasseur retravaillé | 🌑 Obscurité + sprint | 🍖 Système de faim | 🗡️ Lance multi-version | 🔊 Sons refaits",
             download:"Télécharger sur Modrinth", author:"Page de l'auteur", preview:"Vidéo", updateVideo:"Vidéo 2.3.0",
             clickImage:"Cliquez sur l'image pour agrandir",
@@ -1824,7 +1981,7 @@
             modalTitle:"Sprache wählen", modalSub:"Begriffe folgen den offiziellen Minecraft-Namen. Karte wählen und bestätigen.",
             confirm:"Bestätigen", skip:"Später",
             heroTitle:"🎮 Gost — Geisterjagd · Erlöser · Dämonenjäger",
-            heroDesc:"<strong>Gost v2.3.3</strong> — Minecraft-Minigame-Plugin für Bukkit/Spigot/Paper/Purpur (Folia-kompatibel).<br>Inspiriert von <strong>Dead Realm</strong> — Verfolgungsjagden und Mindgames in Minecraft.",
+            heroDesc:"<strong>Gost v2.3.3</strong> — Minecraft-Minigame-Plugin für <strong>Bukkit / Spigot / Paper / Purpur / Folia</strong> und weitere verbreitete Server, kompatibel mit <strong>1.20.x – 1.21.x</strong>.<br>Inspiriert von <strong>Dead Realm</strong> — Verfolgungsjagden und Mindgames in Minecraft.",
             badge:"⚡ Ständiger Erlöser | 🎮 Dämonenjäger überarbeitet | 🌑 Dunkelheit + Sprint | 🍖 Hunger-System | 🗡️ Speersturm alle Versionen | 🔊 Neue Sounds",
             download:"Auf Modrinth laden", author:"Autorenseite", preview:"Vorschau-Video", updateVideo:"2.3.0-Video",
             clickImage:"Bild anklicken zum Vergrößern",
@@ -2274,12 +2431,88 @@
                 const key = this.dataset.item;
                 const pack = (typeof getItems === 'function') ? getItems() : itemsDetailZh;
                 const item = pack[key];
-                document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><hr><div style="line-height:1.6; color:#b8c4e0;">${item.detail}</div>`;
+                document.getElementById('modal-body').innerHTML = `<div class="modal-item-title">${item.name}</div><div class="modal-divider"></div><div class="modal-item-detail">${item.detail}</div>`;
                 showModal();
             });
         });
         // 新卡片挂载 3D 倾斜 + 入场动效
         if (window.initTiltEffects) window.initTiltEffects();
+    }
+
+
+    // ========== 命令一键复制 ==========
+    const COPY_TEXT = {
+        zh_CN: "已复制",
+        en_US: "Copied",
+        ja_JP: "コピーしました",
+        es_ES: "Copiado",
+        fr_FR: "Copié",
+        de_DE: "Kopiert"
+    };
+
+    function showCopyToast(text) {
+        let toast = document.getElementById('copyToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'copyToast';
+            toast.className = 'copy-toast';
+            document.body.appendChild(toast);
+        }
+        const lang = (typeof currentLang !== 'undefined') ? currentLang : 'zh_CN';
+        const label = COPY_TEXT[lang] || COPY_TEXT.zh_CN;
+        toast.innerHTML = '<i class="fas fa-check-circle"></i> ' + label + '：' + text;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(function () { toast.classList.remove('show'); }, 1800);
+    }
+
+    function copyPlainText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy') ? resolve() : reject();
+            } catch (e) { reject(e); }
+            document.body.removeChild(ta);
+        });
+    }
+
+    function initCopyableCommands() {
+        document.querySelectorAll('.table-wrapper td code').forEach(function (el) {
+            if (el.dataset.copyReady === '1') return;
+            el.dataset.copyReady = '1';
+            el.setAttribute('role', 'button');
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('title', '点击复制');
+            el.addEventListener('click', function () {
+                const text = el.textContent.trim();
+                copyPlainText(text).then(function () {
+                    el.classList.add('copied');
+                    setTimeout(function () { el.classList.remove('copied'); }, 1300);
+                    showCopyToast(text);
+                }).catch(function () {
+                    // 兜底：选中文本方便手动复制
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                });
+            });
+            el.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    el.click();
+                }
+            });
+        });
     }
 
     function showModal() { document.getElementById('modal').classList.add('show'); }
@@ -2749,6 +2982,7 @@
 
         // ★ 在动态内容渲染完成后再挂载倾斜效果
         if (window.initTiltEffects) window.initTiltEffects();
+        if (typeof initCopyableCommands === 'function') initCopyableCommands();
 
         console.log('✅ Gost v2.3.3 文档已完全初始化（含 3D 倾斜弹簧曲线动效）');
     })();
