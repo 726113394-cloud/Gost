@@ -118,6 +118,11 @@
         .section:nth-child(5) { animation-delay: 0.2s; }
         .section:nth-child(6) { animation-delay: 0.25s; }
 
+                /* 仅透明度动画：不触碰 transform，避免覆盖 3D 倾斜 */
+        @keyframes fadeOnly {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
         @keyframes fadeSlideUp {
             0% { opacity: 0; transform: translateY(30px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -2489,11 +2494,13 @@
                 el.style.animation = '';
                 el.style.animationDelay = (i * 0.05) + 's';
             });
+            // 卡片类只做透明度淡入，绝不使用带 transform 的动画，
+            // 否则动画的 fill-mode 会覆盖 3D 倾斜的 inline transform
             document.querySelectorAll('.card, .version-item, .tool-card').forEach((el, i) => {
                 el.style.animation = 'none';
                 void el.offsetWidth;
-                el.style.animation = 'fadeSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both';
-                el.style.animationDelay = Math.min(i * 0.03, 0.45) + 's';
+                el.style.animation = 'fadeOnly 0.45s ease both';
+                el.style.animationDelay = Math.min(i * 0.03, 0.4) + 's';
             });
         }
 
