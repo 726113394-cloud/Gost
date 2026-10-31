@@ -942,15 +942,45 @@
             .tilt-glare { display: none; }
         }
 
-        /* ===== 语言选择 ===== */
-        .lang-btn {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            padding: 0.45rem 0.9rem; border-radius: 999px;
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-            color: #eef2ff; cursor: pointer; font-size: 0.9rem; font-weight: 600;
-            transition: all 0.25s ease; backdrop-filter: blur(10px);
+        /* ===== 语言切换按钮（照搬 GostModWiki 设计） ===== */
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            padding: 0.5rem 1.3rem;
+            color: #dfe6ff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            white-space: nowrap;
         }
-        .lang-btn:hover { background: rgba(255,100,100,0.25); border-color: rgba(255,100,100,0.5); transform: translateY(-1px); }
+        .lang-switch .lang-emoji {
+            font-size: 1rem;
+            line-height: 1;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-block;
+        }
+        .lang-switch:hover {
+            background: rgba(255, 100, 100, 0.15);
+            border-color: rgba(255, 100, 100, 0.35);
+            color: #ffd6d6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 80, 80, 0.15);
+        }
+        .lang-switch:hover .lang-emoji { transform: rotate(180deg); }
+        .lang-switch:active { transform: translateY(0) scale(0.97); }
+
+        @media (max-width: 750px) {
+            .lang-switch { padding: 0.45rem 1rem; font-size: 0.8rem; }
+        }
         .lang-modal {
             position: fixed; inset: 0; z-index: 9999;
             background: rgba(5,8,18,0.82); backdrop-filter: blur(16px);
@@ -1014,8 +1044,8 @@
 <div class="navbar">
     <div class="nav-content">
         <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem; font-weight:400; color:#8892b0;">v2.3.3</span></div>
-        <button type="button" class="lang-btn" id="langCycleBtn" title="Switch language">
-            <span id="langFlag">🌐</span>
+        <button type="button" class="lang-switch" id="langCycleBtn" aria-label="Switch Language" title="Switch Language">
+            <span class="lang-emoji" id="langFlag">🌏</span>
             <span id="langLabel">中文</span>
         </button>
     </div>
@@ -1712,7 +1742,8 @@
         const meta = LANG_META[currentLang];
         const flag = document.getElementById("langFlag");
         const label = document.getElementById("langLabel");
-        if (flag) flag.textContent = meta.flag;
+        // 图标固定为 🌏，仅更新语言名（点击循环切换）
+        if (flag) flag.textContent = "🌏";
         if (label) label.textContent = meta.native;
 
         if (typeof renderItems === "function") { try { renderItems(); } catch (e) {} }
