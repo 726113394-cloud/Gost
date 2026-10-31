@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gost v2.3.2 文档 | 鬼抓人 · 救赎者 · 猎魔人</title>
+    <title>Gost v2.3.3 文档 | 鬼抓人 · 救赎者 · 猎魔人</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -941,13 +941,83 @@
         @media (prefers-reduced-motion: reduce) {
             .tilt-glare { display: none; }
         }
+
+        /* ===== 语言选择 ===== */
+        .lang-btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.45rem 0.9rem; border-radius: 999px;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+            color: #eef2ff; cursor: pointer; font-size: 0.9rem; font-weight: 600;
+            transition: all 0.25s ease; backdrop-filter: blur(10px);
+        }
+        .lang-btn:hover { background: rgba(255,100,100,0.25); border-color: rgba(255,100,100,0.5); transform: translateY(-1px); }
+        .lang-modal {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(5,8,18,0.82); backdrop-filter: blur(16px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+        }
+        .lang-modal.show { opacity: 1; pointer-events: auto; }
+        .lang-modal-box {
+            width: min(920px, 94vw); max-height: 90vh; overflow: auto;
+            background: rgba(18,22,40,0.95); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px; padding: 1.8rem 1.5rem 1.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+        }
+        .lang-modal-box h2 {
+            text-align: center; font-size: 1.55rem; margin-bottom: 0.35rem;
+            background: linear-gradient(135deg,#ffb347,#ff5e5e);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .lang-modal-box .sub {
+            text-align: center; color: #8892b0; margin-bottom: 1.3rem; font-size: 0.95rem;
+        }
+        .lang-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 0.85rem;
+        }
+        .lang-card {
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 14px;
+            padding: 1rem 1rem 0.9rem; cursor: pointer;
+            background: rgba(255,255,255,0.04); transition: all 0.22s ease;
+        }
+        .lang-card:hover {
+            border-color: rgba(255,120,120,0.55); background: rgba(255,80,80,0.12);
+            transform: translateY(-3px);
+        }
+        .lang-card.selected {
+            border-color: #ff7b7b; background: rgba(255,80,80,0.18);
+            box-shadow: 0 0 0 1px rgba(255,100,100,0.4);
+        }
+        .lang-card .native { font-size: 1.15rem; font-weight: 700; color: #fff; }
+        .lang-card .code { font-size: 0.78rem; color: #8892b0; margin-top: 0.2rem; font-family: 'JetBrains Mono', monospace; }
+        .lang-card .hint { font-size: 0.82rem; color: #b8c4e0; margin-top: 0.45rem; }
+        .lang-modal-actions {
+            display: flex; gap: 0.8rem; justify-content: center; margin-top: 1.4rem; flex-wrap: wrap;
+        }
+        .lang-modal-actions button {
+            padding: 0.7rem 1.4rem; border-radius: 999px; border: none; cursor: pointer;
+            font-weight: 700; font-size: 0.95rem;
+        }
+        .lang-confirm {
+            background: linear-gradient(135deg, #ff7b7b, #ff5e5e); color: #fff;
+            box-shadow: 0 8px 24px rgba(255,80,80,0.35);
+        }
+        .lang-confirm:hover { filter: brightness(1.08); }
+        .lang-skip {
+            background: rgba(255,255,255,0.08); color: #c9d2f0; border: 1px solid rgba(255,255,255,0.12) !important;
+        }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="navbar">
     <div class="nav-content">
-        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem; font-weight:400; color:#8892b0;">v2.3.2</span></div>
+        <div class="logo"><span>G</span><span class="colorful">ost</span> <span style="font-size:0.8rem; font-weight:400; color:#8892b0;">v2.3.3</span></div>
+        <button type="button" class="lang-btn" id="langCycleBtn" title="Switch language">
+            <span id="langFlag">🌐</span>
+            <span id="langLabel">中文</span>
+        </button>
     </div>
 </div>
 
@@ -956,7 +1026,7 @@
         <!-- 页面头部 -->
         <div style="padding: 1.5rem 0 1rem;">
             <h1 style="font-size: 2.8rem; background: linear-gradient(135deg,#ffb347,#ff5e5e); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-0.5px;">🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件</h1>
-            <p style="font-size:1.1rem; color:#b8c4e0; max-width: 800px;"><strong>Gost v2.3.2</strong> — 一款基于 Bukkit/Spigot 的 Minecraft 多人对抗小游戏插件。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
+            <p style="font-size:1.1rem; color:#b8c4e0; max-width: 800px;"><strong>Gost v2.3.3</strong> — 一款基于 Bukkit/Spigot/Paper/Purpur 的 Minecraft 多人对抗小游戏插件（Folia 调度兼容）。<br>本插件灵感来源于游戏 <strong>《Dead Realm》</strong>——以此致敬那款曾带来无数欢乐的已逝佳作，并尝试在 Minecraft 中重现那份追逐与博弈的紧张与乐趣。</p>
             <div class="badge">⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🍖 饥饿值系统 | 🗡️ 冲刺矛全版本兼容 | 🔊 音效系统全面更新</div>
             <div class="link-buttons">
                 <a href="https://modrinth.com/plugin/gost" target="_blank" class="link-btn"><i class="fab fa-modrinth"></i> Modrinth 下载</a>
@@ -1111,7 +1181,7 @@
                 <div class="collapsible-content">
                     <div class="version-tabs">
                         <div class="version-tab active" data-panel="dh-old">📅 v2.2.2 ~ v2.3.0</div>
-                        <div class="version-tab" data-panel="dh-new">📅 v2.3.1+ <span class="ver-tag ver-tag-current">当前</span></div>
+                        <div class="version-tab" data-panel="dh-new">📅 v2.3.3+ <span class="ver-tag ver-tag-current">当前</span></div>
                     </div>
                     <div class="version-panel active" id="dh-old">
                         <div class="card"><h3>⚔️ 猎魔人阶段 <span class="ver-tag">v2.2.2 ~ v2.3.0</span></h3>
@@ -1129,17 +1199,19 @@
                         </div>
                     </div>
                     <div class="version-panel" id="dh-new">
-                        <div class="card"><h3>⚔️ 猎魔人阶段（重做） <span class="ver-tag ver-tag-current">v2.3.1+ 当前</span></h3>
-                            <h4 style="color:#ffa07a; margin-top:1rem;">🗡️ 收割者武器重做</h4>
-                            <ul style="margin-left:1.5rem;"><li><strong>左键单体攻击</strong>：普通鬼 <strong>2 次</strong> 击杀，母体鬼 <strong>4 次</strong> 击杀（纯击中次数判定，不依赖血量）</li><li><strong>右键范围技能「收割」</strong>：4 格半径 AOE，10 秒冷却，冲击粒子 + 凋零死亡音效</li><li>攻击冷却 <strong>2 秒</strong></li></ul>
-                            <h4 style="color:#ffa07a; margin-top:1rem;">👻 鬼复活机制（优化）</h4>
-                            <ul style="margin-left:1.5rem;"><li>被击杀后进入 <strong>死亡状态</strong>：隐身但可自由移动（不锁定坐标、不减速、不飞行）</li><li><strong>10 秒复活倒计时</strong>（ActionBar 显示）</li><li>复活时 <strong>随机传送</strong> 至游戏区域内某坐标（非原地）</li><li>复活后恢复原身份（普通鬼/母体）继续参与对局</li><li>击杀位置绽放 <strong>红黄 BURST 烟花</strong> + 爆炸粒子 + 凋零死亡音效</li><li>击杀字幕（中英双语）：💥 击杀成功! / 💥 Elimination!</li></ul>
-                            <h4 style="color:#ffa07a; margin-top:1rem;">👑 母体进化系统（v2.3.1 新增）</h4>
-                            <ul style="margin-left:1.5rem;"><li><strong>触发条件</strong>：猎魔人阶段，参与游戏玩家 > 5 人</li><li><strong>生成</strong>：游戏区域内随机坐标放置 <strong>发光绿宝石</strong>（附魔粒子 + 发光效果标记）</li><li><strong>拾取条件</strong>：仅普通鬼可拾取</li><li><strong>效果</strong>：拾取后变身为母体鬼，获得母体血量，可猎杀猎魔人</li><li><strong>公告/字幕/音效</strong>（中英双语）：✦ 游戏区域出现母体升级绿宝石！ / ✦ A Mother Upgrade Emerald has appeared!<br>变身字幕：👑 你成为了母体鬼! / 👑 You are the Mother Ghost!<br>广播：[玩家]拾取了母体绿宝石，变身为母体鬼！<br>音效：挑战完成提示 + 末影龙低吼</li><li>游戏结束时自动清理绿宝石</li></ul>
+                        <div class="card"><h3>⚔️ 猎魔人阶段 <span class="ver-tag ver-tag-current">v2.3.3 当前</span></h3>
+                            <h4 style="color:#ffa07a; margin-top:1rem;">🗡️ 收割者（伤害值判定）</h4>
+                            <ul style="margin-left:1.5rem;"><li><strong>左键单体攻击</strong>：按配置伤害扣血，显示 <strong>伤害量 + 剩余血量</strong>，血量归零进入旁观 + 复活倒计时</li><li><strong>右键范围技能「收割」</strong>：以自身为中心 <strong>4 格</strong> AOE，伤害与左键一致，冲击粒子 + 凋零死亡音效，冷却 <strong>10 秒</strong></li><li>左键攻击冷却 <strong>2 秒</strong></li></ul>
+                            <h4 style="color:#ffa07a; margin-top:1rem;">👻 鬼死亡 → 旁观 → 复活（v2.3.3 正式启用）</h4>
+                            <ul style="margin-left:1.5rem;"><li>死亡进入 <strong>旁观模式</strong>（不再使用隐身妥协方案）</li><li><strong>复活倒计时</strong>（ActionBar 显示）</li><li>倒计时结束在游戏区域内 <strong>随机坐标</strong> 换回 <strong>生存模式</strong> 复活</li><li>复活后恢复原身份（普通鬼/母体）继续参与对局</li><li>击杀位置绽放 <strong>红黄 BURST 烟花</strong> + 爆炸粒子 + 凋零死亡音效</li></ul>
+                            <h4 style="color:#ffa07a; margin-top:1rem;">🎯 猎魔人被母体击杀（v2.3.3）</h4>
+                            <ul style="margin-left:1.5rem;"><li>被母体击杀后立刻转为 <strong>普通鬼</strong>（死亡状态）</li><li>旁观 + 复活倒计时结束后以 <strong>普通鬼</strong> 身份继续对局</li></ul>
+                            <h4 style="color:#ffa07a; margin-top:1rem;">👑 母体进化水晶（v2.3.3 阶段调整）</h4>
+                            <ul style="margin-left:1.5rem;"><li><strong>出现阶段</strong>：<strong>神圣守护阶段</strong>（原先猎魔人阶段）</li><li><strong>生成</strong>：固定坐标 / 区域中心 / 区域随机（可配置），放置 <strong>发光绿宝石</strong></li><li><strong>拾取条件</strong>：仅普通鬼可拾取</li><li><strong>效果</strong>：拾取后变身为母体鬼</li></ul>
                             <h4 style="color:#ffa07a; margin-top:1rem;">🛡️ 猎魔人阶段防御规则</h4>
-                            <ul style="margin-left:1.5rem;"><li><strong>阵营伤害保护</strong>：猎魔人无法伤害人类/猎魔人，鬼无法伤害鬼（母体无法击杀普通鬼），人类无法伤害人类</li><li><strong>死亡拦截</strong>：鬼/猎魔人真实死亡事件被取消，不会回重生点</li><li><strong>环境伤害免疫</strong>：鬼/猎魔人免疫坠落/岩浆/火焰等环境伤害</li><li><strong>正常回血</strong>：不再禁止回血，玩家可正常恢复</li></ul>
+                            <ul style="margin-left:1.5rem;"><li><strong>阵营伤害保护</strong>：猎魔人无法伤害人类/猎魔人，鬼无法伤害鬼，人类无法伤害人类</li><li><strong>死亡拦截</strong>：鬼/猎魔人真实死亡事件被取消</li><li><strong>环境伤害免疫</strong>：鬼/猎魔人免疫坠落/岩浆/火焰等</li><li><strong>正常回血</strong>：玩家可正常恢复</li></ul>
                             <h4 style="color:#ffa07a; margin-top:1rem;">👑 母体攻击猎魔人</h4>
-                            <ul style="margin-left:1.5rem;"><li><strong>无神圣守护猎魔人</strong>：母体 <strong>4 次</strong> 击中 → 感染（进入旁观）</li><li><strong>有神圣守护猎魔人</strong>：先 <strong>3 次</strong> 破除守护，再 <strong>4 次</strong> 感染</li></ul>
+                            <ul style="margin-left:1.5rem;"><li><strong>无神圣守护猎魔人</strong>：母体 <strong>4 次</strong> 击中 → 转为普通鬼（旁观复活）</li><li><strong>有神圣守护猎魔人</strong>：先 <strong>3 次</strong> 破除守护，再 <strong>4 次</strong> 击杀</li></ul>
                             <h4 style="color:#ffa07a; margin-top:1rem;">🚫 母体禁足</h4>
                             <ul style="margin-left:1.5rem;"><li>对局开始前母体随机锁定游戏区域坐标，<strong>20 秒</strong> 无法移动</li></ul>
                         </div>
@@ -1157,7 +1229,7 @@
                     <div class="card">
                         <p>道具会在游戏过程中 <strong>定时发放</strong> 给玩家，每次发放间隔可在配置中调整（默认每 60 秒发放一次），同时区域会随机刷新道具。发放道具时会揭示所有玩家位置 5 秒。</p>
                         <p><strong>背包管理（v2.3.1）</strong>：对局期间最多 <strong>9 个</strong> 道具，不可放入背包，不堆叠，不允许相同道具（除通用道具外），收割者/神之救赎强制放第一格。</p>
-                        <p style="margin-top:0.8rem; color:#6ee7b7;"><strong>🗡️ 冲刺矛（v2.3.2 更新）</strong>：<br>• 右键使用进行冲刺，向前冲刺 <strong>5 米</strong>，使用后即刻消失。<br>• <strong>全版本兼容</strong>：在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 版本中显示为 <strong>矛</strong>，功能完全一致。<br>• 使用音效：矛冲刺音效（由游戏内置）。</p>
+                        <p style="margin-top:0.8rem; color:#6ee7b7;"><strong>🗡️ 冲刺矛（v2.3.3 更新）</strong>：<br>• <strong>右键</strong>使用进行冲刺，向前冲刺 <strong>5.5 米</strong>，使用后即刻消失。<br>• <strong>全版本兼容</strong>：在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 版本中显示为 <strong>矛</strong>，功能完全一致。<br>• 使用音效：凋零死亡音效。</p>
                     </div>
                 </div>
             </div>
@@ -1274,12 +1346,12 @@
                     <div class="grid-2col">
                         <div class="card"><h3>🌑 黑暗效果与疾跑并存</h3><p>使用 Minecraft 原生 <strong>DARKNESS</strong> 效果（1.19+）或 <strong>BLINDNESS</strong> 效果（旧版本）。<br>通过属性修改器增加 <strong>30% 移动速度</strong>，抵消黑暗效果对疾跑的影响。<br>每 10 ticks 检查玩家疾跑状态，自动恢复被阻止的疾跑。<br>管理员和创造模式玩家也会受到黑暗效果影响。</p></div>
                         <div class="card"><h3>👻 鬼玩家粒子效果</h3><p>鬼玩家身上持续显示环绕粒子效果。<br><strong>母体鬼</strong>：红色粒子，<strong>普通鬼</strong>：绿色粒子。<br>支持 21 种粒子类型，RGB 颜色自定义。<br>可配置准备阶段是否显示。</p></div>
-                        <div class="card"><h3>💬 语言系统全面优化（Cover version 核心改进）</h3><p>大幅扩充默认消息库，90+ 条默认中文消息。<br>智能消息回退机制，不再返回错误代码。<br>错误隔离保护，不影响核心游戏流程。<br>插件启动保护，LanguageManager 初始化失败仍能运行。</p></div>
+                        <div class="card"><h3>💬 多语言系统（v2.3.3 六国语言文件）</h3><p>支持 <strong>中文 / English / 日本語 / Español / Français / Deutsch</strong>。<br>语言文件：<code>plugins/Gost/lang/&lt;locale&gt;.yml</code>，用户可自行修改。<br>选择语言：<code>config.yml → language.default</code> 或 <code>/gostadmin lang</code>。<br>修改后 <code>/gost reload</code> 生效；智能回退与错误隔离。</p></div>
                         <div class="card"><h3>❤️ 心跳声系统</h3><p>游戏过程中人类方循环播放监守者出现时的心跳声。<br>管理员可通过 <code>/gostadmin heartbeat</code> 控制开关。</p></div>
                         <div class="card"><h3>🎒 背包管理系统（v2.3.1）</h3><p>对局期间最多 <strong>9 个</strong> 道具。<br>道具不可放入背包（强制移回物品栏）。<br>道具不堆叠、不允许两个相同道具、不允许两个肾上腺素（人鬼通用道具除外）。<br><strong>收割者</strong> / <strong>神之救赎</strong> 强制放第一格。</p></div>
                         <div class="card"><h3>🔥 选区粒子框（v2.3.1）</h3><p>设置选区后自动显示 <strong>火焰粒子框</strong>，持续 <strong>30 秒</strong>。<br>帮助管理员直观确认游戏区域边界。</p></div>
                         <div class="card"><h3>🌐 双语字幕（v2.3.1）</h3><p>复活等待、重生、收割、救赎、母体禁足等核心事件新增 <strong>中英双语字幕</strong>。<br>根据服务器语言设置自动切换。</p></div>
-                        <div class="card"><h3>📦 版本兼容性</h3><p>支持 <strong>1.20.x 至 1.21.x 全版本</strong>。<br>粒子/音效/物品名称自动版本兼容。<br>冲刺矛（v2.3.2）已实现 <strong>全版本兼容</strong>，&lt;1.21.4 显示为三叉戟，≥1.21.4 显示为矛。</p></div>
+                        <div class="card"><h3>📦 版本与服务端兼容</h3><p>支持 <strong>1.20.x 至 1.21.x</strong>。<br><strong>Bukkit / Spigot / Paper / Purpur</strong> 完整支持；<strong>Folia</strong> 调度兼容。<br>Sponge 与代理端（BungeeCord/Velocity/Waterfall）不适用。<br>粒子/音效/属性/附魔跨版本自动兼容（ApiCompat / ParticleCompat / SoundCompat）。</p></div>
                     </div>
                 </div>
             </div>
@@ -1403,32 +1475,435 @@
     </div>
 </div>
 
+
+<!-- ===== 语言选择弹窗 ===== -->
+<div class="lang-modal" id="langModal" aria-hidden="true">
+    <div class="lang-modal-box">
+        <h2 id="langModalTitle">选择语言 / Choose Language</h2>
+        <p class="sub" id="langModalSub">Language files use Minecraft official terminology · 语言专有名词遵循 Minecraft 官方译名</p>
+        <div class="lang-grid" id="langGrid"></div>
+        <div class="lang-modal-actions">
+            <button type="button" class="lang-confirm" id="langConfirmBtn">确认 / Confirm</button>
+            <button type="button" class="lang-skip" id="langSkipBtn">稍后再说 / Later</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    // ========== 六国语言 i18n（Minecraft 专有名词） ==========
+    const LANGS = ["zh_CN", "en_US", "ja_JP", "es_ES", "fr_FR", "de_DE"];
+    const LANG_META = {
+        zh_CN: { native: "简体中文", flag: "🇨🇳", code: "zh_CN", hint: "Minecraft 简体中文" },
+        en_US: { native: "English", flag: "🇺🇸", code: "en_US", hint: "Minecraft English (US)" },
+        ja_JP: { native: "日本語", flag: "🇯🇵", code: "ja_JP", hint: "Minecraft 日本語" },
+        es_ES: { native: "Español", flag: "🇪🇸", code: "es_ES", hint: "Minecraft Español" },
+        fr_FR: { native: "Français", flag: "🇫🇷", code: "fr_FR", hint: "Minecraft Français" },
+        de_DE: { native: "Deutsch", flag: "🇩🇪", code: "de_DE", hint: "Minecraft Deutsch" }
+    };
+
+    const UI = {
+        zh_CN: {
+            modalTitle:"选择语言", modalSub:"专有名词遵循 Minecraft 官方译名。点击卡片选择，确认后生效。",
+            confirm:"确认", skip:"稍后再说",
+            heroTitle:"🎮 Gost — 鬼抓人 · 救赎者 · 猎魔人 多阶段多阵容对抗插件",
+            heroDesc:"<strong>Gost v2.3.3</strong> — 一款基于 Bukkit/Spigot/Paper/Purpur 的 Minecraft 多人对抗小游戏插件（Folia 调度兼容）。<br>灵感来源于游戏 <strong>《Dead Realm》</strong>，在 Minecraft 中重现追逐与博弈的紧张与乐趣。",
+            badge:"⚡ 救赎者常驻 | 🎮 猎魔人重做 | 🌑 黑暗疾跑并存 | 🍖 饥饿值系统 | 🗡️ 冲刺矛全版本兼容 | 🔊 音效系统全面更新",
+            download:"Modrinth 下载", author:"作者主页", preview:"预览视频", updateVideo:"2.3.0 更新介绍",
+            clickImage:"点击图片可查看大图",
+            expand:"展开查看详情", toc:"目录",
+            navCore:"核心玩法", navDivine:"神圣守护", navRedeemer:"救赎者", navHunter:"猎魔人",
+            navItems:"道具系统", navHunger:"饥饿值系统", navSound:"音效系统", navGhost2h:"鬼转人类",
+            navEconomy:"经济奖励", navFeatures:"特色系统", navCommands:"命令", navPerm:"权限", navVersions:"版本历史",
+            secCore:"🎯 核心玩法", secDivine:"🛡️ 神圣守护系统", secRedeemer:"✨ 救赎者系统",
+            secHunter:"⚔️ 猎魔人阶段", secItems:"🧰 道具系统", secHunger:"🍖 饥饿值系统",
+            secSound:"🔊 音效系统", secGhost2h:"👻 鬼转人类功能", secEconomy:"🏆 经济与奖励系统",
+            secFeatures:"✨ 特色系统", secCommands:"📋 命令", secPerm:"🔐 权限", secVersions:"📈 版本历史",
+            footer:"🎉 开始你的生存对抗之旅！ /gost join | 感染方式：左键/右键 | 道具发放全体高亮5秒 | 猎魔人阶段带来全新体验",
+            current:"当前", langName:"中文", switchHint:"点击切换语言"
+        },
+        en_US: {
+            modalTitle:"Choose Language", modalSub:"Terms follow official Minecraft names. Click a card, then confirm.",
+            confirm:"Confirm", skip:"Later",
+            heroTitle:"🎮 Gost — Ghost Chase · Redeemer · Demon Hunter Multi-Stage Minigame Plugin",
+            heroDesc:"<strong>Gost v2.3.3</strong> — A Minecraft multiplayer minigame plugin for Bukkit/Spigot/Paper/Purpur (Folia scheduler-compatible).<br>Inspired by <strong>Dead Realm</strong> — recreating tense chase and mind games in Minecraft.",
+            badge:"⚡ Permanent Redeemer | 🎮 Demon Hunter Rework | 🌑 Darkness + Sprint | 🍖 Hunger System | 🗡️ Spear Rush Cross-Version | 🔊 Full Sound Overhaul",
+            download:"Download on Modrinth", author:"Author Page", preview:"Preview Video", updateVideo:"2.3.0 Update Video",
+            clickImage:"Click an image to enlarge",
+            expand:"Show details", toc:"Contents",
+            navCore:"Core Gameplay", navDivine:"Divine Guardian", navRedeemer:"Redeemer", navHunter:"Demon Hunter",
+            navItems:"Items", navHunger:"Hunger", navSound:"Sounds", navGhost2h:"Ghost→Human",
+            navEconomy:"Economy", navFeatures:"Features", navCommands:"Commands", navPerm:"Permissions", navVersions:"Changelog",
+            secCore:"🎯 Core Gameplay", secDivine:"🛡️ Divine Guardian System", secRedeemer:"✨ Redeemer System",
+            secHunter:"⚔️ Demon Hunter Phase", secItems:"🧰 Item System", secHunger:"🍖 Hunger System",
+            secSound:"🔊 Sound System", secGhost2h:"👻 Ghost to Human", secEconomy:"🏆 Economy & Rewards",
+            secFeatures:"✨ Features", secCommands:"📋 Commands", secPerm:"🔐 Permissions", secVersions:"📈 Version History",
+            footer:"🎉 Start your survival chase! /gost join | Infect: left/right click | Items reveal all for 5s | Demon Hunter phase brings a new experience",
+            current:"Current", langName:"English", switchHint:"Click to switch language"
+        },
+        ja_JP: {
+            modalTitle:"言語を選択", modalSub:"用語は Minecraft 公式訳に準拠。カードをクリックして確定してください。",
+            confirm:"確定", skip:"後で",
+            heroTitle:"🎮 Gost — ゴーストチェイス · 救済者 · デーモンハンター 多段階対抗プラグイン",
+            heroDesc:"<strong>Gost v2.3.3</strong> — Bukkit/Spigot/Paper/Purpur 向け Minecraft マルチ対抗ミニゲームプラグイン（Folia スケジューラ互換）。<br><strong>Dead Realm</strong> にインスパイアされ、Minecraft で緊迫の追跡と駆け引きを再現。",
+            badge:"⚡ 救済者常設 | 🎮 デーモンハンター刷新 | 🌑 暗闇+ダッシュ併用 | 🍖 空腹システム | 🗡️ スピアラッシュ全対応 | 🔊 効果音一新",
+            download:"Modrinth でダウンロード", author:"作者ページ", preview:"プレビュー動画", updateVideo:"2.3.0 更新紹介",
+            clickImage:"画像をクリックで拡大",
+            expand:"詳細を表示", toc:"目次",
+            navCore:"コアプレイ", navDivine:"神聖守護", navRedeemer:"救済者", navHunter:"デーモンハンター",
+            navItems:"アイテム", navHunger:"空腹", navSound:"効果音", navGhost2h:"ゴースト→人間",
+            navEconomy:"経済報酬", navFeatures:"特徴", navCommands:"コマンド", navPerm:"権限", navVersions:"バージョン履歴",
+            secCore:"🎯 コアプレイ", secDivine:"🛡️ 神聖守護システム", secRedeemer:"✨ 救済者システム",
+            secHunter:"⚔️ デーモンハンターフェーズ", secItems:"🧰 アイテム", secHunger:"🍖 空腹システム",
+            secSound:"🔊 効果音", secGhost2h:"👻 ゴーストから人間へ", secEconomy:"🏆 経済と報酬",
+            secFeatures:"✨ 特徴", secCommands:"📋 コマンド", secPerm:"🔐 権限", secVersions:"📈 バージョン履歴",
+            footer:"🎉 サバイバルチェイスを始めよう！ /gost join | 感染：左/右クリック | 配布時 5 秒全員ハイライト | デーモンハンターで新体験",
+            current:"現在", langName:"日本語", switchHint:"クリックで言語切替"
+        },
+        es_ES: {
+            modalTitle:"Elegir idioma", modalSub:"Los términos siguen los nombres oficiales de Minecraft. Elige una tarjeta y confirma.",
+            confirm:"Confirmar", skip:"Luego",
+            heroTitle:"🎮 Gost — Caza de fantasmas · Redentor · Cazador de demonios",
+            heroDesc:"<strong>Gost v2.3.3</strong> — Plugin de minijuego multijugador de Minecraft para Bukkit/Spigot/Paper/Purpur (compatible con Folia).<br>Inspirado en <strong>Dead Realm</strong> — recreando la persecución y la tensión en Minecraft.",
+            badge:"⚡ Redentor permanente | 🎮 Cazador renovado | 🌑 Oscuridad + esprint | 🍖 Sistema de hambre | 🗡️ Lanza multiplataforma | 🔊 Sonidos actualizados",
+            download:"Descargar en Modrinth", author:"Página del autor", preview:"Vídeo previo", updateVideo:"Vídeo 2.3.0",
+            clickImage:"Haz clic en la imagen para ampliar",
+            expand:"Ver detalles", toc:"Índice",
+            navCore:"Jugabilidad", navDivine:"Guardián Divino", navRedeemer:"Redentor", navHunter:"Cazador",
+            navItems:"Objetos", navHunger:"Hambre", navSound:"Sonidos", navGhost2h:"Fantasma→Humano",
+            navEconomy:"Economía", navFeatures:"Funciones", navCommands:"Comandos", navPerm:"Permisos", navVersions:"Historial",
+            secCore:"🎯 Jugabilidad", secDivine:"🛡️ Sistema del Guardián Divino", secRedeemer:"✨ Sistema del Redentor",
+            secHunter:"⚔️ Fase del Cazador de demonios", secItems:"🧰 Objetos", secHunger:"🍖 Sistema de hambre",
+            secSound:"🔊 Sistema de sonido", secGhost2h:"👻 Fantasma a humano", secEconomy:"🏆 Economía y recompensas",
+            secFeatures:"✨ Funciones", secCommands:"📋 Comandos", secPerm:"🔐 Permisos", secVersions:"📈 Historial de versiones",
+            footer:"🎉 ¡Comienza tu persecución! /gost join | Infectar: clic izq/der | Objetos revelan 5s | Fase del Cazador",
+            current:"Actual", langName:"Español", switchHint:"Clic para cambiar idioma"
+        },
+        fr_FR: {
+            modalTitle:"Choisir la langue", modalSub:"Les termes suivent les noms officiels Minecraft. Cliquez une carte puis confirmez.",
+            confirm:"Confirmer", skip:"Plus tard",
+            heroTitle:"🎮 Gost — Chasse aux fantômes · Rédempteur · Chasseur de démons",
+            heroDesc:"<strong>Gost v2.3.3</strong> — Plugin de mini-jeu multijoueur Minecraft pour Bukkit/Spigot/Paper/Purpur (compatible Folia).<br>Inspiré de <strong>Dead Realm</strong> — recréer la poursuite et les mind games dans Minecraft.",
+            badge:"⚡ Rédempteur permanent | 🎮 Chasseur retravaillé | 🌑 Obscurité + sprint | 🍖 Système de faim | 🗡️ Lance multi-version | 🔊 Sons refaits",
+            download:"Télécharger sur Modrinth", author:"Page de l'auteur", preview:"Vidéo", updateVideo:"Vidéo 2.3.0",
+            clickImage:"Cliquez sur l'image pour agrandir",
+            expand:"Voir les détails", toc:"Sommaire",
+            navCore:"Gameplay", navDivine:"Gardien Divin", navRedeemer:"Rédempteur", navHunter:"Chasseur",
+            navItems:"Objets", navHunger:"Faim", navSound:"Sons", navGhost2h:"Fantôme→Humain",
+            navEconomy:"Économie", navFeatures:"Fonctions", navCommands:"Commandes", navPerm:"Permissions", navVersions:"Historique",
+            secCore:"🎯 Gameplay", secDivine:"🛡️ Système du Gardien Divin", secRedeemer:"✨ Système du Rédempteur",
+            secHunter:"⚔️ Phase du Chasseur de démons", secItems:"🧰 Objets", secHunger:"🍖 Système de faim",
+            secSound:"🔊 Système sonore", secGhost2h:"👻 Fantôme vers humain", secEconomy:"🏆 Économie et récompenses",
+            secFeatures:"✨ Fonctions", secCommands:"📋 Commandes", secPerm:"🔐 Permissions", secVersions:"📈 Historique des versions",
+            footer:"🎉 Commencez la chasse ! /gost join | Infecter : clic G/D | Objets révèlent 5s | Phase Chasseur",
+            current:"Actuel", langName:"Français", switchHint:"Cliquez pour changer de langue"
+        },
+        de_DE: {
+            modalTitle:"Sprache wählen", modalSub:"Begriffe folgen den offiziellen Minecraft-Namen. Karte wählen und bestätigen.",
+            confirm:"Bestätigen", skip:"Später",
+            heroTitle:"🎮 Gost — Geisterjagd · Erlöser · Dämonenjäger",
+            heroDesc:"<strong>Gost v2.3.3</strong> — Minecraft-Minigame-Plugin für Bukkit/Spigot/Paper/Purpur (Folia-kompatibel).<br>Inspiriert von <strong>Dead Realm</strong> — Verfolgungsjagden und Mindgames in Minecraft.",
+            badge:"⚡ Ständiger Erlöser | 🎮 Dämonenjäger überarbeitet | 🌑 Dunkelheit + Sprint | 🍖 Hunger-System | 🗡️ Speersturm alle Versionen | 🔊 Neue Sounds",
+            download:"Auf Modrinth laden", author:"Autorenseite", preview:"Vorschau-Video", updateVideo:"2.3.0-Video",
+            clickImage:"Bild anklicken zum Vergrößern",
+            expand:"Details anzeigen", toc:"Inhalt",
+            navCore:"Spielprinzip", navDivine:"Göttlicher Wächter", navRedeemer:"Erlöser", navHunter:"Dämonenjäger",
+            navItems:"Items", navHunger:"Hunger", navSound:"Sounds", navGhost2h:"Geist→Mensch",
+            navEconomy:"Ökonomie", navFeatures:"Funktionen", navCommands:"Befehle", navPerm:"Rechte", navVersions:"Verlauf",
+            secCore:"🎯 Spielprinzip", secDivine:"🛡️ Göttlicher Wächter", secRedeemer:"✨ Erlöser-System",
+            secHunter:"⚔️ Dämonenjäger-Phase", secItems:"🧰 Items", secHunger:"🍖 Hunger-System",
+            secSound:"🔊 Soundsystem", secGhost2h:"👻 Geist zu Mensch", secEconomy:"🏆 Ökonomie & Belohnungen",
+            secFeatures:"✨ Funktionen", secCommands:"📋 Befehle", secPerm:"🔐 Rechte", secVersions:"📈 Versionsverlauf",
+            footer:"🎉 Starte die Verfolgungsjagd! /gost join | Infizieren: Links/Rechtsklick | Items 5s sichtbar | Dämonenjäger-Phase",
+            current:"Aktuell", langName:"Deutsch", switchHint:"Klicken zum Sprachwechsel"
+        }
+    };
+
+    let currentLang = "zh_CN";
+    let pendingLang = "zh_CN";
+
+    function t(key) {
+        return (UI[currentLang] && UI[currentLang][key]) || (UI.zh_CN[key] || key);
+    }
+
+    function applyUI() {
+        try { document.documentElement.lang = currentLang.replace("_", "-"); } catch (e) {}
+        const map = [
+            ["#langModalTitle", "modalTitle"], ["#langModalSub", "modalSub"],
+            ["#langConfirmBtn", "confirm"], ["#langSkipBtn", "skip"]
+        ];
+        map.forEach(([sel, key]) => {
+            const el = document.querySelector(sel);
+            if (el) el.textContent = t(key);
+        });
+
+        const h1 = document.querySelector("#zh-content h1");
+        if (h1) h1.textContent = t("heroTitle");
+        const heroP = document.querySelector("#zh-content p[style*='max-width: 800px']");
+        if (heroP) heroP.innerHTML = t("heroDesc");
+        const badge = document.querySelector("#zh-content .badge");
+        if (badge) badge.textContent = t("badge");
+
+        const links = document.querySelectorAll("#zh-content .link-btn");
+        const linkKeys = ["download", "author", "preview", "updateVideo"];
+        links.forEach((a, i) => {
+            if (linkKeys[i] && a) {
+                const icon = a.querySelector("i");
+                a.innerHTML = (icon ? icon.outerHTML + " " : "") + t(linkKeys[i]);
+            }
+        });
+
+        const clickImg = document.querySelector("#zh-content div[style*='点击图片'], #zh-content div[style*='Click an image']");
+        if (clickImg) clickImg.innerHTML = '<i class="fas fa-image"></i> ' + t("clickImage");
+
+        const secKeys = [
+            ["#section-core .section-title", "secCore"],
+            ["#section-divine .section-title", "secDivine"],
+            ["#section-redeemer .section-title", "secRedeemer"],
+            ["#section-demonhunter .section-title", "secHunter"],
+            ["#section-items .section-title", "secItems"],
+            ["#section-hunger .section-title", "secHunger"],
+            ["#section-sound .section-title", "secSound"],
+            ["#section-ghost2human .section-title", "secGhost2h"],
+            ["#section-economy .section-title", "secEconomy"],
+            ["#section-features .section-title", "secFeatures"],
+            ["#section-commands .section-title", "secCommands"],
+            ["#section-permissions .section-title", "secPerm"],
+            ["#section-versions .section-title", "secVersions"]
+        ];
+        secKeys.forEach(([sel, key]) => {
+            const el = document.querySelector(sel);
+            if (el) el.textContent = t(key);
+        });
+
+        document.querySelectorAll(".collapsible-header").forEach(el => {
+            const icon = el.querySelector("i");
+            const open = el.nextElementSibling && el.nextElementSibling.classList.contains('show');
+            if (icon) {
+                icon.className = open ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                // 只替换文字节点，保留图标与展开旋转动效
+                let textNode = null;
+                el.childNodes.forEach(n => { if (n.nodeType === 3) textNode = n; });
+                if (textNode) textNode.textContent = ' ' + t('expand') + ' ';
+                else el.insertBefore(document.createTextNode(' ' + t('expand') + ' '), icon);
+            } else {
+                el.innerHTML = t('expand') + ' <i class="fas fa-chevron-down"></i>';
+            }
+        });
+
+        const tocMap = [
+            ["#section-core", "navCore"], ["#section-divine", "navDivine"],
+            ["#section-redeemer", "navRedeemer"], ["#section-demonhunter", "navHunter"],
+            ["#section-items", "navItems"], ["#section-hunger", "navHunger"],
+            ["#section-sound", "navSound"], ["#section-ghost2human", "navGhost2h"],
+            ["#section-economy", "navEconomy"], ["#section-features", "navFeatures"],
+            ["#section-commands", "navCommands"], ["#section-permissions", "navPerm"],
+            ["#section-versions", "navVersions"]
+        ];
+        tocMap.forEach(([hash, key]) => {
+            document.querySelectorAll('.toc-item[href="' + hash + '"], .toc-item-mobile[href="' + hash + '"]').forEach(a => {
+                const icon = a.querySelector(".toc-icon");
+                a.innerHTML = (icon ? icon.outerHTML : "") + t(key);
+            });
+        });
+
+        const footer = document.querySelector("#zh-content footer");
+        if (footer) footer.textContent = t("footer");
+
+        const meta = LANG_META[currentLang];
+        const flag = document.getElementById("langFlag");
+        const label = document.getElementById("langLabel");
+        if (flag) flag.textContent = meta.flag;
+        if (label) label.textContent = meta.native;
+
+        if (typeof renderItems === "function") { try { renderItems(); } catch (e) {} }
+        if (typeof renderVersionList === "function") { try { renderVersionList(); } catch (e) {} }
+
+        const mFloat = document.getElementById("tocMobileFloat");
+        if (mFloat) mFloat.innerHTML = '<i class="fas fa-list"></i> ' + t("toc");
+
+        // ★ 恢复动效：语言切换会重绘 DOM，需重新挂载 3D 倾斜并重放入场动画
+        if (typeof window.replayEnterAnimations === 'function') window.replayEnterAnimations();
+        if (window.initTiltEffects) window.initTiltEffects();
+    }
+
+    function setLang(lang) {
+        if (!LANGS.includes(lang)) lang = "zh_CN";
+        currentLang = lang;
+        pendingLang = lang;
+        try { localStorage.setItem("gost_lang", lang); } catch (e) {}
+        applyUI();
+    }
+
+    function cycleLang() {
+        const i = LANGS.indexOf(currentLang);
+        setLang(LANGS[(i + 1) % LANGS.length]);
+    }
+
+    function buildLangGrid() {
+        const grid = document.getElementById("langGrid");
+        if (!grid) return;
+        grid.innerHTML = "";
+        LANGS.forEach(code => {
+            const meta = LANG_META[code];
+            const card = document.createElement("div");
+            card.className = "lang-card" + (code === pendingLang ? " selected" : "");
+            card.innerHTML = '<div class="native">' + meta.flag + " " + meta.native +
+                '</div><div class="code">' + meta.code + '</div><div class="hint">' + meta.hint + '</div>';
+            card.addEventListener("click", () => {
+                pendingLang = code;
+                grid.querySelectorAll(".lang-card").forEach(x => x.classList.remove("selected"));
+                card.classList.add("selected");
+            });
+            grid.appendChild(card);
+        });
+    }
+
+    function showLangModal() {
+        buildLangGrid();
+        const modal = document.getElementById("langModal");
+        if (modal) { modal.classList.add("show"); modal.setAttribute("aria-hidden", "false"); }
+    }
+
+    function hideLangModal() {
+        const modal = document.getElementById("langModal");
+        if (modal) { modal.classList.remove("show"); modal.setAttribute("aria-hidden", "true"); }
+    }
+
+    function initI18n() {
+        let saved = null;
+        try { saved = localStorage.getItem("gost_lang"); } catch (e) {}
+        if (saved && LANGS.includes(saved)) {
+            setLang(saved);
+        } else {
+            pendingLang = "zh_CN";
+            setLang("zh_CN");
+            showLangModal();
+        }
+        const cycleBtn = document.getElementById("langCycleBtn");
+        if (cycleBtn) cycleBtn.addEventListener("click", cycleLang);
+        const confirmBtn = document.getElementById("langConfirmBtn");
+        if (confirmBtn) confirmBtn.addEventListener("click", () => { setLang(pendingLang); hideLangModal(); });
+        const skipBtn = document.getElementById("langSkipBtn");
+        if (skipBtn) skipBtn.addEventListener("click", hideLangModal);
+    }
+
+
     // ========== 道具数据 ==========
     const itemsDetailZh = {
-        reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器（双技能）", faction: "human", detail: "效果（v2.3.1 重做）：<br><strong>左键单体攻击</strong>：普通鬼 <strong>2 次</strong> 击杀，母体鬼 <strong>4 次</strong> 击杀（纯击中次数判定）<br><strong>右键范围技能「收割」</strong>（v2.3.1）：4 格半径 AOE，10 秒冷却，冲击粒子 + 凋零死亡音效<br>攻击冷却：2 秒<br>使用音效：左键无音效，右键有 AOE 特效" },
-        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果：对鬼玩家使用可将其转化回人类阵容<br>使用次数：<strong>2 次</strong>（v2.3.1 起）<br>冷却时间：10 秒<br>使用后救赎者被随机传送到安全位置<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
-        secondChance: { name: "❤️ 第二次机会", desc: "被动触发", faction: "human", detail: "效果：人类玩家专用道具，被鬼感染时自动触发，免疫本次感染并保留人类身份，触发后进入冷却（180秒），冷却期间被感染则正常变为鬼。<br>冷却时间：180秒<br>使用音效：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code>" },
-        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：投掷后对命中的玩家施加 <strong>缓慢 III（3秒）</strong> 效果，对所有玩家（人类/鬼）均生效，可用于逃跑或追击。<br>使用音效：投掷 <code>ENTITY_SNOWBALL_THROW</code>" },
+        reaper: { name: "🗡️ 收割者", desc: "猎魔人专属武器（双技能）", faction: "human", detail: "效果（v2.3.3）：<br><strong>左键单体攻击</strong>：按配置伤害扣血，显示伤害量与剩余血量，血量归零进入旁观+复活<br><strong>右键「收割」</strong>：4 格 AOE，伤害同左键，冲击粒子 + 凋零死亡音效<br>左键冷却 2 秒 / 收割冷却 10 秒" },
+        holyRedemption: { name: "💊 神之救赎", desc: "救赎者专属道具", faction: "human", detail: "效果（v2.3.3）：右键对鬼玩家使用可转化回人类阵容<br>使用次数：<strong>1 次</strong>（不可重复使用）<br>使用后救赎者被随机传送到安全位置<br>救赎者附带独立神圣守护 2 次<br>使用音效：<code>ITEM_TOTEM_USE</code>" },
+        secondChance: { name: "❤️ 第二次机会", desc: "被动触发", faction: "human", detail: "效果：人类玩家专用道具，被鬼感染时自动触发，免疫本次感染并保留人类身份，触发后进入冷却（180秒），冷却期间被感染则正常变为鬼；默认保留道具只进冷却（可配置消耗）。<br>冷却时间：180秒（触发后保留道具，仅进冷却，可配置是否消耗）<br>使用音效：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code>" },
+        iceBall: { name: "🧊 凝冰球", desc: "投掷控制道具", faction: "neutral", detail: "效果：投掷后对命中的玩家施加 <strong>缓慢 IV（4秒）</strong> 效果，对所有玩家（人类/鬼）均生效，可用于逃跑或追击。<br>使用音效：投掷 <code>ENTITY_SNOWBALL_THROW</code>" },
         stinkySteak: { name: "🥩 臭牛排", desc: "速度道具", faction: "neutral", detail: "效果（v2.3.1 修改）：<br><strong>右键开始食用</strong>，1 秒吃完后效果生效<br>中途切换物品会 <strong>打断</strong> 食用<br>获得 <strong>速度 III（14秒）</strong> 效果，附带发光效果（10秒）<br>无视饱食度<br>使用音效：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code>" },
         soulControl: { name: "🔮 控魂术", desc: "控制类道具", faction: "human", detail: "效果：人类玩家专用道具，可短暂控制全场的鬼玩家，使整个鬼阵容无法移动 6 秒。<br>冷却时间：18秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>" },
-        soulDetector: { name: "👁️ 灵魂探测器", desc: "探测类道具", faction: "ghost", detail: "效果：使用后持续揭示所有玩家的位置 25 秒。<br>冷却时间：35秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
+        soulDetector: { name: "👁️ 灵魂探测器", desc: "母体专属探测", faction: "ghost", detail: "效果（v2.3.3）：母体专属，右键使用后持续揭示所有玩家位置 <strong>25 秒</strong>。<br>冷却时间：35 秒<br>使用音效：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code>" },
         teleportPearl: { name: "🪄 传送珍珠", desc: "战术传送道具", faction: "neutral", detail: "效果：投掷后玩家传送到珍珠落点位置，人类和鬼双方均可使用（仅能右键使用）。<br>冷却时间：20秒<br>使用音效：<code>ENTITY_ENDER_PEARL_THROW</code>" },
         adrenaline: { name: "🧪 肾上腺素", desc: "人类专属", faction: "human", detail: "效果：使用获得速度 II 效果 10 秒。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" },
         frenzy: { name: "🔥 狂暴药水", desc: "鬼专属", faction: "ghost", detail: "效果：使用获得速度 II 效果 10 秒。<br>使用音效：<code>ENTITY_WITHER_SHOOT</code>" },
-        spearRush: { name: "🗡️ 冲刺矛", desc: "右键冲刺，全版本兼容", faction: "neutral", detail: "效果（v2.3.2 更新）：<br><strong>右键使用</strong>进行冲刺，向前冲刺 <strong>5 米</strong>，使用后即刻消失。<br><strong>全版本兼容</strong>：在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 版本中显示为 <strong>矛</strong>，功能完全一致。<br>使用音效：矛冲刺音效（由游戏内置）。" },
+        spearRush: { name: "🗡️ 冲刺矛", desc: "右键冲刺，全版本兼容", faction: "neutral", detail: "效果（v2.3.3）：<br><strong>右键使用</strong>进行冲刺，向前冲刺 <strong>5.5 米</strong>，使用后即刻消失。<br><strong>全版本兼容</strong>：&lt;1.21.4 显示三叉戟，≥1.21.4 显示矛。<br>使用音效：凋零死亡音效。" },
         levitationPotion: { name: "🧪 漂浮药水", desc: "右键获得漂浮效果", faction: "neutral", detail: "效果：右键使用获得 <strong>漂浮</strong> 效果 4.5 秒（大约可以飞 3.4 个方块高度）。<br>使用音效：<code>ENTITY_PLAYER_SPLASH</code>" }
     };
+
+    // 多语言道具包（Minecraft 专有名词）
+    const ITEMS_I18N = {
+        en_US: {
+            reaper: { name: "🗡️ Reaper", desc: "Demon Hunter exclusive", faction: "human", detail: "Left-click: configured damage + remaining HP; 0 HP → Spectator Mode + respawn.<br>Right-click Harvest: 4-block AOE, shockwave + Wither death sound.<br>CD 2s / 10s" },
+            holyRedemption: { name: "💊 Holy Redemption", desc: "Redeemer exclusive", faction: "human", detail: "Right-click a Ghost → Human.<br>Uses: 1. Redeemer teleported to safety. Divine Guardian ×2.<br>Sound: ITEM_TOTEM_USE" },
+            secondChance: { name: "❤️ Second Chance", desc: "Passive (Totem of Undying)", faction: "human", detail: "Human-only. On infection: immune once, stay Human.<br>CD 180s (item kept).<br>Sounds: ITEM_TOTEM_USE / ENTITY_ELDER_GUARDIAN_CURSE / ENTITY_PLAYER_LEVELUP" },
+            iceBall: { name: "🧊 Ice Ball", desc: "Throw control (Snowball)", faction: "neutral", detail: "On hit: Slowness IV (4s) on any player.<br>Sound: ENTITY_SNOWBALL_THROW" },
+            stinkySteak: { name: "🥩 Stinky Steak", desc: "Speed item", faction: "neutral", detail: "Eat 1s: Speed III (14s) + Glowing (10s). Ignores hunger.<br>Sounds: ENTITY_GENERIC_EAT + ENTITY_PLAYER_BURP" },
+            soulControl: { name: "🔮 Soul Control", desc: "Human-only (Clock)", faction: "human", detail: "Freeze all Ghosts 6s. CD 18s.<br>Sounds: ENTITY_ILLUSIONER_CAST_SPELL / ENTITY_ELDER_GUARDIAN_CURSE" },
+            soulDetector: { name: "👁️ Soul Detector", desc: "Mother-only (Compass)", faction: "ghost", detail: "Reveal all players 25s. CD 35s.<br>Sounds: ENTITY_ILLUSIONER_PREPARE_MIRROR / ENTITY_ENDER_DRAGON_FLAP" },
+            teleportPearl: { name: "🪄 Teleport Pearl", desc: "Ender Pearl", faction: "neutral", detail: "Right-click throw → teleport. CD 20s.<br>Sound: ENTITY_ENDER_PEARL_THROW" },
+            adrenaline: { name: "🧪 Adrenaline", desc: "Human exclusive", faction: "human", detail: "Speed II for 10s. Sound: ENTITY_PLAYER_SPLASH" },
+            frenzy: { name: "🔥 Frenzy Potion", desc: "Ghost exclusive", faction: "ghost", detail: "Speed II for 10s. Sound: ENTITY_WITHER_SHOOT" },
+            spearRush: { name: "🗡️ Spear Rush", desc: "Right-click dash", faction: "neutral", detail: "Dash 5.5 blocks then consumed.<br>Trident skin &lt;1.21.4; Spear skin ≥1.21.4.<br>Sound: Wither death" },
+            levitationPotion: { name: "🧪 Levitation Potion", desc: "Lingering Potion", faction: "neutral", detail: "Levitation 4.5s. Sound: ENTITY_PLAYER_SPLASH" }
+        },
+        ja_JP: {
+            reaper: { name: "🗡️ リーパー", desc: "デーモンハンター専用", faction: "human", detail: "左クリック：設定ダメージ+残りHP。HP0で観戦モード+復活。<br>右クリック「収穫」：半径4マスAOE、ウィザー死亡音。<br>CD 2秒 / 10秒" },
+            holyRedemption: { name: "💊 神聖なる救済", desc: "救済者専用", faction: "human", detail: "ゴーストを右クリック→人間。使用1回。安全地帯へ転送。神聖守護×2。<br>効果音：ITEM_TOTEM_USE" },
+            secondChance: { name: "❤️ セカンドチャンス", desc: "パッシブ（不死のトーテム）", faction: "human", detail: "人間専用。感染時に1度免疫。CD180秒（アイテム保持）。" },
+            iceBall: { name: "🧊 氷玉", desc: "投擲（雪玉）", faction: "neutral", detail: "命中時：スローIV（4秒）。効果音：ENTITY_SNOWBALL_THROW" },
+            stinkySteak: { name: "🥩 臭いステーキ", desc: "速度アイテム", faction: "neutral", detail: "摂食1秒：スピードIII（14秒）+発光（10秒）。" },
+            soulControl: { name: "🔮 ソウルコントロール", desc: "人間専用（時計）", faction: "human", detail: "全ゴースト6秒停止。CD18秒。" },
+            soulDetector: { name: "👁️ ソウルディテクター", desc: "マザー専用（コンパス）", faction: "ghost", detail: "全員位置25秒公開。CD35秒。" },
+            teleportPearl: { name: "🪄 テレポートパール", desc: "エンダーパール", faction: "neutral", detail: "右クリック投擲→転送。CD20秒。" },
+            adrenaline: { name: "🧪 アドレナリン", desc: "人間専用", faction: "human", detail: "スピードII 10秒。" },
+            frenzy: { name: "🔥 狂暴のポーション", desc: "ゴースト専用", faction: "ghost", detail: "スピードII 10秒。" },
+            spearRush: { name: "🗡️ スピアラッシュ", desc: "右クリック突進", faction: "neutral", detail: "5.5マス突進後に消失。&lt;1.21.4は三叉槍。" },
+            levitationPotion: { name: "🧪 浮遊のポーション", desc: "滞留ポーション", faction: "neutral", detail: "浮遊4.5秒。" }
+        },
+        es_ES: {
+            reaper: { name: "🗡️ Segador", desc: "Exclusivo Cazador", faction: "human", detail: "Clic izq.: daño + HP restante; 0 HP → Modo espectador.<br>Clic der. Cosecha: AOE 4 bloques.<br>CD 2s / 10s" },
+            holyRedemption: { name: "💊 Redención Sagrada", desc: "Exclusivo Redentor", faction: "human", detail: "Clic der. Fantasma → Humano. 1 uso. Teletransporte. Guardián Divino ×2." },
+            secondChance: { name: "❤️ Segunda Oportunidad", desc: "Pasiva (Tótem de inmortalidad)", faction: "human", detail: "Solo Humanos. Inmunidad una vez. CD 180s." },
+            iceBall: { name: "🧊 Bola de Hielo", desc: "Bola de nieve", faction: "neutral", detail: "Lentitud IV (4s). Sonido: ENTITY_SNOWBALL_THROW" },
+            stinkySteak: { name: "🥩 Bistec Apestado", desc: "Velocidad", faction: "neutral", detail: "Velocidad III (14s) + Brillo (10s)." },
+            soulControl: { name: "🔮 Control de Almas", desc: "Solo Humanos (Reloj)", faction: "human", detail: "Congela Fantasmas 6s. CD 18s." },
+            soulDetector: { name: "👁️ Detector de Almas", desc: "Solo Madre (Brújula)", faction: "ghost", detail: "Revelar 25s. CD 35s." },
+            teleportPearl: { name: "🪄 Perla de Teletransporte", desc: "Perla de Ender", faction: "neutral", detail: "Clic der. → teletransporte. CD 20s." },
+            adrenaline: { name: "🧪 Adrenalina", desc: "Solo Humanos", faction: "human", detail: "Velocidad II 10s." },
+            frenzy: { name: "🔥 Poción de Frenesí", desc: "Solo Fantasmas", faction: "ghost", detail: "Velocidad II 10s." },
+            spearRush: { name: "🗡️ Lanza de Carrera", desc: "Clic der.", faction: "neutral", detail: "Embestida 5.5 bloques. Tridente &lt;1.21.4." },
+            levitationPotion: { name: "🧪 Poción de Levitación", desc: "Poción persistente", faction: "neutral", detail: "Levitación 4.5s." }
+        },
+        fr_FR: {
+            reaper: { name: "🗡️ Faucheur", desc: "Exclusif Chasseur", faction: "human", detail: "Clic G. : dégâts + PV ; 0 PV → Mode spectateur.<br>Clic D. Récolte : AOE 4 blocs.<br>CD 2s / 10s" },
+            holyRedemption: { name: "💊 Rédemption Sacrée", desc: "Exclusif Rédempteur", faction: "human", detail: "Clic D. Fantôme → Humain. 1 usage. Téléport. Gardien Divin ×2." },
+            secondChance: { name: "❤️ Seconde Chance", desc: "Passif (Totem d'immortalité)", faction: "human", detail: "Humains seulement. Immunité une fois. Recharge 180s." },
+            iceBall: { name: "🧊 Boule de Glace", desc: "Boule de neige", faction: "neutral", detail: "Lenteur IV (4s). Son : ENTITY_SNOWBALL_THROW" },
+            stinkySteak: { name: "🥩 Steak Puant", desc: "Vitesse", faction: "neutral", detail: "Vitesse III (14s) + Lueur (10s)." },
+            soulControl: { name: "🔮 Contrôle des Âmes", desc: "Humains (Horloge)", faction: "human", detail: "Immobilise Fantômes 6s. CD 18s." },
+            soulDetector: { name: "👁️ Détecteur d'Âmes", desc: "Mère (Boussole)", faction: "ghost", detail: "Révélation 25s. CD 35s." },
+            teleportPearl: { name: "🪄 Perle de Téléportation", desc: "Perle d'Ender", faction: "neutral", detail: "Clic D. → téléport. CD 20s." },
+            adrenaline: { name: "🧪 Adrénaline", desc: "Humains", faction: "human", detail: "Vitesse II 10s." },
+            frenzy: { name: "🔥 Potion de Frénésie", desc: "Fantômes", faction: "ghost", detail: "Vitesse II 10s." },
+            spearRush: { name: "🗡️ Lance de Ruée", desc: "Clic D.", faction: "neutral", detail: "Ruée 5.5 blocs. Trident &lt;1.21.4." },
+            levitationPotion: { name: "🧪 Potion de Lévitation", desc: "Potion persistante", faction: "neutral", detail: "Lévitation 4.5s." }
+        },
+        de_DE: {
+            reaper: { name: "🗡️ Schnitter", desc: "Dämonenjäger-exklusiv", faction: "human", detail: "Linksklick: Schaden + LP; 0 LP → Zuschauermodus.<br>Rechtsklick Ernte: 4-Block-AoE.<br>CD 2s / 10s" },
+            holyRedemption: { name: "💊 Heilige Erlösung", desc: "Erlöser-exklusiv", faction: "human", detail: "Rechtsklick Geist → Mensch. 1 Nutzung. Teleport. Göttlicher Wächter ×2." },
+            secondChance: { name: "❤️ Zweite Chance", desc: "Passiv (Totem der Unsterblichkeit)", faction: "human", detail: "Nur Menschen. Einmal Immunität. CD 180s." },
+            iceBall: { name: "🧊 Eiskugel", desc: "Schneeball", faction: "neutral", detail: "Langsamkeit IV (4s). Sound: ENTITY_SNOWBALL_THROW" },
+            stinkySteak: { name: "🥩 Stinky Steak", desc: "Tempo", faction: "neutral", detail: "Tempo III (14s) + Leuchten (10s)." },
+            soulControl: { name: "🔮 Seelenkontrolle", desc: "Menschen (Uhr)", faction: "human", detail: "Friert Geister 6s. CD 18s." },
+            soulDetector: { name: "👁️ Seelendetektor", desc: "Mutter (Kompass)", faction: "ghost", detail: "Alle 25s aufdecken. CD 35s." },
+            teleportPearl: { name: "🪄 Teleportperle", desc: "Enderperle", faction: "neutral", detail: "Rechtsklick → Teleport. CD 20s." },
+            adrenaline: { name: "🧪 Adrenalin", desc: "Menschen", faction: "human", detail: "Tempo II 10s." },
+            frenzy: { name: "🔥 Rauschtrank", desc: "Geister", faction: "ghost", detail: "Tempo II 10s." },
+            spearRush: { name: "🗡️ Speersturm", desc: "Rechtsklick", faction: "neutral", detail: "Sturm 5.5 Blöcke. Dreizack &lt;1.21.4." },
+            levitationPotion: { name: "🧪 Schwebetränke", desc: "Verweiltrank", faction: "neutral", detail: "Schweben 4.5s." }
+        }
+    };
+
+    function getItems() {
+        if (typeof currentLang !== "undefined" && ITEMS_I18N[currentLang]) return ITEMS_I18N[currentLang];
+        return itemsDetailZh;
+    }
+
+    function detailBtnLabel() {
+        if (typeof t === "function") {
+            if (currentLang === "en_US") return "📖 Details";
+            if (currentLang === "ja_JP") return "📖 詳細";
+            if (currentLang === "es_ES") return "📖 Detalles";
+            if (currentLang === "fr_FR") return "📖 Détails";
+            if (currentLang === "de_DE") return "📖 Details";
+        }
+        return "📖 详情";
+    }
 
     // ========== 版本历史数据 ==========
     const versionData = {
         zh: [
-            { version: "v2.3.2", tag: "当前版本|冲刺矛全版本兼容 & 饥饿值系统", content: `<strong>🗡️ 冲刺矛全版本兼容</strong><br>• 冲刺矛道具现在支持 <strong>全版本</strong>（1.20.x ~ 1.21.x）<br>• 在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 显示为 <strong>矛</strong>，功能完全一致<br>• 右键使用向前冲刺 <strong>5 米</strong>，使用后即刻消失<br><br><strong>🍖 新增饥饿值系统</strong><br>• 对局饥饿值消耗功能，<strong>可配置、可开关</strong><br>• 对局内饥饿值与局外 <strong>独立</strong>，结算后恢复开局前饱食度<br>• 进入对局饱食度 <strong>回满</strong>，奔跑正常消耗<br>• 人类蹲下（Shift）：每秒恢复 <strong>1</strong> 饱食度<br>• 鬼蹲下（Shift）：每 <strong>0.8</strong> 秒恢复 1 饱食度<br>• 转换阵容时饱食度 <strong>回满</strong><br>• 猎魔人阶段饱食度 <strong>回满且不再消耗</strong><br><br><strong>⚙️ 配置版本升级到 29</strong><br>插件版本升级到 2.3.2` },
+            { version: "v2.3.3", tag: "当前版本|旁观复活 · 伤害收割 · 六国语言 · Folia", content: `<strong>👻 鬼死亡 → 旁观 → 复活（正式启用）</strong><br>• 死亡进入 <strong>旁观模式</strong>（不再用隐身妥协）<br>• ActionBar 复活倒计时<br>• 倒计时结束在游戏区域内随机坐标换回 <strong>生存模式</strong> 复活<br><br><strong>🎯 猎魔人死亡 → 普通鬼</strong><br>• 被母体击杀后立刻转为普通鬼，旁观倒计时后以普通鬼继续对局<br><br><strong>💎 母体进化水晶</strong><br>• 改为在 <strong>神圣守护阶段</strong> 出现（原先猎魔人阶段）<br>• 坐标可配：固定 / 区域中心 / 区域随机<br><br><strong>🗡️ 收割者（伤害值判定）</strong><br>• 左键按配置伤害扣血，显示伤害量与剩余血量<br>• 血量归零进入旁观 + 复活倒计时<br>• 右键「收割」4 格 AOE，伤害同左键，冲击粒子 + 凋零死亡音效<br><br><strong>🎒 背包管理</strong>：最多 9 格、禁入背包、禁堆叠、禁重复专属、特殊道具强制第一格<br><br><strong>🧰 道具规格对齐</strong>（神之救赎 / 第二次机会 / 凝冰球 / 臭牛排 / 控魂术 / 灵魂探测器 / 冲刺矛 5.5m 等）<br><br><strong>⚙️ 跨服务端兼容</strong><br>• ApiCompat / ParticleCompat / SoundCompat<br>• ServerCompat + SchedulerCompat：<strong>Folia</strong> 调度与实体线程适配<br><br><strong>🌐 六国语言文件（用户可改）</strong><br>• 中文 / English / 日本語 / Español / Français / Deutsch<br>• <code>plugins/Gost/lang/&lt;locale&gt;.yml</code> 可自行修改<br>• <code>language.default</code> 或 <code>/gostadmin lang</code> 切换，<code>/gost reload</code> 生效<br><br><strong>⚙️ 配置版本升级到 31</strong><br>插件版本升级到 <strong>2.3.3</strong>` },
+            { version: "v2.3.2", tag: "冲刺矛全版本兼容 & 饥饿值系统（含 2.3.2_B 补丁）", content: `<strong>🗡️ 冲刺矛全版本兼容</strong><br>• 冲刺矛道具现在支持 <strong>全版本</strong>（1.20.x ~ 1.21.x）<br>• 在 <strong>&lt;1.21.4</strong> 版本中显示为 <strong>三叉戟</strong>，≥1.21.4 显示为 <strong>矛</strong>，功能完全一致<br>• 右键使用向前冲刺 <strong>5 米</strong>，使用后即刻消失<br><br><strong>🍖 新增饥饿值系统</strong><br>• 对局饥饿值消耗功能，<strong>可配置、可开关</strong><br>• 对局内饥饿值与局外 <strong>独立</strong>，结算后恢复开局前饱食度<br>• 进入对局饱食度 <strong>回满</strong>，奔跑正常消耗<br>• 人类蹲下（Shift）：每秒恢复 <strong>1</strong> 饱食度<br>• 鬼蹲下（Shift）：每 <strong>0.8</strong> 秒恢复 1 饱食度<br>• 转换阵容时饱食度 <strong>回满</strong><br>• 猎魔人阶段饱食度 <strong>回满且不再消耗</strong><br><br><strong>⚙️ 配置版本升级到 29</strong><br>插件版本升级到 2.3.2<br><br><strong>🩹 v2.3.2_B 补丁（并入 2.3.2 记录）</strong><br>• <strong>背包返还失效修复</strong>：快照深拷贝（ItemStack/Location clone）、防重复覆盖、清空前兜底备份、顺序固化、诊断日志<br>• <strong>掉线处理优化</strong>：掉线即退出对局并同步还原背包；掉线退队并退入场费；静默发包；遗留快照兜底还原<br>• 无新增玩法，插件/配置版本号保持不变` },
             { version: "v2.3.1", tag: "救赎者重构 & 收割者重做", content: `<strong>✨ 救赎者系统重构</strong><br>• 删除神圣守护模式切换，救赎者常驻每局游戏<br>• 每局最多 <strong>2 名</strong> 救赎者，随"神之救赎"道具发放随机绑定<br>• 救赎者获得独立神圣守护（2 次防御）+ 2 次"神之救赎"使用次数<br><br><strong>⚔️ 收割者武器重做</strong><br>• 左键单体：普通鬼 2 次击杀，母体鬼 4 次击杀（纯击中次数）<br>• 右键范围技能「收割」：4 格 AOE，10 秒冷却<br><br><strong>👻 鬼复活机制优化</strong><br>• 死亡状态：隐身但可自由移动（不锁定坐标、不减速、不飞行）<br>• 复活方式：随机地点复活（游戏区域内随机坐标传送），不再原地复活<br>• 保留 10 秒倒计时 + 重生字幕/音效<br><br><strong>🎆 击杀烟花反馈</strong><br>• 猎魔人击杀鬼时，击杀位置绽放红黄 BURST 烟花（1 tick 后引爆）<br>• 爆炸粒子 + 凋零死亡音效<br>• 击杀字幕（中英双语）：💥 击杀成功! → 你击杀了 [玩家]<br><br><strong>👑 母体进化系统</strong><br>• 触发条件：猎魔人阶段，参与游戏玩家 > 5 人<br>• 生成：游戏区域内随机位置放置发光绿宝石（附魔粒子 + 发光效果）<br>• 拾取条件：仅普通鬼可拾取<br>• 效果：拾取后变身为母体鬼，获得母体血量，可猎杀猎魔人<br>• 公告/字幕/音效（中英双语）<br><br><strong>🛡️ 猎魔人阶段防御重构</strong><br>• 新增阵营伤害保护、死亡拦截、环境伤害保护<br>• 删除"禁止回血"设计<br><br><strong>🥩 臭牛排机制修改</strong><br>• 右键开始食用，1 秒后生效，切换物品打断<br><br><strong>🎒 背包管理系统</strong><br>• 最多 9 个道具，不可放入背包，不堆叠<br><br><strong>📋 命令整合与权限精简</strong><br>• divineguardian/ghostparticle 并入 /gostadmin<br>• 仅保留 gost.use / gost.player / gost.admin 三个权限<br><br><strong>🔥 选区粒子框</strong><br>• 设置选区后显示火焰粒子框 30 秒<br><br><strong>🌐 双语字幕</strong><br>• 核心事件新增中英双语字幕<br><br><strong>⚙️ 配置版本升级到 28</strong><br>插件版本升级到 2.3.1` },
             { version: "v2.3.0", tag: "新道具 & 管理员工具", content: `<strong>🎯 新增道具：</strong><br>• <strong>冲刺矛</strong>（<code>GOLDEN_SPEAR</code>）：左键冲刺，使用后消失（仅 1.21.4+ 可用）<br>• <strong>漂浮药水</strong>（<code>LINGERING_POTION</code>）：右键获得漂浮 4.5 秒<br><br><strong>🛠️ 新增管理员命令：</strong><br>• <code>/gost start</code> — 强制开局（跳过人数限制）<br>• <code>/gostadmin testmode</code> — 单人测试模式<br>• <code>/gostadmin giveitem &lt;道具名&gt;</code> — 直接获得道具（支持模糊匹配）<br><br><strong>⚙️ 配置版本升级到 27</strong><br>插件版本升级到 2.3.0<br><br><strong>+ 新增游戏结束奖金排行榜</strong>` },
             { version: "v2.2.3", tag: "视觉、听觉沉浸&重新支持英文", content: `<p>🔊 新增音效系统：<br><strong>阶段音效：</strong><br>• 准备阶段倒计时最后3秒：<code>BLOCK_NOTE_BLOCK_HAT</code>（每秒一次）<br>• 游戏正式开始：<code>ENTITY_ENDER_DRAGON_GROWL</code>（全服）<br>• 人类胜利：人类方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，鬼方 <code>ENTITY_WITHER_DEATH</code><br>• 鬼胜利：鬼方 <code>UI_TOAST_CHALLENGE_COMPLETE</code>，人类方 <code>ENTITY_WITHER_DEATH</code><br><strong>发放道具音效：</strong><br>• 每个玩家获得道具时播放 <code>ENTITY_ITEM_PICKUP</code>（不同道具不同音调）<br>• 发放完毕全局提示 <code>BLOCK_NOTE_BLOCK_PLING</code><br><strong>道具使用音效：</strong><br>• 肾上腺素：<code>ENTITY_PLAYER_SPLASH</code><br>• 狂暴药水：<code>ENTITY_WITHER_SHOOT</code><br>• 凝冰球：<code>ENTITY_SNOWBALL_THROW</code><br>• 控魂术：使用者 <code>ENTITY_ILLUSIONER_CAST_SPELL</code>，被控鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code><br>• 臭牛排：<code>ENTITY_GENERIC_EAT</code> + <code>ENTITY_PLAYER_BURP</code><br>• 传送珍珠：<code>ENTITY_ENDER_PEARL_THROW</code><br>• 灵魂探测器：使用者 <code>ENTITY_ILLUSIONER_PREPARE_MIRROR</code>，全服 <code>ENTITY_ENDER_DRAGON_FLAP</code><br>• 第二次机会：使用者 <code>ITEM_TOTEM_USE</code>，攻击鬼 <code>ENTITY_ELDER_GUARDIAN_CURSE</code>，其他玩家 <code>ENTITY_PLAYER_LEVELUP</code><br><strong>🎬 新增道具居中字幕提示：</strong><br>• 肾上腺素使用者：⚡ 肾上腺素! → 移动速度大幅提升!<br>• 狂暴药水使用者：💢 狂暴药水! → 攻击力与速度提升!<br>• 凝冰球被击中者：❄ 被冻伤! → 移动速度降低!<br>• 控魂术被控者：✧ 你被控魂! → 无法移动!<br>• 臭牛排使用者：🥩 好臭! → 速度提升，但位置已暴露!<br>• 灵魂探测器被揭露者：⚠ 你的位置被揭露! → 所有玩家都能看到你!<br>• 神之救赎双方：救赎者 ✝ 神之救赎成功! / 被救者 ✝ 你被救赎了!<br><strong>🌐 新增英文语言支持：</strong> 在 config.yml 中设置 language.default: en_US 即可切换为英文。<br><strong>⚙️ 配置自动迁移：</strong> 检测到配置版本不一致时自动迁移，旧配置备份为 config_old_v{版本号}.yml。<br><strong>🔧 修复1.20.x API兼容性。</strong><br>配置版本升级到26。</p>` },
             { version: "v2.2.2", tag: "猎魔人登场(大改)", content: "<strong>1. 鬼玩家复活机制</strong>：猎魔人阶段鬼玩家被击杀后进入旁观模式，可配置的复活倒计时（默认15秒），倒计时显示在ActionBar上，复活时播放视觉效果和音效。<br><strong>2. 智能血量调整系统</strong>：普通鬼血量降至2点，母体鬼血量降至3点，猎魔人血量固定为2点（均可配置）。自动适应游戏阶段变化。<br><strong>3. 禁止回血机制</strong>：猎魔人阶段禁止所有玩家回血（包括自然恢复、饱食度、药水效果），并提供明确的游戏提示。<br><strong>4. 收割者伤害系统</strong>：基于伤害值而非攻击次数的击杀逻辑，可配置每次攻击伤害值，显示伤害值和剩余血量信息。<br><strong>5. 神圣守护3次抵挡机制</strong>：母体需攻击3次才能破除猎魔人守护，普通鬼猎魔人阶段无法感染只能躲避猎杀。<br><strong>6. 猎魔人阶段自动激活所有人类神圣守护</strong>，无猎魔人时广播提示。<br>配置项：divine-guardian.demon-hunter 下可调整复活时间、血量、伤害等参数。" },
-            { version: "v2.2.1_Cover", tag: "第二稳定版本|修复神圣守护2&凝冰球问题", content: "🎯 语言系统全面优化（Cover version核心改进）：大幅扩充默认消息库，90+条默认中文消息，智能消息回退机制，错误隔离保护，插件启动保护。<br>🛠️ 游戏平衡性调整：凝冰球修复（对所有玩家生效），默认血量调整为10颗心，道具系统优化，配置版本更新（v19→v20）。<br>🌑 黑暗效果与疾跑并存系统：原生DARKNESS效果，属性修改器增加30%移动速度，智能检查机制，版本兼容性。<br>🛡️ 神圣守护系统修复：触发修复，救赎者模式优化，模式切换稳定性，冷却时间修复。<br>🎯 道具系统修复：\"一次机会\"道具修复，冷却时间同步，发放逻辑优化，使用反馈增强。<br>⚙️ 配置系统升级：配置版本升级到20，黑暗效果描述更新为\"不影响疾跑\"，黑暗效果默认启用。" },
+            { version: "v2.2.1_Cover", tag: "第二稳定版本|修复神圣守护2&凝冰球问题", content: "🎯 语言系统全面优化（Cover version核心改进）：大幅扩充默认消息库，90+条默认中文消息，智能消息回退机制，错误隔离保护，插件启动保护。<br>🛠️ 游戏平衡性调整：凝冰球修复（对所有玩家生效），默认血量调整为10颗心，道具系统优化，配置版本更新（v19→v20）。<br>🌑 黑暗效果与疾跑并存系统：原生DARKNESS效果，属性修改器增加30%移动速度，智能检查机制，版本兼容性。<br>🛡️ 神圣守护系统修复：触发修复，救赎者模式优化，模式切换稳定性，冷却时间修复。<br>🎯 道具系统修复：\"第二次机会\"道具修复，冷却时间同步，发放逻辑优化，使用反馈增强。<br>⚙️ 配置系统升级：配置版本升级到20，黑暗效果描述更新为\"不影响疾跑\"，黑暗效果默认启用。" },
             { version: "v2.2.0", tag: "新增神圣守护模式2(新玩意)", content: "⚡ 神圣守护模式2 - 救赎者系统：最后一名人类成为救赎者，神之救赎道具转化鬼玩家，随机传送，2次使用限制，高亮显示+速度效果。<br>🎮 游戏模式切换：模式1传统神圣守护，模式2救赎者模式，/divineguardian setmode <1|2>，游戏进行中切换立即生效。<br>🔧 队列系统全面优化：智能队列清理，退出队列提示，加入队列引导，Boss栏同步修复，队列状态透明。<br>🗑️ 代码精简与性能提升：移除冗余系统（NPC、独立货币发放、观战系统），配置清理，内存优化，错误修复。" },
             { version: "v2.1.3", tag: "首个稳定版本|管理员可参与", content: "🔧 修复管理员游戏效果免疫问题：管理员黑暗效果修复，母体鬼禁足修复，强制效果应用，游戏开始清理效果，管理员提示。<br>🎮 创造模式玩家自动切换：自动模式切换，强制效果应用，公平性保障。" },
             { version: "v2.1.2", tag: "新增粒子效果", content: "👻 新增鬼玩家粒子效果系统：持续环绕粒子，颜色区分（母体红/普通绿），智能生成，支持21种粒子类型，RGB颜色系统，准备阶段控制。<br>🎮 鬼玩家粒子效果管理命令：/ghostparticle全套管理命令。<br>⚙️ 配置系统升级：添加鬼玩家粒子效果相关配置项，配置版本升级到14，支持21种粒子类型选择，完整的RGB颜色配置。<br>🔐 权限系统完善：新增 gost.admin.ghostparticle 权限节点。" },
@@ -1561,24 +2036,29 @@
     function renderItems() {
         const container = document.getElementById('items-list-zh');
         if (!container) return;
+        const items = (typeof getItems === 'function') ? getItems() : itemsDetailZh;
+        const dLabel = (typeof detailBtnLabel === 'function') ? detailBtnLabel() : '📖 详情';
         container.innerHTML = '';
-        for (let key in itemsDetailZh) {
-            const item = itemsDetailZh[key];
+        for (let key in items) {
+            const item = items[key];
             let factionClass = '';
             if (item.faction === 'human') factionClass = 'card-human';
             else if (item.faction === 'ghost') factionClass = 'card-ghost';
             const card = document.createElement('div'); card.className = `card ${factionClass}`;
-            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem; color:#b8c4e0;">${item.desc}</span><br><button class="btn-detail" data-item="${key}">📖 详情</button>`;
+            card.innerHTML = `<strong>${item.name}</strong><br><span style="font-size:0.85rem; color:#b8c4e0;">${item.desc}</span><br><button class="btn-detail" data-item="${key}">${dLabel}</button>`;
             container.appendChild(card);
         }
         document.querySelectorAll('.btn-detail[data-item]').forEach(btn => {
             btn.addEventListener('click', function() {
                 const key = this.dataset.item;
-                const item = itemsDetailZh[key];
+                const pack = (typeof getItems === 'function') ? getItems() : itemsDetailZh;
+                const item = pack[key];
                 document.getElementById('modal-body').innerHTML = `<div style="font-size:1.5rem;">${item.name}</div><hr><div style="line-height:1.6; color:#b8c4e0;">${item.detail}</div>`;
                 showModal();
             });
         });
+        // 新卡片挂载 3D 倾斜 + 入场动效
+        if (window.initTiltEffects) window.initTiltEffects();
     }
 
     function showModal() { document.getElementById('modal').classList.add('show'); }
@@ -1950,9 +2430,39 @@
         /* ---------- 挂载 ---------- */
         function mount(selector, opts) {
             document.querySelectorAll(selector).forEach(el => {
+                if (!el.isConnected) return;
                 if (el.dataset.tiltReady === '1') return;
                 el.dataset.tiltReady = '1';
                 new TiltCard(el, opts);
+            });
+            // 清理已从 DOM 移除的倾斜实例，避免语言切换后残留
+            for (const t of Array.from(allTilts)) {
+                if (!t.el || !t.el.isConnected) {
+                    try {
+                        t.el && t.el.removeEventListener('pointerenter', t._enter);
+                        t.el && t.el.removeEventListener('pointermove', t._move);
+                        t.el && t.el.removeEventListener('pointerleave', t._leave);
+                        t.el && t.el.removeEventListener('pointercancel', t._leave);
+                    } catch (e) {}
+                    allTilts.delete(t);
+                }
+            }
+        }
+
+        /** 重新播放入场动画（语言切换 / 重绘后） */
+        window.replayEnterAnimations = function replayEnterAnimations() {
+            document.querySelectorAll('.section').forEach((el, i) => {
+                el.style.animation = 'none';
+                // 强制 reflow 再恢复，才能重放 fadeSlideUp
+                void el.offsetWidth;
+                el.style.animation = '';
+                el.style.animationDelay = (i * 0.05) + 's';
+            });
+            document.querySelectorAll('.card, .version-item, .tool-card').forEach((el, i) => {
+                el.style.animation = 'none';
+                void el.offsetWidth;
+                el.style.animation = 'fadeSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both';
+                el.style.animationDelay = Math.min(i * 0.03, 0.45) + 's';
             });
         }
 
@@ -1997,6 +2507,7 @@
 
     // ========== 初始化 ==========
     (function() {
+        if (typeof initI18n === 'function') initI18n();
         initCarousel('carousel');
         renderItems();
         initCollapsibles();
@@ -2016,7 +2527,7 @@
         // ★ 在动态内容渲染完成后再挂载倾斜效果
         if (window.initTiltEffects) window.initTiltEffects();
 
-        console.log('✅ Gost v2.3.2 文档已完全初始化（含 3D 倾斜弹簧曲线动效）');
+        console.log('✅ Gost v2.3.3 文档已完全初始化（含 3D 倾斜弹簧曲线动效）');
     })();
 </script>
 </body>
