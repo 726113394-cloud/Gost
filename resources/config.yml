@@ -1,8 +1,12 @@
 # Gost 插件配置文件
-# 版本: 2.3.3
+# 版本: 2.4.0
 # Minecraft: 1.20.x
 
-ScriptIrc-config-version: 31
+ScriptIrc-config-version: 34
+
+# 启动时向 Modrinth 查询一次是否有新版本，有新版本会提示在线管理员
+update-check:
+  enabled: true
 
 # 服务端支持: Bukkit/Spigot/Paper/Purpur 完整 | Folia 调度兼容 | Sponge/代理端 不适用
 
@@ -109,6 +113,13 @@ ghost-to-human:
 health:
   max-health: 10.0
 
+# ==================== 死亡状态 ====================
+# 玩家被击杀后、等待复活期间的状态
+#   invisible = 隐身（旧版行为，默认）：保持生存、回满血、施加隐身，不限制移动
+#   spectator = 旁观（2.3.3 引入）：切入旁观模式，并可限制离开游戏区域
+death-state:
+  mode: invisible
+
 # ==================== 黑暗效果 ====================
 dark-effect:
   enabled: true
@@ -132,6 +143,10 @@ area:
   max-areas: 20
   auto-teleport: true
   ignore-y-axis: false
+  # 每局从「已启用」的区域中随机选一张图。
+  # 管理员用 /gostadmin load <名称> 手动指定的区域只对下一局生效（之后恢复随机）。
+  # 设为 false 则沿用当前选中区域，不再每局随机。
+  random-each-game: true
 
 # ==================== 道具刷新 ====================
 item-spawn:

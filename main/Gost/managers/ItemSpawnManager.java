@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ItemSpawnManager {
     
     private final Gost plugin;
-    private BukkitTask spawnTask;
+    private ServerCompat.Cancellable spawnTask;
     private final Map<UUID, Integer> playerItemCounts = new ConcurrentHashMap<>();
     private final Random random = new Random();
     
@@ -109,7 +109,7 @@ public class ItemSpawnManager {
             spawnTask.cancel();
         }
         
-        spawnTask = new BukkitRunnable() {
+        spawnTask = ServerCompat.runTimer(plugin, new Runnable() {
             @Override
             public void run() {
                 if (!plugin.getGameManager().isGameRunning()) {
@@ -118,7 +118,7 @@ public class ItemSpawnManager {
                 
                 refreshItems();
             }
-        }.runTaskTimer(plugin, 
+        },
             plugin.getConfigManager().getItemSpawnInterval() * 20L,  // 初始延迟
             plugin.getConfigManager().getItemSpawnInterval() * 20L   // 间隔
         );
@@ -206,7 +206,7 @@ public class ItemSpawnManager {
         if (plugin.getPlayerManager().hasReachedMaxItemTypes(player)) {
             int currentTypes = plugin.getPlayerManager().getPlayerItemTypesCount(player);
             int maxTypes = plugin.getConfigManager().getMaxItemTypesPerPlayer();
-            player.sendMessage(ChatColor.RED + "你已达到最大道具种类数量 (" + currentTypes + "/" + maxTypes + ")！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.max-types", String.valueOf(currentTypes), String.valueOf(maxTypes)));
             return;
         }
         

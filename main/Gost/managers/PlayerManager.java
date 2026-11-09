@@ -101,10 +101,17 @@ public class PlayerManager {
         plugin.getTeamManager().removeFromAllTeams(player);
 
         if (!silent) {
-            player.sendMessage("§a你已离开游戏！");
+            plugin.getLanguageManager().sendMessage(player, "game.left-game");
         }
         plugin.getLogger().info("玩家 " + player.getName() + " 离开游戏" + (silent ? "（掉线静默）" : ""));
         return true;
+    }
+    
+    /** 角色 → 语言 key */
+    private String roleLangKey(PlayerRole role) {
+        if (role == PlayerRole.GHOST_MOTHER) return "role.mother-ghost";
+        if (role == PlayerRole.GHOST_NORMAL) return "role.ghost";
+        return "role.human";
     }
     
     // 设置玩家角色
@@ -139,9 +146,9 @@ public class PlayerManager {
             applyRoleEffects(player, role);
             
             // 发送角色变更消息
-            String roleName = plugin.getTeamManager().getTeamName(role);
             ChatColor color = plugin.getTeamManager().getTeamColor(role);
-            player.sendMessage(color + "你的角色已变更为: " + roleName);
+            player.sendMessage(color + plugin.getLanguageManager().getMessage(player, "role.changed",
+                plugin.getLanguageManager().getMessage(player, roleLangKey(role))));
             
             // 阵容切换音效
             if (oldRole != null && oldRole != role) {
@@ -299,8 +306,10 @@ public class PlayerManager {
         Player infector = infectorId != null ? Bukkit.getPlayer(infectorId) : null;
         
         if (victim != null) {
-            String infectorName = infector != null ? infector.getName() : "未知";
-            Bukkit.broadcastMessage("§c" + victim.getName() + " 被 " + infectorName + " 感染了！");
+            String infectorName = infector != null ? infector.getName()
+                : plugin.getLanguageManager().getMessage("game.unknown-player");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage(
+                "broadcast.player-infected", victim.getName(), infectorName));
             
             // 显示感染效果
             showInfectionEffects(victim);
@@ -368,7 +377,8 @@ public class PlayerManager {
         plugin.getGameManager().updateBossBarStats(humanCount, ghostCount);
         
         // 广播统计
-        Bukkit.broadcastMessage("§a剩余人类: " + humanCount + " §c鬼: " + ghostCount);
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage(
+            "game.remaining-count", humanCount, ghostCount));
     }
     
     // 更新存活时间
@@ -459,8 +469,8 @@ public class PlayerManager {
             player.setGameMode(GameMode.SURVIVAL);
             
             // 发送提示消息
-            player.sendMessage(ChatColor.YELLOW + "⚠ 注意：创造/旁观模式已自动切换为生存模式！");
-            player.sendMessage(ChatColor.YELLOW + "游戏期间所有玩家必须使用生存模式以确保公平性。");
+            plugin.getLanguageManager().sendMessage(player, "game.creative-switched");
+            plugin.getLanguageManager().sendMessage(player, "game.creative-required");
             
             plugin.getLogger().info("强制切换玩家 " + player.getName() + " 从 " + originalMode + " 到 SURVIVAL 模式");
         } else {
@@ -551,10 +561,14 @@ public class PlayerManager {
                 
                 // 发送提示消息
                 if (isAdmin || wasCreative) {
-                    player.sendMessage(ChatColor.YELLOW + "⚠ 注意：作为" + (isAdmin ? "管理员" : "") + 
-                                     (isAdmin && wasCreative ? "且" : "") + 
-                                     (wasCreative ? "创造模式玩家" : "") + "参与游戏，你也会受到母体鬼禁足效果的影响！");
-                    player.sendMessage(ChatColor.YELLOW + "禁足时间: " + plugin.getConfigManager().getGhostImmobilizeDuration() + "秒");
+                    String adminRole = isAdmin && wasCreative
+                        ? plugin.getLanguageManager().getMessage(player, "game.fairness.role-both")
+                        : isAdmin
+                        ? plugin.getLanguageManager().getMessage(player, "game.fairness.role-admin")
+                        : plugin.getLanguageManager().getMessage(player, "game.fairness.role-creative");
+                    plugin.getLanguageManager().sendMessage(player, "game.mother-immobilize-notice", adminRole);
+                    plugin.getLanguageManager().sendMessage(player, "game.mother-immobilize-duration",
+                        plugin.getConfigManager().getGhostImmobilizeDuration());
                 }
                 
                 plugin.getLanguageManager().sendMessage(player, "role.ghost-disabled-prep");
@@ -694,7 +708,7 @@ public class PlayerManager {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null && player.isOnline()) {
                 restorePlayerState(player);
-                player.sendMessage(ChatColor.RED + "游戏已结束，你的状态已恢复！");
+                plugin.getLanguageManager().sendMessage(player, "game.state-restored");
             }
         }
         

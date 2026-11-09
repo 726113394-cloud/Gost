@@ -1,5 +1,5 @@
 name: Gost
-version: 2.3.3
+version: 2.4.0
 main: io.Sriptirc_wp_1258.gost.Gost
 api-version: 1.20
 description: 极限生存对抗游戏 - 兼容 Bukkit/Spigot/Paper/Purpur，Folia 调度兼容

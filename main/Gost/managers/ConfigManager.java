@@ -8,7 +8,12 @@ public class ConfigManager {
     private final Gost plugin;
     private FileConfiguration config;
     
-    private static final int CURRENT_CONFIG_VERSION = 31;
+    private static final int CURRENT_CONFIG_VERSION = 34;
+
+    /** 当前代码期望的配置版本（自检用） */
+    public int getCurrentConfigVersion() {
+        return CURRENT_CONFIG_VERSION;
+    }
     
     // 记录迁移数据，用于服务器启动后打印详情
     private boolean configMigrated = false;
@@ -98,6 +103,7 @@ public class ConfigManager {
         
         // 设置默认值
         config.addDefault("ScriptIrc-config-version", CURRENT_CONFIG_VERSION);
+        config.addDefault("update-check.enabled", true); // 启动时查一次 Modrinth 是否有新版本
         config.addDefault("game.duration", 420); // 7分钟，单位秒
         config.addDefault("game.preparation-time", 20); // 准备时间，单位秒
         config.addDefault("game.queue-time", 60); // 队列等待时间，单位秒
@@ -186,6 +192,8 @@ public class ConfigManager {
         config.addDefault("area.selection-tool", "MAGMA_CREAM"); // 选区工具物品
         config.addDefault("area.max-areas", 20); // 最大存档区域数量
         config.addDefault("area.auto-teleport", true); // 是否自动传送到区域
+        config.addDefault("area.random-each-game", true); // 每局从已启用区域中随机选图
+        config.addDefault("death-state.mode", "invisible"); // invisible 隐身(默认) / spectator 旁观
         
         // 语言设置
         config.addDefault("language.default", "zh_CN"); // 默认语言: zh_CN/en_US/ja_JP/es_ES/fr_FR/de_DE
@@ -523,6 +531,24 @@ public class ConfigManager {
     
     public int getMaxAreas() {
         return config.getInt("area.max-areas", 20);
+    }
+
+    /** 每局是否从已启用区域中随机选图 */
+    public boolean isRandomAreaEachGame() {
+        ensureConfigLoaded();
+        return config.getBoolean("area.random-each-game", true);
+    }
+
+    /**
+     * 死亡状态模式：{@code invisible}（隐身，默认）或 {@code spectator}（旁观）。
+     * 非法值一律回退为 invisible。
+     */
+    public String getDeathStateMode() {
+        ensureConfigLoaded();
+        String mode = config.getString("death-state.mode", "invisible");
+        if (mode == null) return "invisible";
+        mode = mode.trim().toLowerCase(java.util.Locale.ROOT);
+        return "spectator".equals(mode) ? "spectator" : "invisible";
     }
     
     // 新功能配置方法

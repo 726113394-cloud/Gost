@@ -11,6 +11,12 @@ public class Gost extends JavaPlugin {
     
     private static Gost instance;
     
+    /**
+     * bStats 插件 ID。为 0 时不上报任何数据；
+     * 在 bstats.org 注册后填入真实 ID 即自动生效。
+     */
+    private static final int BSTATS_PLUGIN_ID = 0;
+    
     private boolean spearRushEnabled = false;
     
     private ConfigManager configManager;
@@ -105,9 +111,15 @@ public class Gost extends JavaPlugin {
             getLogger().info("主页: https://space.bilibili.com/3493116665400113");
             getLogger().info("==========================================");
             
-            Bukkit.getScheduler().runTaskLater(this, () -> {
+            io.Sriptirc_wp_1258.gost.managers.ServerCompat.runLater(this, () -> {
                 configManager.printMigrationReport();
             }, 20L);
+
+            enableMetrics();
+
+            if (getConfig().getBoolean("update-check.enabled", true)) {
+                UpdateChecker.checkAsync(this);
+            }
         } catch (Exception e) {
             getLogger().severe("注册命令和监听器时发生错误: " + e.getMessage());
             e.printStackTrace();
@@ -134,6 +146,28 @@ public class Gost extends JavaPlugin {
         getLogger().info("Gost 插件已禁用");
     }
     
+    /**
+     * bStats 匿名统计（可选）。
+     *
+     * <p>ID 为 0 时不上报任何数据 —— 在 <a href="https://bstats.org">bstats.org</a>
+     * 注册插件后把真实 ID 填到 {@link #BSTATS_PLUGIN_ID} 即可生效，无需改动其他代码。</p>
+     *
+     * <p>服务器主可通过 bStats 自身的 {@code plugins/bStats/config.yml} 全局关闭，
+     * 因此本插件不再额外提供开关。</p>
+     */
+    private void enableMetrics() {
+        if (BSTATS_PLUGIN_ID <= 0) {
+            getLogger().info("bStats 统计未启用（插件 ID 未配置）");
+            return;
+        }
+        try {
+            new org.bstats.bukkit.Metrics(this, BSTATS_PLUGIN_ID);
+            getLogger().info("bStats 统计已启用（ID " + BSTATS_PLUGIN_ID + "）");
+        } catch (Throwable t) {
+            getLogger().warning("bStats 初始化失败: " + t.getMessage());
+        }
+    }
+
     public static Gost getInstance() {
         return instance;
     }

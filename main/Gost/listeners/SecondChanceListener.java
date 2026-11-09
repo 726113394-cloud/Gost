@@ -65,7 +65,7 @@ public class SecondChanceListener implements Listener {
             
             if (timeLeft > 0) {
                 // 还在冷却中
-                humanPlayer.sendMessage(ChatColor.RED + "第二次机会还在冷却中！剩余时间: " + (timeLeft / 1000) + "秒");
+                humanPlayer.sendMessage(plugin.getLanguageManager().getMessage(humanPlayer, "item.second-chance-cooldown", (timeLeft / 1000)));
                 return;
             }
         }
@@ -123,8 +123,8 @@ public class SecondChanceListener implements Listener {
         
         // 发送公告
         Bukkit.broadcastMessage(ChatColor.YELLOW + "════════════════════════════════");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "✨ " + humanPlayer.getName() + " 使用了第二次机会！");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "✨ 成功抵挡了 " + ghostPlayer.getName() + " 的感染！");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.second-chance-used-broadcast", humanPlayer.getName()));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.second-chance-blocked-broadcast", ghostPlayer.getName()));
         Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.second_chance_teleport_broadcast"));
         Bukkit.broadcastMessage(ChatColor.YELLOW + "════════════════════════════════");
     }
@@ -164,19 +164,19 @@ public class SecondChanceListener implements Listener {
     private void sendDialogMessages(Player humanPlayer, Player ghostPlayer) {
         // 给人类玩家的对话框消息
         humanPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
-        humanPlayer.sendMessage(ChatColor.GOLD + "             第二次机会触发！");
+        humanPlayer.sendMessage(plugin.getLanguageManager().getMessage(humanPlayer, "item.second-chance-trigger"));
         humanPlayer.sendMessage("");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 成功抵挡了 " + ghostPlayer.getName() + " 的感染");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 获得速度II效果 " + plugin.getConfigManager().getSecondChanceHumanSpeedDuration() + "秒");
-        humanPlayer.sendMessage(ChatColor.GREEN + "✓ 获得高亮效果 " + plugin.getConfigManager().getSecondChanceHumanGlowingDuration() + "秒");
+        humanPlayer.sendMessage(plugin.getLanguageManager().getMessage(humanPlayer, "item.second-chance-blocked-self", ghostPlayer.getName()));
+        humanPlayer.sendMessage(plugin.getLanguageManager().getMessage(humanPlayer, "item.second-chance-speed", plugin.getConfigManager().getSecondChanceHumanSpeedDuration()));
+        humanPlayer.sendMessage(plugin.getLanguageManager().getMessage(humanPlayer, "item.second-chance-glowing", plugin.getConfigManager().getSecondChanceHumanGlowingDuration()));
         humanPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
         
         // 给鬼玩家的对话框消息
         ghostPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
-        ghostPlayer.sendMessage(ChatColor.RED + "             感染被抵挡！");
+        ghostPlayer.sendMessage(plugin.getLanguageManager().getMessage(ghostPlayer, "item.second-chance-blocked-ghost"));
         ghostPlayer.sendMessage("");
-        ghostPlayer.sendMessage(ChatColor.RED + "✗ 对 " + humanPlayer.getName() + " 的感染被抵挡");
-        ghostPlayer.sendMessage(ChatColor.RED + "✗ 获得缓慢I效果 " + plugin.getConfigManager().getSecondChanceGhostSlowDuration() + "秒");
+        ghostPlayer.sendMessage(plugin.getLanguageManager().getMessage(ghostPlayer, "item.second-chance-ghost-blocked", humanPlayer.getName()));
+        ghostPlayer.sendMessage(plugin.getLanguageManager().getMessage(ghostPlayer, "item.second-chance-ghost-slowed", plugin.getConfigManager().getSecondChanceGhostSlowDuration()));
         ghostPlayer.sendMessage(ChatColor.YELLOW + "════════════════════════════════");
     }
     
@@ -210,7 +210,7 @@ public class SecondChanceListener implements Listener {
             
             if (timeLeft > 0) {
                 // 还在冷却中
-                humanPlayer.sendMessage(ChatColor.RED + "第二次机会还在冷却中！剩余时间: " + (timeLeft / 1000) + "秒");
+                humanPlayer.sendMessage(plugin.getLanguageManager().getMessage(humanPlayer, "item.second-chance-cooldown", (timeLeft / 1000)));
                 return false;
             }
         }

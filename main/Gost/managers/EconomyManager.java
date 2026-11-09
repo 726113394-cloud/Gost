@@ -52,7 +52,7 @@ public class EconomyManager {
     // 收取入场费
     public boolean chargeEntryFee(Player player) {
         if (!isEconomyEnabled()) {
-            player.sendMessage(ChatColor.RED + "经济系统不可用！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.unavailable"));
             return false;
         }
         
@@ -77,7 +77,7 @@ public class EconomyManager {
         // 更新奖池
         prizePool += entryFee;
         
-        player.sendMessage(ChatColor.GREEN + "已支付入场费: " + entryFee + " 金币");
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.entry-fee-paid", entryFee));
         return true;
     }
     
@@ -164,14 +164,14 @@ public class EconomyManager {
         playerContributions.remove(player.getUniqueId());
 
         if (!silent) {
-            player.sendMessage(ChatColor.YELLOW + "入场费已退还: " + contribution + " 金币");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.refund-received", contribution));
         }
     }
     
     // 分发奖金
     public void distributeRewards(boolean humanWin) {
         if (!isEconomyEnabled()) {
-            Bukkit.broadcastMessage(ChatColor.RED + "经济系统不可用，无法分发奖金！");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.unavailable-broadcast"));
             return;
         }
         
@@ -180,12 +180,12 @@ public class EconomyManager {
         prizePool += serverBonus;
         
         Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "💰 奖池总额: " + prizePool + " 金币");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "（包含服务器奖金: " + serverBonus + " 金币）");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.pool-total", prizePool));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.pool-server-bonus", serverBonus));
         Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
         
         if (prizePool <= 0) {
-            Bukkit.broadcastMessage(ChatColor.RED + "奖池为空，无法分发奖金！");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.pool-empty"));
             return;
         }
         
@@ -201,7 +201,7 @@ public class EconomyManager {
         
         // 分发奖金并发送突出显示消息
         Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "💰💰💰 最终奖金结算 💰💰💰");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.settle-header"));
         Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
         
         for (Map.Entry<UUID, Double> entry : rewards.entrySet()) {
@@ -212,8 +212,8 @@ public class EconomyManager {
                     deposit(player, reward);
                     // 发送突出显示的个人奖金消息
                     player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-                    player.sendMessage(ChatColor.YELLOW + "🎉 奖金已到账！");
-                    player.sendMessage(ChatColor.GREEN + "💰 最终获得: " + String.format("%.2f", reward) + " 金币");
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.reward-credited"));
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.reward-final", String.format("%.2f", reward)));
                     player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
                     
                     // 额外提示音效
@@ -225,7 +225,7 @@ public class EconomyManager {
         
         // 广播奖金分发完成
         Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "✅ 所有奖金已发放完毕！");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.all-paid"));
         Bukkit.broadcastMessage(ChatColor.GOLD + "════════════════════════════════");
         
         // 显示奖金排行榜
@@ -241,13 +241,13 @@ public class EconomyManager {
         List<Map.Entry<UUID, Double>> sorted = new ArrayList<>(rewards.entrySet());
         sorted.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
         Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "═══════ 奖金排行榜 ═══════");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "🏆 奖励排行 🏆");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.leaderboard-header"));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.leaderboard-title"));
         Bukkit.broadcastMessage("");
         int rank = 1;
         for (Map.Entry<UUID, Double> entry : sorted) {
             Player player = Bukkit.getPlayer(entry.getKey());
-            String playerName = (player != null) ? player.getName() : "未知玩家";
+            String playerName = (player != null) ? player.getName() : plugin.getLanguageManager().getMessage("economy.unknown-player");
             double reward = entry.getValue();
             String medal;
             switch (rank) {
@@ -256,7 +256,8 @@ public class EconomyManager {
                 case 3: medal = "§e🥉"; break;
                 default: medal = "§f" + rank + "."; break;
             }
-            Bukkit.broadcastMessage(medal + " §e" + playerName + " §7- §a" + String.format("%.2f", reward) + " 金币");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.leaderboard-entry",
+                medal, playerName, String.format("%.2f", reward)));
             rank++;
         }
         Bukkit.broadcastMessage(ChatColor.GOLD + "═══════════════════════");
@@ -272,9 +273,9 @@ public class EconomyManager {
         List<UUID> ghostPlayers = playerManager.getGhostPlayers();
         
         Bukkit.broadcastMessage(ChatColor.GREEN + "════════════════════════════════");
-        Bukkit.broadcastMessage(ChatColor.GREEN + "🎮 人类胜利！奖金分配方案：");
-        Bukkit.broadcastMessage(ChatColor.GREEN + "人类阵容：获得奖池的70%");
-        Bukkit.broadcastMessage(ChatColor.RED + "鬼阵容：获得奖池的30%");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.human-win-header"));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.human-share", 70));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.human-to-ghost-share", 30));
         Bukkit.broadcastMessage(ChatColor.GREEN + "════════════════════════════════");
         
         // 计算人类阵容奖金（70%）
@@ -292,8 +293,8 @@ public class EconomyManager {
         List<UUID> ghostPlayers = playerManager.getGhostPlayers();
         
         Bukkit.broadcastMessage(ChatColor.RED + "════════════════════════════════");
-        Bukkit.broadcastMessage(ChatColor.RED + "👻 鬼胜利！奖金分配方案：");
-        Bukkit.broadcastMessage(ChatColor.RED + "鬼阵容：获得奖池的100%");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.ghost-win-header"));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.ghost-share-all", 100));
         Bukkit.broadcastMessage(ChatColor.RED + "════════════════════════════════");
         
         // 计算鬼阵容奖金（100%）
@@ -304,7 +305,7 @@ public class EconomyManager {
     // 分配人类奖金（100%按存活时间比例）
     private void distributeHumanRewards(List<UUID> humanPlayers, double humanPrizePool, Map<UUID, Double> rewards) {
         if (humanPlayers.isEmpty() || humanPrizePool <= 0) {
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "⚠️ 人类阵容没有玩家或奖金为0，不发放奖金！");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.human-none"));
             return;
         }
         
@@ -322,12 +323,12 @@ public class EconomyManager {
         }
         
         if (totalSurvivalTime == 0) {
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "⚠️ 没有人类存活时间超过10秒，人类奖金不发放！");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.human-no-survivor"));
             return;
         }
         
-        Bukkit.broadcastMessage(ChatColor.GREEN + "👤 人类阵容奖金分配（" + String.format("%.2f", humanPrizePool) + "金币）：");
-        Bukkit.broadcastMessage(ChatColor.GREEN + "分配方式：100%按存活时间比例分配");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.human-pool-header", String.format("%.2f", humanPrizePool)));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.human-method"));
         
         // 按比例分配奖金
         for (Map.Entry<UUID, Long> entry : survivalTimes.entrySet()) {
@@ -341,9 +342,9 @@ public class EconomyManager {
             Player player = Bukkit.getPlayer(entry.getKey());
             if (player != null) {
                 player.sendMessage(ChatColor.GREEN + "════════════════════════════════");
-                player.sendMessage(ChatColor.GREEN + "⏱️ 你的存活时间: " + entry.getValue() + "秒");
-                player.sendMessage(ChatColor.GREEN + "📊 获得比例: " + String.format("%.1f", proportion * 100) + "%");
-                player.sendMessage(ChatColor.GREEN + "💰 基础人类奖金: " + String.format("%.2f", baseReward) + "金币");
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.human-survival", entry.getValue()));
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.human-proportion", String.format("%.1f", proportion * 100)));
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.human-base-reward", String.format("%.2f", baseReward)));
                 
                 // 如果有累计鬼时间，添加转换补偿奖金
                 if (ghostAccumulatedTime > 0) {
@@ -351,9 +352,9 @@ public class EconomyManager {
                     double conversionBonus = baseReward * 0.2;
                     totalReward = baseReward + conversionBonus;
                     
-                    player.sendMessage(ChatColor.GOLD + "👻 累计鬼时间: " + ghostAccumulatedTime + "秒");
-                    player.sendMessage(ChatColor.GOLD + "✨ 转换补偿奖金: " + String.format("%.2f", conversionBonus) + "金币");
-                    player.sendMessage(ChatColor.GOLD + "💰 总人类奖金: " + String.format("%.2f", totalReward) + "金币");
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.ghost-accumulated", ghostAccumulatedTime));
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.conversion-bonus", String.format("%.2f", conversionBonus)));
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.human-total", String.format("%.2f", totalReward)));
                 }
             }
             
@@ -364,7 +365,7 @@ public class EconomyManager {
     // 分配鬼奖金（70%按鬼存活时间，30%按感染人数）
     private void distributeGhostRewards(List<UUID> ghostPlayers, double ghostPrizePool, Map<UUID, Double> rewards) {
         if (ghostPrizePool <= 0) {
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "⚠️ 鬼阵容奖金为0，不发放奖金！");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.ghost-none"));
             return;
         }
         
@@ -402,8 +403,8 @@ public class EconomyManager {
             }
         }
         
-        Bukkit.broadcastMessage(ChatColor.RED + "👻 鬼阵容奖金分配（" + String.format("%.2f", ghostPrizePool) + "金币）：");
-        Bukkit.broadcastMessage(ChatColor.RED + "分配方式：70%按鬼存活时间，30%按感染人数");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.ghost-pool-header", String.format("%.2f", ghostPrizePool)));
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("economy.ghost-method"));
         
         // 计算时间部分奖金（70%）
         double timePrizePool = ghostPrizePool * 0.7;
@@ -423,9 +424,9 @@ public class EconomyManager {
                 Player player = Bukkit.getPlayer(entry.getKey());
                 if (player != null) {
                     player.sendMessage(ChatColor.RED + "════════════════════════════════");
-                    player.sendMessage(ChatColor.RED + "⏱️ 鬼存活时间: " + entry.getValue() + "秒");
-                    player.sendMessage(ChatColor.RED + "📊 时间比例: " + String.format("%.1f", timeProportion * 100) + "%");
-                    player.sendMessage(ChatColor.RED + "💰 时间奖金: " + String.format("%.2f", timeReward) + "金币");
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.ghost-survival", entry.getValue()));
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.ghost-time-proportion", String.format("%.1f", timeProportion * 100)));
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.ghost-time-reward", String.format("%.2f", timeReward)));
                 }
             }
         } else {
@@ -443,8 +444,8 @@ public class EconomyManager {
                     
                     Player player = Bukkit.getPlayer(playerId);
                     if (player != null) {
-                        player.sendMessage(ChatColor.RED + "⏱️ 鬼存活时间: 无详细数据");
-                        player.sendMessage(ChatColor.RED + "💰 基础时间奖金: " + String.format("%.2f", timeRewardPerPlayer) + "金币");
+                        player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.ghost-no-survival"));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.ghost-base-time-reward", String.format("%.2f", timeRewardPerPlayer)));
                     }
                 }
             }
@@ -462,9 +463,9 @@ public class EconomyManager {
                 
                 Player player = Bukkit.getPlayer(entry.getKey());
                 if (player != null) {
-                    player.sendMessage(ChatColor.RED + "🦠 感染人数: " + entry.getValue() + "人");
-                    player.sendMessage(ChatColor.RED + "📊 感染比例: " + String.format("%.1f", infectionProportion * 100) + "%");
-                    player.sendMessage(ChatColor.RED + "💰 感染奖金: " + String.format("%.2f", infectionReward) + "金币");
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.infection-count", entry.getValue()));
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.infection-proportion", String.format("%.1f", infectionProportion * 100)));
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.infection-reward", String.format("%.2f", infectionReward)));
                 }
             }
         } else {
@@ -482,8 +483,8 @@ public class EconomyManager {
                     
                     Player player = Bukkit.getPlayer(playerId);
                     if (player != null) {
-                        player.sendMessage(ChatColor.RED + "🦠 感染人数: 无详细数据");
-                        player.sendMessage(ChatColor.RED + "💰 基础感染奖金: " + String.format("%.2f", infectionRewardPerPlayer) + "金币");
+                        player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.infection-no-data"));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.infection-base-reward", String.format("%.2f", infectionRewardPerPlayer)));
                     }
                 }
             }
@@ -496,7 +497,7 @@ public class EconomyManager {
                 Player player = Bukkit.getPlayer(playerId);
                 if (player != null) {
                     player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-                    player.sendMessage(ChatColor.GOLD + "💰 鬼阵容总奖金: " + String.format("%.2f", ghostReward) + "金币");
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "economy.ghost-total", String.format("%.2f", ghostReward)));
                 }
             }
         }

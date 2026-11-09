@@ -27,7 +27,7 @@ public class GameListener implements Listener {
         // 如果玩家在游戏中，禁止破坏方块
         if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "游戏期间禁止破坏方块！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "game.block-break"));
         }
     }
     
@@ -38,7 +38,7 @@ public class GameListener implements Listener {
         // 如果玩家在游戏中，禁止放置方块
         if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "游戏期间禁止放置方块！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "game.block-place"));
         }
     }
     
@@ -54,7 +54,7 @@ public class GameListener implements Listener {
                 if (!selectedArea.contains(player.getLocation())) {
                     // 将玩家传送回区域中心
                     plugin.getAreaManager().teleportPlayerToArea(player, selectedArea);
-                    player.sendMessage(ChatColor.RED + "请不要离开游戏区域！");
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "game.leave-area"));
                 }
             }
         }

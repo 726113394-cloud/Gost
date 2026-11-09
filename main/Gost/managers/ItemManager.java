@@ -194,7 +194,7 @@ public class ItemManager {
             true
         ));
         
-        player.sendMessage(ChatColor.GREEN + "你使用了肾上腺素！速度提升！");
+        plugin.getLanguageManager().sendMessage(player, "item.adrenaline-used");
     }
     
     public void applyFrenzyEffect(Player player) {
@@ -209,7 +209,7 @@ public class ItemManager {
             true
         ));
         
-        player.sendMessage(ChatColor.RED + "你使用了狂暴药水！速度提升！");
+        plugin.getLanguageManager().sendMessage(player, "item.berserk-potion-used");
     }
     
     public void applyIceBallEffect(Player target) {
@@ -226,7 +226,7 @@ public class ItemManager {
             true
         ));
         
-        target.sendMessage(ChatColor.AQUA + "你被凝冰球击中了！移动速度降低！");
+        plugin.getLanguageManager().sendMessage(target, "item.freeze-ball-used");
         plugin.getLogger().info("凝冰球效果应用给玩家: " + target.getName() + " (减速等级: " + level + ", 持续时间: " + duration + " ticks, 成功: " + success + ")");
     }
     
@@ -242,7 +242,7 @@ public class ItemManager {
                 true
             ));
             
-            ghost.sendMessage(ChatColor.DARK_PURPLE + "你被控魂术影响了！无法移动！");
+            plugin.getLanguageManager().sendMessage(ghost, "item.soul-control-used");
         }
     }
     
@@ -261,7 +261,7 @@ public class ItemManager {
             ));
         }
         
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "幽灵感知激活！所有玩家高亮显示！");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.ghost-sense-activated"));
     }
     
     // 随机分配道具
@@ -381,7 +381,7 @@ public class ItemManager {
             }
         }
         
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "道具已发放！");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.distributed"));
         plugin.getLogger().info("道具分发完成: 人类=" + humanPlayers.size() + ", 鬼=" + ghostPlayers.size() + 
             ", 凝冰球=" + iceBallRecipients.size() + ", 控魂术=" + (humanPlayers.isEmpty() ? 0 : Math.min(3, humanPlayers.size())) + 
             ", 传送珍珠=" + teleportPearlRecipients.size());
@@ -406,11 +406,11 @@ public class ItemManager {
             ItemStack s = player.getInventory().getItem(i);
             if (s == null || s.getType() == org.bukkit.Material.AIR) {
                 player.getInventory().setItem(i, item);
-                player.sendMessage(ChatColor.GREEN + "你获得了" + itemName + "！");
+                plugin.getLanguageManager().sendMessage(player, "item.received", itemName);
                 return;
             }
         }
-        player.sendMessage(ChatColor.RED + "物品栏已满！无法获得 " + itemName + "！");
+        plugin.getLanguageManager().sendMessage(player, "item.inventory-full", itemName);
     }
     
     /**
@@ -447,8 +447,8 @@ public class ItemManager {
         
         Player player = Bukkit.getPlayer(selectedGhost);
         if (player != null) {
-            player.sendMessage(ChatColor.GREEN + "你在最后时刻被治愈了！变回了人类！");
-            Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " 在最后时刻被治愈，变回了人类！");
+            plugin.getLanguageManager().sendMessage(player, "item.cured-self");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.cured-broadcast", player.getName()));
         }
     }
     
@@ -601,10 +601,10 @@ public class ItemManager {
         // 发送消息
         humanPlayer.sendMessage(plugin.getLanguageManager().getMessage("item.one_chance_triggered"));
         humanPlayer.sendMessage(plugin.getLanguageManager().getMessage("item.random_teleport"));
-        ghostPlayer.sendMessage(ChatColor.RED + "目标使用了第二次机会！你被减速了！");
+        plugin.getLanguageManager().sendMessage(ghostPlayer, "item.second-chance-slowed");
         
         // 广播消息
-        Bukkit.broadcastMessage(ChatColor.YELLOW + humanPlayer.getName() + " 使用了第二次机会抵挡了 " + ghostPlayer.getName() + " 的感染！");
+        Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("item.second-chance-blocked", humanPlayer.getName(), ghostPlayer.getName()));
         
         plugin.getLogger().info("第二次机会效果应用完成");
     }
@@ -626,7 +626,7 @@ public class ItemManager {
         player.playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 1.0f, 0.8f);
         
         // 居中字幕提示
-        player.sendTitle("§6⚡ 冲刺! ⚡", "§7向前冲刺!", 5, 20, 5);
+        player.sendTitle(plugin.getLanguageManager().getMessage(player, "item.spear-rush-title"), plugin.getLanguageManager().getMessage(player, "item.spear-rush-subtitle"), 5, 20, 5);
         
         plugin.getLogger().info("玩家 " + player.getName() + " 使用了冲刺矛");
     }
@@ -641,6 +641,6 @@ public class ItemManager {
             true,
             true
         ));
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "你使用了漂浮药水！获得漂浮效果！");
+        plugin.getLanguageManager().sendMessage(player, "item.levitation-used");
     }
 }

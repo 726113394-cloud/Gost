@@ -21,7 +21,7 @@ import java.util.UUID;
 public class GhostParticleManager {
     
     private final Gost plugin;
-    private BukkitTask particleTask;
+    private ServerCompat.Cancellable particleTask;
     private final Map<UUID, ParticleData> particleDataMap = new HashMap<>();
     
     // 粒子效果数据类
@@ -68,7 +68,7 @@ public class GhostParticleManager {
             particleTask.cancel();
         }
         
-        particleTask = new BukkitRunnable() {
+        particleTask = ServerCompat.runTimer(plugin, new Runnable() {
             @Override
             public void run() {
                 if (!plugin.getGameManager().isGameRunning()) {
@@ -86,7 +86,7 @@ public class GhostParticleManager {
                 // 为所有鬼玩家生成粒子
                 generateParticlesForAllGhosts();
             }
-        }.runTaskTimer(plugin, 0L, plugin.getConfigManager().getGhostParticleInterval());
+        }, 0L, plugin.getConfigManager().getGhostParticleInterval());
     }
     
     /**

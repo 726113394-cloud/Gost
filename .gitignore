@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# 早期手工构建残留（源码真正的家在 main/ 与 resources/）
+.build/
+sources_rel.txt
+META-INF/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 注：根目录的 Gost_v*.jar 与 Gost_v*_code.zip 是对外发布产物，
+# 按本项目的发版约定需要提交，因此不在此忽略。

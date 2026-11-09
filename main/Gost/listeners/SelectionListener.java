@@ -51,11 +51,11 @@ public class SelectionListener implements Listener {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             // 左键设置第一个点
             plugin.getSelectionManager().setPos1(player, clickedBlock.getLocation());
-            player.sendMessage(ChatColor.GREEN + "已设置第一个点！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.pos1-set"));
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             // 右键设置第二个点
             plugin.getSelectionManager().setPos2(player, clickedBlock.getLocation());
-            player.sendMessage(ChatColor.GREEN + "已设置第二个点！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.pos2-set"));
         }
         
         // 显示选区粒子框（持续30秒）
@@ -81,29 +81,33 @@ public class SelectionListener implements Listener {
         
         // 每5 tick刷新一次，持续30秒（600 ticks）
         int totalTicks = 600;
-        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
-            int ticks = 0;
-            @Override
-            public void run() {
-                if (ticks >= totalTicks || !player.isOnline()) return;
-                // 沿12条边生成粒子
-                for (int i = 0; i <= 8; i++) {
-                    double t = i / 8.0;
-                    // X方向边
-                    player.spawnParticle(org.bukkit.Particle.FLAME, 
-                        minX + (maxX - minX) * t, minY, minZ, 1, 0, 0, 0, 0);
-                    player.spawnParticle(org.bukkit.Particle.FLAME,
-                        minX + (maxX - minX) * t, maxY, maxZ, 1, 0, 0, 0, 0);
-                    // Z方向边
-                    player.spawnParticle(org.bukkit.Particle.FLAME,
-                        minX, minY, minZ + (maxZ - minZ) * t, 1, 0, 0, 0, 0);
-                    player.spawnParticle(org.bukkit.Particle.FLAME,
-                        maxX, maxY, minZ + (maxZ - minZ) * t, 1, 0, 0, 0, 0);
-                }
-                ticks += 5;
-                if (ticks >= totalTicks) {
-                    player.sendMessage(ChatColor.GRAY + "选区粒子效果已结束");
-                }
+        // 粒子是发给该玩家的，任务要挂在玩家所属区域线程上；结束时必须取消，否则会永久空转
+        final int[] ticks = {0};
+        final io.Sriptirc_wp_1258.gost.managers.ServerCompat.Cancellable[] holder =
+            new io.Sriptirc_wp_1258.gost.managers.ServerCompat.Cancellable[1];
+        holder[0] = io.Sriptirc_wp_1258.gost.managers.ServerCompat.runTimerForEntity(player, plugin, () -> {
+            if (ticks[0] >= totalTicks || !player.isOnline()) {
+                if (holder[0] != null) holder[0].cancel();
+                return;
+            }
+            // 沿12条边生成粒子
+            for (int i = 0; i <= 8; i++) {
+                double t = i / 8.0;
+                // X方向边
+                player.spawnParticle(org.bukkit.Particle.FLAME, 
+                    minX + (maxX - minX) * t, minY, minZ, 1, 0, 0, 0, 0);
+                player.spawnParticle(org.bukkit.Particle.FLAME,
+                    minX + (maxX - minX) * t, maxY, maxZ, 1, 0, 0, 0, 0);
+                // Z方向边
+                player.spawnParticle(org.bukkit.Particle.FLAME,
+                    minX, minY, minZ + (maxZ - minZ) * t, 1, 0, 0, 0, 0);
+                player.spawnParticle(org.bukkit.Particle.FLAME,
+                    maxX, maxY, minZ + (maxZ - minZ) * t, 1, 0, 0, 0, 0);
+            }
+            ticks[0] += 5;
+            if (ticks[0] >= totalTicks) {
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.particles-end"));
+                if (holder[0] != null) holder[0].cancel();
             }
         }, 0L, 5L);
     }

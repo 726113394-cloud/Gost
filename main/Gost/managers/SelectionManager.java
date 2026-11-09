@@ -74,11 +74,11 @@ public class SelectionManager {
      */
     public void giveSelectionTool(Player player) {
         player.getInventory().addItem(getSelectionTool());
-        player.sendMessage(ChatColor.GREEN + "已获得区域选择工具！");
-        player.sendMessage(ChatColor.YELLOW + "使用说明：");
-        player.sendMessage(ChatColor.GRAY + "  • 左键点击方块设置第一个点");
-        player.sendMessage(ChatColor.GRAY + "  • 右键点击方块设置第二个点");
-        player.sendMessage(ChatColor.GRAY + "  • 使用 /gostadmin save <名称> 保存区域");
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.tool-received"));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.usage-header"));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.usage-pos1"));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.usage-pos2"));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.usage-save"));
     }
     
     /**
@@ -89,7 +89,7 @@ public class SelectionManager {
         PlayerSelection selection = playerSelections.computeIfAbsent(playerId, k -> new PlayerSelection());
         
         selection.setPos1(location);
-        player.sendMessage(ChatColor.GREEN + "第一个点已设置: " + formatLocation(location));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.pos1-coords", formatLocation(location)));
         
         // 如果两个点都已设置，显示区域信息
         if (selection.isComplete()) {
@@ -107,7 +107,7 @@ public class SelectionManager {
         PlayerSelection selection = playerSelections.computeIfAbsent(playerId, k -> new PlayerSelection());
         
         selection.setPos2(location);
-        player.sendMessage(ChatColor.GREEN + "第二个点已设置: " + formatLocation(location));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.pos2-coords", formatLocation(location)));
         
         // 如果两个点都已设置，显示区域信息
         if (selection.isComplete()) {
@@ -124,7 +124,7 @@ public class SelectionManager {
         UUID playerId = player.getUniqueId();
         if (playerSelections.containsKey(playerId)) {
             playerSelections.remove(playerId);
-            player.sendMessage(ChatColor.YELLOW + "选区已清除");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.cleared"));
             return true;
         }
         return false;
@@ -158,7 +158,7 @@ public class SelectionManager {
         
         // 检查是否在同一世界
         if (!pos1.getWorld().equals(pos2.getWorld())) {
-            player.sendMessage(ChatColor.RED + "错误：两个点必须在同一世界！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.different-world"));
             return;
         }
         
@@ -175,14 +175,14 @@ public class SelectionManager {
         int length = (int) Math.abs(maxZ - minZ) + 1;
         int volume = width * height * length;
         
-        player.sendMessage(ChatColor.GOLD + "========== 选区信息 ==========");
-        player.sendMessage(ChatColor.YELLOW + "世界: " + ChatColor.WHITE + pos1.getWorld().getName());
-        player.sendMessage(ChatColor.YELLOW + "点1: " + ChatColor.WHITE + formatLocation(pos1));
-        player.sendMessage(ChatColor.YELLOW + "点2: " + ChatColor.WHITE + formatLocation(pos2));
-        player.sendMessage(ChatColor.YELLOW + "尺寸: " + ChatColor.WHITE + width + "×" + height + "×" + length);
-        player.sendMessage(ChatColor.YELLOW + "体积: " + ChatColor.WHITE + volume + " 方块");
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.info-header"));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.info-world", pos1.getWorld().getName()));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.info-pos1", formatLocation(pos1)));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.info-pos2", formatLocation(pos2)));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.info-size", String.valueOf(width), String.valueOf(height), String.valueOf(length)));
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.info-volume", String.valueOf(volume)));
         player.sendMessage(ChatColor.GOLD + "==============================");
-        player.sendMessage(ChatColor.GREEN + "使用 /gostadmin save <名称> 保存此区域");
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "selection.save-hint"));
     }
     
     /**

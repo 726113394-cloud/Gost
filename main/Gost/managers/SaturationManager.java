@@ -45,7 +45,7 @@ public class SaturationManager implements Listener {
     /** 定时任务执行间隔（0.2秒 = 4 tick），用于支持 0.8 秒的亚秒级恢复间隔 */
     private static final long TICK_MS = 200L;
 
-    private BukkitRunnable task;
+    private ServerCompat.Cancellable task;
 
     public SaturationManager(Gost plugin) {
         this.plugin = plugin;
@@ -53,13 +53,7 @@ public class SaturationManager implements Listener {
     }
 
     private void startTask() {
-        task = new BukkitRunnable() {
-            @Override
-            public void run() {
-                tick();
-            }
-        };
-        task.runTaskTimer(plugin, TICK_MS / 50L, TICK_MS / 50L);
+        task = ServerCompat.runTimer(plugin, this::tick, TICK_MS / 50L, TICK_MS / 50L);
     }
 
     private void tick() {
@@ -94,7 +88,7 @@ public class SaturationManager implements Listener {
             }
             // 首次达到 1 秒：提示"开始恢复饱食度"
             if (notifiedPlayers.add(playerId)) {
-                player.sendMessage(ChatColor.GREEN + "§a开始恢复饱食度");
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "game.saturation-recovering"));
             }
             // 按阵营计算恢复间隔与单次恢复量
             long interval = getRegenInterval(playerId);

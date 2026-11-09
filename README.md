@@ -618,23 +618,38 @@ v2.3.1 起，`/divineguardian` 和 `/ghostparticle` 命令已整合到 `/gostadm
 
 ---
 
-## 🌏 多语言（v2.3.3）
+## 🌏 多语言（v2.4.0）
 
-支持 **中文 / English / 日本語 / Español / Français / Deutsch**。
+支持 **中文 / English / 日本語 / Español / Français / Deutsch**，覆盖玩家可见的全部文案（对局流程、道具、经济结算、神圣守护 / 猎魔人 / 收割者 / 救赎者、管理员命令）。
+
+服务器默认语言：
 
 ```yaml
 language:
   default: zh_CN   # zh_CN / en_US / ja_JP / es_ES / fr_FR / de_DE
 ```
 
+玩家可自行切换（**立即生效，不需要 reload**）：
+
+```bash
+/gost lang en_US      # 只影响你自己
+/gost lang reset      # 恢复服务器默认语言
+```
+
+管理员切换服务器默认语言：
+
 ```bash
 /gostadmin lang en_US
 /gost reload
 ```
 
-语言文件（可自行修改）：`plugins/Gost/lang/*.yml`。缺失键自动回退。
+语言文件：`plugins/Gost/lang/*.yml`，可自行修改。要点：
 
-## ⚙️ 配置参考（v2.3.3 · config version 31）
+- **升级自动补齐**：版本更新后新增的 key 会自动追加到你的语言文件末尾，保留你已改的译文与注释，只追加不重写
+- **缺失键四级回退**：玩家语言 → 服务器默认语言 → 内置中文 → key 本身
+- **道具名称与队伍名目前仍为中文**：它们同时被用作道具身份识别，翻译需先做身份标识改造
+
+## ⚙️ 配置参考（v2.4.0 · config version 34）
 
 见 `plugins/Gost/config.yml`。高频项：
 
@@ -683,7 +698,49 @@ v2.3.2_B 起背包快照深拷贝 + 防覆盖。请使用 <b>2.3.3</b>。
 
 ## 📈 版本历史
 
-### v2.3.3（当前）— 旁观复活 · 伤害收割 · 六国语言 · Folia
+### v2.4.0（当前）— 兼容性与多语言落地，无新玩法
+
+本版不加新玩法，把此前「已声明但未落地」的能力补齐。**config version 31 → 34**（新增 `update-check.enabled`、`area.random-each-game`、`death-state.mode`，旧配置自动备份迁移）。
+
+**🔧 构建可复现**
+- 修复 `build.gradle`（`sourceSets` 指向 `main/` 与 `resources/`，补 Vault 依赖）
+- 此前 `gradle build` 产不出可用 jar；现一条命令复现，产物 class 清单与原 2.3.3 jar 一致
+
+**⚙️ Folia 兼容修复**
+- `BukkitRunnable.runTask*()` 内部同样走全局调度，Folia 上一律抛异常 —— 全项目 17 处全部收口到 `ServerCompat`
+- 新增实体维度调度（`runLaterForEntity` / `runTimerForEntity`），母体水晶发光、旁观边界、特效循环、烟花引爆、ActionBar 改为绑定实体区域线程
+
+**💬 ActionBar 修复**
+- 原直调 Paper 专有 `player.sendActionBar(String)`，Spigot 抛 `NoSuchMethodError` 且兜底抓不到 `Error`
+- 统一走 `ChatMessageType.ACTION_BAR`，四平台通用；v2.3.3 的旁观复活倒计时在 Spigot 上此前实际不可用
+
+**🌐 六语言真正生效**
+- 语言 key 66 → 569，玩家可见文案不再有硬编码中文
+- 新增 `/gost lang` 按玩家切换，立即生效
+- 语言文件升级自动补齐新 key（只追加，保留用户译文与注释）
+- 新增 `tools/check_lang.py` 校验并接入 CI
+
+**🎲 随机地图**
+- 每局从已启用区域中随机选图（`area.random-each-game`，默认开启）
+- 管理员 `/gostadmin load <名称>` 指定的区域只对下一局生效，之后恢复随机
+- 旧版实际上只在「没有选中区域」时随机一次，之后每局都会复用同一张图
+
+**💀 死亡状态**
+- 被击杀后的状态可配：`death-state.mode` = `invisible`（**默认**，旧版隐身行为）或 `spectator`（2.3.3 的旁观）
+
+**🐛 其它**
+- 选区粒子任务此前永不取消（每 5 tick 空转到服务器关闭）
+- 控制台现在可以执行 `/gost start` 等管理员命令
+
+**📊 运维**
+- 接 bStats 匿名统计（插件 ID 未配置前不上报任何数据）
+- 启动时异步检查 Modrinth 版本，有新版本提示在线管理员（`update-check.enabled: false` 可关闭）
+- 新增 CI：push 自动校验语言文件 + 构建，打 tag 自动建 Release
+
+**⚠️ 已知限制**
+- 道具名称与队伍名仍为中文：它们同时是道具身份标识，翻译需先做 PersistentDataContainer 改造
+
+### v2.3.3 — 旁观复活 · 伤害收割 · 六国语言 · Folia
 
 **👻 鬼死亡正式改为旁观**
 - 死亡 → **旁观模式** → 倒计时 → 游戏区域内随机坐标 → **生存模式** 复活

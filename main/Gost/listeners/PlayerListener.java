@@ -59,12 +59,16 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        // 检查玩家是否是旁观者
+        // 检查玩家是否是死亡等待状态（隐身 / 旁观，由 death-state.mode 决定）
         if (plugin.getDivineGuardianManager().isSpectator(playerId)) {
-            // 保持旁观模式
-            player.setGameMode(GameMode.SPECTATOR);
-            player.sendMessage("§c§l[游戏结束] §c你已被淘汰，处于旁观模式");
-            return;
+            if (plugin.getDivineGuardianManager().isSpectatorDeathMode()) {
+                // 旁观模式：保持旁观
+                player.setGameMode(GameMode.SPECTATOR);
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "game.eliminated-spectator"));
+                return;
+            }
+            // 隐身模式：不强制旁观，重新施加隐身，随后继续走正常传送流程
+            plugin.getDivineGuardianManager().reapplyInvisibleDeathState(player);
         }
 
         // 如果玩家在游戏中，传送到游戏区域
@@ -88,7 +92,7 @@ public class PlayerListener implements Listener {
         // 如果玩家在游戏中，禁止丢弃物品
         if (plugin.getPlayerManager().getAllPlayers().contains(player.getUniqueId())) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "游戏期间禁止丢弃物品！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "game.no-item-drop"));
         }
     }
 
@@ -160,7 +164,7 @@ public class PlayerListener implements Listener {
             }
             // 空位满则直接替换第一格
             player.getInventory().setItem(0, item.clone());
-            player.sendMessage(ChatColor.GOLD + "「" + ChatColor.stripColor(name) + "」已强制放置到第一格！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.forced-first-slot", ChatColor.stripColor(name)));
         }
     }
 
@@ -175,7 +179,7 @@ public class PlayerListener implements Listener {
             if (ignore != null && inv == ignore) continue;
             if (inv.hasItemMeta() && inv.getItemMeta().hasDisplayName() &&
                 inv.getItemMeta().getDisplayName().equals(name)) {
-                player.sendMessage(ChatColor.RED + "你不允许携带两个相同道具！");
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.duplicate-not-allowed"));
                 return true;
             }
         }
@@ -194,7 +198,7 @@ public class PlayerListener implements Listener {
                 return true;
             }
         }
-        player.sendMessage(ChatColor.RED + "物品栏已满！道具无法放入背包！");
+        player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.inventory-full-nobackpack"));
         return false;
     }
 
@@ -221,7 +225,7 @@ public class PlayerListener implements Listener {
         if (current != null && cursor != null && isGameItem(current) && isGameItem(cursor)) {
             if (current.isSimilar(cursor) && current.getAmount() + cursor.getAmount() > 1) {
                 event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "道具不允许堆叠！");
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.no-stacking"));
                 return;
             }
         }
@@ -276,7 +280,7 @@ public class PlayerListener implements Listener {
             // hotbar 按键目标在 0-8，若当前点击的是背包区，会把 hotbar 的东西换进来
             if (isPlayerStorage) {
                 event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "道具不允许放入背包！");
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.no-backpack"));
             }
         }
 
@@ -300,7 +304,7 @@ public class PlayerListener implements Listener {
                 ItemStack dragged = event.getOldCursor();
                 if (isGameItem(dragged)) {
                     event.setCancelled(true);
-                    player.sendMessage(ChatColor.RED + "道具不允许放入背包！已阻止拖拽。");
+                    player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.no-backpack-drag"));
                     return;
                 }
             }
@@ -310,7 +314,7 @@ public class PlayerListener implements Listener {
         if (isGameItem(newItems) && newItems.getAmount() > 1) {
             // 拖拽不允许堆叠
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "道具不允许堆叠！");
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.no-stacking"));
         }
     }
 
@@ -348,7 +352,7 @@ public class PlayerListener implements Listener {
         }
         if (hotbarFull) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "物品栏已满！无法拾取 " + ChatColor.stripColor(name));
+            player.sendMessage(plugin.getLanguageManager().getMessage(player, "item.pickup-full", ChatColor.stripColor(name)));
         }
     }
 }

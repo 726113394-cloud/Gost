@@ -2,7 +2,6 @@ package io.Sriptirc_wp_1258.gost.commands;
 
 import io.Sriptirc_wp_1258.gost.Gost;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,103 +19,117 @@ public class GostCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
     
+    /** 按玩家自己的语言发消息；控制台用服务器默认语言 */
+    private void send(CommandSender sender, String key, Object... args) {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        sender.sendMessage(plugin.getLanguageManager().getMessage(player, key, args));
+    }
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
-            return true;
-        }
-        
-        Player player = (Player) sender;
-        
         if (args.length == 0) {
-            sendHelp(player);
+            sendHelp(sender);
             return true;
         }
         
         switch (args[0].toLowerCase()) {
             case "join":
-                if (!player.hasPermission("gost.player")) {
-                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                if (!requirePlayer(sender)) return true;
+                if (!sender.hasPermission("gost.player")) {
+                    send(sender, "error.no-permission");
                     return true;
                 }
-                handleJoin(player);
+                handleJoin((Player) sender);
                 break;
             case "leave":
-                if (!player.hasPermission("gost.player")) {
-                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                if (!requirePlayer(sender)) return true;
+                if (!sender.hasPermission("gost.player")) {
+                    send(sender, "error.no-permission");
                     return true;
                 }
-                handleLeave(player);
+                handleLeave((Player) sender);
                 break;
             case "info":
-                if (!player.hasPermission("gost.player")) {
-                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                if (!requirePlayer(sender)) return true;
+                if (!sender.hasPermission("gost.player")) {
+                    send(sender, "error.no-permission");
                     return true;
                 }
-                handleInfo(player);
+                handleInfo((Player) sender);
+                break;
+            case "lang":
+                handleLang(sender, args);
                 break;
             case "help":
-            default:
-                sendHelp(player);
+                sendHelp(sender);
                 break;
             case "start":
-                if (!player.hasPermission("gost.admin")) {
-                    player.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+                if (!sender.hasPermission("gost.admin")) {
+                    send(sender, "error.no-permission");
                     return true;
                 }
-                handleAdminStart(player);
+                handleAdminStart(sender);
+                break;
+            default:
+                sendHelp(sender);
                 break;
         }
         
         return true;
     }
     
+    /** 仅玩家可用的子命令，控制台执行时给出提示 */
+    private boolean requirePlayer(CommandSender sender) {
+        if (sender instanceof Player) return true;
+        send(sender, "error.player-only");
+        return false;
+    }
+    
     private void handleJoin(Player player) {
         // 检查权限
         if (!player.hasPermission("gost.join")) {
-            player.sendMessage(ChatColor.RED + "你没有权限加入游戏！");
+            send(player, "command.join.no-permission");
             return;
         }
         
         // 检查是否有游戏在进行
         if (plugin.getGameManager().isAnyGameRunning()) {
-            player.sendMessage(ChatColor.RED + "当前有游戏正在进行，请等待游戏结束！");
+            send(player, "error.game-in-progress");
             return;
         }
         
         // 检查最大游戏数
         if (plugin.getConfigManager().getMaxGames() == 0) {
-            player.sendMessage(ChatColor.RED + "当前不允许开始新游戏！");
+            send(player, "error.cannot-start");
             return;
         }
         
         // 加入队列
         if (plugin.getGameManager().joinQueue(player)) {
-            player.sendMessage(ChatColor.GREEN + "你已加入游戏队列！");
+            send(player, "command.join.success");
         }
     }
     
     private void handleLeave(Player player) {
         // 检查权限
         if (!player.hasPermission("gost.leave")) {
-            player.sendMessage(ChatColor.RED + "你没有权限离开游戏！");
+            send(player, "command.leave.no-permission");
             return;
         }
         
         // 尝试离开游戏
         if (plugin.getPlayerManager().leaveGame(player)) {
-            player.sendMessage(ChatColor.YELLOW + "你已离开游戏！");
+            send(player, "command.leave.success");
             return;
         }
         
         // 尝试离开队列
         if (plugin.getGameManager().leaveQueue(player)) {
-            player.sendMessage(ChatColor.YELLOW + "你已离开游戏队列！");
+            send(player, "command.leave.queue-success");
             return;
         }
         
-        player.sendMessage(ChatColor.RED + "你不在游戏或队列中！");
+        send(player, "command.leave.not-in");
     }
     
     private void handleInfo(Player player) {
@@ -125,73 +138,113 @@ public class GostCommand implements CommandExecutor, TabCompleter {
             int humanCount = plugin.getPlayerManager().getHumanPlayers().size();
             int ghostCount = plugin.getPlayerManager().getGhostPlayers().size();
             
-            player.sendMessage(ChatColor.GREEN + "=== 游戏信息 ===");
-            player.sendMessage(ChatColor.YELLOW + "游戏状态: " + ChatColor.GREEN + "进行中");
-            player.sendMessage(ChatColor.YELLOW + "人类数量: " + ChatColor.GREEN + humanCount);
-            player.sendMessage(ChatColor.YELLOW + "鬼数量: " + ChatColor.RED + ghostCount);
+            send(player, "command.info.header");
+            send(player, "command.info.state", plugin.getLanguageManager().getMessage(player, "command.info.state-running"));
+            send(player, "command.info.humans", humanCount);
+            send(player, "command.info.ghosts", ghostCount);
             
             // 显示奖池信息
             if (plugin.getEconomyManager().isEconomyEnabled()) {
                 double prizePool = plugin.getEconomyManager().getPrizePool();
-                player.sendMessage(ChatColor.YELLOW + "当前奖池: " + ChatColor.GOLD + prizePool + " 金币");
+                send(player, "command.info.prize-pool", prizePool);
             }
         } else if (plugin.getGameManager().getWaitingPlayersCount() > 0) {
             int waitingPlayers = plugin.getGameManager().getWaitingPlayersCount();
             int minPlayers = plugin.getConfigManager().getMinPlayers();
             
-            player.sendMessage(ChatColor.GREEN + "=== 队列信息 ===");
-            player.sendMessage(ChatColor.YELLOW + "游戏状态: " + ChatColor.GOLD + "等待玩家");
-            player.sendMessage(ChatColor.YELLOW + "等待玩家: " + ChatColor.GOLD + waitingPlayers + "/" + minPlayers);
+            send(player, "command.info.queue-header");
+            send(player, "command.info.state", plugin.getLanguageManager().getMessage(player, "command.info.state-waiting"));
+            send(player, "command.info.waiting", waitingPlayers, minPlayers);
         } else {
-            player.sendMessage(ChatColor.GREEN + "=== 游戏信息 ===");
-            player.sendMessage(ChatColor.YELLOW + "游戏状态: " + ChatColor.GRAY + "未开始");
-            player.sendMessage(ChatColor.YELLOW + "使用 " + ChatColor.GREEN + "/gost join" + ChatColor.YELLOW + " 加入游戏");
+            send(player, "command.info.header");
+            send(player, "command.info.state", plugin.getLanguageManager().getMessage(player, "command.info.state-idle"));
+            send(player, "command.info.hint-join");
         }
         
         // 显示区域信息
         io.Sriptirc_wp_1258.gost.managers.AreaManager.GameArea selectedArea = plugin.getAreaManager().getSelectedArea();
         if (selectedArea != null) {
-            player.sendMessage(ChatColor.YELLOW + "当前区域: " + ChatColor.GREEN + selectedArea.getName());
+            send(player, "command.info.area", selectedArea.getName());
             int[] dims = selectedArea.getDimensions();
-            player.sendMessage(ChatColor.YELLOW + "区域尺寸: " + ChatColor.WHITE + dims[0] + "×" + dims[1] + "×" + dims[2]);
+            send(player, "command.info.area-size", dims[0], dims[1], dims[2]);
         } else {
-            player.sendMessage(ChatColor.YELLOW + "当前区域: " + ChatColor.RED + "未选择");
+            send(player, "command.info.area-none");
         }
     }
     
-    private void sendHelp(Player player) {
-        player.sendMessage(ChatColor.GREEN + "=== Gost 生化模式 ===");
-        player.sendMessage(ChatColor.YELLOW + "/gost join" + ChatColor.GRAY + " - 加入游戏队列");
-        player.sendMessage(ChatColor.YELLOW + "/gost leave" + ChatColor.GRAY + " - 离开游戏/队列");
-        player.sendMessage(ChatColor.YELLOW + "/gost info" + ChatColor.GRAY + " - 查看游戏信息");
-        player.sendMessage(ChatColor.YELLOW + "/gost help" + ChatColor.GRAY + " - 显示此帮助");
-        
-        if (player.hasPermission("gost.admin")) {
-            player.sendMessage(ChatColor.RED + "管理员命令:");
-            player.sendMessage(ChatColor.RED + "/gost start" + ChatColor.GRAY + " - 管理员强制开局（单人也可）");
-            player.sendMessage(ChatColor.RED + "/gostadmin" + ChatColor.GRAY + " - 更多管理员命令");
-        }
-    }
-    
-    private void handleAdminStart(Player player) {
-        // 检查是否有游戏正在进行
-        if (plugin.getGameManager().isAnyGameRunning()) {
-            player.sendMessage(ChatColor.RED + "当前有游戏正在进行！");
+    private void handleLang(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            send(sender, "command.lang.usage", plugin.getLanguageManager().listSupported());
             return;
         }
         
-        // 如果管理员不在队列中，自动加入队列
-        if (!plugin.getGameManager().isInQueue(player.getUniqueId())) {
-            plugin.getGameManager().joinQueue(player);
-            player.sendMessage(ChatColor.GREEN + "你已加入游戏队列！");
+        String requested = args[1];
+        if ("reset".equalsIgnoreCase(requested)) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                plugin.getLanguageManager().clearLanguage(player);
+                send(player, "command.lang.reset", plugin.getLanguageManager().getCurrentLanguage());
+            } else {
+                send(sender, "command.lang.usage", plugin.getLanguageManager().listSupported());
+            }
+            return;
+        }
+        
+        String locale = plugin.getLanguageManager().resolveLocale(requested);
+        if (locale == null) {
+            send(sender, "command.lang.invalid", requested, plugin.getLanguageManager().listSupported());
+            return;
+        }
+        
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            plugin.getLanguageManager().setLanguage(player, locale);
+            send(player, "command.lang.set", locale);
+            return;
+        }
+        
+        // 控制台无法单独设语言，提示用法即可
+        send(sender, "command.lang.usage", plugin.getLanguageManager().listSupported());
+    }
+    
+    private void sendHelp(CommandSender sender) {
+        send(sender, "command.help.header");
+        send(sender, "command.help.join");
+        send(sender, "command.help.leave");
+        send(sender, "command.help.info");
+        send(sender, "command.help.lang");
+        send(sender, "command.help.help");
+        
+        if (sender.hasPermission("gost.admin")) {
+            send(sender, "command.help.admin-header");
+            send(sender, "command.help.admin-start");
+            send(sender, "command.help.admin-more");
+        }
+    }
+    
+    private void handleAdminStart(CommandSender sender) {
+        // 检查是否有游戏正在进行
+        if (plugin.getGameManager().isAnyGameRunning()) {
+            send(sender, "error.game-in-progress");
+            return;
+        }
+        
+        // 管理员不在队列中则自动加入队列（控制台没有玩家身份，跳过）
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (!plugin.getGameManager().isInQueue(player.getUniqueId())) {
+                plugin.getGameManager().joinQueue(player);
+                send(player, "command.join.success");
+            }
         }
         
         // 管理员强制开局
         boolean started = plugin.getGameManager().startGame(true);
         if (started) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "管理员 " + player.getName() + " 强制开始了游戏！");
+            String name = sender instanceof Player ? sender.getName() : "Console";
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("command.admin.started", name));
         } else {
-            player.sendMessage(ChatColor.RED + "强制开局失败，请检查区域设置！");
+            send(sender, "command.admin.start-failed");
         }
     }
     
@@ -204,8 +257,13 @@ public class GostCommand implements CommandExecutor, TabCompleter {
             completions.add("leave");
             completions.add("info");
             completions.add("help");
+            completions.add("lang");
             if (sender.hasPermission("gost.admin")) {
                 completions.add("start");
+            }
+        } else if (args.length == 2 && "lang".equalsIgnoreCase(args[0])) {
+            for (String locale : io.Sriptirc_wp_1258.gost.managers.LanguageManager.SUPPORTED) {
+                completions.add(locale);
             }
         }
         

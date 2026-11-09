@@ -66,10 +66,6 @@ public final class ServerCompat {
 
     private static synchronized void detect() {
         if (cachedPlatform != null) return;
-        boolean folia = classExists("io.papermc.paper.threadedregions.RegionizedServer")
-                || classExists("io.papermc.paper.threadedregions.RegionizedWorld")
-                || hasMethod(Server.class, "getGlobalRegionScheduler");
-        foliaDetected = folia;
 
         String name = "";
         try {
@@ -77,11 +73,19 @@ public final class ServerCompat {
         } catch (Throwable ignored) {
         }
 
+        // 只认强信号：Folia 内核才有 Regionized* 这些类。
+        // 不能拿 getGlobalRegionScheduler 判断 —— Paper/Purpur 后来也加了这个兼容方法，
+        // 用它会把普通 Purpur/Paper 误判成 Folia（v2.4.0 自检实测踩过）。
+        boolean folia = classExists("io.papermc.paper.threadedregions.RegionizedServer")
+                || classExists("io.papermc.paper.threadedregions.RegionizedWorld")
+                || name.contains("folia");
+        foliaDetected = folia;
+
         if (folia) {
             cachedPlatform = Platform.FOLIA;
         } else if (name.contains("purpur")) {
             cachedPlatform = Platform.PURPUR;
-        } else if (name.contains("paper") || name.contains("pufferfish") || name.contains("folia")) {
+        } else if (name.contains("paper") || name.contains("pufferfish")) {
             cachedPlatform = Platform.PAPER;
         } else if (name.contains("spigot")) {
             cachedPlatform = Platform.SPIGOT;
@@ -204,6 +208,46 @@ public final class ServerCompat {
             } catch (Throwable ignored) {
             }
         });
+    }
+
+    /**
+     * 在实体所在区域线程延迟执行一次（Folia 走 EntityScheduler；其他平台走全局调度）。
+     * 用于 teleport / setGameMode / 实体状态修改等必须在实体线程完成的延迟操作。
+     * @return 可取消句柄；调度失败返回 null
+     */
+    public static Cancellable runLaterForEntity(org.bukkit.entity.Entity entity, Plugin plugin,
+                                                Runnable task, long delayTicks) {
+        if (entity == null || plugin == null || task == null) return null;
+        if (isFolia()) {
+            Cancellable c = SchedulerCompat.runOnEntityDelayed(entity, plugin, task, delayTicks);
+            if (c != null) return c;
+        }
+        try {
+            return new BukkitCancellable(
+                Bukkit.getScheduler().runTaskLater(plugin, task, Math.max(0L, delayTicks)));
+        } catch (Throwable t) {
+            return SchedulerCompat.runOnEntityDelayed(entity, plugin, task, delayTicks);
+        }
+    }
+
+    /**
+     * 周期性在实体所在区域线程执行（Folia 走 EntityScheduler；其他平台走全局调度）。
+     * @return 可取消句柄；调度失败返回 null
+     */
+    public static Cancellable runTimerForEntity(org.bukkit.entity.Entity entity, Plugin plugin,
+                                                Runnable task, long delayTicks, long periodTicks) {
+        if (entity == null || plugin == null || task == null) return null;
+        if (isFolia()) {
+            Cancellable c = SchedulerCompat.runOnEntityTimer(entity, plugin, task, delayTicks, periodTicks);
+            if (c != null) return c;
+        }
+        try {
+            return new BukkitCancellable(
+                Bukkit.getScheduler().runTaskTimer(plugin, task,
+                    Math.max(0L, delayTicks), Math.max(1L, periodTicks)));
+        } catch (Throwable t) {
+            return SchedulerCompat.runOnEntityTimer(entity, plugin, task, delayTicks, periodTicks);
+        }
     }
 
     /** 可取消句柄 */

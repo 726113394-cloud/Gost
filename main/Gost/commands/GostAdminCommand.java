@@ -3,6 +3,7 @@ package io.Sriptirc_wp_1258.gost.commands;
 import io.Sriptirc_wp_1258.gost.Gost;
 import io.Sriptirc_wp_1258.gost.managers.AreaManager;
 import io.Sriptirc_wp_1258.gost.managers.SelectionManager;
+import io.Sriptirc_wp_1258.gost.managers.ServerCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -24,10 +25,16 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
     
+    /** 按玩家自己的语言发消息；控制台用服务器默认语言 */
+    private void send(CommandSender sender, String key, Object... args) {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        sender.sendMessage(plugin.getLanguageManager().getMessage(player, key, args));
+    }
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("gost.admin")) {
-            sender.sendMessage(ChatColor.RED + "你没有权限使用此命令！");
+            send(sender, "error.no-permission");
             return true;
         }
         
@@ -65,6 +72,8 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 return handleReload(sender);
             case "status":
                 return handleStatus(sender);
+            case "selftest":
+                return handleSelfTest(sender);
 
             case "dark":
                 return handleDark(sender, args);
@@ -87,15 +96,15 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 sendHelp(sender);
                 return true;
             default:
-                sender.sendMessage(ChatColor.RED + "未知命令！使用 /gostadmin help 查看帮助");
+                send(sender, "admin.usage.unknown");
                 return true;
         }
     }
     
     private boolean handleStart(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin start <区域名称>");
-            sender.sendMessage(ChatColor.YELLOW + "可用区域: " + String.join(", ", plugin.getAreaManager().getAreaNames()));
+            send(sender, "admin.start.usage");
+            send(sender, "admin.start.available", String.join(", ", plugin.getAreaManager().getAreaNames()));
             return true;
         }
         
@@ -103,61 +112,61 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         
         // 选择区域
         if (!plugin.getAreaManager().selectArea(areaName)) {
-            sender.sendMessage(ChatColor.RED + "区域 '" + areaName + "' 不存在！");
+            send(sender, "admin.area.not-exist", areaName);
             return true;
         }
         
         // 开始游戏
         if (!plugin.getGameManager().startGame()) {
-            sender.sendMessage(ChatColor.RED + "无法开始游戏！");
+            send(sender, "admin.start.failed");
         } else {
-            sender.sendMessage(ChatColor.GREEN + "游戏已开始！使用区域: " + areaName);
+            send(sender, "admin.start.success", areaName);
         }
         return true;
     }
     
     private boolean handleStop(CommandSender sender) {
         if (!plugin.getGameManager().isAnyGameRunning()) {
-            sender.sendMessage(ChatColor.RED + "当前没有游戏在进行！");
+            send(sender, "admin.stop.none");
             return true;
         }
         
         // 强制停止游戏
         plugin.getGameManager().forceStopGame();
-        sender.sendMessage(ChatColor.GREEN + "游戏已强制停止！");
+        send(sender, "admin.stop.success");
         return true;
     }
     
     private boolean handlePos1(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            send(sender, "error.player-only");
             return true;
         }
         
         Player player = (Player) sender;
-        player.sendMessage(ChatColor.YELLOW + "请使用选区工具左键点击方块设置第一个点");
+        send(player, "admin.pos1.hint");
         return true;
     }
     
     private boolean handlePos2(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            send(sender, "error.player-only");
             return true;
         }
         
         Player player = (Player) sender;
-        player.sendMessage(ChatColor.YELLOW + "请使用选区工具右键点击方块设置第二个点");
+        send(player, "admin.pos2.hint");
         return true;
     }
     
     private boolean handleSave(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            send(sender, "error.player-only");
             return true;
         }
         
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin save <区域名称>");
+            send(sender, "admin.save.usage");
             return true;
         }
         
@@ -167,22 +176,22 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         // 检查选区是否完整
         SelectionManager.PlayerSelection selection = plugin.getSelectionManager().getSelection(player);
         if (selection == null || !selection.isComplete()) {
-            player.sendMessage(ChatColor.RED + "请先设置两个点！");
-            player.sendMessage(ChatColor.YELLOW + "使用选区工具：左键设置第一个点，右键设置第二个点");
+            send(player, "admin.save.no-selection");
+            send(player, "admin.save.howto");
             return true;
         }
         
         // 检查是否在同一世界
         if (!selection.isValid()) {
-            player.sendMessage(ChatColor.RED + "错误：两个点必须在同一世界！");
+            send(player, "admin.save.different-world");
             return true;
         }
         
         // 保存区域
         if (plugin.getAreaManager().saveArea(areaName, selection.getPos1(), selection.getPos2())) {
-            player.sendMessage(ChatColor.GREEN + "区域 '" + areaName + "' 已保存！");
+            send(player, "admin.save.success", areaName);
         } else {
-            player.sendMessage(ChatColor.RED + "保存失败！区域名称可能已存在或达到最大数量限制。");
+            send(player, "admin.save.failed");
         }
         
         return true;
@@ -192,32 +201,28 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<AreaManager.GameArea> areas = plugin.getAreaManager().getAllAreas();
         
         if (areas.isEmpty()) {
-            sender.sendMessage(ChatColor.YELLOW + "暂无存档区域");
+            send(sender, "admin.list.empty");
             return true;
         }
         
-        sender.sendMessage(ChatColor.GOLD + "========== 存档区域列表 ==========");
+        send(sender, "admin.list.header");
         for (AreaManager.GameArea area : areas) {
             int[] dims = area.getDimensions();
             String selected = area.getName().equals(plugin.getAreaManager().getSelectedAreaName()) ? "✓" : " ";
             String enabled = plugin.getAreaManager().isAreaEnabled(area.getName()) ? "✔" : "✘";
-            sender.sendMessage(ChatColor.YELLOW + "[" + selected + "] " + 
-                ChatColor.GREEN + "[" + enabled + "] " + 
-                ChatColor.WHITE + area.getName() + 
-                ChatColor.GRAY + " - " + dims[0] + "×" + dims[1] + "×" + dims[2] + 
-                " (" + area.getUsageCount() + "次使用)");
+            send(sender, "admin.list.entry", selected, enabled, area.getName(), dims[0], dims[1], dims[2], area.getUsageCount());
         }
-        sender.sendMessage(ChatColor.GOLD + "==================================");
+        send(sender, "admin.separator");
         return true;
     }
     
     private boolean handleLoad(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin load <区域名称> [enable|disable]");
-            sender.sendMessage(ChatColor.GRAY + "示例:");
-            sender.sendMessage(ChatColor.GRAY + "  /gostadmin load area1 - 选择区域");
-            sender.sendMessage(ChatColor.GRAY + "  /gostadmin load area1 enable - 启用区域");
-            sender.sendMessage(ChatColor.GRAY + "  /gostadmin load area1 disable - 禁用区域");
+            send(sender, "admin.load.usage");
+            send(sender, "admin.load.example-header");
+            send(sender, "admin.load.example-select");
+            send(sender, "admin.load.example-enable");
+            send(sender, "admin.load.example-disable");
             return true;
         }
         
@@ -225,7 +230,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         
         // 检查区域是否存在
         if (plugin.getAreaManager().getArea(areaName) == null) {
-            sender.sendMessage(ChatColor.RED + "区域 '" + areaName + "' 不存在！");
+            send(sender, "admin.area.not-exist", areaName);
             return true;
         }
         
@@ -235,30 +240,35 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
             switch (action) {
                 case "enable":
                     if (plugin.getAreaManager().enableArea(areaName)) {
-                        sender.sendMessage(ChatColor.GREEN + "区域 '" + areaName + "' 已启用！");
+                        send(sender, "admin.load.enabled", areaName);
+                    } else if (plugin.getAreaManager().isAreaEnabled(areaName)) {
+                        // 已启用：幂等提示，不要和「不存在」混成一句
+                        send(sender, "admin.load.already-enabled", areaName);
                     } else {
-                        sender.sendMessage(ChatColor.YELLOW + "区域 '" + areaName + "' 已经启用或不存在");
+                        send(sender, "admin.area.not-exist", areaName);
                     }
                     break;
                     
                 case "disable":
                     if (plugin.getAreaManager().disableArea(areaName)) {
-                        sender.sendMessage(ChatColor.GREEN + "区域 '" + areaName + "' 已禁用！");
+                        send(sender, "admin.load.disabled", areaName);
+                    } else if (!plugin.getAreaManager().isAreaEnabled(areaName)) {
+                        send(sender, "admin.load.not-enabled", areaName);
                     } else {
-                        sender.sendMessage(ChatColor.YELLOW + "区域 '" + areaName + "' 未启用或不存在");
+                        send(sender, "admin.area.not-exist", areaName);
                     }
                     break;
                     
                 default:
-                    sender.sendMessage(ChatColor.RED + "未知操作！使用 enable 或 disable");
+                    send(sender, "admin.load.unknown-action");
                     return true;
             }
         } else {
             // 没有第三个参数，选择区域
             if (plugin.getAreaManager().selectArea(areaName)) {
-                sender.sendMessage(ChatColor.GREEN + "已选择区域: " + areaName);
+                send(sender, "admin.load.selected", areaName);
             } else {
-                sender.sendMessage(ChatColor.RED + "选择区域失败！");
+                send(sender, "admin.load.select-failed");
             }
         }
         
@@ -267,16 +277,16 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleDelete(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin delete <区域名称>");
+            send(sender, "admin.delete.usage");
             return true;
         }
         
         String areaName = args[1];
         
         if (plugin.getAreaManager().deleteArea(areaName)) {
-            sender.sendMessage(ChatColor.GREEN + "区域 '" + areaName + "' 已删除！");
+            send(sender, "admin.delete.success", areaName);
         } else {
-            sender.sendMessage(ChatColor.RED + "区域 '" + areaName + "' 不存在！");
+            send(sender, "admin.area.not-exist", areaName);
         }
         
         return true;
@@ -284,7 +294,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleInfo(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin info <区域名称>");
+            send(sender, "admin.info.usage");
             return true;
         }
         
@@ -292,31 +302,31 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         AreaManager.GameArea area = plugin.getAreaManager().getArea(areaName);
         
         if (area == null) {
-            sender.sendMessage(ChatColor.RED + "区域 '" + areaName + "' 不存在！");
+            send(sender, "admin.area.not-exist", areaName);
             return true;
         }
         
         int[] dims = area.getDimensions();
         int volume = area.getVolume();
         
-        sender.sendMessage(ChatColor.GOLD + "========== 区域信息 ==========");
-        sender.sendMessage(ChatColor.YELLOW + "名称: " + ChatColor.WHITE + area.getName());
-        sender.sendMessage(ChatColor.YELLOW + "世界: " + ChatColor.WHITE + area.getPos1().getWorld().getName());
-        sender.sendMessage(ChatColor.YELLOW + "点1: " + ChatColor.WHITE + formatLocation(area.getPos1()));
-        sender.sendMessage(ChatColor.YELLOW + "点2: " + ChatColor.WHITE + formatLocation(area.getPos2()));
-        sender.sendMessage(ChatColor.YELLOW + "尺寸: " + ChatColor.WHITE + dims[0] + "×" + dims[1] + "×" + dims[2]);
-        sender.sendMessage(ChatColor.YELLOW + "体积: " + ChatColor.WHITE + volume + " 方块");
-        sender.sendMessage(ChatColor.YELLOW + "创建时间: " + ChatColor.WHITE + dateFormat.format(area.getCreatedDate()));
-        sender.sendMessage(ChatColor.YELLOW + "最后使用: " + ChatColor.WHITE + dateFormat.format(area.getLastUsedDate()));
-        sender.sendMessage(ChatColor.YELLOW + "使用次数: " + ChatColor.WHITE + area.getUsageCount());
-        sender.sendMessage(ChatColor.GOLD + "==============================");
+        send(sender, "admin.info.header");
+        send(sender, "admin.info.name", area.getName());
+        send(sender, "admin.info.world", area.getPos1().getWorld().getName());
+        send(sender, "admin.info.pos1", formatLocation(area.getPos1()));
+        send(sender, "admin.info.pos2", formatLocation(area.getPos2()));
+        send(sender, "admin.info.size", dims[0], dims[1], dims[2]);
+        send(sender, "admin.info.volume", volume);
+        send(sender, "admin.info.created", dateFormat.format(area.getCreatedDate()));
+        send(sender, "admin.info.last-used", dateFormat.format(area.getLastUsedDate()));
+        send(sender, "admin.info.usage-count", area.getUsageCount());
+        send(sender, "admin.separator");
         
         return true;
     }
     
     private boolean handleTool(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            send(sender, "error.player-only");
             return true;
         }
         
@@ -327,15 +337,15 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleClear(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            send(sender, "error.player-only");
             return true;
         }
         
         Player player = (Player) sender;
         if (plugin.getSelectionManager().clearSelection(player)) {
-            player.sendMessage(ChatColor.YELLOW + "选区已清除");
+            send(player, "admin.clear.success");
         } else {
-            player.sendMessage(ChatColor.YELLOW + "没有选区需要清除");
+            send(player, "admin.clear.nothing");
         }
         return true;
     }
@@ -344,10 +354,10 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     /** 切换/查看语言：/gostadmin lang [zh_CN|en_US|ja_JP|es_ES|fr_FR|de_DE] */
     private boolean handleLanguage(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.YELLOW + "当前语言: " + plugin.getLanguageManager().getCurrentLanguage());
-            sender.sendMessage(ChatColor.YELLOW + "可用语言: " + plugin.getLanguageManager().listSupported());
-            sender.sendMessage(ChatColor.YELLOW + "用法: /gostadmin lang <语言代码>");
-            sender.sendMessage(ChatColor.GRAY + "语言文件: plugins/Gost/lang/<locale>.yml 可自行修改");
+            send(sender, "admin.lang.current", plugin.getLanguageManager().getCurrentLanguage());
+            send(sender, "admin.lang.available", plugin.getLanguageManager().listSupported());
+            send(sender, "admin.lang.usage");
+            send(sender, "admin.lang.file-hint");
             return true;
         }
         String loc = args[1];
@@ -360,47 +370,47 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
             }
         }
         if (matched == null) {
-            sender.sendMessage(ChatColor.RED + "不支持的语言: " + loc);
-            sender.sendMessage(ChatColor.YELLOW + "可用: " + plugin.getLanguageManager().listSupported());
+            send(sender, "admin.lang.unsupported", loc);
+            send(sender, "admin.lang.available-short", plugin.getLanguageManager().listSupported());
             return true;
         }
         plugin.getConfigManager().setDefaultLanguage(matched);
         plugin.getLanguageManager().reload();
-        sender.sendMessage(ChatColor.GREEN + "语言已切换为: " + matched);
-        sender.sendMessage(ChatColor.GRAY + "也可编辑 plugins/Gost/lang/" + matched + ".yml 自定义文本");
+        send(sender, "admin.lang.changed", matched);
+        send(sender, "admin.lang.edit-hint", matched);
         return true;
     }
 
     private boolean handleReload(CommandSender sender) {
         plugin.getConfigManager().reloadConfig();
         plugin.getAreaManager().reload();
-        sender.sendMessage(ChatColor.GREEN + "配置和区域数据已重新加载！");
+        send(sender, "admin.reload.success");
         return true;
     }
     
     private boolean handleStatus(CommandSender sender) {
-        sender.sendMessage(ChatColor.GREEN + "=== Gost 管理信息 ===");
+        send(sender, "admin.status.header");
         
         // 游戏状态
         String gameState;
         switch (plugin.getGameManager().getGameState()) {
             case WAITING:
-                gameState = ChatColor.YELLOW + "等待玩家";
+                gameState = plugin.getLanguageManager().getMessage("admin.status.state-waiting");
                 break;
             case STARTING:
-                gameState = ChatColor.GOLD + "准备中";
+                gameState = plugin.getLanguageManager().getMessage("admin.status.state-starting");
                 break;
             case RUNNING:
-                gameState = ChatColor.GREEN + "进行中";
+                gameState = plugin.getLanguageManager().getMessage("admin.status.state-running");
                 break;
             case ENDING:
-                gameState = ChatColor.RED + "结束中";
+                gameState = plugin.getLanguageManager().getMessage("admin.status.state-ending");
                 break;
             default:
-                gameState = ChatColor.GRAY + "未开始";
+                gameState = plugin.getLanguageManager().getMessage("admin.status.state-idle");
                 break;
         }
-        sender.sendMessage(ChatColor.YELLOW + "游戏状态: " + gameState);
+        send(sender, "admin.status.state", gameState);
         
         // 玩家统计
         int waitingPlayers = plugin.getGameManager().getWaitingPlayersCount();
@@ -408,52 +418,233 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         int humanPlayers = plugin.getPlayerManager().getHumanPlayers().size();
         int ghostPlayers = plugin.getPlayerManager().getGhostPlayers().size();
         
-        sender.sendMessage(ChatColor.YELLOW + "等待玩家: " + ChatColor.GOLD + waitingPlayers);
-        sender.sendMessage(ChatColor.YELLOW + "游戏玩家: " + ChatColor.GOLD + gamePlayers);
-        sender.sendMessage(ChatColor.YELLOW + "人类玩家: " + ChatColor.GREEN + humanPlayers);
-        sender.sendMessage(ChatColor.YELLOW + "鬼玩家: " + ChatColor.RED + ghostPlayers);
+        send(sender, "admin.status.waiting", waitingPlayers);
+        send(sender, "admin.status.players", gamePlayers);
+        send(sender, "admin.status.humans", humanPlayers);
+        send(sender, "admin.status.ghosts", ghostPlayers);
         
         // 区域信息
         AreaManager.GameArea selectedArea = plugin.getAreaManager().getSelectedArea();
         if (selectedArea != null) {
-            sender.sendMessage(ChatColor.YELLOW + "当前区域: " + ChatColor.GREEN + selectedArea.getName());
+            send(sender, "admin.status.area", selectedArea.getName());
             int[] dims = selectedArea.getDimensions();
-            sender.sendMessage(ChatColor.YELLOW + "区域尺寸: " + ChatColor.WHITE + dims[0] + "×" + dims[1] + "×" + dims[2]);
+            send(sender, "admin.status.area-size", dims[0], dims[1], dims[2]);
         } else {
-            sender.sendMessage(ChatColor.YELLOW + "当前区域: " + ChatColor.RED + "未选择");
+            send(sender, "admin.status.area-none");
         }
         
         // 存档区域数量
         int areaCount = plugin.getAreaManager().getAreaNames().size();
-        sender.sendMessage(ChatColor.YELLOW + "存档区域: " + ChatColor.GOLD + areaCount + " 个");
+        send(sender, "admin.status.area-count", areaCount);
         
         // 经济信息
         if (plugin.getEconomyManager().isEconomyEnabled()) {
             double prizePool = plugin.getEconomyManager().getPrizePool();
-            sender.sendMessage(ChatColor.YELLOW + "当前奖池: " + ChatColor.GOLD + prizePool + " 金币");
+            send(sender, "admin.status.prize-pool", prizePool);
         } else {
-            sender.sendMessage(ChatColor.YELLOW + "经济系统: " + ChatColor.RED + "不可用");
+            send(sender, "admin.status.economy-off");
         }
         
         // 配置信息
-        sender.sendMessage(ChatColor.YELLOW + "最小玩家: " + ChatColor.GOLD + 
-            plugin.getConfigManager().getMinPlayers());
-        sender.sendMessage(ChatColor.YELLOW + "最大玩家: " + ChatColor.GOLD + 
-            plugin.getConfigManager().getMaxPlayers());
-        sender.sendMessage(ChatColor.YELLOW + "游戏时长: " + ChatColor.GOLD + 
-            plugin.getConfigManager().getGameDuration() + "秒");
+        send(sender, "admin.status.min-players", plugin.getConfigManager().getMinPlayers());
+        send(sender, "admin.status.max-players", plugin.getConfigManager().getMaxPlayers());
+        send(sender, "admin.status.duration", plugin.getConfigManager().getGameDuration());
         
         return true;
     }
     
 
     
+    /**
+     * /gostadmin selftest —— 运行期自检。
+     *
+     * <p>目的是让「必须跑起来才知道」的东西可以单人验证：平台探测、语言加载、
+     * 道具能否生成、ActionBar 通道、以及全局/实体两种调度能不能真正执行。
+     * 不依赖开一局游戏。</p>
+     */
+    private boolean handleSelfTest(CommandSender sender) {
+        final int[] stats = {0, 0, 0}; // 通过 / 失败 / 警告
+        final Player player = sender instanceof Player ? (Player) sender : null;
+        final String locale = plugin.getLanguageManager().getCurrentLanguage();
+
+        send(sender, "selftest.header");
+
+        // ---- 平台 ----
+        stPass(sender, stats, lbl(player, "selftest.platform", ServerCompat.describe()));
+        boolean folia = ServerCompat.isFolia();
+        stPass(sender, stats, lbl(player, "selftest.folia",
+            lbl(player, folia ? "selftest.yes" : "selftest.no")));
+
+        // ---- 语言 ----
+        int msgCount = plugin.getLanguageManager().getMessageCount(locale);
+        if (msgCount > 0) {
+            stPass(sender, stats, lbl(player, "selftest.lang", locale, String.valueOf(msgCount)));
+        } else {
+            stFail(sender, stats, lbl(player, "selftest.lang", locale, "0"), "no messages loaded");
+        }
+        int diff = plugin.getLanguageManager().getMaxKeySetDiff("zh_CN");
+        String localeDetail = plugin.getLanguageManager().describeLocaleCounts();
+        if (diff == 0) {
+            stPass(sender, stats, lbl(player, "selftest.lang-missing", "0"));
+        } else if (diff < 0) {
+            stWarn(sender, stats, lbl(player, "selftest.lang-missing", "?"), "zh_CN not loaded");
+        } else {
+            stFail(sender, stats, lbl(player, "selftest.lang-missing", String.valueOf(diff)), localeDetail);
+        }
+
+        // ---- Vault 经济 ----
+        if (plugin.getEconomyManager().isEconomyEnabled()) {
+            stPass(sender, stats, lbl(player, "selftest.vault"));
+        } else {
+            stWarn(sender, stats, lbl(player, "selftest.vault"), lbl(player, "selftest.disabled"));
+        }
+
+        // ---- 区域 ----
+        java.util.List<String> areaNames = plugin.getAreaManager().getAreaNames();
+        int enabledAreas = 0;
+        for (String n : areaNames) {
+            if (plugin.getAreaManager().isAreaEnabled(n)) enabledAreas++;
+        }
+        if (areaNames.isEmpty()) {
+            stFail(sender, stats, lbl(player, "selftest.areas", "0", "0"), "no saved area");
+        } else if (enabledAreas == 0) {
+            stFail(sender, stats, lbl(player, "selftest.areas", String.valueOf(areaNames.size()), "0"),
+                "no enabled area");
+        } else {
+            stPass(sender, stats, lbl(player, "selftest.areas",
+                String.valueOf(areaNames.size()), String.valueOf(enabledAreas)));
+        }
+
+        String selected = plugin.getAreaManager().getSelectedAreaName();
+        if (selected != null && !selected.isEmpty()) {
+            stPass(sender, stats, lbl(player, "selftest.area", selected));
+        } else {
+            stWarn(sender, stats, lbl(player, "selftest.area-none"), lbl(player, "selftest.disabled"));
+        }
+
+        // ---- 配置版本 ----
+        int cfgVersion = plugin.getConfig().getInt("ScriptIrc-config-version", -1);
+        int expected = plugin.getConfigManager().getCurrentConfigVersion();
+        if (cfgVersion == expected) {
+            stPass(sender, stats, lbl(player, "selftest.config-version",
+                String.valueOf(cfgVersion), String.valueOf(expected)));
+        } else {
+            stFail(sender, stats, lbl(player, "selftest.config-version",
+                String.valueOf(cfgVersion), String.valueOf(expected)), "run /gostadmin reload");
+        }
+
+        // ---- 道具工厂 ----
+        java.util.List<org.bukkit.inventory.ItemStack> made = new java.util.ArrayList<>();
+        made.add(plugin.getItemManager().getAdrenaline());
+        made.add(plugin.getItemManager().getFrenzyPotion());
+        made.add(plugin.getItemManager().getIceBall());
+        made.add(plugin.getItemManager().getSoulControl());
+        made.add(plugin.getItemManager().getSecondChance());
+        made.add(plugin.getItemManager().getLevitationPotion());
+        made.add(plugin.getItemManager().getSpearRush());
+        made.add(plugin.getItemSpawnManager().createTeleportPearl());
+        made.add(plugin.getItemSpawnManager().createStinkySteak());
+        made.add(plugin.getItemSpawnManager().createSoulDetector());
+        int madeOk = 0;
+        for (org.bukkit.inventory.ItemStack it : made) {
+            if (it != null && it.getType() != org.bukkit.Material.AIR) madeOk++;
+        }
+        String itemText = lbl(player, "selftest.items",
+            String.valueOf(madeOk), String.valueOf(made.size()));
+        if (madeOk == made.size()) {
+            stPass(sender, stats, itemText);
+        } else {
+            stFail(sender, stats, itemText, "item factory returned empty");
+        }
+
+        // ---- 更新检查开关 ----
+        boolean updateCheck = plugin.getConfig().getBoolean("update-check.enabled", true);
+        stPass(sender, stats, lbl(player, "selftest.update-check",
+            lbl(player, updateCheck ? "selftest.enabled" : "selftest.disabled")));
+
+        // ---- ActionBar 通道（只有玩家能测）----
+        if (player != null) {
+            try {
+                io.Sriptirc_wp_1258.gost.managers.ActionBarManager.sendNow(
+                    player, lbl(player, "selftest.actionbar") + " ✓");
+                String strategy = io.Sriptirc_wp_1258.gost.managers.ActionBarManager.activeStrategy();
+                String text = lbl(player, "selftest.actionbar") + " [" + strategy + "]";
+                if ("chat-fallback".equals(strategy)) {
+                    stWarn(sender, stats, text, "degraded to chat");
+                } else {
+                    stPass(sender, stats, text);
+                }
+            } catch (Throwable t) {
+                stFail(sender, stats, lbl(player, "selftest.actionbar"), t.getClass().getSimpleName());
+            }
+        }
+
+        if (player == null) {
+            send(sender, "selftest.console-hint");
+            finishSelfTest(sender, stats);
+            return true;
+        }
+
+        // ---- 调度：延迟验证任务是否真的执行 ----
+        final boolean[] ranLater = {false};
+        ServerCompat.runLater(plugin, () -> ranLater[0] = true, 1L);
+
+        final boolean[] timerRan = {false};
+        final ServerCompat.Cancellable[] holder = new ServerCompat.Cancellable[1];
+        holder[0] = ServerCompat.runTimerForEntity(player, plugin, () -> {
+            timerRan[0] = true;
+            if (holder[0] != null) holder[0].cancel();
+        }, 0L, 2L);
+
+        ServerCompat.runLater(plugin, () -> {
+            if (ranLater[0]) {
+                stPass(sender, stats, lbl(player, "selftest.scheduler"));
+            } else {
+                stFail(sender, stats, lbl(player, "selftest.scheduler"), "task never ran");
+            }
+            if (timerRan[0]) {
+                stPass(sender, stats, lbl(player, "selftest.entity-timer"));
+            } else {
+                stFail(sender, stats, lbl(player, "selftest.entity-timer"), "timer never fired");
+            }
+            finishSelfTest(sender, stats);
+        }, 30L);
+
+        return true;
+    }
+
+    /** 取文案（玩家可为 null，此时用服务器默认语言） */
+    private String lbl(Player player, String key, Object... args) {
+        return plugin.getLanguageManager().getMessage(player, key, args);
+    }
+
+    private void stPass(CommandSender sender, int[] stats, String text) {
+        stats[0]++;
+        send(sender, "selftest.pass", text);
+    }
+
+    private void stFail(CommandSender sender, int[] stats, String text, String detail) {
+        stats[1]++;
+        send(sender, "selftest.fail", text, detail);
+    }
+
+    private void stWarn(CommandSender sender, int[] stats, String text, String detail) {
+        stats[2]++;
+        send(sender, "selftest.warn", text, detail);
+    }
+
+    private void finishSelfTest(CommandSender sender, int[] stats) {
+        send(sender, "selftest.footer");
+        send(sender, "selftest.summary", stats[0], stats[1], stats[2]);
+        send(sender, stats[1] == 0 ? "selftest.ready" : "selftest.blocked");
+    }
+
     private boolean handleDark(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin dark <on|off|status>");
-            sender.sendMessage(ChatColor.YELLOW + "  on - 启用黑暗效果（给予所有玩家失明效果）");
-            sender.sendMessage(ChatColor.YELLOW + "  off - 禁用黑暗效果（移除所有玩家的失明效果）");
-            sender.sendMessage(ChatColor.YELLOW + "  status - 查看黑暗效果状态");
+            send(sender, "admin.dark.usage");
+            send(sender, "admin.dark.help-on");
+            send(sender, "admin.dark.help-off");
+            send(sender, "admin.dark.help-status");
             return true;
         }
         
@@ -462,22 +653,21 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         switch (action) {
             case "on":
                 plugin.getDarkEffectManager().toggleDarkEffect(true);
-                sender.sendMessage(ChatColor.GREEN + "黑暗效果已启用！所有玩家获得失明效果。");
+                send(sender, "admin.dark.enabled");
                 break;
                 
             case "off":
                 plugin.getDarkEffectManager().toggleDarkEffect(false);
-                sender.sendMessage(ChatColor.GREEN + "黑暗效果已禁用！所有玩家的失明效果已移除。");
+                send(sender, "admin.dark.disabled");
                 break;
                 
             case "status":
                 boolean enabled = plugin.getDarkEffectManager().isDarkEffectEnabled();
-                sender.sendMessage(ChatColor.YELLOW + "黑暗效果状态: " + 
-                    (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
+                send(sender, "admin.dark.status", plugin.getLanguageManager().getMessage(enabled ? "common.enabled" : "common.disabled"));
                 break;
                 
             default:
-                sender.sendMessage(ChatColor.RED + "未知操作！使用 /gostadmin dark 查看帮助");
+                send(sender, "admin.dark.unknown");
                 break;
         }
         
@@ -486,10 +676,10 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleHeartbeat(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin heartbeat <on|off|status>");
-            sender.sendMessage(ChatColor.YELLOW + "  on - 启用心跳声效果（游戏过程中人类玩家听到监守者心跳声）");
-            sender.sendMessage(ChatColor.YELLOW + "  off - 禁用心跳声效果");
-            sender.sendMessage(ChatColor.YELLOW + "  status - 查看心跳声效果状态");
+            send(sender, "admin.heartbeat.usage");
+            send(sender, "admin.heartbeat.help-on");
+            send(sender, "admin.heartbeat.help-off");
+            send(sender, "admin.heartbeat.help-status");
             return true;
         }
         
@@ -507,14 +697,14 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
             case "status":
                 boolean enabled = plugin.getConfigManager().isHeartbeatEnabled();
                 boolean running = plugin.getHeartbeatManager().isHeartbeatEnabled();
-                sender.sendMessage(ChatColor.GOLD + "=== 心跳声效果状态 ===");
-                sender.sendMessage(ChatColor.YELLOW + "配置状态: " + (enabled ? ChatColor.GREEN + "已启用" : ChatColor.RED + "已禁用"));
-                sender.sendMessage(ChatColor.YELLOW + "运行状态: " + (running ? ChatColor.GREEN + "运行中" : ChatColor.RED + "已停止"));
-                sender.sendMessage(ChatColor.YELLOW + "播放间隔: " + ChatColor.AQUA + plugin.getConfigManager().getHeartbeatInterval() + "秒");
+                send(sender, "admin.heartbeat.header");
+                send(sender, "admin.heartbeat.config", plugin.getLanguageManager().getMessage(enabled ? "common.enabled" : "common.disabled"));
+                send(sender, "admin.heartbeat.running", plugin.getLanguageManager().getMessage(running ? "common.running" : "common.disabled"));
+                send(sender, "admin.heartbeat.interval", plugin.getConfigManager().getHeartbeatInterval());
                 break;
                 
             default:
-                sender.sendMessage(ChatColor.RED + "未知操作！使用 /gostadmin heartbeat 查看帮助");
+                send(sender, "admin.heartbeat.unknown");
                 break;
         }
         
@@ -523,10 +713,10 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleEconomy(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin economy <set|status>");
-            sender.sendMessage(ChatColor.YELLOW + "  set entryfee <金额> - 设置入场费金额");
-            sender.sendMessage(ChatColor.YELLOW + "  set serverbonus <金额> - 设置服务器奖金金额");
-            sender.sendMessage(ChatColor.YELLOW + "  status - 查看当前经济设置");
+            send(sender, "admin.economy.usage");
+            send(sender, "admin.economy.help-set-fee");
+            send(sender, "admin.economy.help-set-bonus");
+            send(sender, "admin.economy.help-status");
             return true;
         }
         
@@ -540,14 +730,14 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 double entryFee = plugin.getConfigManager().getEntryFee();
                 double serverBonus = plugin.getConfigManager().getServerBonus();
                 
-                sender.sendMessage(ChatColor.GOLD + "=== 经济设置状态 ===");
-                sender.sendMessage(ChatColor.YELLOW + "入场费: " + ChatColor.GREEN + entryFee + " 金币");
-                sender.sendMessage(ChatColor.YELLOW + "服务器奖金: " + ChatColor.GREEN + serverBonus + " 金币");
-                sender.sendMessage(ChatColor.GRAY + "总奖池 = 入场费 × 玩家数 + 服务器奖金");
+                send(sender, "admin.economy.header");
+                send(sender, "admin.economy.entry-fee", entryFee);
+                send(sender, "admin.economy.server-bonus", serverBonus);
+                send(sender, "admin.economy.formula");
                 break;
                 
             default:
-                sender.sendMessage(ChatColor.RED + "未知操作！使用 /gostadmin economy 查看帮助");
+                send(sender, "admin.economy.unknown");
                 break;
         }
         
@@ -556,9 +746,9 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleEconomySet(CommandSender sender, String[] args) {
         if (args.length < 4) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin economy set <entryfee|serverbonus> <金额>");
-            sender.sendMessage(ChatColor.YELLOW + "示例: /gostadmin economy set entryfee 150");
-            sender.sendMessage(ChatColor.YELLOW + "示例: /gostadmin economy set serverbonus 10000");
+            send(sender, "admin.economy.set-usage");
+            send(sender, "admin.economy.set-example-fee");
+            send(sender, "admin.economy.set-example-bonus");
             return true;
         }
         
@@ -569,7 +759,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
             double value = Double.parseDouble(valueStr);
             
             if (value < 0) {
-                sender.sendMessage(ChatColor.RED + "金额不能为负数！");
+                send(sender, "admin.economy.negative");
                 return true;
             }
             
@@ -578,25 +768,25 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
                 case "entry-fee":
                 case "entry_fee":
                     plugin.getConfigManager().setEntryFee(value);
-                    sender.sendMessage(ChatColor.GREEN + "入场费已设置为: " + ChatColor.YELLOW + value + " 金币");
-                    sender.sendMessage(ChatColor.GRAY + "玩家加入游戏队列时需要支付此金额作为入场费");
+                    send(sender, "admin.economy.fee-set", value);
+                    send(sender, "admin.economy.fee-set-hint");
                     break;
                     
                 case "serverbonus":
                 case "server-bonus":
                 case "server_bonus":
                     plugin.getConfigManager().setServerBonus(value);
-                    sender.sendMessage(ChatColor.GREEN + "服务器奖金已设置为: " + ChatColor.YELLOW + value + " 金币");
-                    sender.sendMessage(ChatColor.GRAY + "此金额将添加到每场游戏的总奖池中");
+                    send(sender, "admin.economy.bonus-set", value);
+                    send(sender, "admin.economy.bonus-set-hint");
                     break;
                     
                 default:
-                    sender.sendMessage(ChatColor.RED + "未知设置！可用设置: entryfee, serverbonus");
+                    send(sender, "admin.economy.unknown-key");
                     return true;
             }
             
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "无效的金额格式！请输入有效的数字");
+            send(sender, "admin.economy.invalid-number");
             return true;
         }
         
@@ -604,33 +794,33 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     }
     
     private void sendHelp(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "========== Gost 管理员命令 ==========");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin start <区域> - 使用指定区域开始游戏");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin stop - 停止游戏");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin testmode - 管理员单人测试模式（不会因人数不足结束）");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin giveitem <道具名> - 直接获得指定道具");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin tool - 获取选区工具");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin pos1 - 设置第一个点（使用工具左键）");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin pos2 - 设置第二个点（使用工具右键）");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin save <名称> - 保存当前选区");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin list - 列出所有存档区域");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin load <名称> [enable|disable] - 选择/启用/禁用区域");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin delete <名称> - 删除区域");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin info <名称> - 查看区域信息");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin clear - 清除当前选区");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin reload - 重新加载配置");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin lang <代码> - 切换语言 (zh_CN/en_US/ja_JP/es_ES/fr_FR/de_DE)");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin status - 查看游戏状态");
-
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin dark <on|off|status> - 黑暗效果管理");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin heartbeat <on|off|status> - 心跳声效果管理");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin economy <set|status> - 经济设置管理");
-        sender.sendMessage(ChatColor.YELLOW + "/gostadmin help - 显示此帮助");
-        sender.sendMessage(ChatColor.GOLD + "==================================");
+        send(sender, "admin.help.header");
+        send(sender, "admin.help.start");
+        send(sender, "admin.help.stop");
+        send(sender, "admin.help.testmode");
+        send(sender, "admin.help.giveitem");
+        send(sender, "admin.help.tool");
+        send(sender, "admin.help.pos1");
+        send(sender, "admin.help.pos2");
+        send(sender, "admin.help.save");
+        send(sender, "admin.help.list");
+        send(sender, "admin.help.load");
+        send(sender, "admin.help.delete");
+        send(sender, "admin.help.info");
+        send(sender, "admin.help.clear");
+        send(sender, "admin.help.reload");
+        send(sender, "admin.help.lang", plugin.getLanguageManager().listSupported());
+        send(sender, "admin.help.status");
+        send(sender, "selftest.help");
+        send(sender, "admin.help.dark");
+        send(sender, "admin.help.heartbeat");
+        send(sender, "admin.help.economy");
+        send(sender, "admin.help.help");
+        send(sender, "admin.separator");
     }
     
     private String formatLocation(org.bukkit.Location location) {
-        if (location == null) return "未设置";
+        if (location == null) return plugin.getLanguageManager().getMessage("admin.location.unset");
         return String.format("(%d, %d, %d)", 
             (int) location.getX(), 
             (int) location.getY(), 
@@ -643,7 +833,7 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         
         if (args.length == 1) {
-            String[] subCommands = {"start", "stop", "testmode", "giveitem", "lang", "language", "divine", "particle", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "dark", "heartbeat", "economy", "help"};
+            String[] subCommands = {"start", "stop", "testmode", "giveitem", "lang", "language", "divine", "particle", "pos1", "pos2", "save", "list", "load", "delete", "info", "tool", "clear", "reload", "status", "selftest", "dark", "heartbeat", "economy", "help"};
             for (String subCommand : subCommands) {
                 if (subCommand.startsWith(args[0].toLowerCase())) {
                     completions.add(subCommand);
@@ -713,29 +903,29 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleTestMode(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            send(sender, "error.player-only");
             return true;
         }
         
         Player player = (Player) sender;
         
         if (plugin.getGameManager().isAnyGameRunning()) {
-            player.sendMessage(ChatColor.RED + "当前有游戏正在进行！请先使用 /gostadmin stop 停止游戏。");
+            send(player, "admin.testmode.in-progress");
             return true;
         }
         
         if (!plugin.getGameManager().isInQueue(player.getUniqueId())) {
             plugin.getGameManager().joinQueue(player);
-            player.sendMessage(ChatColor.GREEN + "你已加入游戏队列！");
+            send(player, "command.join.success");
         }
         
         boolean started = plugin.getGameManager().startGame(true, true);
         if (started) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "管理员 " + player.getName() + " 启动了单人测试模式！");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "对局不会因人数不足而结束，道具正常发放。");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "使用 /gostadmin stop 结束测试。");
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("admin.testmode.started", player.getName()));
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("admin.testmode.note-1"));
+            Bukkit.broadcastMessage(plugin.getLanguageManager().getMessage("admin.testmode.note-2"));
         } else {
-            player.sendMessage(ChatColor.RED + "启动测试模式失败，请检查区域设置！");
+            send(player, "admin.testmode.failed");
         }
         
         return true;
@@ -743,13 +933,13 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
     
     private boolean handleGiveItem(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "只有玩家可以使用此命令！");
+            send(sender, "error.player-only");
             return true;
         }
         
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "用法: /gostadmin giveitem <道具名称>");
-            sender.sendMessage(ChatColor.YELLOW + "可用道具: 肾上腺素, 狂暴药水, 凝冰球, 控魂术, 臭牛排, 传送珍珠, 灵魂探测器, 第二次机会, 冲刺矛");
+            send(sender, "admin.giveitem.usage");
+            send(sender, "admin.giveitem.available", "肾上腺素, 狂暴药水, 凝冰球, 控魂术, 臭牛排, 传送珍珠, 灵魂探测器, 第二次机会, 漂浮药水, 冲刺矛");
             return true;
         }
         
@@ -781,63 +971,63 @@ public class GostAdminCommand implements CommandExecutor, TabCompleter {
         
         if (item == null || item.getType() == org.bukkit.Material.AIR) {
             if (itemName.contains("冲刺矛")) {
-                player.sendMessage(ChatColor.RED + "冲刺矛在当前服务器版本不可用！");
+                plugin.getLanguageManager().sendMessage(player, "item.spear-unavailable");
             } else {
-                player.sendMessage(ChatColor.RED + "未知道具！可用道具: 肾上腺素, 狂暴药水, 凝冰球, 控魂术, 臭牛排, 传送珍珠, 灵魂探测器, 第二次机会, 漂浮药水" + (plugin.isSpearRushEnabled() ? ", 冲刺矛" : ""));
+                send(player, "admin.giveitem.unknown", "肾上腺素, 狂暴药水, 凝冰球, 控魂术, 臭牛排, 传送珍珠, 灵魂探测器, 第二次机会, 漂浮药水" + (plugin.isSpearRushEnabled() ? ", 冲刺矛" : ""));
             }
             return true;
         }
         
         player.getInventory().addItem(item);
-        player.sendMessage(ChatColor.GREEN + "你获得了 " + itemName + "！");
+        send(player, "admin.giveitem.received", itemName);
         return true;
     }
     
     // 神圣守护管理子命令（整合原/divineguardian）
     private boolean handleDivineSub(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.YELLOW + "神圣守护子命令:");
-            sender.sendMessage(ChatColor.YELLOW + "/gostadmin divine status - 查看状态");
-            sender.sendMessage(ChatColor.YELLOW + "/gostadmin divine clear - 清除神圣守护数据");
+            send(sender, "admin.divine.header");
+            send(sender, "admin.divine.help-status");
+            send(sender, "admin.divine.help-clear");
             return true;
         }
         String sub = args[1].toLowerCase();
         if (sub.equals("status")) {
             io.Sriptirc_wp_1258.gost.managers.DivineGuardianManager dg = plugin.getDivineGuardianManager();
-            sender.sendMessage(ChatColor.GOLD + "=== 神圣守护状态 ===");
-            sender.sendMessage(ChatColor.YELLOW + "救赎者数量: " + ChatColor.GREEN + dg.getRedeemerCount() + "/2");
-            sender.sendMessage(ChatColor.YELLOW + "猎魔人阶段: " + ChatColor.GREEN + (dg.isInDemonHunterPhase() ? "进行中" : "未开始"));
+            send(sender, "admin.divine.status-header");
+            send(sender, "admin.divine.redeemers", dg.getRedeemerCount());
+            send(sender, "admin.divine.dh-phase", plugin.getLanguageManager().getMessage(dg.isInDemonHunterPhase() ? "common.in-progress" : "common.not-started"));
             return true;
         } else if (sub.equals("clear")) {
-            sender.sendMessage(ChatColor.GREEN + "神圣守护数据已清除（请使用 /gostadmin reload 生效）");
+            send(sender, "admin.divine.cleared");
             return true;
         }
-        sender.sendMessage(ChatColor.RED + "未知神圣守护子命令！");
+        send(sender, "admin.divine.unknown");
         return true;
     }
     
     // 鬼粒子管理子命令（整合原/ghostparticle）
     private boolean handleParticleSub(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.YELLOW + "鬼粒子子命令:");
-            sender.sendMessage(ChatColor.YELLOW + "/gostadmin particle status - 查看状态");
-            sender.sendMessage(ChatColor.YELLOW + "/gostadmin particle enable|disable - 启用/禁用");
+            send(sender, "admin.particle.header");
+            send(sender, "admin.particle.help-status");
+            send(sender, "admin.particle.help-toggle");
             return true;
         }
         String sub = args[1].toLowerCase();
         io.Sriptirc_wp_1258.gost.managers.GhostParticleManager gp = plugin.getGhostParticleManager();
         if (sub.equals("status")) {
-            sender.sendMessage(ChatColor.GOLD + "=== 鬼粒子状态 ===");
-            sender.sendMessage(ChatColor.YELLOW + "粒子效果: " + ChatColor.GREEN + (gp != null ? "运行中" : "未启用"));
+            send(sender, "admin.particle.status-header");
+            send(sender, "admin.particle.status", plugin.getLanguageManager().getMessage(gp != null ? "common.running" : "common.not-running"));
             return true;
         } else if (sub.equals("enable")) {
-            sender.sendMessage(ChatColor.GREEN + "鬼粒子效果已启用");
+            send(sender, "admin.particle.enabled");
             return true;
         } else if (sub.equals("disable")) {
-            sender.sendMessage(ChatColor.GREEN + "鬼粒子效果已禁用");
+            send(sender, "admin.particle.disabled");
             return true;
         }
-        sender.sendMessage(ChatColor.RED + "未知鬼粒子子命令！");
+        send(sender, "admin.particle.unknown");
         return true;
     }
 }

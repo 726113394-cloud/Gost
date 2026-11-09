@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.gradleup.shadow' version '8.3.6'
 }
 
 group = 'io.Sriptirc_wp_1258'
-version = '2.3.3'
+version = '2.4.0'
 
 repositories {
     mavenCentral()
@@ -12,6 +13,22 @@ repositories {
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT'
+    compileOnly files('libs/VaultAPI.jar')
+
+    // bStats 匿名统计：需要打进 jar，故用 implementation 而非 compileOnly
+    implementation 'org.bstats:bstats-bukkit:3.0.2'
+}
+
+// 源码实际布局是 main/ 与 resources/，并非 Gradle 默认的 src/main/java
+sourceSets {
+    main {
+        java {
+            srcDirs = ['main']
+        }
+        resources {
+            srcDirs = ['resources']
+        }
+    }
 }
 
 java {
@@ -22,4 +39,19 @@ java {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release.set(17)
+}
+
+// 把 bStats 重定位进本插件自己的包，避免与其他插件冲突
+tasks.named('shadowJar') {
+    archiveFileName = "Gost_v${project.version}.jar"
+    relocate 'org.bstats', 'io.Sriptirc_wp_1258.gost.libs.bstats'
+}
+
+// 只产出 shadow 包，避免同时生成一个不含 bStats 的普通 jar
+tasks.named('jar') {
+    enabled = false
+}
+
+tasks.named('build') {
+    dependsOn 'shadowJar'
 }

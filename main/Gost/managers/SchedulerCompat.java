@@ -108,6 +108,48 @@ final class SchedulerCompat {
         }
     }
 
+    /** Folia EntityScheduler.runDelayed → 返回可取消包装 */
+    static ServerCompat.Cancellable runOnEntityDelayed(org.bukkit.entity.Entity entity, Plugin plugin,
+                                                       Runnable task, long delayTicks) {
+        try {
+            Object sched = entityScheduler(entity);
+            if (sched == null) return null;
+            Method m = sched.getClass().getMethod("runDelayed", Plugin.class,
+                java.util.function.Consumer.class, Runnable.class, long.class);
+            Object handle = m.invoke(sched, plugin,
+                (java.util.function.Consumer<Object>) ignored -> task.run(), null,
+                Math.max(1L, delayTicks));
+            return new ReflectCancellable(handle);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /** Folia EntityScheduler.runAtFixedRate → 返回可取消包装 */
+    static ServerCompat.Cancellable runOnEntityTimer(org.bukkit.entity.Entity entity, Plugin plugin,
+                                                     Runnable task, long delayTicks, long periodTicks) {
+        try {
+            Object sched = entityScheduler(entity);
+            if (sched == null) return null;
+            Method m = sched.getClass().getMethod("runAtFixedRate", Plugin.class,
+                java.util.function.Consumer.class, Runnable.class, long.class, long.class);
+            Object handle = m.invoke(sched, plugin,
+                (java.util.function.Consumer<Object>) ignored -> task.run(), null,
+                Math.max(1L, delayTicks), Math.max(1L, periodTicks));
+            return new ReflectCancellable(handle);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    private static Object entityScheduler(org.bukkit.entity.Entity entity) {
+        try {
+            return entity.getClass().getMethod("getScheduler").invoke(entity);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
     private static final class ReflectCancellable implements ServerCompat.Cancellable {
         private final Object handle;
         ReflectCancellable(Object handle) { this.handle = handle; }

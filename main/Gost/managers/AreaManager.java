@@ -27,6 +27,9 @@ public class AreaManager {
     
     // 当前选中的区域（用于快速开始游戏）
     private String selectedAreaName = null;
+
+    /** 管理员手动指定、只对下一局生效 */
+    private boolean forceNextArea = false;
     
     // 启用的区域列表（管理员通过指令加载的区域）
     private final Set<String> enabledAreas = new HashSet<>();
@@ -407,7 +410,10 @@ public class AreaManager {
     }
     
     /**
-     * 设置选中的区域
+     * 设置选中的区域。
+     *
+     * <p>管理员手动指定会打上「只生效一局」的标记：下一局用它，
+     * 之后的局恢复随机（见 {@link #consumeForceNextArea()}）。</p>
      */
     public boolean selectArea(String name) {
         if (!areas.containsKey(name)) {
@@ -415,9 +421,21 @@ public class AreaManager {
         }
         
         selectedAreaName = name;
+        forceNextArea = true;
         areas.get(name).incrementUsage();
         saveAreas();
         return true;
+    }
+    
+    /**
+     * 取出并清除「管理员指定下一局区域」标记。
+     *
+     * @return true 表示本局应使用 {@link #getSelectedArea()} 指定的区域
+     */
+    public boolean consumeForceNextArea() {
+        boolean forced = forceNextArea;
+        forceNextArea = false;
+        return forced;
     }
     
     /**
@@ -585,7 +603,7 @@ public class AreaManager {
      */
     public boolean teleportPlayerToArea(Player player, GameArea area) {
         if (area == null) {
-            player.sendMessage("§c区域不存在！");
+            plugin.getLanguageManager().sendMessage(player, "area.not-exist");
             return false;
         }
         
@@ -595,13 +613,13 @@ public class AreaManager {
             // 如果找不到安全位置，尝试使用中心点
             safeLocation = area.getCenter();
             if (safeLocation == null) {
-                player.sendMessage("§c无法获取传送位置！");
+                player.sendMessage(plugin.getLanguageManager().getMessage(player, "area.no-teleport-target"));
                 return false;
             }
         }
         
         player.teleport(safeLocation);
-        player.sendMessage("§a你已被传送到游戏区域！");
+        plugin.getLanguageManager().sendMessage(player, "area.teleported");
         return true;
     }
     

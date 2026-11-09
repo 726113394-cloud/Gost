@@ -1,7 +1,6 @@
 package io.Sriptirc_wp_1258.gost.managers;
 
 import io.Sriptirc_wp_1258.gost.Gost;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -11,75 +10,218 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 多语言管理器（v2.3.3）
+ * 多语言管理器（v2.4.0）
  *
  * <p>支持语言文件：zh_CN / en_US / ja_JP / es_ES / fr_FR / de_DE</p>
  * <p>文件位置：plugins/Gost/lang/&lt;locale&gt;.yml —— 用户可自行修改，/gost reload 生效。</p>
- * <p>config.yml -> language.default 选择语言。</p>
+ * <p>语言选择：config.yml -> language.default 作为服务器默认语言；
+ * 玩家可用 /gost lang &lt;locale&gt; 单独切换（按 UUID 记忆，不落盘）。</p>
+ *
+ * <p>v2.4.0 起一次性加载全部语言，因此：</p>
+ * <ul>
+ *   <li>玩家切语言立即生效，不需要重载</li>
+ *   <li>缺失的 key 会按「玩家语言 → 服务器默认语言 → key 本身」逐级回退</li>
+ * </ul>
  */
 public class LanguageManager {
 
     public static final String[] SUPPORTED = {"zh_CN", "en_US", "ja_JP", "es_ES", "fr_FR", "de_DE"};
 
+    private static final String FALLBACK_LOCALE = "zh_CN";
+
     private final Gost plugin;
-    private final Map<String, String> messages = new HashMap<>();
-    private String currentLanguage = "zh_CN";
+
+    /** locale → (key → 消息) */
+    private final Map<String, Map<String, String>> byLocale = new LinkedHashMap<>();
+    /** 玩家单独选择的语言 */
+    private final Map<UUID, String> playerLocales = new ConcurrentHashMap<>();
+
+    private String defaultLocale = FALLBACK_LOCALE;
 
     public LanguageManager(Gost plugin) {
         this.plugin = plugin;
         loadMessages();
     }
 
-    /** 当前语言代码 */
+    /** 服务器默认语言代码 */
     public String getCurrentLanguage() {
-        return currentLanguage;
+        return defaultLocale;
     }
 
-    /** 是否英文（兼容旧调用） */
+    /** 是否英文（兼容旧调用；基于服务器默认语言） */
     public boolean isEnglish() {
-        return "en_US".equalsIgnoreCase(currentLanguage);
+        return "en_US".equalsIgnoreCase(defaultLocale);
     }
 
-    /** 是否中文 */
+    /** 是否中文（兼容旧调用；基于服务器默认语言） */
     public boolean isChinese() {
-        return currentLanguage.toLowerCase(Locale.ROOT).startsWith("zh");
+        return defaultLocale.toLowerCase(Locale.ROOT).startsWith("zh");
+    }
+
+    /** 取某个玩家实际生效的语言（未单独设置则用服务器默认） */
+    public String getLanguage(Player player) {
+        if (player == null) return defaultLocale;
+        return playerLocales.getOrDefault(player.getUniqueId(), defaultLocale);
+    }
+
+    /** 取某个玩家实际生效的语言（按 UUID） */
+    public String getLanguage(UUID playerId) {
+        if (playerId == null) return defaultLocale;
+        return playerLocales.getOrDefault(playerId, defaultLocale);
     }
 
     /**
-     * 加载语言：优先 plugins/Gost/lang/&lt;locale&gt;.yml，缺失则从 jar 内置资源释放并加载。
+     * 为玩家单独设置语言。
+     * @return 语言代码非法时返回 false
+     */
+    public boolean setLanguage(Player player, String locale) {
+        if (player == null || locale == null) return false;
+        String normalized = normalizeOrNull(locale);
+        if (normalized == null) return false;
+        playerLocales.put(player.getUniqueId(), normalized);
+        return true;
+    }
+
+    /** 清除玩家单独设置，回到服务器默认语言 */
+    public void clearLanguage(Player player) {
+        if (player == null) return;
+        playerLocales.remove(player.getUniqueId());
+    }
+
+    /**
+     * 加载全部语言：优先 plugins/Gost/lang/&lt;locale&gt;.yml，
+     * 文件缺失的键从 jar 内置资源补齐，并**回写**到用户文件里。
+     *
+     * <p>回写只做追加：用户已改过的译文、自己加的注释、键顺序全部保留，
+     * 只在文件末尾补上这一版新增而文件里还没有的键。这样升级后新增的文案
+     * 会出现在用户文件里，可被翻译，而不需要用户删掉文件重新生成。</p>
      */
     private void loadMessages() {
-        messages.clear();
-        currentLanguage = normalize(plugin.getConfigManager().getDefaultLanguage());
+        byLocale.clear();
+        defaultLocale = normalize(plugin.getConfigManager().getDefaultLanguage());
         ensureLanguageFiles();
 
-        File file = new File(plugin.getDataFolder(), "lang" + File.separator + currentLanguage + ".yml");
-        int loaded = 0;
-        if (file.isFile()) {
-            YamlConfiguration yml = YamlConfiguration.loadConfiguration(file);
-            for (String key : yml.getKeys(true)) {
-                if (!yml.isConfigurationSection(key)) {
-                    String val = yml.getString(key);
-                    if (val != null) {
-                        messages.put(key, val);
-                        loaded++;
+        for (String locale : SUPPORTED) {
+            Map<String, String> messages = new HashMap<>();
+            File file = new File(plugin.getDataFolder(), "lang" + File.separator + locale + ".yml");
+
+            // 1) 用户文件（保留用户改动）
+            if (file.isFile()) {
+                YamlConfiguration yml = YamlConfiguration.loadConfiguration(file);
+                collect(yml, messages);
+            }
+
+            // 2) 内置资源
+            Map<String, String> builtin = loadBuiltin(locale);
+
+            // 3) 把内置里有、用户文件里没有的键追加回文件（只追加，不重写）
+            if (file.isFile() && !builtin.isEmpty()) {
+                Map<String, String> missing = new LinkedHashMap<>();
+                for (Map.Entry<String, String> e : builtin.entrySet()) {
+                    if (!messages.containsKey(e.getKey())) {
+                        missing.put(e.getKey(), e.getValue());
                     }
                 }
+                if (!missing.isEmpty() && appendKeys(file, missing)) {
+                    plugin.getLogger().info("语言文件 " + locale + ".yml 已自动补齐 "
+                        + missing.size() + " 个新增键");
+                }
             }
+
+            // 4) 内置兜底（不覆盖用户已有的值）
+            for (Map.Entry<String, String> e : builtin.entrySet()) {
+                messages.putIfAbsent(e.getKey(), e.getValue());
+            }
+
+            byLocale.put(locale, messages);
         }
 
-        // 缺失键从内置默认补齐（zh_CN / en_US）
-        if (loaded < 20 || !messages.containsKey("game.starting")) {
-            loadBuiltinFallback();
-            loaded = messages.size();
-        }
+        int total = byLocale.getOrDefault(defaultLocale, java.util.Collections.emptyMap()).size();
+        plugin.getLogger().info("语言: " + defaultLocale + "，已加载 " + total + " 条消息（共 "
+            + byLocale.size() + " 种语言）");
+    }
 
-        plugin.getLogger().info("语言: " + currentLanguage + "，已加载 " + loaded + " 条消息"
-            + (file.isFile() ? " (来自 " + file.getName() + ")" : " (内置)"));
+    /** 读取 jar 内置的某种语言 */
+    private Map<String, String> loadBuiltin(String locale) {
+        Map<String, String> builtin = new HashMap<>();
+        try (InputStream in = plugin.getResource("lang/" + locale + ".yml")) {
+            if (in != null) {
+                YamlConfiguration yml = YamlConfiguration.loadConfiguration(
+                    new InputStreamReader(in, StandardCharsets.UTF_8));
+                collect(yml, builtin);
+            } else {
+                plugin.getLogger().warning("内置语言资源缺失: lang/" + locale + ".yml");
+            }
+        } catch (Exception e) {
+            // 不能静默：内置文件解析失败会导致该语种只剩用户文件里的旧键，
+            // 玩家会看到大段 key 或回退到默认语言
+            plugin.getLogger().warning("解析内置语言文件失败 lang/" + locale + ".yml: " + e.getMessage());
+        }
+        return builtin;
+    }
+
+    /** 各语言已加载的键数，形如 "zh_CN=598, en_US=66"（自检诊断用） */
+    public String describeLocaleCounts() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Map<String, String>> e : byLocale.entrySet()) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(e.getKey()).append('=').append(e.getValue().size());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 把缺失的键追加到语言文件末尾。
+     * 保持用户原有内容与换行风格，只往末尾追加一段带说明的键块。
+     *
+     * @return 是否真的写入成功
+     */
+    private boolean appendKeys(File file, Map<String, String> missing) {
+        try {
+            String original = new String(java.nio.file.Files.readAllBytes(file.toPath()),
+                StandardCharsets.UTF_8);
+            String newline = original.contains("\r\n") ? "\r\n" : "\n";
+
+            StringBuilder sb = new StringBuilder(original);
+            if (!original.endsWith("\n") && !original.endsWith("\r\n")) {
+                sb.append(newline);
+            }
+            sb.append(newline)
+              .append("# ---- 以下 ").append(missing.size())
+              .append(" 个键由 Gost ").append(plugin.getDescription().getVersion())
+              .append(" 自动补齐（可自行翻译/修改）----").append(newline);
+            for (Map.Entry<String, String> e : missing.entrySet()) {
+                sb.append(e.getKey()).append(": \"").append(escapeYaml(e.getValue())).append("\"").append(newline);
+            }
+
+            java.nio.file.Files.write(file.toPath(), sb.toString().getBytes(StandardCharsets.UTF_8));
+            return true;
+        } catch (Exception e) {
+            plugin.getLogger().warning("补齐语言文件失败 " + file.getName() + ": " + e.getMessage());
+            return false;
+        }
+    }
+
+    /** 双引号 YAML 字符串转义 */
+    private String escapeYaml(String value) {
+        if (value == null) return "";
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private void collect(YamlConfiguration yml, Map<String, String> into) {
+        for (String key : yml.getKeys(true)) {
+            if (yml.isConfigurationSection(key)) continue;
+            String val = yml.getString(key);
+            if (val == null) continue;
+            into.put(key, val);
+        }
     }
 
     /** 确保 lang 目录下有全部语言文件（从 jar 复制，不覆盖用户已改文件） */
@@ -104,65 +246,73 @@ public class LanguageManager {
     }
 
     private String normalize(String lang) {
-        if (lang == null || lang.trim().isEmpty()) return "zh_CN";
+        String normalized = normalizeOrNull(lang);
+        return normalized != null ? normalized : FALLBACK_LOCALE;
+    }
+
+    /** 归一化语言代码；无法识别返回 null */
+    private String normalizeOrNull(String lang) {
+        if (lang == null || lang.trim().isEmpty()) return null;
         String l = lang.trim().replace('-', '_');
         for (String s : SUPPORTED) {
             if (s.equalsIgnoreCase(l)) return s;
         }
-        // 常见别名
-        if (l.toLowerCase(Locale.ROOT).startsWith("zh")) return "zh_CN";
-        if (l.toLowerCase(Locale.ROOT).startsWith("en")) return "en_US";
-        if (l.toLowerCase(Locale.ROOT).startsWith("ja")) return "ja_JP";
-        if (l.toLowerCase(Locale.ROOT).startsWith("es")) return "es_ES";
-        if (l.toLowerCase(Locale.ROOT).startsWith("fr")) return "fr_FR";
-        if (l.toLowerCase(Locale.ROOT).startsWith("de")) return "de_DE";
-        return "zh_CN";
+        String lower = l.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("zh")) return "zh_CN";
+        if (lower.startsWith("en")) return "en_US";
+        if (lower.startsWith("ja")) return "ja_JP";
+        if (lower.startsWith("es")) return "es_ES";
+        if (lower.startsWith("fr")) return "fr_FR";
+        if (lower.startsWith("de")) return "de_DE";
+        return null;
     }
 
-    /** 内置兜底（jar 内 zh_CN/en_US） */
-    private void loadBuiltinFallback() {
-        String[] candidates = {"lang/" + currentLanguage + ".yml", "lang/zh_CN.yml", "lang/en_US.yml"};
-        for (String path : candidates) {
-            try (InputStream in = plugin.getResource(path)) {
-                if (in == null) continue;
-                YamlConfiguration yml = YamlConfiguration.loadConfiguration(
-                    new InputStreamReader(in, StandardCharsets.UTF_8));
-                for (String key : yml.getKeys(true)) {
-                    if (!yml.isConfigurationSection(key)) {
-                        String val = yml.getString(key);
-                        if (val != null) {
-                            messages.putIfAbsent(key, val);
-                        }
-                    }
-                }
-                return;
-            } catch (Exception ignored) {
+    // ---------------------------------------------------------------- 取值
+
+    private String resolve(String locale, String key) {
+        Map<String, String> messages = byLocale.get(locale);
+        if (messages != null) {
+            String message = messages.get(key);
+            if (message != null) return message;
+        }
+        // 回退到服务器默认语言
+        if (!locale.equals(defaultLocale)) {
+            Map<String, String> defaults = byLocale.get(defaultLocale);
+            if (defaults != null) {
+                String message = defaults.get(key);
+                if (message != null) return message;
             }
         }
-    }
-
-    /**
-     * 获取消息
-     */
-    public String getMessage(String key) {
-        String message = messages.get(key);
-        if (message != null) {
-            return message;
+        // 再回退到内置中文，最后暴露 key 本身，便于发现漏配
+        Map<String, String> fallback = byLocale.get(FALLBACK_LOCALE);
+        if (fallback != null) {
+            String message = fallback.get(key);
+            if (message != null) return message;
         }
         plugin.getLogger().warning("找不到语言消息: " + key);
-        if (key.startsWith("game.")) return isEnglish() ? "§eGame Tip" : "§e游戏提示";
-        if (key.startsWith("role.")) return isEnglish() ? "§cRole Status" : "§c角色状态";
-        if (key.startsWith("item.")) return isEnglish() ? "§aItem Effect" : "§a道具效果";
-        if (key.startsWith("broadcast.")) return isEnglish() ? "§6Broadcast" : "§6广播消息";
-        if (key.startsWith("queue.")) return isEnglish() ? "§bQueue" : "§b队列信息";
-        if (key.startsWith("economy.")) return isEnglish() ? "§eEconomy" : "§e经济提示";
-        if (key.startsWith("error.")) return isEnglish() ? "§cFailed" : "§c操作失败";
-        if (key.startsWith("area.")) return isEnglish() ? "§aArea" : "§a区域信息";
-        return isEnglish() ? "§7System" : "§7系统提示";
+        return key;
+    }
+
+    /** 按服务器默认语言取消息 */
+    public String getMessage(String key) {
+        return resolve(defaultLocale, key);
     }
 
     public String getMessage(String key, Object... args) {
-        String message = getMessage(key);
+        return format(resolve(defaultLocale, key), key, args);
+    }
+
+    /** 按玩家自己的语言取消息 */
+    public String getMessage(Player player, String key) {
+        return resolve(getLanguage(player), key);
+    }
+
+    public String getMessage(Player player, String key, Object... args) {
+        return format(resolve(getLanguage(player), key), key, args);
+    }
+
+    private String format(String message, String key, Object... args) {
+        if (args == null || args.length == 0) return message;
         try {
             return MessageFormat.format(message, args);
         } catch (Exception e) {
@@ -171,14 +321,18 @@ public class LanguageManager {
         }
     }
 
+    // ---------------------------------------------------------------- 发送
+
     public void sendMessage(Player player, String key, Object... args) {
-        player.sendMessage(getMessage(key, args));
+        if (player == null) return;
+        player.sendMessage(getMessage(player, key, args));
     }
 
     public void sendTitle(Player player, String titleKey, String subtitleKey,
                           Object[] titleArgs, Object[] subtitleArgs) {
-        String title = titleKey != null ? getMessage(titleKey, titleArgs) : "";
-        String subtitle = subtitleKey != null ? getMessage(subtitleKey, subtitleArgs) : "";
+        if (player == null) return;
+        String title = titleKey != null ? getMessage(player, titleKey, titleArgs) : "";
+        String subtitle = subtitleKey != null ? getMessage(player, subtitleKey, subtitleArgs) : "";
         player.sendTitle(title, subtitle, 10, 70, 20);
     }
 
@@ -187,8 +341,10 @@ public class LanguageManager {
     }
 
     public void sendActionBar(Player player, String key, Object... args) {
-        player.sendMessage(getMessage(key, args));
+        ActionBarManager.sendNow(player, getMessage(player, key, args));
     }
+
+    // ---------------------------------------------------------------- 生命周期
 
     public void loadLanguage() {
         loadMessages();
@@ -203,8 +359,48 @@ public class LanguageManager {
         // 语言文件由用户编辑，无需回写
     }
 
+    /** 玩家退出时清理其语言选择，避免 UUID 表无限增长 */
+    public void forget(Player player) {
+        if (player != null) playerLocales.remove(player.getUniqueId());
+    }
+
     /** 列出可用语言（供命令提示） */
     public String listSupported() {
         return String.join(", ", SUPPORTED);
+    }
+
+    /** 某个语言代码是否受支持 */
+    public boolean isSupported(String locale) {
+        return normalizeOrNull(locale) != null;
+    }
+
+    /** 某语言已加载的消息条数（自检用） */
+    public int getMessageCount(String locale) {
+        Map<String, String> messages = byLocale.get(locale);
+        return messages == null ? 0 : messages.size();
+    }
+
+    /**
+     * 相对基准语言，各语言键集的最大差异数量（自检用）。
+     * 0 表示六语言键集完全一致。
+     */
+    public int getMaxKeySetDiff(String reference) {
+        Map<String, String> ref = byLocale.get(reference);
+        if (ref == null || ref.isEmpty()) return -1;
+        int max = 0;
+        for (Map.Entry<String, Map<String, String>> e : byLocale.entrySet()) {
+            if (e.getKey().equals(reference)) continue;
+            java.util.Set<String> diff = new java.util.HashSet<>(ref.keySet());
+            diff.removeAll(e.getValue().keySet());
+            java.util.Set<String> extra = new java.util.HashSet<>(e.getValue().keySet());
+            extra.removeAll(ref.keySet());
+            max = Math.max(max, diff.size() + extra.size());
+        }
+        return max;
+    }
+
+    /** 归一化语言代码（供命令使用）；非法返回 null */
+    public String resolveLocale(String locale) {
+        return normalizeOrNull(locale);
     }
 }
